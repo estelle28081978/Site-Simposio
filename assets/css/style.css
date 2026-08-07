@@ -1,4 +1,35 @@
 /* ==========================================================================
+   Fonts — self-hosted, SIL Open Font License (see assets/fonts/*/LICENSE.txt)
+   ========================================================================== */
+@font-face {
+  font-family: "Glacial Indifference";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url("../fonts/glacial-indifference/glacial-indifference-400.woff2") format("woff2"),
+    url("../fonts/glacial-indifference/glacial-indifference-400.woff") format("woff");
+}
+@font-face {
+  font-family: "Glacial Indifference";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url("../fonts/glacial-indifference/glacial-indifference-400italic.woff2") format("woff2"),
+    url("../fonts/glacial-indifference/glacial-indifference-400italic.woff") format("woff");
+}
+@font-face {
+  font-family: "Glacial Indifference";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    url("../fonts/glacial-indifference/glacial-indifference-700.woff2") format("woff2"),
+    url("../fonts/glacial-indifference/glacial-indifference-700.woff") format("woff");
+}
+
+/* ==========================================================================
    Simposio — Design tokens (Apple-inspired: huge type, glass, gradients,
    scroll storytelling — brand palette reduced to primary colors only)
    ========================================================================== */
@@ -32,9 +63,13 @@
   --glass-bg-dark: rgba(16, 31, 39, 0.6);
   --glass-border: rgba(255, 255, 255, 0.4);
 
-  /* Type */
+  /* Type — brand system: Yeseva One (titre) / Canter (sous-titre) / Glacial
+     Indifference (corps). Canter is not obtainable in this environment (see
+     README note); Oswald stands in for it until the real font files are
+     supplied. */
   --font-display: "Yeseva One", "Georgia", serif;
-  --font-body: "Jost", "Helvetica Neue", Arial, sans-serif;
+  --font-subtitle: "Canter", "Oswald", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Glacial Indifference", "Helvetica Neue", Arial, sans-serif;
 
   /* Spacing scale — generous, Apple-like breathing room */
   --space-1: 0.5rem;
@@ -114,9 +149,9 @@ h2 { font-size: clamp(2.3rem, 3.4vw + 1.2rem, 4.6rem); }
 h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 
 .eyebrow {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.72rem;
+  font-family: var(--font-subtitle);
+  font-weight: 500;
+  font-size: 0.75rem;
   letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--accent);
@@ -214,6 +249,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 
 .nav-links { display: none; align-items: center; gap: var(--space-4); }
 .nav-links a {
+  font-family: var(--font-subtitle);
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -327,6 +363,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
   align-items: center;
   gap: 0.6rem;
   color: var(--fg-muted-inverse);
+  font-family: var(--font-subtitle);
   font-size: 0.66rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -381,6 +418,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
   background: var(--bg-dim);
+  font-family: var(--font-subtitle);
   font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -479,6 +517,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 
 .vehicle-feature .status {
   display: inline-flex;
+  font-family: var(--font-subtitle);
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -521,7 +560,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 }
 .service-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px -24px rgba(28, 59, 74, 0.3); }
 
-.service-card .service-index { font-family: var(--font-display); font-size: 0.85rem; color: var(--accent); letter-spacing: 0.1em; }
+.service-card .service-index { font-family: var(--font-subtitle); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; color: var(--accent); letter-spacing: 0.1em; }
 .service-card h3 { color: var(--navy); margin-block: 0.6rem 0.2rem; }
 .service-card .service-name { font-family: var(--font-display); font-size: 1.7rem; }
 .service-card .tagline {
@@ -644,7 +683,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 .footer-brand .logo { margin-bottom: var(--space-2); }
 .footer-brand p { max-width: 26rem; font-size: 0.92rem; color: var(--fg-muted-inverse); }
 
-.footer-col h4 { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); margin-bottom: var(--space-2); }
+.footer-col h4 { font-family: var(--font-subtitle); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); margin-bottom: var(--space-2); }
 .footer-col ul { display: flex; flex-direction: column; gap: 0.6rem; }
 .footer-col a { font-size: 0.9rem; transition: color var(--dur-fast) var(--ease); }
 .footer-col a:hover { color: var(--cream); }
