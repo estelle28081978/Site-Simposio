@@ -382,9 +382,12 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
   justify-content: center;
   overflow: hidden;
   background:
-    radial-gradient(60% 55% at 18% 12%, rgba(193, 98, 45, 0.35), transparent 60%),
-    radial-gradient(70% 60% at 85% 85%, rgba(193, 98, 45, 0.18), transparent 55%),
-    linear-gradient(160deg, var(--navy) 0%, var(--navy-900) 78%);
+    radial-gradient(60% 55% at 18% 12%, rgba(193, 98, 45, 0.45), transparent 60%),
+    radial-gradient(70% 60% at 85% 85%, rgba(193, 98, 45, 0.22), transparent 55%),
+    linear-gradient(160deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.94) 78%),
+    url("../img/portofino-harbour.jpg");
+  background-size: cover;
+  background-position: center 65%;
   color: var(--fg-inverse);
   text-align: center;
   padding-top: 5rem;
@@ -562,6 +565,39 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 }
 .positioning-tag svg { width: 14px; height: 14px; color: var(--accent); }
 
+.promise-photo {
+  position: relative;
+  margin: var(--space-6) 0 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+  box-shadow: 0 40px 80px -30px rgba(28, 59, 74, 0.35);
+}
+.promise-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.promise-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(16, 31, 39, 0.75) 0%, transparent 45%);
+}
+.promise-photo figcaption {
+  position: absolute;
+  left: var(--space-4);
+  bottom: var(--space-3);
+  font-family: var(--font-subtitle);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream);
+  z-index: 1;
+}
+@media (max-width: 700px) { .promise-photo { aspect-ratio: 4 / 5; } }
+
 /* ==========================================================================
    Experience — pinned sticky senses feature
    ========================================================================== */
@@ -667,6 +703,9 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
   justify-content: center;
 }
 .vehicle-feature .visual svg { width: 52%; height: 52%; color: var(--navy); }
+.vehicle-feature .visual.photo { padding: 0; overflow: hidden; background: var(--cream-dim); }
+.vehicle-feature .visual.photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 700ms var(--ease); }
+.vehicle-feature:hover .visual.photo img { transform: scale(1.04); }
 
 .vehicle-feature .status {
   display: inline-flex;
@@ -683,6 +722,7 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 }
 .vehicle-feature h3 { color: var(--navy); font-size: clamp(1.8rem, 1.4vw + 1.2rem, 2.6rem); margin-bottom: var(--space-2); }
 .vehicle-feature p { color: var(--fg-muted); font-size: 1.1rem; max-width: 30rem; }
+.vehicle-feature .visual-note { font-size: 0.78rem; color: var(--fg-muted); opacity: 0.75; margin-top: var(--space-2); max-width: 26rem; }
 
 /* ==========================================================================
    Services — editorial index list with cursor-following preview
@@ -814,8 +854,11 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
   overflow: hidden;
   color: var(--fg-inverse);
   background:
-    radial-gradient(65% 65% at 90% 10%, rgba(193, 98, 45, 0.3), transparent 60%),
-    linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 85%);
+    radial-gradient(65% 65% at 90% 10%, rgba(193, 98, 45, 0.32), transparent 60%),
+    linear-gradient(200deg, rgba(16, 31, 39, 0.9) 0%, rgba(16, 31, 39, 0.95) 85%),
+    url("../img/alsace-vineyard.jpg");
+  background-size: cover;
+  background-position: center 40%;
 }
 
 .contact-grid { display: grid; gap: var(--space-5); position: relative; z-index: 1; }
@@ -905,6 +948,9 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 .footer-col a:hover { color: var(--cream); }
 
 .footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); font-size: 0.78rem; color: rgba(246, 241, 231, 0.45); }
+.photo-credits { margin-top: var(--space-2); font-size: 0.72rem; color: rgba(246, 241, 231, 0.35); }
+.photo-credits a { color: rgba(246, 241, 231, 0.55); text-decoration: underline; }
+.photo-credits a:hover { color: var(--cream); }
 
 /* ==========================================================================
    Scroll reveal (fallback / general use)
