@@ -19,9 +19,10 @@
   window.addEventListener("scroll", onHeaderScroll, { passive: true });
   onHeaderScroll();
 
-  /* ---------- Mobile menu ---------- */
+  /* ---------- Full-screen menu ---------- */
   var navToggle = document.getElementById("navToggle");
   var mobileMenu = document.getElementById("mobileMenu");
+  var mobileMenuClose = document.getElementById("mobileMenuClose");
 
   function closeMenu() {
     mobileMenu.classList.remove("is-open");
@@ -33,8 +34,59 @@
       var isOpen = mobileMenu.classList.toggle("is-open");
       navToggle.setAttribute("aria-expanded", String(isOpen));
     });
+    if (mobileMenuClose) mobileMenuClose.addEventListener("click", closeMenu);
     mobileMenu.querySelectorAll("a").forEach(function (a) {
       a.addEventListener("click", closeMenu);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) closeMenu();
+    });
+  }
+
+  /* ---------- Custom cursor ---------- */
+  var cursorDot = document.getElementById("cursorDot");
+  var supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  if (cursorDot && supportsHover && !reducedMotion) {
+    document.addEventListener("mousemove", function (e) {
+      cursorDot.style.transform = "translate3d(" + e.clientX + "px," + e.clientY + "px,0)";
+      cursorDot.classList.add("is-active");
+    });
+    document.addEventListener("mouseleave", function () { cursorDot.classList.remove("is-active"); });
+
+    var hoverables = document.querySelectorAll("a, button, .service-row-head, [data-cursor-hover]");
+    hoverables.forEach(function (el) {
+      el.addEventListener("mouseenter", function () { cursorDot.classList.add("is-hovering"); });
+      el.addEventListener("mouseleave", function () { cursorDot.classList.remove("is-hovering"); });
+    });
+  }
+
+  /* ---------- Services: cursor-following preview panel ---------- */
+  var servicesIndex = document.getElementById("servicesIndex");
+  var servicePreview = document.getElementById("servicePreview");
+
+  if (servicesIndex && servicePreview && supportsHover && !reducedMotion) {
+    var previewPanels = servicePreview.querySelectorAll(".service-preview-panel");
+    var rows = servicesIndex.querySelectorAll(".service-row");
+
+    function setActivePanel(index) {
+      previewPanels.forEach(function (p) {
+        p.classList.toggle("is-active", p.getAttribute("data-panel") === String(index));
+      });
+    }
+
+    rows.forEach(function (row) {
+      row.addEventListener("mouseenter", function () {
+        setActivePanel(row.getAttribute("data-preview"));
+        servicePreview.classList.add("is-visible");
+      });
+    });
+    servicesIndex.addEventListener("mouseleave", function () {
+      servicePreview.classList.remove("is-visible");
+    });
+    servicesIndex.addEventListener("mousemove", function (e) {
+      servicePreview.style.left = e.clientX + "px";
+      servicePreview.style.top = e.clientY + "px";
     });
   }
 

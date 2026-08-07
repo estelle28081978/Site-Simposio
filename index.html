@@ -14,21 +14,17 @@
 
 <a class="skip-link" href="#main">Aller au contenu</a>
 
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
 <!-- ============================== HEADER ============================== -->
 <header class="site-header" id="siteHeader">
   <div class="container">
     <a href="#hero" class="logo">Simposio<span>.</span></a>
 
-    <nav class="nav-links" aria-label="Navigation principale">
-      <a href="#positionnement">Positionnement</a>
-      <a href="#experience">L'expérience</a>
-      <a href="#services">Formules</a>
-      <a href="#contact">Contact</a>
-    </nav>
-
     <div class="nav-actions">
       <a href="#contact" class="btn btn-primary" style="display:none" id="navCta">Demander un devis</a>
       <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Ouvrir le menu">
+        <span class="nav-toggle-label">Menu</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
     </div>
@@ -36,11 +32,27 @@
 </header>
 
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#positionnement">Positionnement</a>
-  <a href="#experience">L'expérience</a>
-  <a href="#services">Formules</a>
-  <a href="#contact">Contact</a>
-  <a href="#contact" class="btn btn-primary">Demander un devis</a>
+  <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fermer le menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="mobile-menu-grid">
+    <nav class="mobile-menu-links" aria-label="Navigation principale">
+      <a href="#positionnement"><span class="idx">01</span>Positionnement</a>
+      <a href="#experience"><span class="idx">02</span>L'expérience</a>
+      <a href="#signature"><span class="idx">03</span>Signature</a>
+      <a href="#services"><span class="idx">04</span>Formules</a>
+      <a href="#contact"><span class="idx">05</span>Contact</a>
+    </nav>
+    <div class="mobile-menu-side">
+      <a href="#contact" class="btn btn-primary">Demander un devis</a>
+      <div class="mobile-menu-info">
+        <span class="eyebrow on-dark">Contact</span>
+        <a href="mailto:Estellelorusso@eurhekaconseil.com">Estellelorusso@eurhekaconseil.com</a>
+        <span class="eyebrow on-dark">Basée en</span>
+        <span>Alsace, France</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <main id="main">
@@ -87,6 +99,24 @@
       <svg viewBox="0 0 14 20" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="12" height="18" rx="6"/><circle cx="7" cy="6" r="1.4" fill="currentColor" stroke="none"/></svg>
     </div>
   </section>
+
+  <!-- ============================== MARQUEE ============================== -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>L'événement qui a le goût d'une expérience</span>
+      <span class="dot">&middot;</span>
+      <span>Dolce Vita</span>
+      <span class="dot">&middot;</span>
+      <span>Simposio</span>
+      <span class="dot">&middot;</span>
+      <span>L'événement qui a le goût d'une expérience</span>
+      <span class="dot">&middot;</span>
+      <span>Dolce Vita</span>
+      <span class="dot">&middot;</span>
+      <span>Simposio</span>
+      <span class="dot">&middot;</span>
+    </div>
+  </div>
 
   <!-- ============================== POSITIONNEMENT (scroll-highlight) ============================== -->
   <section class="promise" id="positionnement">
@@ -236,62 +266,93 @@
   <!-- ============================== SERVICES ============================== -->
   <section class="services" id="services">
     <div class="container">
-      <div class="section-head center" data-reveal>
+      <div class="section-head" data-reveal>
         <span class="eyebrow">Nos formules</span>
         <h2>Une offre sur-mesure pour chaque occasion</h2>
       </div>
 
-      <div class="services-grid" data-reveal-group>
+      <div class="services-index" id="servicesIndex" data-reveal-group>
 
-        <article class="service-card">
-          <span class="service-index">01 — Décoration</span>
-          <h3 class="service-name">La Cartolina</h3>
-          <p class="tagline">Le décor qui invite la Dolce Vita, où que vous soyez.</p>
-          <p class="desc">
-            Une scénographie immersive complète — mobilier, éclairage, signalétique, musique d'ambiance — sans
-            changer de traiteur. L'option idéale pour donner vie à votre univers dès la première prestation.
-          </p>
-          <p class="service-target"><strong>Pour :</strong> entreprises avec cuisine interne ou traiteur déjà en place.</p>
-          <a href="#contact" class="btn btn-ghost" data-service="La Cartolina — Décoration">Demander un devis</a>
+        <article class="service-row" data-preview="0">
+          <div class="service-row-head">
+            <span class="service-row-num">01</span>
+            <h3 class="service-row-name">La Cartolina</h3>
+            <span class="service-row-cat">Décoration</span>
+            <svg class="service-row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+          </div>
+          <div class="service-row-body">
+            <p class="tagline">Le décor qui invite la Dolce Vita, où que vous soyez.</p>
+            <p class="desc">
+              Une scénographie immersive complète — mobilier, éclairage, signalétique, musique d'ambiance — sans
+              changer de traiteur. L'option idéale pour donner vie à votre univers dès la première prestation.
+            </p>
+            <p class="service-target"><strong>Pour :</strong> entreprises avec cuisine interne ou traiteur déjà en place.</p>
+            <a href="#contact" class="btn btn-ghost" data-service="La Cartolina — Décoration">Demander un devis</a>
+          </div>
         </article>
 
-        <article class="service-card">
-          <span class="service-index">02 — Expérience signature</span>
-          <h3 class="service-name">L'Esperienza</h3>
-          <p class="tagline">L'évènement, du premier regard à la dernière gorgée, signé Simposio.</p>
-          <p class="desc">
-            Notre offre phare, clé en main : décoration, animation, gastronomie, boissons et service, en formule
-            Standard ou Prestige. Le cœur de notre savoir-faire, pour une immersion totale dans l'univers Dolce Vita.
-          </p>
-          <p class="service-target"><strong>Pour :</strong> entreprises qui délèguent l'organisation et l'exécution de A à Z.</p>
-          <a href="#contact" class="btn btn-ghost" data-service="L'Esperienza — Expérience signature">Demander un devis</a>
+        <article class="service-row" data-preview="1">
+          <div class="service-row-head">
+            <span class="service-row-num">02</span>
+            <h3 class="service-row-name">L'Esperienza</h3>
+            <span class="service-row-cat">Expérience signature</span>
+            <svg class="service-row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+          </div>
+          <div class="service-row-body">
+            <p class="tagline">L'évènement, du premier regard à la dernière gorgée, signé Simposio.</p>
+            <p class="desc">
+              Notre offre phare, clé en main : décoration, animation, gastronomie, boissons et service, en formule
+              Standard ou Prestige. Le cœur de notre savoir-faire, pour une immersion totale dans l'univers Dolce Vita.
+            </p>
+            <p class="service-target"><strong>Pour :</strong> entreprises qui délèguent l'organisation et l'exécution de A à Z.</p>
+            <a href="#contact" class="btn btn-ghost" data-service="L'Esperienza — Expérience signature">Demander un devis</a>
+          </div>
         </article>
 
-        <article class="service-card">
-          <span class="service-index">03 — After Work</span>
-          <h3 class="service-name">L'Aperitivo</h3>
-          <p class="tagline">L'afterwork où la Dolce Vita prend le relais.</p>
-          <p class="desc">
-            Un format court et convivial, moins formel qu'un cocktail événementiel classique. Base fixe et options
-            à la carte, avec une formule d'abonnement mensuel pour une présence régulière auprès de vos équipes.
-          </p>
-          <p class="service-target"><strong>Pour :</strong> afterworks réguliers et moments de cohésion d'équipe.</p>
-          <a href="#contact" class="btn btn-ghost" data-service="L'Aperitivo — After Work">Demander un devis</a>
+        <article class="service-row" data-preview="2">
+          <div class="service-row-head">
+            <span class="service-row-num">03</span>
+            <h3 class="service-row-name">L'Aperitivo</h3>
+            <span class="service-row-cat">After Work</span>
+            <svg class="service-row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+          </div>
+          <div class="service-row-body">
+            <p class="tagline">L'afterwork où la Dolce Vita prend le relais.</p>
+            <p class="desc">
+              Un format court et convivial, moins formel qu'un cocktail événementiel classique. Base fixe et options
+              à la carte, avec une formule d'abonnement mensuel pour une présence régulière auprès de vos équipes.
+            </p>
+            <p class="service-target"><strong>Pour :</strong> afterworks réguliers et moments de cohésion d'équipe.</p>
+            <a href="#contact" class="btn btn-ghost" data-service="L'Aperitivo — After Work">Demander un devis</a>
+          </div>
         </article>
 
-        <article class="service-card">
-          <span class="service-index">04 — Déjeuner d'affaires</span>
-          <h3 class="service-name">La Tavola</h3>
-          <p class="tagline">Le déjeuner d'affaires où Simposio inspire un échange privilégié.</p>
-          <p class="desc">
-            Une atmosphère soignée mais non festive, pensée pour vos rendez-vous professionnels : menu sur-mesure,
-            vins italiens et service à table sobre et efficace, pour garder l'attention sur l'essentiel.
-          </p>
-          <p class="service-target"><strong>Pour :</strong> directions et cadres qui reçoivent clients et partenaires.</p>
-          <a href="#contact" class="btn btn-ghost" data-service="La Tavola — Déjeuner d'affaires">Demander un devis</a>
+        <article class="service-row" data-preview="3">
+          <div class="service-row-head">
+            <span class="service-row-num">04</span>
+            <h3 class="service-row-name">La Tavola</h3>
+            <span class="service-row-cat">Déjeuner d'affaires</span>
+            <svg class="service-row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+          </div>
+          <div class="service-row-body">
+            <p class="tagline">Le déjeuner d'affaires où Simposio inspire un échange privilégié.</p>
+            <p class="desc">
+              Une atmosphère soignée mais non festive, pensée pour vos rendez-vous professionnels : menu sur-mesure,
+              vins italiens et service à table sobre et efficace, pour garder l'attention sur l'essentiel.
+            </p>
+            <p class="service-target"><strong>Pour :</strong> directions et cadres qui reçoivent clients et partenaires.</p>
+            <a href="#contact" class="btn btn-ghost" data-service="La Tavola — Déjeuner d'affaires">Demander un devis</a>
+          </div>
         </article>
 
       </div>
+    </div>
+
+    <div class="service-preview" id="servicePreview" aria-hidden="true">
+      <div class="service-preview-panel" data-panel="0"><span>01</span>La Cartolina</div>
+      <div class="service-preview-panel" data-panel="1"><span>02</span>L'Esperienza</div>
+      <div class="service-preview-panel" data-panel="2"><span>03</span>L'Aperitivo</div>
+      <div class="service-preview-panel" data-panel="3"><span>04</span>La Tavola</div>
     </div>
   </section>
 
