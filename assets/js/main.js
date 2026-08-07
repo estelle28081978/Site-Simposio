@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -8,15 +10,14 @@
   /* ---------- Sticky header state + nav CTA reveal ---------- */
   var header = document.getElementById("siteHeader");
   var navCta = document.getElementById("navCta");
-  var hero = document.getElementById("hero");
 
-  function onScroll() {
+  function onHeaderScroll() {
     var scrolled = window.scrollY > 40;
     header.classList.toggle("is-scrolled", scrolled);
     if (navCta) navCta.style.display = scrolled ? "inline-flex" : "none";
   }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
+  window.addEventListener("scroll", onHeaderScroll, { passive: true });
+  onHeaderScroll();
 
   /* ---------- Mobile menu ---------- */
   var navToggle = document.getElementById("navToggle");
@@ -54,6 +55,130 @@
     revealTargets.forEach(function (el) { io.observe(el); });
   } else {
     revealTargets.forEach(function (el) { el.classList.add("is-visible"); });
+  }
+
+  /* ---------- Hero blob parallax (subtle, scroll-linked) ---------- */
+  var parallaxEls = document.querySelectorAll("[data-parallax]");
+  if (!reducedMotion && parallaxEls.length) {
+    var ticking = false;
+    function updateParallax() {
+      var y = window.scrollY;
+      parallaxEls.forEach(function (el) {
+        var factor = parseFloat(el.getAttribute("data-parallax")) || 0.1;
+        el.style.transform = "translate3d(0, " + Math.round(y * factor) + "px, 0)";
+      });
+      ticking = false;
+    }
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!ticking) {
+          window.requestAnimationFrame(updateParallax);
+          ticking = true;
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  /* ---------- Promise: scroll-progress word highlight ---------- */
+  var promiseSection = document.querySelector(".promise");
+  var promiseQuote = document.getElementById("promiseQuote");
+
+  if (promiseSection && promiseQuote && !reducedMotion) {
+    var words = Array.prototype.slice.call(promiseQuote.querySelectorAll(".word"));
+    var pTicking = false;
+
+    function updatePromise() {
+      var rect = promiseSection.getBoundingClientRect();
+      var vh = window.innerHeight;
+      // progress 0 -> section top enters viewport bottom, 1 -> section bottom leaves viewport top
+      var total = rect.height + vh;
+      var traveled = vh - rect.top;
+      var progress = Math.min(1, Math.max(0, traveled / total));
+      // Map the middle 70% of the scroll range to the word reveal for a comfortable read
+      var reveal = Math.min(1, Math.max(0, (progress - 0.12) / 0.6));
+      var litCount = Math.round(reveal * words.length);
+      words.forEach(function (w, i) {
+        w.classList.toggle("lit", i < litCount);
+      });
+      pTicking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!pTicking) {
+          window.requestAnimationFrame(updatePromise);
+          pTicking = true;
+        }
+      },
+      { passive: true }
+    );
+    updatePromise();
+  } else if (promiseQuote) {
+    promiseQuote.classList.add("static-lit");
+  }
+
+  /* ---------- Senses: sticky visual synced to active row ---------- */
+  var sensesList = document.getElementById("sensesList");
+  var sensesVisual = document.getElementById("sensesVisual");
+
+  if (sensesList && sensesVisual && "IntersectionObserver" in window) {
+    var rows = Array.prototype.slice.call(sensesList.querySelectorAll(".sense-row"));
+    var icons = Array.prototype.slice.call(sensesVisual.querySelectorAll(".icon"));
+
+    function setActiveSense(index) {
+      rows.forEach(function (row) {
+        row.classList.toggle("is-active", row.getAttribute("data-index") === String(index));
+      });
+      icons.forEach(function (icon) {
+        var match = icon.getAttribute("data-icon") === String(index);
+        icon.classList.toggle("is-active", match);
+        icon.classList.toggle("is-hidden", !match);
+      });
+    }
+
+    var sensesObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            setActiveSense(entry.target.getAttribute("data-index"));
+          }
+        });
+      },
+      { threshold: 0.6, rootMargin: "-20% 0px -20% 0px" }
+    );
+    rows.forEach(function (row) { sensesObserver.observe(row); });
+  }
+
+  /* ---------- Hero stat count-up ---------- */
+  var countEl = document.querySelector("[data-count]");
+  if (countEl && "IntersectionObserver" in window) {
+    var countObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          var target = parseInt(countEl.getAttribute("data-count"), 10) || 0;
+          if (reducedMotion) {
+            countEl.textContent = String(target);
+          } else {
+            var start = null;
+            var duration = 900;
+            function step(ts) {
+              if (!start) start = ts;
+              var p = Math.min(1, (ts - start) / duration);
+              countEl.textContent = String(Math.round(p * target));
+              if (p < 1) window.requestAnimationFrame(step);
+            }
+            window.requestAnimationFrame(step);
+          }
+          countObserver.unobserve(countEl);
+        });
+      },
+      { threshold: 0.6 }
+    );
+    countObserver.observe(countEl);
   }
 
   /* ---------- Service CTA -> prefill contact form ---------- */
