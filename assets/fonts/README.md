@@ -2,11 +2,18 @@
 
 Système typographique de la charte graphique : **Titre** / **Sous-titre** / **Corps de texte**.
 
+Toutes les polices sont **auto-hébergées** (aucune requête vers Google Fonts
+ou un autre CDN au chargement du site — plus rapide, plus fiable, aucune
+dépendance externe).
+
 | Rôle | Police prévue (charte) | Police utilisée sur le site | Statut |
 |---|---|---|---|
-| Titre | Yeseva One | Yeseva One | ✅ Police exacte (Google Fonts) |
-| Corps de texte | Glacial Indifference | Glacial Indifference | ✅ Police exacte (auto-hébergée ici, `glacial-indifference/`) |
-| Sous-titre | Canter | Oswald (temporaire) | ⚠️ Substitut — voir ci-dessous |
+| Titre | Yeseva One | Yeseva One | ✅ Police exacte (Google Fonts, auto-hébergée dans `yeseva-one/`) |
+| Corps de texte | Glacial Indifference | Glacial Indifference | ✅ Police exacte (auto-hébergée dans `glacial-indifference/`) |
+| Sous-titre | Canter | Oswald (temporaire, auto-hébergée dans `oswald/`) | ⚠️ Substitut — voir ci-dessous |
+
+Yeseva One et Oswald viennent de Google Fonts, sous licence **SIL Open Font
+License 1.1** (même licence libre que Glacial Indifference).
 
 ## Glacial Indifference
 

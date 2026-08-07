@@ -28,6 +28,20 @@
     url("../fonts/glacial-indifference/glacial-indifference-700.woff2") format("woff2"),
     url("../fonts/glacial-indifference/glacial-indifference-700.woff") format("woff");
 }
+@font-face {
+  font-family: "Yeseva One";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/yeseva-one/yeseva-one-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("../fonts/oswald/oswald-variable.woff2") format("woff2-variations"), url("../fonts/oswald/oswald-variable.woff2") format("woff2");
+}
 
 /* ==========================================================================
    Simposio — Design tokens (Apple-inspired: huge type, glass, gradients,
@@ -140,27 +154,28 @@ body {
 h1, h2, h3, .font-display {
   font-family: var(--font-display);
   font-weight: 400;
-  line-height: 1.04;
-  letter-spacing: -0.01em;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
 }
 
-h1 { font-size: clamp(3.2rem, 5vw + 2rem, 7.2rem); }
-h2 { font-size: clamp(2.3rem, 3.4vw + 1.2rem, 4.6rem); }
-h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
+h1 { font-size: clamp(3.4rem, 5.4vw + 2rem, 7.8rem); letter-spacing: -0.03em; }
+h2 { font-size: clamp(2.4rem, 3.6vw + 1.2rem, 4.9rem); letter-spacing: -0.025em; }
+h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 
 .eyebrow {
   font-family: var(--font-subtitle);
-  font-weight: 500;
-  font-size: 0.75rem;
-  letter-spacing: 0.32em;
+  font-weight: 600;
+  font-size: 0.76rem;
+  letter-spacing: 0.34em;
   text-transform: uppercase;
   color: var(--accent);
 }
 .eyebrow.on-dark { color: var(--terracotta-300); }
 
 .lede {
-  font-size: clamp(1.1rem, 0.4vw + 1rem, 1.4rem);
-  font-weight: 300;
+  font-size: clamp(1.12rem, 0.4vw + 1rem, 1.45rem);
+  font-weight: 400;
+  line-height: 1.55;
   color: var(--fg-muted);
   max-width: 40rem;
 }
@@ -178,8 +193,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
   align-items: center;
   gap: 0.6em;
   padding: 1em 2.1em;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.92rem;
+  font-weight: 600;
   letter-spacing: 0.01em;
   border-radius: 999px;
   border: 1px solid transparent;
@@ -250,8 +265,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 .nav-links { display: none; align-items: center; gap: var(--space-4); }
 .nav-links a {
   font-family: var(--font-subtitle);
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.82rem;
+  font-weight: 600;
   letter-spacing: 0.06em;
   color: var(--fg-muted-inverse);
   transition: color var(--dur-fast) var(--ease);
@@ -409,7 +424,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 }
 @media (min-width: 860px) { .promise-footnote { grid-template-columns: 1fr 1fr; } }
 .promise-footnote p { color: var(--fg-muted); font-size: 1.02rem; }
-.promise-footnote strong { color: var(--navy); font-weight: 600; }
+.promise-footnote strong { color: var(--navy); font-weight: 700; }
 
 .positioning-tag {
   display: inline-flex;
@@ -420,7 +435,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
   background: var(--bg-dim);
   font-family: var(--font-subtitle);
   font-size: 0.72rem;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--navy);
@@ -432,11 +447,30 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
    Experience — pinned sticky senses feature
    ========================================================================== */
 .experience {
-  background: linear-gradient(190deg, var(--navy) 0%, var(--navy-900) 100%);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(55% 50% at 88% 8%, rgba(193, 98, 45, 0.22), transparent 60%),
+    linear-gradient(190deg, var(--navy) 0%, var(--navy-900) 100%);
   color: var(--fg-inverse);
   padding-block: var(--space-6);
 }
-.experience .section-head { margin-inline: auto; }
+.experience .section-head { margin-inline: auto; position: relative; z-index: 1; }
+.experience .senses-feature { position: relative; z-index: 1; }
+
+/* Subtle film-grain texture on dark sections — adds depth without extra imagery */
+.hero::after,
+.experience::after,
+.contact::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
 .senses-feature {
   margin-top: var(--space-5);
@@ -481,7 +515,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 .senses-list .sense-row .row-icon { display: none; width: 26px; height: 26px; color: var(--terracotta-300); flex-shrink: 0; }
 @media (max-width: 899px) { .senses-list .sense-row .row-icon { display: block; } }
 .senses-list .sense-row .num { font-family: var(--font-display); font-size: 0.85rem; color: var(--terracotta-300); }
-.senses-list .sense-row h3 { font-family: var(--font-body); font-weight: 600; font-size: 1.35rem; letter-spacing: 0; margin-block: 0.4rem 0.5rem; color: var(--cream); }
+.senses-list .sense-row h3 { font-family: var(--font-body); font-weight: 700; font-size: 1.4rem; letter-spacing: 0; margin-block: 0.4rem 0.5rem; color: var(--cream); }
 .senses-list .sense-row p { font-size: 1rem; color: var(--fg-muted-inverse); max-width: 32rem; }
 
 /* ==========================================================================
@@ -560,7 +594,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 }
 .service-card:hover { transform: translateY(-6px); box-shadow: 0 30px 60px -24px rgba(28, 59, 74, 0.3); }
 
-.service-card .service-index { font-family: var(--font-subtitle); font-weight: 500; font-size: 0.78rem; text-transform: uppercase; color: var(--accent); letter-spacing: 0.1em; }
+.service-card .service-index { font-family: var(--font-subtitle); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; color: var(--accent); letter-spacing: 0.1em; }
 .service-card h3 { color: var(--navy); margin-block: 0.6rem 0.2rem; }
 .service-card .service-name { font-family: var(--font-display); font-size: 1.7rem; }
 .service-card .tagline {
@@ -683,7 +717,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.75rem); }
 .footer-brand .logo { margin-bottom: var(--space-2); }
 .footer-brand p { max-width: 26rem; font-size: 0.92rem; color: var(--fg-muted-inverse); }
 
-.footer-col h4 { font-family: var(--font-subtitle); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); margin-bottom: var(--space-2); }
+.footer-col h4 { font-family: var(--font-subtitle); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream); margin-bottom: var(--space-2); }
 .footer-col ul { display: flex; flex-direction: column; gap: 0.6rem; }
 .footer-col a { font-size: 0.9rem; transition: color var(--dur-fast) var(--ease); }
 .footer-col a:hover { color: var(--cream); }
