@@ -373,6 +373,24 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
   min-width: 2.2ch;
 }
 
+.mobile-menu-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  padding: 0.9rem 0 1rem calc(2.2ch + var(--space-3));
+  border-bottom: 1px solid var(--border-inverse);
+}
+.mobile-menu-sub a {
+  font-family: var(--font-subtitle);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted-inverse);
+  padding: 0.3rem 0;
+  transition: color var(--dur-fast) var(--ease);
+}
+.mobile-menu-sub a:hover { color: var(--terracotta-300); }
+
 .mobile-menu-side { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); flex-shrink: 0; }
 .mobile-menu-info { display: flex; flex-direction: column; gap: 0.4rem; }
 .mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--fg-muted-inverse); font-size: 0.95rem; }
@@ -478,36 +496,6 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 .scroll-cue svg { width: 14px; height: 22px; animation: bob 2.4s ease-in-out infinite; }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
 @media (max-height: 780px) { .scroll-cue { display: none; } }
-
-/* ==========================================================================
-   Marquee — looping brand statement band
-   ========================================================================== */
-.marquee {
-  background: var(--accent);
-  color: var(--white);
-  overflow: hidden;
-  padding-block: 1.1rem;
-}
-.marquee-track {
-  display: flex;
-  align-items: center;
-  width: max-content;
-  animation: marquee 26s linear infinite;
-}
-.marquee-track span {
-  font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1.2vw + 0.8rem, 1.6rem);
-  white-space: nowrap;
-  padding-inline: 0.6em;
-}
-.marquee-track .dot { color: rgba(255, 255, 255, 0.55); padding-inline: 0.3em; }
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marquee-track { animation: none; }
-}
 
 /* ==========================================================================
    Custom cursor — desktop only, follows pointer, reacts to interactive targets
