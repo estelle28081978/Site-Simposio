@@ -54,39 +54,10 @@
     });
     document.addEventListener("mouseleave", function () { cursorDot.classList.remove("is-active"); });
 
-    var hoverables = document.querySelectorAll("a, button, .service-row-head, [data-cursor-hover]");
+    var hoverables = document.querySelectorAll("a, button, .gallery-item, [data-cursor-hover]");
     hoverables.forEach(function (el) {
       el.addEventListener("mouseenter", function () { cursorDot.classList.add("is-hovering"); });
       el.addEventListener("mouseleave", function () { cursorDot.classList.remove("is-hovering"); });
-    });
-  }
-
-  /* ---------- Services: cursor-following preview panel ---------- */
-  var servicesIndex = document.getElementById("servicesIndex");
-  var servicePreview = document.getElementById("servicePreview");
-
-  if (servicesIndex && servicePreview && supportsHover && !reducedMotion) {
-    var previewPanels = servicePreview.querySelectorAll(".service-preview-panel");
-    var rows = servicesIndex.querySelectorAll(".service-row");
-
-    function setActivePanel(index) {
-      previewPanels.forEach(function (p) {
-        p.classList.toggle("is-active", p.getAttribute("data-panel") === String(index));
-      });
-    }
-
-    rows.forEach(function (row) {
-      row.addEventListener("mouseenter", function () {
-        setActivePanel(row.getAttribute("data-preview"));
-        servicePreview.classList.add("is-visible");
-      });
-    });
-    servicesIndex.addEventListener("mouseleave", function () {
-      servicePreview.classList.remove("is-visible");
-    });
-    servicesIndex.addEventListener("mousemove", function (e) {
-      servicePreview.style.left = e.clientX + "px";
-      servicePreview.style.top = e.clientY + "px";
     });
   }
 

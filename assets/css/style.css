@@ -48,17 +48,25 @@
    scroll storytelling — brand palette reduced to primary colors only)
    ========================================================================== */
 :root {
-  /* Brand — primary colors only */
+  /* Brand — primary colors */
   --navy: #1c3b4a;
   --navy-700: #234a5c;
   --navy-900: #101f27;
+  --navy-rgb: 28, 59, 74;
   --terracotta: #c1622d;
   --terracotta-600: #a84f21;
   --terracotta-300: #e0956a;
+  --terracotta-rgb: 193, 98, 45;
   --cream: #f6f1e7;
   --cream-dim: #ece3d1;
   --white: #ffffff;
   --ink: #12232b;
+
+  /* Brand — secondary colors (used sparingly, to give each "univers" its own tint) */
+  --rosso-ombria: #4a1c1c;
+  --rosso-ombria-rgb: 74, 28, 28;
+  --rosso-venezia: #9d3636;
+  --rosso-venezia-rgb: 157, 54, 54;
 
   /* Semantic */
   --bg: var(--cream);
@@ -124,7 +132,7 @@ html { scroll-behavior: smooth; }
 
 body, h1, h2, h3, h4, p, figure, blockquote { margin: 0; }
 img { max-width: 100%; display: block; }
-ul { list-style: none; margin: 0; padding: 0; }
+ul, ol { list-style: none; margin: 0; padding: 0; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; cursor: pointer; }
 input, select, textarea { font: inherit; }
@@ -381,17 +389,39 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background:
-    radial-gradient(60% 55% at 18% 12%, rgba(193, 98, 45, 0.45), transparent 60%),
-    radial-gradient(70% 60% at 85% 85%, rgba(193, 98, 45, 0.22), transparent 55%),
-    linear-gradient(160deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.94) 78%),
-    url("../img/portofino-harbour.jpg");
-  background-size: cover;
-  background-position: center 65%;
+  background: var(--navy-900);
   color: var(--fg-inverse);
   text-align: center;
   padding-top: 5rem;
   padding-bottom: 4.5rem;
+}
+
+/* Slow Ken Burns drift on the hero photo — a first, gentle sign that the site moves */
+.hero-ken-burns {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("../img/portofino-harbour.jpg");
+  background-size: cover;
+  background-position: center 65%;
+  animation: heroKenBurns 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.hero-ken-burns::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 55% at 18% 12%, rgba(193, 98, 45, 0.45), transparent 60%),
+    radial-gradient(70% 60% at 85% 85%, rgba(193, 98, 45, 0.22), transparent 55%),
+    linear-gradient(160deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.94) 78%);
+}
+@keyframes heroKenBurns {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-ken-burns { animation: none; }
 }
 
 .hero-glow {
@@ -509,6 +539,27 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 @media (hover: none), (pointer: coarse) {
   .cursor-dot { display: none; }
 }
+
+/* ==========================================================================
+   Story — the meaning of the name, ahead of the promise quote
+   ========================================================================== */
+.story-name {
+  max-width: 42rem;
+  margin: 0 auto var(--space-5);
+  text-align: center;
+}
+.story-name p {
+  font-size: clamp(1.1rem, 0.4vw + 1rem, 1.35rem);
+  line-height: 1.6;
+  color: var(--fg-muted);
+}
+.story-name strong {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.15em;
+  color: var(--navy);
+}
+.story-name em { font-style: italic; color: var(--accent); }
 
 /* ==========================================================================
    Promise — pinned scroll-highlight statement
@@ -674,169 +725,140 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 .senses-list .sense-row p { font-size: 1rem; color: var(--fg-muted-inverse); max-width: 32rem; }
 
 /* ==========================================================================
-   Vehicles / signature — alternating big feature blocks
+   Founder — text-only, no fabricated photo
    ========================================================================== */
-.vehicles { background: var(--bg); padding-block: var(--space-6); }
-.vehicles .section-head { margin-inline: auto; }
-
-.vehicle-feature {
-  display: grid;
-  gap: var(--space-4);
-  align-items: center;
-  padding-block: var(--space-5);
-  border-top: 1px solid var(--border);
-}
-.vehicle-feature:last-child { border-bottom: 1px solid var(--border); }
-@media (min-width: 860px) {
-  .vehicle-feature { grid-template-columns: 1fr 1fr; gap: var(--space-6); }
-  .vehicle-feature.flip .visual { order: 2; }
-  .vehicle-feature.flip .copy { order: 1; }
-}
-
-.vehicle-feature .visual {
-  aspect-ratio: 5 / 4;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(150deg, var(--cream-dim), var(--white));
-  box-shadow: 0 30px 60px -30px rgba(28, 59, 74, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.vehicle-feature .visual svg { width: 52%; height: 52%; color: var(--navy); }
-.vehicle-feature .visual.photo { padding: 0; overflow: hidden; background: var(--cream-dim); }
-.vehicle-feature .visual.photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 700ms var(--ease); }
-.vehicle-feature:hover .visual.photo img { transform: scale(1.04); }
-
-.vehicle-feature .status {
-  display: inline-flex;
-  font-family: var(--font-subtitle);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  background: rgba(193, 98, 45, 0.12);
-  color: var(--accent-hover);
-  margin-bottom: var(--space-2);
-}
-.vehicle-feature h3 { color: var(--navy); font-size: clamp(1.8rem, 1.4vw + 1.2rem, 2.6rem); margin-bottom: var(--space-2); }
-.vehicle-feature p { color: var(--fg-muted); font-size: 1.1rem; max-width: 30rem; }
-.vehicle-feature .visual-note { font-size: 0.78rem; color: var(--fg-muted); opacity: 0.75; margin-top: var(--space-2); max-width: 26rem; }
-
-/* ==========================================================================
-   Services — editorial index list with cursor-following preview
-   ========================================================================== */
-.services { position: relative; background: var(--bg-dim); padding-block: var(--space-6); }
-
-.services-index { margin-top: var(--space-4); }
-
-.service-row {
-  position: relative;
-  border-top: 1px solid var(--border);
-  padding-block: var(--space-4);
-}
-.service-row:last-child { border-bottom: 1px solid var(--border); }
-
-.service-row-head {
-  display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  align-items: baseline;
-  gap: var(--space-3);
-}
-.service-row-num {
-  font-family: var(--font-subtitle);
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--accent);
-  align-self: center;
-}
-.service-row-name {
-  font-size: clamp(2rem, 2.4vw + 1.2rem, 3.4rem);
+.founder { background: var(--bg-dim); padding-block: var(--space-6); }
+.founder-inner { max-width: 42rem; margin-inline: auto; text-align: center; }
+.founder-quote {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 1.4vw + 1rem, 2.1rem);
+  line-height: 1.42;
   color: var(--navy);
-  transition: color var(--dur) var(--ease);
+  margin-top: var(--space-3);
 }
-.service-row-cat {
-  display: none;
+.founder-signature {
+  margin-top: var(--space-3);
   font-family: var(--font-subtitle);
+  font-size: 0.8rem;
   font-weight: 600;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-muted);
 }
-@media (min-width: 700px) { .service-row-cat { display: inline; } }
-.service-row-arrow {
-  width: 26px;
-  height: 26px;
-  color: var(--navy);
-  align-self: center;
-  transform: rotate(0deg);
-  transition: transform var(--dur) var(--ease), color var(--dur) var(--ease);
-}
-.service-row:hover .service-row-name { color: var(--accent); }
-.service-row:hover .service-row-arrow { transform: rotate(45deg); color: var(--accent); }
 
-.service-row-body {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-2);
-  margin-top: var(--space-3);
-  padding-left: calc(2.2ch + var(--space-3));
-}
-@media (min-width: 780px) { .service-row-body { grid-template-columns: 1fr 1fr; align-items: start; gap: var(--space-4); } }
-.service-row-body .tagline { color: var(--accent); font-size: 1.05rem; }
-.service-row-body .desc { color: var(--fg-muted); font-size: 1.02rem; }
-.service-row-body .service-target { font-size: 0.85rem; color: var(--fg-muted); margin-top: 0.4rem; }
-.service-row-body .service-target strong { color: var(--navy); }
-.service-row-body .btn { margin-top: var(--space-2); }
+/* ==========================================================================
+   Prestations — four full-viewport "worlds", each with its own dominant
+   visual and tint, so moving between them feels like changing place.
+   ========================================================================== */
+.prestations { background: var(--bg); padding-block: var(--space-6) 0; }
+.prestations-intro { margin-bottom: var(--space-6); }
+.prestations-intro .lede { margin-inline: auto; }
 
-/* Floating preview that trails the cursor while hovering a row — desktop only */
-.service-preview {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 220px;
-  height: 220px;
-  border-radius: var(--radius);
-  pointer-events: none;
-  z-index: 50;
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0.85);
-  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
-  background: linear-gradient(150deg, var(--navy), var(--navy-900));
-  box-shadow: 0 30px 60px -20px rgba(16, 31, 39, 0.5);
+.world {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
   overflow: hidden;
+  color: var(--cream);
+  --tint-rgb: var(--terracotta-rgb);
 }
-.service-preview.is-visible { opacity: 1; }
-.service-preview-panel {
+.world-cartolina { --tint-rgb: var(--terracotta-rgb); }
+.world-esperienza { --tint-rgb: var(--navy-rgb); }
+.world-aperitivo { --tint-rgb: var(--rosso-venezia-rgb); }
+.world-tavola { --tint-rgb: var(--rosso-ombria-rgb); }
+
+.world-media { position: absolute; inset: 0; z-index: 0; }
+.world-media img { width: 100%; height: 100%; object-fit: cover; }
+.world-media::after {
+  content: "";
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  color: var(--cream);
-  opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease);
+  background: linear-gradient(100deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.55) 42%, rgba(var(--tint-rgb), 0.4) 100%);
 }
-.service-preview-panel.is-active { opacity: 1; }
-.service-preview-panel span {
-  font-family: var(--font-display);
-  font-size: 2.4rem;
-  color: var(--terracotta-300);
+.world-esperienza .world-media::after,
+.world-tavola .world-media::after {
+  background: linear-gradient(260deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.55) 42%, rgba(var(--tint-rgb), 0.4) 100%);
 }
-@media (hover: none), (pointer: coarse) {
-  .service-preview { display: none; }
+
+.world-copy { position: relative; z-index: 1; width: 100%; padding-block: var(--space-6); }
+.world-copy-inner { max-width: 34rem; }
+.world-esperienza .world-copy-inner,
+.world-tavola .world-copy-inner { margin-left: auto; text-align: right; }
+
+.world-num { display: block; font-family: var(--font-display); font-size: 1rem; color: var(--terracotta-300); margin-bottom: 0.6rem; }
+.world-copy-inner .eyebrow.on-dark { display: block; margin-bottom: 0.6rem; }
+.world-copy-inner h3 { font-size: clamp(2.4rem, 3vw + 1.4rem, 4.2rem); color: var(--cream); margin-bottom: var(--space-2); }
+.world-copy-inner .tagline { font-family: var(--font-subtitle); font-size: 1.1rem; color: var(--terracotta-300); margin-bottom: var(--space-2); }
+.world-copy-inner .desc { color: var(--fg-muted-inverse); font-size: 1.05rem; margin-bottom: var(--space-2); }
+.world-esperienza .world-copy-inner .desc,
+.world-tavola .world-copy-inner .desc { margin-left: auto; }
+.world-copy-inner .service-target { font-size: 0.85rem; color: var(--fg-muted-inverse); margin-bottom: var(--space-3); }
+.world-copy-inner .service-target strong { color: var(--cream); }
+.world-copy-inner .visual-note { font-size: 0.75rem; color: var(--fg-muted-inverse); opacity: 0.75; margin-top: var(--space-2); max-width: 26rem; }
+.world-esperienza .world-copy-inner .visual-note,
+.world-tavola .world-copy-inner .visual-note { margin-left: auto; }
+
+@media (max-width: 700px) {
+  .world { min-height: 100svh; }
+  .world-copy-inner,
+  .world-esperienza .world-copy-inner,
+  .world-tavola .world-copy-inner { margin-left: 0; text-align: left; max-width: 100%; }
+  .world-esperienza .world-copy-inner .desc,
+  .world-tavola .world-copy-inner .desc,
+  .world-esperienza .world-copy-inner .visual-note,
+  .world-tavola .world-copy-inner .visual-note { margin-left: 0; }
 }
 
 /* ==========================================================================
-   Why Simposio — stat highlight band
+   Réalisations — honest visual moodboard (no fabricated case studies)
    ========================================================================== */
-.why { background: var(--bg); padding-block: var(--space-6); }
+.realisations { background: var(--bg-dim); padding-block: var(--space-6); }
 
-.why-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: var(--space-4); margin-top: var(--space-5); }
+.gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-top: var(--space-5); }
+.gallery-item {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 20px 40px -24px rgba(28, 59, 74, 0.28);
+}
+.gallery-item.span-2 { grid-column: span 2; aspect-ratio: 16 / 10; }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 700ms var(--ease); }
+.gallery-item:hover img { transform: scale(1.05); }
+.gallery-item figcaption {
+  position: absolute;
+  left: var(--space-2);
+  bottom: var(--space-2);
+  font-family: var(--font-subtitle);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream);
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(16, 31, 39, 0.55);
+  backdrop-filter: blur(6px);
+}
+@media (max-width: 900px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .gallery { grid-template-columns: 1fr; } .gallery-item.span-2 { grid-column: span 1; } }
+
+/* ==========================================================================
+   Comment ça se passe — process steps + reassurance grid
+   ========================================================================== */
+.parcours { background: var(--bg); padding-block: var(--space-6); }
+
+.steps { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+@media (min-width: 700px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1080px) { .steps { grid-template-columns: repeat(5, 1fr); } }
+.step { padding: var(--space-4) var(--space-3); border-radius: var(--radius); background: var(--bg-dim); }
+.step-num { display: block; font-family: var(--font-display); font-size: 1.6rem; color: var(--accent); margin-bottom: var(--space-2); }
+.step h3 { color: var(--navy); font-size: 1.15rem; margin-bottom: 0.5rem; }
+.step p { color: var(--fg-muted); font-size: 0.92rem; }
+
+.why-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: var(--space-4); margin-top: var(--space-6); }
 @media (min-width: 700px) { .why-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1080px) { .why-grid { grid-template-columns: repeat(4, 1fr); } }
 

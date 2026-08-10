@@ -10,6 +10,10 @@ CC BY-SA). Attribution reprise dans le footer du site.
 | `portofino-harbour.jpg` | [Portofino - 2016-06-02 - Harbor.jpg](https://commons.wikimedia.org/wiki/File:Portofino_-_2016-06-02_-_Harbor.jpg) | Pierre-Selim Huard | CC BY 4.0 |
 | `tuscany-hills.jpg` | [Hills of Tuscany at evening light.jpg](https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg) | Matthias Rhomberg | CC BY 2.0 |
 | `alsace-vineyard.jpg` | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
+| `terrace-dinner-assisi.jpg` | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
+| `piazza-evening-menaggio.jpg` | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
+| `amalfi-coast-sunset.jpg` | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
+| `lemon-tree-italy.jpg` | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
 
 ## Important — à savoir avant publication
 
@@ -19,6 +23,12 @@ sont pas des photos des véhicules réels de Simposio. Un petit texte le
 précise déjà sous chaque photo sur le site. Dès que vous aurez de vraies
 photos de vos véhicules (habillés aux couleurs Simposio), remplacez ces
 fichiers et retirez la mention.
+
+La photo `terrace-dinner-assisi.jpg` montre de vraies personnes attablées
+(clients du restaurant photographié, sans lien avec Simposio) — elle sert
+uniquement à illustrer une ambiance de déjeuner d'affaires en terrasse. Le
+site précise "photo d'illustration" sous cette image, comme pour les
+véhicules.
 
 Les licences CC BY et CC BY-SA autorisent l'usage commercial, mais
 exigent de créditer l'auteur (déjà fait dans le footer) ; CC BY-SA exige
