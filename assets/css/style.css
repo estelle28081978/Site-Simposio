@@ -743,6 +743,28 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 .prestations-intro { margin-bottom: var(--space-6); }
 .prestations-intro .lede { margin-inline: auto; }
 
+.matieres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: var(--space-4);
+}
+.matieres li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--bg-dim);
+  font-family: var(--font-subtitle);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--navy);
+}
+.matieres svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+
 .world {
   position: relative;
   min-height: 92vh;
