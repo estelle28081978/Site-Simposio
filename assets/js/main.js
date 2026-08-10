@@ -7,14 +7,12 @@
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  /* ---------- Sticky header state + nav CTA reveal ---------- */
+  /* ---------- Sticky header state ---------- */
   var header = document.getElementById("siteHeader");
-  var navCta = document.getElementById("navCta");
 
   function onHeaderScroll() {
     var scrolled = window.scrollY > 40;
     header.classList.toggle("is-scrolled", scrolled);
-    if (navCta) navCta.style.display = scrolled ? "inline-flex" : "none";
   }
   window.addEventListener("scroll", onHeaderScroll, { passive: true });
   onHeaderScroll();
@@ -40,24 +38,6 @@
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && mobileMenu.classList.contains("is-open")) closeMenu();
-    });
-  }
-
-  /* ---------- Custom cursor ---------- */
-  var cursorDot = document.getElementById("cursorDot");
-  var supportsHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
-  if (cursorDot && supportsHover && !reducedMotion) {
-    document.addEventListener("mousemove", function (e) {
-      cursorDot.style.transform = "translate3d(" + e.clientX + "px," + e.clientY + "px,0)";
-      cursorDot.classList.add("is-active");
-    });
-    document.addEventListener("mouseleave", function () { cursorDot.classList.remove("is-active"); });
-
-    var hoverables = document.querySelectorAll("a, button, .gallery-item, [data-cursor-hover]");
-    hoverables.forEach(function (el) {
-      el.addEventListener("mouseenter", function () { cursorDot.classList.add("is-hovering"); });
-      el.addEventListener("mouseleave", function () { cursorDot.classList.remove("is-hovering"); });
     });
   }
 

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Immersion 3D — Simposio</title>
-<meta name="description" content="Explorez en 3D nos trois véhicules-stands signature — Fiat 500, Vespa et triporteur — habillés aux couleurs et matières Simposio." />
+<title>Engagements & Équipe — Simposio</title>
+<meta name="description" content="Les engagements de Simposio — concept clé en main, positionnement premium, ancrage alsacien — et l'équipe derrière l'agence." />
 
 <link rel="stylesheet" href="assets/css/style.css" />
 
@@ -69,49 +69,64 @@
 
   <div class="page-header">
     <div class="container">
-      <span class="eyebrow" data-reveal>Immersion 3D</span>
-      <h1 data-reveal>Nos trois stands, en volume</h1>
-      <p class="lede" data-reveal>
-        Fiat 500, Vespa, triporteur : chacun devient un comptoir Dolce Vita. Faites glisser pour tourner autour,
-        ou choisissez un véhicule.
-      </p>
+      <span class="eyebrow" data-reveal>Engagements</span>
+      <h1 data-reveal>Un partenaire, pas un prestataire de plus</h1>
     </div>
   </div>
 
-  <!-- ============================== 3 STANDS 3D ============================== -->
-  <section class="event-section">
+  <section class="engagements">
     <div class="container">
-      <div class="event-stage" id="eventStage">
-        <canvas id="eventCanvas"></canvas>
-        <div class="configurator-loading is-visible">
-          <span class="spinner" aria-hidden="true"></span>
-          Préparation du modèle…
+      <div class="why-grid" data-reveal-group>
+        <div class="why-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.7 1.6 6.8L12 17l-6.2 3.5 1.6-6.8L2.2 9l6.9-.7L12 2z"/></svg>
+          <h3>Concept clé en main</h3>
+          <p>Décoration, animation, ambiance, restauration et service : un interlocuteur unique pour une expérience entièrement intégrée.</p>
         </div>
-        <div class="configurator-error">
-          Le modèle 3D n'a pas pu être chargé. Réessayez dans quelques instants.
+        <div class="why-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 11h.01M15 11h.01M9 15h.01M15 15h.01"/></svg>
+          <h3>Positionnement premium</h3>
+          <p>Une qualité de service et de produits pensée pour les directions et grands comptes régionaux.</p>
         </div>
-        <p class="configurator-hint">Cliquez-glissez pour explorer</p>
+        <div class="why-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-9.5-9A6 6 0 0112 5.5 6 6 0 0121.5 12c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+          <h3>Spécialiste Dolce Vita</h3>
+          <p>Une immersion réelle dans l'univers de l'art de vivre italien, pensée dans les moindres détails.</p>
+        </div>
+        <div class="why-card">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2C7 2 3 6 3 10c0 6 9 12 9 12s9-6 9-12c0-4-4-8-9-8z"/><circle cx="12" cy="10" r="2.6"/></svg>
+          <h3>Ancrage alsacien</h3>
+          <p>Une agence implantée en Alsace, au plus près de vos équipes et de vos lieux de réception.</p>
+        </div>
       </div>
-
-      <div class="event-viewpoints" role="tablist" aria-label="Choisir un véhicule">
-        <button type="button" class="is-active" data-vehicle="fiat">Fiat 500 — La Cartolina</button>
-        <button type="button" data-vehicle="vespa">Vespa — L'Aperitivo</button>
-        <button type="button" data-vehicle="triporteur">Triporteur — La Tavola</button>
-      </div>
-
-      <p class="visual-note" style="text-align:center;margin-top:var(--space-3);">
-        Véhicules à titre illustratif (silhouettes génériques, licence Creative Commons — crédits en pied de page) ;
-        le stand est une représentation conceptuelle Simposio, pas encore notre équipement réel.
-      </p>
     </div>
   </section>
 
-  <section class="teaser" style="padding-block:var(--space-5);">
-    <div class="container" style="text-align:center;">
-      <a href="projets.html" class="link-arrow" style="justify-content:center;font-size:0.9rem;" data-reveal>
-        Voir notre univers visuel
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
+  <!-- ============================== TALENTS ============================== -->
+  <section class="talents">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <span class="eyebrow">L'équipe</span>
+        <h2>Les talents derrière Simposio</h2>
+      </div>
+
+      <div class="talents-grid" data-reveal-group>
+        <article class="talent-card">
+          <div class="talent-avatar" style="--from:#1c3b4a;--to:#c1622d;">EL</div>
+          <h3>Estelle Lorusso</h3>
+          <p class="talent-role">Fondatrice</p>
+          <p class="talent-bio">Porte l'art de recevoir à l'italienne jusqu'en Alsace, une initiative Eurheka Conseil.</p>
+        </article>
+        <article class="talent-card">
+          <!-- TODO: Estelle — remplacez par le vrai nom, rôle et bio de la 2e personne -->
+          <div class="talent-avatar" style="--from:#9d3636;--to:#1c3b4a;">??</div>
+          <h3>À compléter</h3>
+          <p class="talent-role">Rôle à préciser</p>
+          <p class="talent-bio">Envoyez-moi le nom, le rôle et une courte bio pour compléter cette fiche.</p>
+        </article>
+      </div>
+      <p class="visual-note" style="text-align:center;margin-top:var(--space-3);">
+        Avatars provisoires (monogrammes aux couleurs Simposio) en attendant de vraies photos d'équipe.
+      </p>
     </div>
   </section>
 
@@ -152,18 +167,6 @@
       <span>Alsace, France</span>
     </div>
     <p class="photo-credits">
-      Photos : <a href="https://commons.wikimedia.org/wiki/File:Positano_Fiat_500_car_rally.jpg" target="_blank" rel="noopener">Arnoldius</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg" target="_blank" rel="noopener">Marco Ober</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Portofino_-_2016-06-02_-_Harbor.jpg" target="_blank" rel="noopener">Pierre-Selim Huard</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg" target="_blank" rel="noopener">Matthias Rhomberg</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg" target="_blank" rel="noopener">Nicolas Torquet</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg" target="_blank" rel="noopener">Andrew Parlette</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg" target="_blank" rel="noopener">Hartmut Schmidt Heidelberg</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg" target="_blank" rel="noopener">Tracey Hind</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG" target="_blank" rel="noopener">donarreiskoffer</a>
-      — Wikimedia Commons, licences CC BY / CC BY-SA.
-    </p>
-    <p class="photo-credits">
       Modèles 3D : <!-- TODO: ajouter les liens Sketchfab + auteurs exacts fournis par Estelle --> Sketchfab,
       licence CC Attribution. Three.js, licence MIT.
     </p>
@@ -171,10 +174,6 @@
 </footer>
 
 <script src="assets/js/main.js"></script>
-<script type="importmap">
-{ "imports": { "three": "./assets/js/vendor/three/build/three.module.min.js" } }
-</script>
-<script type="module" src="assets/js/configurator.js"></script>
 </body>
 </html>
 </content>

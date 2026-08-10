@@ -14,15 +14,19 @@
 
 <a class="skip-link" href="#main">Aller au contenu</a>
 
-<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
-
 <!-- ============================== HEADER ============================== -->
 <header class="site-header" id="siteHeader">
   <div class="container">
     <a href="index.html" class="logo">Simposio<span>.</span></a>
 
     <div class="nav-actions">
-      <a href="contact.html" class="btn btn-primary" id="navCta">Demander un devis</a>
+      <!-- TODO: remplacer # par les vraies URLs Instagram / LinkedIn de Simposio -->
+      <a href="#" class="nav-social" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a href="#" class="nav-social" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7.2 10v7M7.2 7.2v.01M11.2 17v-4.2a2 2 0 014-.1V17M11.2 12.8V17"/></svg>
+      </a>
       <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Ouvrir le menu">
         <span class="nav-toggle-label">Menu</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -37,20 +41,20 @@
   </button>
   <div class="mobile-menu-grid">
     <nav class="mobile-menu-links" aria-label="Navigation principale">
-      <a href="univers.html"><span class="idx">01</span>L'Univers</a>
-      <a href="prestations.html"><span class="idx">02</span>Prestations</a>
+      <a href="univers.html">L'Univers</a>
+      <a href="prestations.html">Prestations</a>
       <div class="mobile-menu-sub">
         <a href="prestations.html#world-cartolina">La Cartolina</a>
         <a href="prestations.html#world-esperienza">L'Esperienza</a>
         <a href="prestations.html#world-aperitivo">L'Aperitivo</a>
         <a href="prestations.html#world-tavola">La Tavola</a>
       </div>
-      <a href="realisations.html"><span class="idx">03</span>Réalisations</a>
-      <a href="parcours.html"><span class="idx">04</span>Le parcours</a>
-      <a href="contact.html"><span class="idx">05</span>Contact</a>
+      <a href="realisations.html">Réalisations</a>
+      <a href="projets.html">Projets</a>
+      <a href="engagements.html">Engagements</a>
+      <a href="contact.html">Contact</a>
     </nav>
     <div class="mobile-menu-side">
-      <a href="contact.html" class="btn btn-primary">Demander un devis</a>
       <div class="mobile-menu-info">
         <span class="eyebrow on-dark">Contact</span>
         <a href="mailto:Estellelorusso@eurhekaconseil.com">Estellelorusso@eurhekaconseil.com</a>
@@ -67,10 +71,6 @@
     <div class="container">
       <span class="eyebrow" data-reveal>Nos prestations</span>
       <h1 data-reveal>Quatre mondes, une même Dolce Vita</h1>
-      <p class="lede" data-reveal>
-        Chaque prestation est pensée comme un univers à part entière — sa propre ambiance, sa propre lumière,
-        son propre rythme — tout en portant la même exigence Simposio.
-      </p>
 
       <ul class="matieres" data-reveal-group>
         <li>
@@ -101,15 +101,11 @@
       <div class="world-copy">
         <div class="container">
           <div class="world-copy-inner" data-reveal>
-            <span class="world-num">01</span>
             <span class="eyebrow on-dark">Décoration</span>
             <h2>La Cartolina</h2>
             <p class="tagline">Le décor qui invite la Dolce Vita, où que vous soyez.</p>
             <p class="desc">
-              Une scénographie immersive complète — mobilier, éclairage, signalétique lumineuse, musique d'ambiance,
-              et nos véhicules d'époque comme point de rendez-vous — sans changer de traiteur. Céramiques peintes à
-              la main, guirlandes florales, comptoirs en bois brut et laiton : chaque détail compose un décor qui se
-              vit autant qu'il se regarde.
+              Mobilier, lumière, véhicules d'époque en point de rendez-vous — sans changer de traiteur.
             </p>
             <p class="service-target"><strong>Pour :</strong> entreprises avec cuisine interne ou traiteur déjà en place.</p>
             <a href="contact.html?service=La+Cartolina+%E2%80%94+D%C3%A9coration" class="btn btn-outline">Demander un devis</a>
@@ -126,13 +122,11 @@
       <div class="world-copy">
         <div class="container">
           <div class="world-copy-inner" data-reveal>
-            <span class="world-num">02</span>
             <span class="eyebrow on-dark">Expérience signature</span>
             <h2>L'Esperienza</h2>
             <p class="tagline">L'évènement, du premier regard à la dernière gorgée, signé Simposio.</p>
             <p class="desc">
-              Notre offre phare, clé en main : décoration, animation, gastronomie, boissons et service, en formule
-              Standard ou Prestige. Le cœur de notre savoir-faire, pour une immersion totale dans l'univers Dolce Vita.
+              Décoration, animation, gastronomie, service — clé en main, en formule Standard ou Prestige.
             </p>
             <p class="service-target"><strong>Pour :</strong> entreprises qui délèguent l'organisation et l'exécution de A à Z.</p>
             <a href="contact.html?service=L%27Esperienza+%E2%80%94+Exp%C3%A9rience+signature" class="btn btn-outline">Demander un devis</a>
@@ -148,15 +142,11 @@
       <div class="world-copy">
         <div class="container">
           <div class="world-copy-inner" data-reveal>
-            <span class="world-num">03</span>
             <span class="eyebrow on-dark">After Work</span>
             <h2>L'Aperitivo</h2>
             <p class="tagline">L'afterwork où la Dolce Vita prend le relais.</p>
             <p class="desc">
-              Un format court et convivial, moins formel qu'un cocktail événementiel classique — guirlandes
-              lumineuses, serviettes vichy, agrumes et herbes fraîches en centre de table, comptoir illuminé au
-              crépuscule. Base fixe et options à la carte, avec une formule d'abonnement mensuel pour une présence
-              régulière auprès de vos équipes.
+              Format court et convivial, guirlandes et comptoir illuminé au crépuscule. Formule ponctuelle ou abonnement mensuel.
             </p>
             <p class="service-target"><strong>Pour :</strong> afterworks réguliers et moments de cohésion d'équipe.</p>
             <a href="contact.html?service=L%27Aperitivo+%E2%80%94+After+Work" class="btn btn-outline">Demander un devis</a>
@@ -172,13 +162,11 @@
       <div class="world-copy">
         <div class="container">
           <div class="world-copy-inner" data-reveal>
-            <span class="world-num">04</span>
             <span class="eyebrow on-dark">Déjeuner d'affaires</span>
             <h2>La Tavola</h2>
             <p class="tagline">Le déjeuner d'affaires où Simposio inspire un échange privilégié.</p>
             <p class="desc">
-              Une atmosphère soignée mais non festive, pensée pour vos rendez-vous professionnels : menu sur-mesure,
-              vins italiens et service à table sobre et efficace, pour garder l'attention sur l'essentiel.
+              Atmosphère soignée et sobre, menu sur-mesure — pour garder l'attention sur l'essentiel.
             </p>
             <p class="service-target"><strong>Pour :</strong> directions et cadres qui reçoivent clients et partenaires.</p>
             <a href="contact.html?service=La+Tavola+%E2%80%94+D%C3%A9jeuner+d%27affaires" class="btn btn-outline">Demander un devis</a>
@@ -215,7 +203,8 @@
           <li><a href="univers.html">L'Univers</a></li>
           <li><a href="prestations.html">Prestations</a></li>
           <li><a href="realisations.html">Réalisations</a></li>
-          <li><a href="parcours.html">Le parcours</a></li>
+          <li><a href="projets.html">Projets</a></li>
+          <li><a href="engagements.html">Engagements</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
       </div>
