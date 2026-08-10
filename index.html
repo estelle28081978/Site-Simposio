@@ -45,9 +45,10 @@
         <a href="#world-aperitivo">L'Aperitivo</a>
         <a href="#world-tavola">La Tavola</a>
       </div>
-      <a href="#realisations"><span class="idx">03</span>Réalisations</a>
-      <a href="#parcours"><span class="idx">04</span>Le parcours</a>
-      <a href="#contact"><span class="idx">05</span>Contact</a>
+      <a href="#immersion3d"><span class="idx">03</span>Immersion 3D</a>
+      <a href="#realisations"><span class="idx">04</span>Réalisations</a>
+      <a href="#parcours"><span class="idx">05</span>Le parcours</a>
+      <a href="#contact"><span class="idx">06</span>Contact</a>
     </nav>
     <div class="mobile-menu-side">
       <a href="#contact" class="btn btn-primary">Demander un devis</a>
@@ -363,6 +364,52 @@
     </article>
   </section>
 
+  <!-- ============================== IMMERSION 3D ============================== -->
+  <section class="configurator-section" id="immersion3d">
+    <div class="container">
+      <div class="section-head center" data-reveal>
+        <span class="eyebrow">Immersion 3D</span>
+        <h2>Imaginez votre stand</h2>
+        <p class="lede" style="margin-inline:auto;">
+          Fiat 500, Vespa, triporteur : explorez nos véhicules signature en 3D et activez le module de stand
+          amovible pour visualiser la transformation en comptoir Dolce Vita.
+        </p>
+      </div>
+
+      <div class="configurator" data-reveal>
+        <div class="configurator-stage" id="configuratorStage">
+          <canvas id="configuratorCanvas"></canvas>
+          <div class="configurator-loading is-visible">
+            <span class="spinner" aria-hidden="true"></span>
+            Chargement du modèle…
+          </div>
+          <div class="configurator-error">
+            Le modèle 3D n'a pas pu être chargé. Réessayez dans quelques instants.
+          </div>
+          <p class="configurator-hint">Cliquez-glissez pour explorer</p>
+        </div>
+
+        <div class="configurator-controls">
+          <div class="configurator-vehicles" role="tablist" aria-label="Choisir un véhicule">
+            <button type="button" class="is-active" data-vehicle="fiat">Fiat 500</button>
+            <button type="button" data-vehicle="vespa">Vespa</button>
+            <button type="button" data-vehicle="triporteur">Triporteur</button>
+          </div>
+          <button type="button" class="configurator-toggle" data-stand-toggle aria-pressed="false">
+            <span class="switch" aria-hidden="true"></span>
+            Module de stand
+          </button>
+        </div>
+      </div>
+
+      <p class="visual-note" style="text-align:center;margin-top:var(--space-3);">
+        Modèles 3D de véhicules à titre illustratif (silhouettes génériques, sous licence Creative Commons —
+        crédits en pied de page) ; le module de stand est une représentation conceptuelle Simposio, pas encore
+        notre équipement réel.
+      </p>
+    </div>
+  </section>
+
   <!-- ============================== RÉALISATIONS ============================== -->
   <section class="realisations" id="realisations">
     <div class="container">
@@ -580,6 +627,7 @@
         <ul>
           <li><a href="#univers">L'Univers</a></li>
           <li><a href="#prestations">Prestations</a></li>
+          <li><a href="#immersion3d">Immersion 3D</a></li>
           <li><a href="#realisations">Réalisations</a></li>
           <li><a href="#parcours">Le parcours</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -611,10 +659,18 @@
       <a href="https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG" target="_blank" rel="noopener">donarreiskoffer</a>
       — Wikimedia Commons, licences CC BY / CC BY-SA.
     </p>
+    <p class="photo-credits">
+      Modèles 3D : <!-- TODO: ajouter les liens Sketchfab + auteurs exacts fournis par Estelle --> Sketchfab,
+      licence CC Attribution. Three.js, licence MIT.
+    </p>
   </div>
 </footer>
 
 <script src="assets/js/main.js"></script>
+<script type="importmap">
+{ "imports": { "three": "./assets/js/vendor/three/build/three.module.min.js" } }
+</script>
+<script type="module" src="assets/js/configurator.js"></script>
 </body>
 </html>
 </content>

@@ -822,6 +822,142 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 }
 
 /* ==========================================================================
+   Immersion 3D — interactive vehicle-stand configurator (Three.js)
+   ========================================================================== */
+.configurator-section { background: var(--bg); padding-block: var(--space-6); }
+
+.configurator { margin-top: var(--space-5); display: grid; gap: var(--space-4); }
+
+.configurator-stage {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 100% at 30% 15%, rgba(193, 98, 45, 0.14), transparent 60%),
+    linear-gradient(160deg, var(--cream-dim), var(--white));
+  box-shadow: 0 30px 60px -30px rgba(28, 59, 74, 0.25);
+}
+@media (max-width: 700px) { .configurator-stage { aspect-ratio: 4 / 5; } }
+
+.configurator-stage canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.configurator-stage canvas:active { cursor: grabbing; }
+
+.configurator-loading,
+.configurator-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.7rem;
+  text-align: center;
+  padding: var(--space-3);
+  background: rgba(246, 241, 231, 0.9);
+  font-family: var(--font-subtitle);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--navy);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur) var(--ease);
+}
+.configurator-loading.is-visible, .configurator-error.is-visible { opacity: 1; pointer-events: all; }
+.configurator-error { color: var(--accent-hover); }
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin 900ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.configurator-hint {
+  position: absolute;
+  bottom: var(--space-2);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-subtitle);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: rgba(255, 255, 255, 0.75);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.configurator-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.configurator-vehicles { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.configurator-vehicles button {
+  padding: 0.65em 1.3em;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--navy);
+  font-family: var(--font-subtitle);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.configurator-vehicles button.is-active, .configurator-vehicles button:hover {
+  background: var(--navy);
+  color: var(--cream);
+  border-color: var(--navy);
+}
+
+.configurator-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55em 1.2em;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  font-family: var(--font-subtitle);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.configurator-toggle .switch {
+  width: 34px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--border);
+  position: relative;
+  flex-shrink: 0;
+  transition: background var(--dur-fast) var(--ease);
+}
+.configurator-toggle .switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform var(--dur-fast) var(--ease);
+}
+.configurator-toggle.is-on .switch { background: var(--accent); }
+.configurator-toggle.is-on .switch::after { transform: translateX(14px); }
+
+/* ==========================================================================
    Réalisations — honest visual moodboard (no fabricated case studies)
    ========================================================================== */
 .realisations { background: var(--bg-dim); padding-block: var(--space-6); }
