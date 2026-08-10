@@ -204,19 +204,18 @@
     countObserver.observe(countEl);
   }
 
-  /* ---------- Service CTA -> prefill contact form ---------- */
+  /* ---------- Contact form: prefill service type from ?service= URL param ---------- */
   var serviceSelect = document.getElementById("serviceType");
-  document.querySelectorAll("[data-service]").forEach(function (link) {
-    link.addEventListener("click", function () {
-      if (serviceSelect) {
-        var value = link.getAttribute("data-service");
-        var match = Array.prototype.find.call(serviceSelect.options, function (opt) {
-          return opt.value === value;
-        });
-        if (match) serviceSelect.value = value;
-      }
-    });
-  });
+  if (serviceSelect) {
+    var params = new URLSearchParams(window.location.search);
+    var wanted = params.get("service");
+    if (wanted) {
+      var match = Array.prototype.find.call(serviceSelect.options, function (opt) {
+        return opt.value === wanted;
+      });
+      if (match) serviceSelect.value = wanted;
+    }
+  }
 
   /* ---------- Lead form: validation + mailto submission ---------- */
   var form = document.getElementById("leadForm");

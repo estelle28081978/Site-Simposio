@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Réalisations — Immersion 3D — Simposio</title>
+<meta name="description" content="Entrez en 3D dans un événement Simposio : véhicules-stands, tablée, guirlandes lumineuses — une scène immersive Dolce Vita à explorer librement." />
+
+<link rel="stylesheet" href="assets/css/style.css" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%231c3b4a'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='18' fill='%23c1622d' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<a class="skip-link" href="#main">Aller au contenu</a>
+
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+<!-- ============================== HEADER ============================== -->
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <a href="index.html" class="logo">Simposio<span>.</span></a>
+
+    <div class="nav-actions">
+      <a href="contact.html" class="btn btn-primary" id="navCta">Demander un devis</a>
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Ouvrir le menu">
+        <span class="nav-toggle-label">Menu</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Fermer le menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="mobile-menu-grid">
+    <nav class="mobile-menu-links" aria-label="Navigation principale">
+      <a href="univers.html"><span class="idx">01</span>L'Univers</a>
+      <a href="prestations.html"><span class="idx">02</span>Prestations</a>
+      <div class="mobile-menu-sub">
+        <a href="prestations.html#world-cartolina">La Cartolina</a>
+        <a href="prestations.html#world-esperienza">L'Esperienza</a>
+        <a href="prestations.html#world-aperitivo">L'Aperitivo</a>
+        <a href="prestations.html#world-tavola">La Tavola</a>
+      </div>
+      <a href="realisations.html"><span class="idx">03</span>Réalisations</a>
+      <a href="parcours.html"><span class="idx">04</span>Le parcours</a>
+      <a href="contact.html"><span class="idx">05</span>Contact</a>
+    </nav>
+    <div class="mobile-menu-side">
+      <a href="contact.html" class="btn btn-primary">Demander un devis</a>
+      <div class="mobile-menu-info">
+        <span class="eyebrow on-dark">Contact</span>
+        <a href="mailto:Estellelorusso@eurhekaconseil.com">Estellelorusso@eurhekaconseil.com</a>
+        <span class="eyebrow on-dark">Basée en</span>
+        <span>Alsace, France</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+
+  <div class="page-header">
+    <div class="container">
+      <span class="eyebrow" data-reveal>Réalisations</span>
+      <h1 data-reveal>Entrez dans un événement Simposio</h1>
+      <p class="lede" data-reveal>
+        Plutôt qu'une galerie photo, une scène à explorer : nos trois véhicules-stands, une tablée dressée,
+        des guirlandes au crépuscule. Faites glisser pour regarder autour de vous, ou choisissez un point de vue.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================== SCÈNE 3D ============================== -->
+  <section class="event-section">
+    <div class="container">
+      <div class="event-stage" id="eventStage">
+        <canvas id="eventCanvas"></canvas>
+        <div class="configurator-loading is-visible">
+          <span class="spinner" aria-hidden="true"></span>
+          Préparation de la scène…
+        </div>
+        <div class="configurator-error">
+          La scène 3D n'a pas pu être chargée. Réessayez dans quelques instants.
+        </div>
+        <p class="configurator-hint">Cliquez-glissez pour regarder autour de vous</p>
+      </div>
+
+      <div class="event-viewpoints" role="tablist" aria-label="Choisir un point de vue">
+        <button type="button" class="is-active" data-viewpoint="overview">Vue d'ensemble</button>
+        <button type="button" data-viewpoint="cartolina">La Cartolina</button>
+        <button type="button" data-viewpoint="aperitivo">L'Aperitivo</button>
+        <button type="button" data-viewpoint="tavola">La Tavola</button>
+        <button type="button" data-viewpoint="table">La tablée</button>
+      </div>
+
+      <p class="visual-note" style="text-align:center;margin-top:var(--space-3);">
+        Scène 3D conceptuelle : véhicules à titre illustratif (silhouettes génériques, licence Creative Commons —
+        crédits en pied de page), décor de tablée et guirlandes composés par nos soins pour donner un avant-goût
+        de l'ambiance Simposio. Pas encore un reportage de nos propres événements.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================== GALERIE (resserrée) ============================== -->
+  <section class="realisations">
+    <div class="container">
+      <div class="section-head center" data-reveal>
+        <span class="eyebrow">Univers visuel</span>
+        <h2>Quelques repères Dolce Vita</h2>
+      </div>
+
+      <div class="gallery" data-reveal-group>
+        <figure class="gallery-item span-2">
+          <img src="assets/img/portofino-harbour.jpg" alt="Le port de Portofino, sur la Riviera italienne" loading="lazy" width="1920" height="1080" />
+          <figcaption>Portofino, Riviera italienne</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="assets/img/lemon-tree-italy.jpg" alt="Citronnier chargé de fruits en Italie" loading="lazy" width="1400" height="1050" />
+          <figcaption>Citronnier italien</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="assets/img/alsace-vineyard.jpg" alt="Route des vins d'Alsace, entre les vignes" loading="lazy" width="1920" height="1280" />
+          <figcaption>Notre terrain — l'Alsace</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">Simposio<span>.</span></a>
+        <p>L'événement qui a le goût d'une expérience. Simposio conçoit des expériences événementielles premium
+          pour les entreprises d'Alsace, inspirées de l'art de vivre italien.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="univers.html">L'Univers</a></li>
+          <li><a href="prestations.html">Prestations</a></li>
+          <li><a href="realisations.html">Réalisations</a></li>
+          <li><a href="parcours.html">Le parcours</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Prestations</h4>
+        <ul>
+          <li><a href="prestations.html#world-cartolina">La Cartolina</a></li>
+          <li><a href="prestations.html#world-esperienza">L'Esperienza</a></li>
+          <li><a href="prestations.html#world-aperitivo">L'Aperitivo</a></li>
+          <li><a href="prestations.html#world-tavola">La Tavola</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="year"></span> Simposio — Eurheka Conseil. Tous droits réservés.</span>
+      <span>Alsace, France</span>
+    </div>
+    <p class="photo-credits">
+      Photos : <a href="https://commons.wikimedia.org/wiki/File:Positano_Fiat_500_car_rally.jpg" target="_blank" rel="noopener">Arnoldius</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg" target="_blank" rel="noopener">Marco Ober</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Portofino_-_2016-06-02_-_Harbor.jpg" target="_blank" rel="noopener">Pierre-Selim Huard</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg" target="_blank" rel="noopener">Matthias Rhomberg</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg" target="_blank" rel="noopener">Nicolas Torquet</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg" target="_blank" rel="noopener">Andrew Parlette</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg" target="_blank" rel="noopener">Hartmut Schmidt Heidelberg</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg" target="_blank" rel="noopener">Tracey Hind</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG" target="_blank" rel="noopener">donarreiskoffer</a>
+      — Wikimedia Commons, licences CC BY / CC BY-SA.
+    </p>
+    <p class="photo-credits">
+      Modèles 3D : <!-- TODO: ajouter les liens Sketchfab + auteurs exacts fournis par Estelle --> Sketchfab,
+      licence CC Attribution. Three.js, licence MIT.
+    </p>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+<script type="importmap">
+{ "imports": { "three": "./assets/js/vendor/three/build/three.module.min.js" } }
+</script>
+<script type="module" src="assets/js/configurator.js"></script>
+</body>
+</html>
+</content>

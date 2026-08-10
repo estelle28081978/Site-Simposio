@@ -398,6 +398,77 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 .mobile-menu-info .eyebrow:not(:first-child) { margin-top: 0.8rem; }
 
 /* ==========================================================================
+   Page header — sober intro band for standalone inner pages (no hero photo)
+   ========================================================================== */
+.page-header {
+  padding-top: calc(6.5rem + var(--space-5));
+  padding-bottom: var(--space-5);
+  background: var(--bg);
+  text-align: center;
+}
+.page-header .eyebrow { display: block; margin-bottom: var(--space-2); }
+.page-header h1 { max-width: 46rem; margin-inline: auto; }
+.page-header .lede { margin: var(--space-3) auto 0; }
+.page-header.on-dark {
+  background: linear-gradient(200deg, rgba(16, 31, 39, 0.96) 0%, var(--navy-900) 100%);
+  color: var(--fg-inverse);
+}
+.page-header.on-dark .lede { color: var(--fg-muted-inverse); }
+
+/* ==========================================================================
+   Homepage manifesto — short static pull-quote linking to L'Univers
+   ========================================================================== */
+.manifesto { background: var(--bg); padding-block: var(--space-6); text-align: center; }
+.manifesto blockquote {
+  max-width: 46rem;
+  margin: 0 auto;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 2vw + 1.1rem, 2.7rem);
+  line-height: 1.35;
+  color: var(--navy);
+}
+.manifesto blockquote em { font-style: italic; color: var(--accent); }
+.manifesto .link-arrow { margin-top: var(--space-4); }
+
+/* ==========================================================================
+   Homepage prestations teaser — text-forward, no photos (kept for inner page)
+   ========================================================================== */
+.teaser { background: var(--bg-dim); padding-block: var(--space-6); }
+.teaser-grid { display: grid; gap: 1px; background: var(--border); margin-top: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+@media (min-width: 780px) { .teaser-grid { grid-template-columns: repeat(2, 1fr); } }
+.teaser-card {
+  background: var(--bg-dim);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: background var(--dur-fast) var(--ease);
+}
+.teaser-card:hover { background: var(--white); }
+.teaser-card .num { font-family: var(--font-subtitle); font-size: 0.78rem; font-weight: 600; color: var(--accent); }
+.teaser-card h3 { color: var(--navy); font-size: clamp(1.5rem, 1.4vw + 1rem, 2rem); }
+.teaser-card p { color: var(--fg-muted); font-size: 0.98rem; max-width: 26rem; }
+.teaser-card .link-arrow { margin-top: 0.4rem; }
+
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-subtitle);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--navy);
+  transition: gap var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.link-arrow svg { width: 16px; height: 16px; transition: transform var(--dur-fast) var(--ease); }
+.link-arrow:hover { gap: 0.75rem; color: var(--accent); }
+.link-arrow:hover svg { transform: translateX(2px); }
+.on-dark.link-arrow, .page-header.on-dark .link-arrow { color: var(--cream); }
+.page-header.on-dark .link-arrow:hover { color: var(--terracotta-300); }
+
+/* ==========================================================================
    Hero — full viewport, cinematic gradient
    ========================================================================== */
 .hero {
@@ -822,26 +893,48 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
 }
 
 /* ==========================================================================
-   Immersion 3D — interactive vehicle-stand configurator (Three.js)
+   Immersion 3D — full event scene (Three.js)
    ========================================================================== */
-.configurator-section { background: var(--bg); padding-block: var(--space-6); }
+.event-section { background: var(--bg); padding-block: var(--space-6); }
 
-.configurator { margin-top: var(--space-5); display: grid; gap: var(--space-4); }
-
-.configurator-stage {
+.event-stage {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background:
-    radial-gradient(120% 100% at 30% 15%, rgba(193, 98, 45, 0.14), transparent 60%),
-    linear-gradient(160deg, var(--cream-dim), var(--white));
-  box-shadow: 0 30px 60px -30px rgba(28, 59, 74, 0.25);
+  background: linear-gradient(180deg, #f4d9a8 0%, #e2a874 35%, #8a4f4a 70%, var(--navy-900) 100%);
+  box-shadow: 0 30px 60px -30px rgba(28, 59, 74, 0.35);
+  margin-top: var(--space-5);
 }
-@media (max-width: 700px) { .configurator-stage { aspect-ratio: 4 / 5; } }
+@media (max-width: 700px) { .event-stage { aspect-ratio: 3 / 4; } }
 
-.configurator-stage canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
-.configurator-stage canvas:active { cursor: grabbing; }
+.event-stage canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.event-stage canvas:active { cursor: grabbing; }
+
+.event-viewpoints {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: var(--space-3);
+}
+.event-viewpoints button {
+  padding: 0.6em 1.2em;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  color: var(--navy);
+  font-family: var(--font-subtitle);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.event-viewpoints button.is-active, .event-viewpoints button:hover {
+  background: var(--navy);
+  color: var(--cream);
+  border-color: var(--navy);
+}
 
 .configurator-loading,
 .configurator-error {
@@ -892,70 +985,6 @@ h3 { font-size: clamp(1.35rem, 1vw + 1rem, 1.8rem); }
   border-radius: 999px;
   pointer-events: none;
 }
-
-.configurator-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.configurator-vehicles { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-.configurator-vehicles button {
-  padding: 0.65em 1.3em;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--white);
-  color: var(--navy);
-  font-family: var(--font-subtitle);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
-}
-.configurator-vehicles button.is-active, .configurator-vehicles button:hover {
-  background: var(--navy);
-  color: var(--cream);
-  border-color: var(--navy);
-}
-
-.configurator-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.55em 1.2em;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--white);
-  font-family: var(--font-subtitle);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--navy);
-}
-.configurator-toggle .switch {
-  width: 34px;
-  height: 20px;
-  border-radius: 999px;
-  background: var(--border);
-  position: relative;
-  flex-shrink: 0;
-  transition: background var(--dur-fast) var(--ease);
-}
-.configurator-toggle .switch::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--white);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: transform var(--dur-fast) var(--ease);
-}
-.configurator-toggle.is-on .switch { background: var(--accent); }
-.configurator-toggle.is-on .switch::after { transform: translateX(14px); }
 
 /* ==========================================================================
    Réalisations — honest visual moodboard (no fabricated case studies)

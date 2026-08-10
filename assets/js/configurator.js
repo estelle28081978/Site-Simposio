@@ -1,14 +1,14 @@
 (function () {
   "use strict";
 
-  var stage = document.getElementById("configuratorStage");
+  var stage = document.getElementById("eventStage");
   if (!stage) return;
 
   var loaded = false;
   function load() {
     if (loaded) return;
     loaded = true;
-    import("./configurator-core.js");
+    import("./event-scene.js");
   }
 
   if ("IntersectionObserver" in window) {
