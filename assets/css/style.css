@@ -1358,12 +1358,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    of two. Applied to the .world article itself so the photo (absolutely
    positioned inside it) rides along as one rigid piece. Distance is large and
    the duration is scaled up to match, so the sweep reads as more dramatic
-   without feeling rushed; a soft focus-pull (blur-to-sharp) and a gentle
-   scale settle add the finishing, more elegant polish. */
+   without feeling rushed; a soft focus-pull (blur-to-sharp) adds a touch of
+   polish but clears quickly on its own timer so the photo reads sharp well
+   before the (slower) slide has finished settling into place. */
 [data-reveal].formula-slide-left, [data-reveal].formula-slide-right {
   opacity: 0;
   filter: blur(7px);
-  transition: opacity 1.3s var(--ease), transform 1.9s cubic-bezier(0.16, 1, 0.3, 1), filter 1.7s var(--ease);
+  transition: opacity 1.3s var(--ease), transform 1.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s var(--ease);
 }
 [data-reveal].formula-slide-left { transform: translateX(max(-26vw, -480px)) scale(0.96); }
 [data-reveal].formula-slide-right { transform: translateX(min(26vw, 480px)) scale(0.96); }
