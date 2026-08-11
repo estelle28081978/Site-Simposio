@@ -775,32 +775,32 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .senses-journey-frame {
   position: relative;
   z-index: 1;
-  width: min(56vw, 340px);
-  height: min(72vh, 700px);
-  margin-top: var(--space-4);
+  width: min(94vw, 1150px);
+  height: min(70vh, 862px);
+  margin-top: var(--space-3);
 }
 .senses-journey-svg { width: 100%; height: 100%; overflow: visible; }
-.senses-journey-path-bg { fill: none; stroke: rgba(246, 241, 231, 0.14); stroke-width: 3; stroke-linecap: round; }
+.senses-journey-path-bg { fill: none; stroke: rgba(246, 241, 231, 0.16); stroke-width: 7; stroke-linecap: round; }
 .senses-journey-path {
   fill: none;
   stroke: var(--terracotta-300);
-  stroke-width: 3;
+  stroke-width: 8;
   stroke-linecap: round;
-  filter: drop-shadow(0 0 6px rgba(224, 149, 106, 0.55));
+  filter: drop-shadow(0 0 10px rgba(224, 149, 106, 0.55));
 }
 .senses-journey-dot {
   fill: rgba(74, 28, 28, 0.92);
   stroke: rgba(246, 241, 231, 0.35);
-  stroke-width: 2;
+  stroke-width: 2.5;
   transition: fill 0.4s var(--ease), stroke 0.4s var(--ease), stroke-width 0.4s var(--ease);
 }
 .senses-journey-dot-group.is-lit .senses-journey-dot { fill: var(--terracotta-300); stroke: var(--cream); }
-.senses-journey-dot-group.is-active .senses-journey-dot { stroke-width: 3.5; }
+.senses-journey-dot-group.is-active .senses-journey-dot { stroke-width: 4; }
 .senses-journey-dot-num {
   font-family: var(--font-subtitle);
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
-  fill: rgba(246, 241, 231, 0.75);
+  fill: rgba(246, 241, 231, 0.8);
   text-anchor: middle;
   dominant-baseline: central;
   pointer-events: none;
@@ -849,7 +849,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 
 @media (max-width: 700px) {
   .senses-journey { height: 460vh; }
-  .senses-journey-frame { width: min(52vw, 270px); height: min(60vh, 560px); }
+  .senses-journey-frame { width: min(92vw, 480px); height: min(64vh, 600px); margin-top: var(--space-2); }
+  .senses-journey-path-bg { stroke-width: 6; }
+  .senses-journey-path { stroke-width: 7; }
   .senses-journey-card { padding: var(--space-3); }
 }
 
@@ -890,11 +892,19 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .engagement-line:hover .engagement-line-text, .engagement-line.is-active .engagement-line-text { color: var(--accent); }
 @media (min-width: 700px) { .engagement-line-num { display: block; } }
 
+/* Outer element: pure position, moved every frame with no transition so it
+   never lags behind the cursor (a transition here is what caused the
+   stutter/freeze). Reveal animation (opacity/scale) lives on the inner
+   element instead, decoupled from the position updates. */
 .engagement-hover-card {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 200;
+  pointer-events: none;
+  will-change: transform;
+}
+.engagement-hover-card-inner {
   width: min(80vw, 22rem);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
@@ -904,13 +914,11 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   opacity: 0;
   transform: scale(0.92);
   transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
-  pointer-events: none;
-  will-change: transform;
 }
-.engagement-hover-card.is-visible { opacity: 1; transform: scale(1); }
+.engagement-hover-card.is-visible .engagement-hover-card-inner { opacity: 1; transform: scale(1); }
 .engagement-hover-card .num { font-family: var(--font-display); font-size: 0.8rem; color: var(--terracotta-300); }
 .engagement-hover-card p { font-size: 0.95rem; color: var(--fg-muted-inverse); margin-top: 0.4rem; }
-.engagement-hover-card.is-centered { left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) scale(1) !important; }
+.engagement-hover-card.is-centered { left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; }
 @media (hover: none) {
   .engagement-line-text { transition: none; }
 }

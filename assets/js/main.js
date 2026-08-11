@@ -127,7 +127,9 @@
   var sensesJourney = document.getElementById("sensesJourney");
 
   if (sensesJourney) {
+    var journeySvg = sensesJourney.querySelector(".senses-journey-svg");
     var journeyPath = document.getElementById("sensesJourneyPath");
+    var journeyPathBg = sensesJourney.querySelector(".senses-journey-path-bg");
     var journeyDotGroups = Array.prototype.slice.call(sensesJourney.querySelectorAll(".senses-journey-dot-group"));
     var journeyCard = document.getElementById("sensesJourneyCard");
     var journeyCardIcon = document.getElementById("sensesJourneyCardIcon");
@@ -164,9 +166,56 @@
       }
     ];
 
-    var journeyPathLength = journeyPath.getTotalLength();
-    journeyPath.style.strokeDasharray = String(journeyPathLength);
-    journeyPath.style.strokeDashoffset = String(journeyPathLength);
+    // Two hand-tuned "rounded wave" layouts (top-left to bottom-right), built from
+    // 5 waypoints with a Catmull-Rom spline so the curve stays smooth. The wide one
+    // suits landscape/desktop frames; the tall one keeps the wave legible once the
+    // frame turns narrow and portrait on mobile, instead of shrinking to nothing.
+    var journeyLayouts = {
+      desktop: { viewBox: "0 0 1200 900", points: [[51, 171], [369, 249], [652, 373], [807, 675], [1056, 848]] },
+      mobile: { viewBox: "0 0 440 900", points: [[35, 105], [186, 259], [303, 428], [289, 651], [370, 835]] }
+    };
+
+    function catmullRomToBezierD(pts) {
+      var p = [pts[0]].concat(pts, [pts[pts.length - 1]]);
+      var d = "M" + pts[0][0].toFixed(0) + "," + pts[0][1].toFixed(0) + " ";
+      for (var i = 1; i < p.length - 2; i++) {
+        var p0 = p[i - 1], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2];
+        var c1x = p1[0] + (p2[0] - p0[0]) / 6;
+        var c1y = p1[1] + (p2[1] - p0[1]) / 6;
+        var c2x = p2[0] - (p3[0] - p1[0]) / 6;
+        var c2y = p2[1] - (p3[1] - p1[1]) / 6;
+        d += "C" + c1x.toFixed(0) + "," + c1y.toFixed(0) + " " + c2x.toFixed(0) + "," + c2y.toFixed(0) + " " + p2[0].toFixed(0) + "," + p2[1].toFixed(0) + " ";
+      }
+      return d.trim();
+    }
+
+    var journeyPathLength = 0;
+    var journeyIsMobileLayout = null;
+
+    function applyJourneyLayout() {
+      var isMobile = window.innerWidth < 700;
+      if (isMobile === journeyIsMobileLayout) return;
+      journeyIsMobileLayout = isMobile;
+
+      var layout = isMobile ? journeyLayouts.mobile : journeyLayouts.desktop;
+      var d = catmullRomToBezierD(layout.points);
+      journeySvg.setAttribute("viewBox", layout.viewBox);
+      journeyPath.setAttribute("d", d);
+      journeyPathBg.setAttribute("d", d);
+      journeyDotGroups.forEach(function (g, i) {
+        var pt = layout.points[i];
+        g.querySelector("circle").setAttribute("cx", pt[0]);
+        g.querySelector("circle").setAttribute("cy", pt[1]);
+        g.querySelector("text").setAttribute("x", pt[0]);
+        g.querySelector("text").setAttribute("y", pt[1] + 1);
+      });
+
+      journeyPathLength = journeyPath.getTotalLength();
+      journeyPath.style.strokeDasharray = String(journeyPathLength);
+      journeyPath.style.strokeDashoffset = String(journeyPathLength);
+    }
+
+    applyJourneyLayout();
 
     var journeyActiveIndex = -1;
     var journeyMaxReached = 0;
@@ -233,6 +282,15 @@
       { passive: true }
     );
 
+    var journeyResizeTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(journeyResizeTimer);
+      journeyResizeTimer = setTimeout(function () {
+        applyJourneyLayout();
+        updateJourney();
+      }, 200);
+    });
+
     setJourneyCard(0);
     updateJourney();
   }
@@ -245,18 +303,36 @@
     var engagementCardNum = engagementCard.querySelector(".num");
     var engagementCardDesc = engagementCard.querySelector("p");
     var noHover = window.matchMedia("(hover: none)").matches;
+    var engagementCardW = 0;
+    var engagementCardH = 0;
+    var engagementMoveTicking = false;
+    var engagementMouseX = 0;
+    var engagementMouseY = 0;
 
     function positionEngagementCard(x, y) {
-      var w = engagementCard.offsetWidth || 320;
-      var h = engagementCard.offsetHeight || 100;
-      var px = Math.min(window.innerWidth - w - 16, Math.max(16, x - w / 2));
-      var py = Math.min(window.innerHeight - h - 16, Math.max(16, y - h - 28));
+      var px = Math.min(window.innerWidth - engagementCardW - 16, Math.max(16, x - engagementCardW / 2));
+      var py = Math.min(window.innerHeight - engagementCardH - 16, Math.max(16, y - engagementCardH - 28));
       engagementCard.style.transform = "translate(" + px + "px, " + py + "px)";
+    }
+
+    function scheduleEngagementMove(x, y) {
+      engagementMouseX = x;
+      engagementMouseY = y;
+      if (!engagementMoveTicking) {
+        window.requestAnimationFrame(function () {
+          positionEngagementCard(engagementMouseX, engagementMouseY);
+          engagementMoveTicking = false;
+        });
+        engagementMoveTicking = true;
+      }
     }
 
     function fillEngagementCard(line) {
       engagementCardNum.textContent = line.getAttribute("data-num");
       engagementCardDesc.textContent = line.getAttribute("data-desc");
+      // Measured once per reveal (not on every mousemove) to avoid forced layout on each frame
+      engagementCardW = engagementCard.offsetWidth || 320;
+      engagementCardH = engagementCard.offsetHeight || 100;
     }
 
     function closeEngagementCard() {
@@ -267,13 +343,13 @@
     engagementLines.forEach(function (line) {
       if (!noHover) {
         line.addEventListener("mouseenter", function (e) {
-          fillEngagementCard(line);
           line.classList.add("is-active");
           engagementCard.classList.add("is-visible");
+          fillEngagementCard(line);
           positionEngagementCard(e.clientX, e.clientY);
         });
         line.addEventListener("mousemove", function (e) {
-          positionEngagementCard(e.clientX, e.clientY);
+          scheduleEngagementMove(e.clientX, e.clientY);
         });
         line.addEventListener("mouseleave", function () {
           closeEngagementCard();
