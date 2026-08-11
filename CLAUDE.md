@@ -20,22 +20,22 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 - **Site statique multi-pages**, HTML/CSS/JS vanilla — aucun framework, aucun
   build step. Chaque page est un fichier `.html` autonome avec balisage
   dupliqué (header, menu mobile, footer) plutôt qu'un système de templates.
-- **7 pages** : `index.html` (accueil), `univers.html`, `prestations.html`,
-  `realisations.html` (immersion 3D), `projets.html` (mosaïque galerie),
-  `engagements.html` (+ équipe), `contact.html`.
-- **CSS** : un seul fichier `assets/css/style.css` (~1400 lignes), design
+- **6 pages** : `index.html` (accueil), `univers.html`, `prestations.html`,
+  `projets.html` (mosaïque galerie), `engagements.html` (+ équipe),
+  `contact.html`. La page `realisations.html` (immersion 3D des
+  stands-véhicules, Three.js) a été retirée à la demande de la cliente —
+  voir « État d'avancement » ci-dessous.
+- **CSS** : un seul fichier `assets/css/style.css`, design
   tokens en variables `:root` (couleurs, espacements, rayons, durées). Pas de
   préprocesseur.
 - **JS** : `assets/js/main.js` (vanilla, IIFE unique, pas de dépendances) pour
-  tous les comportements interactifs communs. `assets/js/configurator.js` +
-  `assets/js/event-scene.js` pour la scène 3D (lazy-loadée).
-- **3D** : Three.js self-hosté dans `assets/js/vendor/three/`, chargé via
-  `importmap` (spécificateur bare `"three"`). Modèles véhicules dans
-  `assets/models/*.glb` (Fiat 500, Vespa, triporteur), stands construits
-  procéduralement en JS (canvas textures pour guirlandes, franges, enseigne).
-- **Photos** : toutes sourcées sur Wikimedia Commons (licences CC0/CC BY/CC
-  BY-SA), redimensionnées/compressées en JPEG. Attribution complète dans
-  `assets/img/CREDITS.md` et en pied de page de chaque page concernée.
+  tous les comportements interactifs communs (reveal au scroll, jeu des 5 sens,
+  cartes à retourner, mosaïque pannable, formulaire de contact).
+- **Photos** : mélange de photos **Simposio** (vrais événements, fichiers
+  `assets/img/evenement-*.jpg`, aucun crédit requis) et de photos sourcées sur
+  Wikimedia Commons (licences CC0/CC BY/CC BY-SA), redimensionnées/compressées
+  en JPEG. Attribution complète dans `assets/img/CREDITS.md` et en pied de
+  page de chaque page concernée.
 - **Polices** : Yeseva One (titres, self-hosted) et Glacial Indifference
   (corps de texte, self-hosted, SIL OFL) sont les polices de marque exactes.
   **Canter** (sous-titres) n'a pas pu être obtenue légalement pour un usage
@@ -72,19 +72,25 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 
 ## État d'avancement
 
-Le cahier des charges a été appliqué **intégralement, sauf un point explicitement mis de côté par la cliente** :
+Le cahier des charges a été appliqué intégralement :
 
 ✅ Fait : charte graphique (esprit Havas Events — en-têtes asymétriques,
-formes décoratives, contraste gras/normal — appliqué sur 6 pages), hero
-accueil (diaporama photo, CTA refondu), page Univers (animation resynchronisée,
-5 sens gamifiés), menu nettoyé, page Prestations réécrite avec nouvelles
-photos, mosaïque Projets corrigée, page Engagements gamifiée avec
-emplacements photo pour l'équipe, formulaire de contact redesigné.
+formes décoratives, contraste gras/normal), hero accueil réduit à
+bannière/baseline/CTA avec chiffres clés sur bande dédiée, page Univers (5
+sens à déblocage séquentiel, storytelling resserré), page Prestations avec
+vraies photos d'événements Simposio, mosaïque Projets reconstruite en grille
+pannable sans trou (glisser-déposer/clavier) affichant les photos
+d'événements réelles, page Engagements gamifiée avec emplacements photo pour
+l'équipe, page Contact repensée (panneau bleu marine + carte formulaire),
+page Réalisations (immersion 3D) **retirée du site** à la demande de la
+cliente — voir ci-dessous.
 
-⏸️ **En attente (mis de côté à la demande de la cliente)** : refonte complète
-de la scène 3D des stands-véhicules pour coller fidèlement aux photos de
-référence Brindapino — nécessite que ces photos soient repartagées, elles ne
-sont plus disponibles dans l'environnement de session actuel.
+🗑️ **Page Réalisations retirée** : la page `realisations.html` et tout ce qui
+lui était propre ont été supprimés (Three.js self-hébergé dans
+`assets/js/vendor/three/`, `assets/js/configurator.js`,
+`assets/js/event-scene.js`, modèles `assets/models/*.glb`, CSS `.event-*` /
+`.configurator-*` / `.spinner`). Tous les liens de nav/footer vers cette page
+ont été retirés des 6 pages restantes.
 
 ## Limites connues / à traiter avec la cliente
 
@@ -97,8 +103,8 @@ sont plus disponibles dans l'environnement de session actuel.
   (placeholders avec dégradé + icône), en attente des vraies photos couleur
   et du nom/rôle/bio de la 2ᵉ personne (voir commentaires `TODO` dans le
   fichier).
-- **Liens réseaux sociaux** (`#` dans le header) et **crédits Sketchfab des
-  modèles 3D** : placeholders `TODO` à remplacer, présents dans les 7 pages.
+- **Liens réseaux sociaux** (`#` dans le header) : placeholders `TODO` à
+  remplacer, présents dans les 6 pages.
 - **Grilles tarifaires** du document de marque : volontairement exclues du
   site public (info confidentielle, usage interne uniquement).
 
