@@ -85,22 +85,22 @@
   }
 
   /* ---------- Promise: scroll-progress word highlight ---------- */
-  var promiseSection = document.querySelector(".promise");
   var promiseQuote = document.getElementById("promiseQuote");
 
-  if (promiseSection && promiseQuote && !reducedMotion) {
+  if (promiseQuote && !reducedMotion) {
     var words = Array.prototype.slice.call(promiseQuote.querySelectorAll(".word"));
     var pTicking = false;
 
     function updatePromise() {
-      var rect = promiseSection.getBoundingClientRect();
+      var rect = promiseQuote.getBoundingClientRect();
       var vh = window.innerHeight;
-      // progress 0 -> section top enters viewport bottom, 1 -> section bottom leaves viewport top
-      var total = rect.height + vh;
-      var traveled = vh - rect.top;
-      var progress = Math.min(1, Math.max(0, traveled / total));
-      // Map the middle 70% of the scroll range to the word reveal for a comfortable read
-      var reveal = Math.min(1, Math.max(0, (progress - 0.12) / 0.6));
+      var quoteCenter = rect.top + rect.height / 2;
+      // Reveal starts as the quote's center approaches from the lower part of the
+      // screen, and completes exactly when it reaches the vertical middle of the viewport.
+      var startY = vh * 0.85;
+      var endY = vh * 0.5;
+      var progress = (startY - quoteCenter) / (startY - endY);
+      var reveal = Math.min(1, Math.max(0, progress));
       var litCount = Math.round(reveal * words.length);
       words.forEach(function (w, i) {
         w.classList.toggle("lit", i < litCount);

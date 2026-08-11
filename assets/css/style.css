@@ -670,8 +670,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-align: left;
 }
 @media (min-width: 860px) { .promise-footnote { grid-template-columns: 1fr 1fr; } }
-.promise-footnote p { color: var(--fg-muted); font-size: 1.02rem; }
-.promise-footnote strong { color: var(--navy); font-weight: 700; }
+.promise-footnote article { padding-top: var(--space-3); border-top: 2px solid var(--border); }
+.promise-footnote h3 { font-size: clamp(1.3rem, 1vw + 1rem, 1.7rem); color: var(--navy); margin-bottom: 0.5rem; }
+.promise-footnote p { color: var(--fg-muted); font-size: 0.98rem; }
 
 .positioning-tag {
   display: inline-flex;
@@ -690,38 +691,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .positioning-tag svg { width: 14px; height: 14px; color: var(--accent); }
 
-.promise-photo {
-  position: relative;
-  margin: var(--space-6) 0 0;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  aspect-ratio: 21 / 9;
-  box-shadow: 0 40px 80px -30px rgba(28, 59, 74, 0.35);
-}
-.promise-photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.promise-photo::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(0deg, rgba(16, 31, 39, 0.75) 0%, transparent 45%);
-}
-.promise-photo figcaption {
-  position: absolute;
-  left: var(--space-4);
-  bottom: var(--space-3);
-  font-family: var(--font-subtitle);
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cream);
-  z-index: 1;
-}
-@media (max-width: 700px) { .promise-photo { aspect-ratio: 4 / 5; } }
 
 /* ==========================================================================
    Experience — pinned sticky senses feature
