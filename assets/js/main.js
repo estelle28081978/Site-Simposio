@@ -220,24 +220,37 @@
   if (mosaicViewport) {
     var mosaicTrack = document.getElementById("mosaicTrack");
     var mosaicHint = document.getElementById("mosaicHint");
+    /* Ordre volontairement mélangé : on évite de mettre deux photos du même
+       univers (véhicule/stand, nourriture, table/déco, boisson...) côte à
+       côte pour que le défilement de la mosaïque reste varié. */
     var mosaicImages = [
-      { src: "assets/img/evenement-table-fleurs-legumes.jpg", caption: "Table dressée, fleurs et légumes de saison" },
-      { src: "assets/img/evenement-buffet-bruschetta.jpg", caption: "Buffet bruschetta et charcuterie" },
-      { src: "assets/img/evenement-cave-barolo.jpg", caption: "Cave à Barolo" },
-      { src: "assets/img/evenement-tablee-diner-bougies.jpg", caption: "Tablée aux chandelles" },
-      { src: "assets/img/evenement-rangee-spritz.jpg", caption: "L'heure du spritz" },
       { src: "assets/img/evenement-vespas-vintage.jpg", caption: "Vespas vintage" },
+      { src: "assets/img/evenement-buffet-bruschetta.jpg", caption: "Buffet bruschetta et charcuterie" },
+      { src: "assets/img/evenement-table-fleurs-legumes.jpg", caption: "Table dressée, fleurs et légumes de saison" },
       { src: "assets/img/evenement-fiat500-blanche.jpg", caption: "Fiat 500 blanche" },
+      { src: "assets/img/evenement-rangee-spritz.jpg", caption: "L'heure du spritz" },
+      { src: "assets/img/evenement-tablee-diner-bougies.jpg", caption: "Tablée aux chandelles" },
       { src: "assets/img/evenement-fiat-jolly-jaune.jpg", caption: "Fiat Jolly jaune" },
       { src: "assets/img/evenement-canapes-tartelettes.jpg", caption: "Canapés et tartelettes" },
-      { src: "assets/img/evenement-bar-a-burrata.jpg", caption: "Bar à burrata" },
-      { src: "assets/img/evenement-sanpellegrino-verres.jpg", caption: "Verres et Sanpellegrino" },
-      { src: "assets/img/evenement-planche-charcuterie.jpg", caption: "Planche de charcuterie" },
-      { src: "assets/img/evenement-plateau-agrumes.jpg", caption: "Plateau d'agrumes" },
+      { src: "assets/img/evenement-lampe-rotin-citrons.jpg", caption: "Lampe en rotin et détails citron" },
+      { src: "assets/img/evenement-chariot-gelato-blanc.jpg", caption: "Chariot glacier, ombrelle blanche" },
       { src: "assets/img/evenement-ceramiques-citrons.jpg", caption: "Céramiques et citrons" },
-      { src: "assets/img/evenement-tomates-bougeoir.jpg", caption: "Tomates et bougeoir laiton" },
+      { src: "assets/img/evenement-bar-a-burrata.jpg", caption: "Bar à burrata" },
       { src: "assets/img/evenement-fiat500-creme-mur-pierre.jpg", caption: "Fiat 500 crème" },
-      { src: "assets/img/evenement-bruschetta-burrata-jardin.jpg", caption: "Bruschetta burrata au jardin" }
+      { src: "assets/img/evenement-sanpellegrino-verres.jpg", caption: "Verres et Sanpellegrino" },
+      { src: "assets/img/evenement-vases-oranges-fleurs.jpg", caption: "Vases d'oranges et fleurs des champs" },
+      { src: "assets/img/evenement-stand-raye-guirlande.jpg", caption: "Stand rayé et guirlande lumineuse" },
+      { src: "assets/img/evenement-illustration-dolce-vita.jpg", caption: "Illustration La Dolce Vita" },
+      { src: "assets/img/evenement-planche-charcuterie.jpg", caption: "Planche de charcuterie" },
+      { src: "assets/img/evenement-tomates-bougeoir.jpg", caption: "Tomates et bougeoir laiton" },
+      { src: "assets/img/evenement-vespa-gelato-brindapino.jpg", caption: "Vespa glacier Brindapino" },
+      { src: "assets/img/evenement-cave-barolo.jpg", caption: "Cave à Barolo" },
+      { src: "assets/img/evenement-plateau-agrumes.jpg", caption: "Plateau d'agrumes" },
+      { src: "assets/img/evenement-triporteur-gelato.jpg", caption: "Triporteur à glaces" },
+      { src: "assets/img/evenement-bruschetta-burrata-jardin.jpg", caption: "Bruschetta burrata au jardin" },
+      { src: "assets/img/evenement-assiette-agrume-ceramique.jpg", caption: "Marque-place céramique et kumquat" },
+      { src: "assets/img/evenement-carte-degustation.jpg", caption: "Carte à déguster, en terrasse" },
+      { src: "assets/img/evenement-illustration-cincin.jpg", caption: "Illustration Cin Cin" }
     ];
 
     var TILE = window.innerWidth < 640 ? 150 : 240;

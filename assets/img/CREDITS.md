@@ -9,7 +9,9 @@ sont pas soumises aux licences Wikimedia ci-dessous.
 
 | Fichier | Utilisée sur |
 |---|---|
-| `evenement-vespa-fleurie-lemon.jpg` | Prestations — L'Esperienza (fond) |
+| `evenement-parasols-jaunes-table.jpg` | Prestations — La Cartolina (fond) |
+| `evenement-vespa-fleurie-lemon.jpg` | Prestations — L'Esperienza (fond, recadrée avec un fond flou pour rester entièrement visible en bannière large) |
+| `evenement-spritz-caisses-bois.jpg` | Prestations — L'Aperitivo (fond) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets |
@@ -27,13 +29,24 @@ sont pas soumises aux licences Wikimedia ci-dessous.
 | `evenement-tomates-bougeoir.jpg` | Mosaïque Projets |
 | `evenement-fiat500-creme-mur-pierre.jpg` | Mosaïque Projets |
 | `evenement-bruschetta-burrata-jardin.jpg` | Mosaïque Projets |
+| `evenement-lampe-rotin-citrons.jpg` | Mosaïque Projets |
+| `evenement-vases-oranges-fleurs.jpg` | Mosaïque Projets |
+| `evenement-chariot-gelato-blanc.jpg` | Mosaïque Projets |
+| `evenement-illustration-dolce-vita.jpg` | Mosaïque Projets |
+| `evenement-illustration-cincin.jpg` | Mosaïque Projets |
+| `evenement-stand-raye-guirlande.jpg` | Mosaïque Projets |
+| `evenement-vespa-gelato-brindapino.jpg` | Mosaïque Projets |
+| `evenement-triporteur-gelato.jpg` | Mosaïque Projets |
+| `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets |
+| `evenement-carte-degustation.jpg` | Mosaïque Projets |
 
 Bon à savoir : `evenement-vespas-vintage.jpg`, `evenement-fiat500-blanche.jpg`,
-`evenement-fiat-jolly-jaune.jpg` et `evenement-fiat500-creme-mur-pierre.jpg`
-sont désormais de **vrais véhicules photographiés en situation** — elles
-pourraient avantageusement remplacer les photos d'illustration génériques
-`fiat-500-positano.jpg` / `vespa-assisi.jpg` encore utilisées en page
-d'accueil (voir note ci-dessous).
+`evenement-fiat-jolly-jaune.jpg`, `evenement-fiat500-creme-mur-pierre.jpg`,
+`evenement-chariot-gelato-blanc.jpg`, `evenement-vespa-gelato-brindapino.jpg`
+et `evenement-triporteur-gelato.jpg` sont désormais de **vrais véhicules
+photographiés en situation** — elles pourraient avantageusement remplacer
+les photos d'illustration génériques `fiat-500-positano.jpg` /
+`vespa-assisi.jpg` encore utilisées en page d'accueil (voir note ci-dessous).
 
 ## Photos Wikimedia Commons (banque libre)
 
@@ -50,8 +63,6 @@ CC BY-SA). Attribution reprise dans le footer du site.
 | `piazza-evening-menaggio.jpg` | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
 | `amalfi-coast-sunset.jpg` | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 | `lemon-tree-italy.jpg` | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
-| `spritz-terrasse.jpg` | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
-| `lemon-ceramics-positano.jpg` | [Limone and Limoncello.jpg](https://commons.wikimedia.org/wiki/File:Limone_and_Limoncello.jpg) | Bill and Kathy | CC BY 2.0 |
 
 ## Important — à savoir avant publication
 
