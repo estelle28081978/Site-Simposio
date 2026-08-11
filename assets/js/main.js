@@ -181,6 +181,22 @@
     markVisited("0", senseButtons[0]);
   }
 
+  /* ---------- Engagements: click-to-flip cards ---------- */
+  var flipCards = document.querySelectorAll("[data-flip]");
+  flipCards.forEach(function (card) {
+    card.addEventListener("click", function () {
+      card.classList.toggle("is-flipped");
+    });
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "button");
+    card.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        card.classList.toggle("is-flipped");
+      }
+    });
+  });
+
   /* ---------- Hero stat count-up ---------- */
   var countEl = document.querySelector("[data-count]");
   if (countEl && "IntersectionObserver" in window) {
