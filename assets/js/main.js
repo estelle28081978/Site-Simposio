@@ -236,7 +236,8 @@
       { src: "assets/img/evenement-plateau-agrumes.jpg", caption: "Plateau d'agrumes" },
       { src: "assets/img/evenement-ceramiques-citrons.jpg", caption: "Céramiques et citrons" },
       { src: "assets/img/evenement-tomates-bougeoir.jpg", caption: "Tomates et bougeoir laiton" },
-      { src: "assets/img/evenement-fiat500-creme-mur-pierre.jpg", caption: "Fiat 500 crème" }
+      { src: "assets/img/evenement-fiat500-creme-mur-pierre.jpg", caption: "Fiat 500 crème" },
+      { src: "assets/img/evenement-bruschetta-burrata-jardin.jpg", caption: "Bruschetta burrata au jardin" }
     ];
 
     var TILE = window.innerWidth < 640 ? 150 : 240;

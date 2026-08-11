@@ -9,8 +9,7 @@ sont pas soumises aux licences Wikimedia ci-dessous.
 
 | Fichier | Utilisée sur |
 |---|---|
-| `evenement-ceramiques-citrons.jpg` | Prestations — La Cartolina (fond) |
-| `evenement-bruschetta-burrata-jardin.jpg` | Prestations — L'Esperienza (fond) |
+| `evenement-vespa-fleurie-lemon.jpg` | Prestations — L'Esperienza (fond) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets |
@@ -24,8 +23,10 @@ sont pas soumises aux licences Wikimedia ci-dessous.
 | `evenement-sanpellegrino-verres.jpg` | Mosaïque Projets |
 | `evenement-planche-charcuterie.jpg` | Mosaïque Projets |
 | `evenement-plateau-agrumes.jpg` | Mosaïque Projets |
+| `evenement-ceramiques-citrons.jpg` | Mosaïque Projets |
 | `evenement-tomates-bougeoir.jpg` | Mosaïque Projets |
 | `evenement-fiat500-creme-mur-pierre.jpg` | Mosaïque Projets |
+| `evenement-bruschetta-burrata-jardin.jpg` | Mosaïque Projets |
 
 Bon à savoir : `evenement-vespas-vintage.jpg`, `evenement-fiat500-blanche.jpg`,
 `evenement-fiat-jolly-jaune.jpg` et `evenement-fiat500-creme-mur-pierre.jpg`
@@ -50,6 +51,7 @@ CC BY-SA). Attribution reprise dans le footer du site.
 | `amalfi-coast-sunset.jpg` | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 | `lemon-tree-italy.jpg` | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
 | `spritz-terrasse.jpg` | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
+| `lemon-ceramics-positano.jpg` | [Limone and Limoncello.jpg](https://commons.wikimedia.org/wiki/File:Limone_and_Limoncello.jpg) | Bill and Kathy | CC BY 2.0 |
 
 ## Important — à savoir avant publication
 
