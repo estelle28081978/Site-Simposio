@@ -223,7 +223,7 @@
     /* Ordre volontairement mélangé : on évite de mettre deux photos du même
        univers (véhicule/stand, nourriture, table/déco, boisson...) côte à
        côte pour que le défilement de la mosaïque reste varié. */
-    var mosaicImages = [
+    var mosaicImagesBase = [
       { src: "assets/img/evenement-vespas-vintage.jpg", caption: "Vespas vintage" },
       { src: "assets/img/evenement-buffet-bruschetta.jpg", caption: "Buffet bruschetta et charcuterie" },
       { src: "assets/img/evenement-table-fleurs-legumes.jpg", caption: "Table dressée, fleurs et légumes de saison" },
@@ -252,8 +252,13 @@
       { src: "assets/img/evenement-carte-degustation.jpg", caption: "Carte à déguster, en terrasse" },
       { src: "assets/img/evenement-illustration-cincin.jpg", caption: "Illustration Cin Cin" }
     ];
+    /* Chaque photo apparaît exactement deux fois : on double la séquence
+       telle quelle. Les deux occurrences d'une même photo se retrouvent
+       ainsi à 27 tuiles d'écart (jamais côte à côte ni même proches), et
+       l'alternance des univers reste valable aussi à la jointure. */
+    var mosaicImages = mosaicImagesBase.concat(mosaicImagesBase);
 
-    var TILE = window.innerWidth < 640 ? 150 : 240;
+    var TILE = window.innerWidth < 640 ? 130 : 240;
     var EXTRA = 3; // extra rows/cols beyond the exact viewport fit, so there is always room to drag
     var grid = { cols: 0, rows: 0, w: 0, h: 0 };
     var posX = 0, posY = 0;
@@ -373,7 +378,7 @@
     window.addEventListener("resize", function () {
       clearTimeout(mosaicResizeTimer);
       mosaicResizeTimer = setTimeout(function () {
-        TILE = window.innerWidth < 640 ? 150 : 240;
+        TILE = window.innerWidth < 640 ? 130 : 240;
         buildMosaicGrid();
         clampMosaic();
         applyMosaic();
