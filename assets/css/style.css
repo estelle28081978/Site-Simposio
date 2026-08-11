@@ -971,18 +971,19 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .world-tavola { --tint-rgb: var(--rosso-ombria-rgb); }
 
 .world-media { position: absolute; inset: 0; z-index: 0; }
-.world-media img { width: 100%; height: 100%; object-fit: cover; }
+.world-media img { width: 100%; height: 100%; object-fit: cover; filter: saturate(1.1) contrast(1.05); }
 .world-cartolina .world-media img { object-position: center 45%; }
 .world-esperienza .world-media img { object-position: center 40%; }
+.world-aperitivo .world-media img { object-position: center 32%; }
 .world-media::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.55) 42%, rgba(var(--tint-rgb), 0.4) 100%);
+  background: linear-gradient(100deg, rgba(16, 31, 39, 0.8) 0%, rgba(16, 31, 39, 0.46) 42%, rgba(var(--tint-rgb), 0.24) 100%);
 }
 .world-esperienza .world-media::after,
 .world-tavola .world-media::after {
-  background: linear-gradient(260deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.55) 42%, rgba(var(--tint-rgb), 0.4) 100%);
+  background: linear-gradient(260deg, rgba(16, 31, 39, 0.8) 0%, rgba(16, 31, 39, 0.46) 42%, rgba(var(--tint-rgb), 0.24) 100%);
 }
 
 .world-copy { position: relative; z-index: 1; width: 100%; padding-block: var(--space-6); }
@@ -1355,17 +1356,21 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* Formula blocks (Prestations) — the whole formula (photo + text together)
    slides into place, alternating which side it enters from one formula out
    of two. Applied to the .world article itself so the photo (absolutely
-   positioned inside it) rides along as one rigid piece. */
+   positioned inside it) rides along as one rigid piece. Distance is large and
+   the duration is scaled up to match, so the sweep reads as more dramatic
+   without feeling rushed; a soft focus-pull (blur-to-sharp) and a gentle
+   scale settle add the finishing, more elegant polish. */
 [data-reveal].formula-slide-left, [data-reveal].formula-slide-right {
   opacity: 0;
-  transition: opacity 1s var(--ease), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(7px);
+  transition: opacity 1.3s var(--ease), transform 1.9s cubic-bezier(0.16, 1, 0.3, 1), filter 1.7s var(--ease);
 }
-[data-reveal].formula-slide-left { transform: translateX(-12vw); }
-[data-reveal].formula-slide-right { transform: translateX(12vw); }
+[data-reveal].formula-slide-left { transform: translateX(max(-26vw, -480px)) scale(0.96); }
+[data-reveal].formula-slide-right { transform: translateX(min(26vw, 480px)) scale(0.96); }
 [data-reveal].formula-slide-left.is-visible,
-[data-reveal].formula-slide-right.is-visible { opacity: 1; transform: translateX(0); }
+[data-reveal].formula-slide-right.is-visible { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
 @media (prefers-reduced-motion: reduce) {
-  [data-reveal].formula-slide-left, [data-reveal].formula-slide-right { opacity: 1; transform: none; }
+  [data-reveal].formula-slide-left, [data-reveal].formula-slide-right { opacity: 1; transform: none; filter: none; }
 }
 
 /* ==========================================================================
