@@ -1223,44 +1223,57 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .contact-info a:hover { color: var(--terracotta-300); }
 
 .form-card {
-  background: rgba(246, 241, 231, 0.94);
+  background: rgba(246, 241, 231, 0.96);
   backdrop-filter: blur(16px);
   color: var(--ink);
-  border-radius: var(--radius-lg);
+  border-radius: calc(var(--radius-lg) + 0.5rem);
   border: 1px solid var(--glass-border);
   padding: var(--space-4);
   box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.4);
 }
 @media (min-width: 600px) { .form-card { padding: var(--space-5); } }
 
+.form-group { margin-bottom: var(--space-4); }
+.form-group-label {
+  display: block;
+  font-family: var(--font-subtitle);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-3);
+}
+
 .form-row { display: grid; gap: var(--space-3); margin-bottom: var(--space-3); }
 @media (min-width: 560px) { .form-row.cols-2 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 560px) { .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
 
-.field label { display: block; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; color: var(--navy); margin-bottom: 0.5rem; }
+.field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.45rem; }
 .field .optional { text-transform: none; letter-spacing: 0; color: var(--fg-muted); font-size: 0.72rem; font-weight: 400; }
 
 .field input, .field select, .field textarea {
   width: 100%;
-  padding: 0.85em 1em;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  padding: 0.9em 1.15em;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
   background: var(--white);
   color: var(--ink);
-  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
+.field input:hover, .field select:hover, .field textarea:hover { border-color: var(--terracotta-300); }
 .field input:focus, .field select:focus, .field textarea:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(193, 98, 45, 0.15);
 }
-.field textarea { resize: vertical; min-height: 110px; }
+.field textarea { resize: vertical; min-height: 120px; border-radius: var(--radius); }
 
 .field-error { display: none; font-size: 0.78rem; color: var(--accent-hover); margin-top: 0.4rem; font-weight: 500; }
 .field.has-error input, .field.has-error select, .field.has-error textarea { border-color: var(--accent-hover); }
 .field.has-error .field-error { display: block; }
 
-.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-2); }
+.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-3); }
 .form-note { font-size: 0.78rem; color: var(--fg-muted); }
 
 .form-success {

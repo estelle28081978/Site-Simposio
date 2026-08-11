@@ -64,10 +64,10 @@
   <div class="page-header" style="padding-bottom:var(--space-4);">
     <div class="container">
       <span class="eyebrow" data-reveal>Composons ensemble</span>
-      <h1 data-reveal>Votre prochain événement commence ici</h1>
+      <h1 data-reveal>Racontez-nous votre projet</h1>
       <p class="lede" data-reveal>
-        Parlez-nous de votre projet — nous revenons vers vous sous 48h avec une première proposition
-        adaptée à votre budget et à vos objectifs.
+        Deux minutes suffisent. Dites-nous où vous en êtes — même en vrac — et nous revenons vers vous
+        sous 48h avec une première proposition adaptée à votre budget et à vos objectifs.
       </p>
     </div>
   </div>
@@ -93,57 +93,68 @@
         <div class="form-card" data-reveal>
           <form id="leadForm" novalidate>
 
-            <div class="form-row cols-2">
-              <div class="field">
-                <label for="fullName">Nom complet</label>
-                <input type="text" id="fullName" name="fullName" autocomplete="name" required />
-                <p class="field-error">Merci d'indiquer votre nom.</p>
+            <div class="form-group">
+              <span class="form-group-label">Vous</span>
+              <div class="form-row cols-2">
+                <div class="field">
+                  <label for="fullName">Nom complet</label>
+                  <input type="text" id="fullName" name="fullName" autocomplete="name" required />
+                  <p class="field-error">Merci d'indiquer votre nom.</p>
+                </div>
+                <div class="field">
+                  <label for="company">Entreprise</label>
+                  <input type="text" id="company" name="company" autocomplete="organization" required />
+                  <p class="field-error">Merci d'indiquer votre entreprise.</p>
+                </div>
               </div>
-              <div class="field">
-                <label for="company">Entreprise</label>
-                <input type="text" id="company" name="company" autocomplete="organization" required />
-                <p class="field-error">Merci d'indiquer votre entreprise.</p>
+
+              <div class="form-row cols-2">
+                <div class="field">
+                  <label for="email">Email professionnel</label>
+                  <input type="email" id="email" name="email" autocomplete="email" required />
+                  <p class="field-error">Merci d'indiquer un email valide.</p>
+                </div>
+                <div class="field">
+                  <label for="phone">Téléphone <span class="optional">(optionnel)</span></label>
+                  <input type="tel" id="phone" name="phone" autocomplete="tel" />
+                </div>
               </div>
             </div>
 
-            <div class="form-row cols-2">
-              <div class="field">
-                <label for="email">Email professionnel</label>
-                <input type="email" id="email" name="email" autocomplete="email" required />
-                <p class="field-error">Merci d'indiquer un email valide.</p>
+            <div class="form-group">
+              <span class="form-group-label">Votre événement</span>
+              <div class="form-row">
+                <div class="field">
+                  <label for="serviceType">Ça ressemble à quoi&nbsp;?</label>
+                  <select id="serviceType" name="serviceType">
+                    <option value="La Cartolina — Décoration">La Cartolina — Décoration</option>
+                    <option value="L'Esperienza — Expérience signature">L'Esperienza — Expérience signature</option>
+                    <option value="L'Aperitivo — After Work">L'Aperitivo — After Work</option>
+                    <option value="La Tavola — Déjeuner d'affaires">La Tavola — Déjeuner d'affaires</option>
+                    <option value="Je ne sais pas encore">Je ne sais pas encore</option>
+                  </select>
+                </div>
               </div>
-              <div class="field">
-                <label for="phone">Téléphone <span class="optional">(optionnel)</span></label>
-                <input type="tel" id="phone" name="phone" autocomplete="tel" />
-              </div>
-            </div>
-
-            <div class="form-row cols-3">
-              <div class="field">
-                <label for="serviceType">Type d'événement</label>
-                <select id="serviceType" name="serviceType">
-                  <option value="La Cartolina — Décoration">La Cartolina — Décoration</option>
-                  <option value="L'Esperienza — Expérience signature">L'Esperienza — Expérience signature</option>
-                  <option value="L'Aperitivo — After Work">L'Aperitivo — After Work</option>
-                  <option value="La Tavola — Déjeuner d'affaires">La Tavola — Déjeuner d'affaires</option>
-                  <option value="Je ne sais pas encore">Je ne sais pas encore</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="guests">Nb. d'invités <span class="optional">(estim.)</span></label>
-                <input type="number" id="guests" name="guests" min="1" placeholder="Ex. 50" />
-              </div>
-              <div class="field">
-                <label for="eventDate">Date envisagée</label>
-                <input type="date" id="eventDate" name="eventDate" />
+              <div class="form-row cols-2">
+                <div class="field">
+                  <label for="guests">Combien serez-vous&nbsp;? <span class="optional">(estim.)</span></label>
+                  <input type="number" id="guests" name="guests" min="1" placeholder="Ex. 50" />
+                </div>
+                <div class="field">
+                  <label for="eventDate">Une date en tête&nbsp;?</label>
+                  <input type="date" id="eventDate" name="eventDate" />
+                </div>
               </div>
             </div>
 
-            <div class="form-row">
-              <div class="field">
-                <label for="message">Votre projet</label>
-                <textarea id="message" name="message" required placeholder="Décrivez le contexte, vos objectifs, votre lieu de réception..."></textarea>
-                <p class="field-error">Merci de nous en dire un peu plus sur votre projet.</p>
+            <div class="form-group">
+              <span class="form-group-label">Votre projet</span>
+              <div class="form-row">
+                <div class="field">
+                  <label for="message">Dites-nous-en un peu plus</label>
+                  <textarea id="message" name="message" required placeholder="Le contexte, vos objectifs, votre lieu de réception... même en vrac, ça nous suffit pour démarrer."></textarea>
+                  <p class="field-error">Merci de nous en dire un peu plus sur votre projet.</p>
+                </div>
               </div>
             </div>
 
