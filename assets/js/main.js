@@ -221,17 +221,22 @@
     var mosaicTrack = document.getElementById("mosaicTrack");
     var mosaicHint = document.getElementById("mosaicHint");
     var mosaicImages = [
-      { src: "assets/img/portofino-harbour.jpg", caption: "Portofino, Riviera italienne" },
-      { src: "assets/img/fiat-500-positano.jpg", caption: "Positano" },
-      { src: "assets/img/piazza-evening-menaggio.jpg", caption: "Menaggio, au crépuscule" },
-      { src: "assets/img/vespa-assisi.jpg", caption: "Assise" },
-      { src: "assets/img/tuscany-hills.jpg", caption: "Toscane" },
-      { src: "assets/img/lemon-tree-italy.jpg", caption: "Citronnier italien" },
-      { src: "assets/img/terrace-dinner-assisi.jpg", caption: "Déjeuner en terrasse, Ombrie" },
-      { src: "assets/img/amalfi-coast-sunset.jpg", caption: "Côte amalfitaine" },
-      { src: "assets/img/alsace-vineyard.jpg", caption: "Notre terrain — l'Alsace" },
-      { src: "assets/img/spritz-terrasse.jpg", caption: "L'heure du spritz" },
-      { src: "assets/img/lemon-ceramics-positano.jpg", caption: "Céramiques et citrons de Positano" }
+      { src: "assets/img/evenement-table-fleurs-legumes.jpg", caption: "Table dressée, fleurs et légumes de saison" },
+      { src: "assets/img/evenement-buffet-bruschetta.jpg", caption: "Buffet bruschetta et charcuterie" },
+      { src: "assets/img/evenement-cave-barolo.jpg", caption: "Cave à Barolo" },
+      { src: "assets/img/evenement-tablee-diner-bougies.jpg", caption: "Tablée aux chandelles" },
+      { src: "assets/img/evenement-rangee-spritz.jpg", caption: "L'heure du spritz" },
+      { src: "assets/img/evenement-vespas-vintage.jpg", caption: "Vespas vintage" },
+      { src: "assets/img/evenement-fiat500-blanche.jpg", caption: "Fiat 500 blanche" },
+      { src: "assets/img/evenement-fiat-jolly-jaune.jpg", caption: "Fiat Jolly jaune" },
+      { src: "assets/img/evenement-canapes-tartelettes.jpg", caption: "Canapés et tartelettes" },
+      { src: "assets/img/evenement-bar-a-burrata.jpg", caption: "Bar à burrata" },
+      { src: "assets/img/evenement-sanpellegrino-verres.jpg", caption: "Verres et Sanpellegrino" },
+      { src: "assets/img/evenement-planche-charcuterie.jpg", caption: "Planche de charcuterie" },
+      { src: "assets/img/evenement-plateau-agrumes.jpg", caption: "Plateau d'agrumes" },
+      { src: "assets/img/evenement-ceramiques-citrons.jpg", caption: "Céramiques et citrons" },
+      { src: "assets/img/evenement-tomates-bougeoir.jpg", caption: "Tomates et bougeoir laiton" },
+      { src: "assets/img/evenement-fiat500-creme-mur-pierre.jpg", caption: "Fiat 500 crème" }
     ];
 
     var TILE = window.innerWidth < 640 ? 150 : 240;

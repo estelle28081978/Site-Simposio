@@ -1,13 +1,48 @@
 # Crédits photos
 
-Toutes les photos viennent de Wikimedia Commons, sous licence libre (CC BY /
+## Photos Simposio (propres à l'agence)
+
+Les fichiers `evenement-*.jpg` sont des photos fournies par Estelle, prises
+lors de vrais événements Simposio (tables dressées, buffets, véhicules de
+collection). Ce sont les vôtres — **aucun crédit externe requis**, elles ne
+sont pas soumises aux licences Wikimedia ci-dessous.
+
+| Fichier | Utilisée sur |
+|---|---|
+| `evenement-ceramiques-citrons.jpg` | Prestations — La Cartolina (fond) |
+| `evenement-bruschetta-burrata-jardin.jpg` | Prestations — L'Esperienza (fond) |
+| `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
+| `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
+| `evenement-cave-barolo.jpg` | Mosaïque Projets |
+| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets |
+| `evenement-rangee-spritz.jpg` | Mosaïque Projets |
+| `evenement-vespas-vintage.jpg` | Mosaïque Projets |
+| `evenement-fiat500-blanche.jpg` | Mosaïque Projets |
+| `evenement-fiat-jolly-jaune.jpg` | Mosaïque Projets |
+| `evenement-canapes-tartelettes.jpg` | Mosaïque Projets |
+| `evenement-bar-a-burrata.jpg` | Mosaïque Projets |
+| `evenement-sanpellegrino-verres.jpg` | Mosaïque Projets |
+| `evenement-planche-charcuterie.jpg` | Mosaïque Projets |
+| `evenement-plateau-agrumes.jpg` | Mosaïque Projets |
+| `evenement-tomates-bougeoir.jpg` | Mosaïque Projets |
+| `evenement-fiat500-creme-mur-pierre.jpg` | Mosaïque Projets |
+
+Bon à savoir : `evenement-vespas-vintage.jpg`, `evenement-fiat500-blanche.jpg`,
+`evenement-fiat-jolly-jaune.jpg` et `evenement-fiat500-creme-mur-pierre.jpg`
+sont désormais de **vrais véhicules photographiés en situation** — elles
+pourraient avantageusement remplacer les photos d'illustration génériques
+`fiat-500-positano.jpg` / `vespa-assisi.jpg` encore utilisées en page
+d'accueil (voir note ci-dessous).
+
+## Photos Wikimedia Commons (banque libre)
+
+Les photos suivantes viennent de Wikimedia Commons, sous licence libre (CC BY /
 CC BY-SA). Attribution reprise dans le footer du site.
 
 | Fichier | Source | Auteur | Licence |
 |---|---|---|---|
 | `fiat-500-positano.jpg` | [Positano Fiat 500 car rally.jpg](https://commons.wikimedia.org/wiki/File:Positano_Fiat_500_car_rally.jpg) | Arnoldius | CC BY-SA 3.0 |
 | `vespa-assisi.jpg` | [Red Vespa scooter in front of Rocca Maggiore, Assisi.jpg](https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg) | Marco Ober | CC BY-SA 4.0 |
-| `portofino-harbour.jpg` | [Portofino - 2016-06-02 - Harbor.jpg](https://commons.wikimedia.org/wiki/File:Portofino_-_2016-06-02_-_Harbor.jpg) | Pierre-Selim Huard | CC BY 4.0 |
 | `tuscany-hills.jpg` | [Hills of Tuscany at evening light.jpg](https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg) | Matthias Rhomberg | CC BY 2.0 |
 | `alsace-vineyard.jpg` | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
 | `terrace-dinner-assisi.jpg` | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
@@ -15,7 +50,6 @@ CC BY-SA). Attribution reprise dans le footer du site.
 | `amalfi-coast-sunset.jpg` | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 | `lemon-tree-italy.jpg` | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
 | `spritz-terrasse.jpg` | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
-| `lemon-ceramics-positano.jpg` | [Limone and Limoncello.jpg](https://commons.wikimedia.org/wiki/File:Limone_and_Limoncello.jpg) | Bill and Kathy | CC BY 2.0 |
 
 ## Important — à savoir avant publication
 
