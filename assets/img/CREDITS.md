@@ -10,8 +10,7 @@ sont pas soumises aux licences Wikimedia ci-dessous.
 | Fichier | Utilisée sur |
 |---|---|
 | `evenement-parasols-jaunes-table.jpg` | Prestations — La Cartolina (fond) |
-| `evenement-vespa-fleurie-lemon.jpg` | Prestations — L'Esperienza (fond, recadrée avec un fond flou pour rester entièrement visible en bannière large) |
-| `evenement-spritz-caisses-bois.jpg` | Prestations — L'Aperitivo (fond) |
+| `evenement-vespa-fleurie-lemon.jpg` | Prestations — L'Esperienza (fond) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets |
@@ -63,6 +62,7 @@ CC BY-SA). Attribution reprise dans le footer du site.
 | `piazza-evening-menaggio.jpg` | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
 | `amalfi-coast-sunset.jpg` | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 | `lemon-tree-italy.jpg` | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
+| `spritz-terrasse.jpg` | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
 
 ## Important — à savoir avant publication
 

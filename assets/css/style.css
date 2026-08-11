@@ -987,7 +987,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .world-media img { width: 100%; height: 100%; object-fit: cover; }
 .world-cartolina .world-media img { object-position: center 45%; }
 .world-esperienza .world-media img { object-position: center 40%; }
-.world-aperitivo .world-media img { object-position: center 12%; }
 .world-media::after {
   content: "";
   position: absolute;
