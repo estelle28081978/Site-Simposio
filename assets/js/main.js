@@ -166,13 +166,14 @@
       }
     ];
 
-    // Two hand-tuned "rounded wave" layouts (top-left to bottom-right), built from
-    // 5 waypoints with a Catmull-Rom spline so the curve stays smooth. The wide one
-    // suits landscape/desktop frames; the tall one keeps the wave legible once the
-    // frame turns narrow and portrait on mobile, instead of shrinking to nothing.
+    // Two hand-tuned "rounded wave" layouts (top-left, snaking right and down to
+    // finish bottom-right), built from 5 waypoints with a Catmull-Rom spline so the
+    // curve stays smooth. The wide one suits landscape/desktop frames; the tall one
+    // keeps the wave legible once the frame turns narrow and portrait on mobile,
+    // instead of shrinking to nothing.
     var journeyLayouts = {
-      desktop: { viewBox: "0 0 1200 900", points: [[51, 171], [369, 249], [652, 373], [807, 675], [1056, 848]] },
-      mobile: { viewBox: "0 0 440 900", points: [[35, 105], [186, 259], [303, 428], [289, 651], [370, 835]] }
+      desktop: { viewBox: "0 0 1200 1000", points: [[28, 211], [424, 196], [493, 586], [889, 571], [958, 961]] },
+      mobile: { viewBox: "0 0 440 1000", points: [[27, 127], [246, 268], [172, 517], [391, 658], [317, 907]] }
     };
 
     function catmullRomToBezierD(pts) {
@@ -189,8 +190,32 @@
       return d.trim();
     }
 
+    // Finds, for a given (x,y) waypoint, how far along the drawn path (as a
+    // 0..1 fraction of its total length) that point actually sits — by sampling
+    // the real curve rather than assuming the 5 waypoints are evenly spaced by
+    // arc length (they aren't, once a wave offset is added). This is what lets
+    // the card appear exactly when the line reaches the dot, not before.
+    function fractionAtPoint(path, totalLength, target) {
+      var bestFrac = 0;
+      var bestDist = Infinity;
+      var samples = 500;
+      for (var s = 0; s <= samples; s++) {
+        var len = (totalLength * s) / samples;
+        var pt = path.getPointAtLength(len);
+        var dx = pt.x - target[0];
+        var dy = pt.y - target[1];
+        var dist = dx * dx + dy * dy;
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestFrac = len / totalLength;
+        }
+      }
+      return bestFrac;
+    }
+
     var journeyPathLength = 0;
     var journeyIsMobileLayout = null;
+    var journeyWaypointFractions = [];
 
     function applyJourneyLayout() {
       var isMobile = window.innerWidth < 700;
@@ -213,6 +238,10 @@
       journeyPathLength = journeyPath.getTotalLength();
       journeyPath.style.strokeDasharray = String(journeyPathLength);
       journeyPath.style.strokeDashoffset = String(journeyPathLength);
+
+      journeyWaypointFractions = layout.points.map(function (pt) {
+        return fractionAtPoint(journeyPath, journeyPathLength, pt);
+      });
     }
 
     applyJourneyLayout();
@@ -220,7 +249,7 @@
     var journeyActiveIndex = -1;
     var journeyMaxReached = 0;
     var journeyTicking = false;
-    var journeyDwellHalf = 0.075;
+    var journeyDwellSpan = 0.05;
 
     function setJourneyCard(index) {
       var s = journeySenses[index];
@@ -238,11 +267,22 @@
 
       journeyPath.style.strokeDashoffset = String(journeyPathLength * (1 - progress));
 
+      // The card only opens once the drawn line has actually arrived at a
+      // waypoint (progress >= its fraction) and stays for a short window
+      // after — never while the line is still travelling toward it.
       var n = journeySenses.length;
       var activeIndex = -1;
       for (var i = 0; i < n; i++) {
-        var center = (i + 0.5) / n;
-        if (Math.abs(progress - center) <= journeyDwellHalf) {
+        var start = journeyWaypointFractions[i];
+        var isLast = i === n - 1;
+        // The last waypoint sits at the very end of the drawn path (fraction 1),
+        // so it simply stays open once reached — there is no "next" to leave
+        // room before. A small tolerance covers the fact that real scroll
+        // positions rarely land on exactly 1 due to rounding.
+        var inWindow = isLast
+          ? progress >= start - 0.015
+          : progress >= start && progress < Math.min(start + journeyDwellSpan, journeyWaypointFractions[i + 1] - 0.01);
+        if (inWindow) {
           activeIndex = i;
           break;
         }
@@ -263,8 +303,9 @@
       }
 
       journeyDotGroups.forEach(function (g, i) {
-        var center = (i + 0.5) / n;
-        g.classList.toggle("is-lit", progress >= center - journeyDwellHalf);
+        // Small tolerance so the last dot still lights up at the literal bottom of
+        // the page, where sub-pixel rounding can leave progress just short of 1.
+        g.classList.toggle("is-lit", progress >= journeyWaypointFractions[i] - 0.01);
         g.classList.toggle("is-active", i === activeIndex);
       });
 

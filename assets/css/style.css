@@ -729,7 +729,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    avec la position de scroll ; à chaque borne, une carte apparaît au centre
    avec le sens correspondant, puis le tracé continue vers la borne suivante.
    ========================================================================== */
-.senses-journey { position: relative; height: 560vh; }
+.senses-journey { position: relative; height: 620vh; }
 .senses-journey-sticky {
   position: sticky;
   top: 0;
@@ -776,7 +776,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   position: relative;
   z-index: 1;
   width: min(94vw, 1150px);
-  height: min(70vh, 862px);
+  height: min(72vh, 958px);
   margin-top: var(--space-3);
 }
 .senses-journey-svg { width: 100%; height: 100%; overflow: visible; }
@@ -848,8 +848,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .senses-journey-progress strong { color: var(--terracotta-300); }
 
 @media (max-width: 700px) {
-  .senses-journey { height: 460vh; }
-  .senses-journey-frame { width: min(92vw, 480px); height: min(64vh, 600px); margin-top: var(--space-2); }
+  .senses-journey { height: 500vh; }
+  .senses-journey-frame { width: min(92vw, 480px); height: min(66vh, 640px); margin-top: var(--space-2); }
   .senses-journey-path-bg { stroke-width: 6; }
   .senses-journey-path { stroke-width: 7; }
   .senses-journey-card { padding: var(--space-3); }
@@ -859,18 +859,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Engagements — liste ligne par ligne, carte de description qui suit la
    souris au survol (façon portfolio agence).
    ========================================================================== */
-.engagement-lines { border-top: 1px solid var(--border); }
+.engagement-lines { border-top: 1px solid rgba(246, 241, 231, 0.3); }
 .engagement-line {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   padding-block: var(--space-3);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(246, 241, 231, 0.3);
   cursor: pointer;
   transition: background var(--dur-fast) var(--ease);
 }
-.engagement-line:hover, .engagement-line.is-active { background: rgba(193, 98, 45, 0.06); }
+.engagement-line:hover, .engagement-line.is-active { background: rgba(28, 59, 74, 0.14); }
 .engagement-line-num {
   display: none;
   position: absolute;
@@ -878,18 +878,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-subtitle);
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--rosso-ombria);
   letter-spacing: 0.06em;
 }
 .engagement-line-text {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(1.3rem, 4vw + 0.6rem, 2.6rem);
-  color: var(--navy);
+  color: var(--cream);
   text-align: center;
   transition: color var(--dur-fast) var(--ease), letter-spacing var(--dur-fast) var(--ease);
 }
-.engagement-line:hover .engagement-line-text, .engagement-line.is-active .engagement-line-text { color: var(--accent); }
+.engagement-line:hover .engagement-line-text, .engagement-line.is-active .engagement-line-text { color: var(--navy); }
 @media (min-width: 700px) { .engagement-line-num { display: block; } }
 
 /* Outer element: pure position, moved every frame with no transition so it
@@ -1106,7 +1106,25 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Engagements & Talents
    ========================================================================== */
-.engagements { background: var(--bg); padding-block: var(--space-6); }
+.engagements {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(200deg, var(--terracotta) 0%, var(--terracotta-600) 100%);
+  padding-block: var(--space-6);
+}
+.engagements::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 20rem;
+  height: 20rem;
+  right: -7rem;
+  bottom: -8rem;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(246, 241, 231, 0.22);
+}
+.engagements .container { position: relative; z-index: 1; }
+.engagements .lede { color: rgba(255, 255, 255, 0.88); }
 
 .talents { background: var(--bg-dim); padding-block: var(--space-6); }
 .talents-grid { display: grid; gap: var(--space-5); margin-top: var(--space-5); max-width: 46rem; margin-inline: auto; }
