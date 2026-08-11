@@ -123,96 +123,184 @@
     promiseQuote.classList.add("static-lit");
   }
 
-  /* ---------- Senses: sequential unlock discovery game ---------- */
-  var sensesGame = document.getElementById("sensesGame");
+  /* ---------- Univers: 5 senses — scroll-drawn path with waypoint cards ---------- */
+  var sensesJourney = document.getElementById("sensesJourney");
 
-  if (sensesGame) {
-    var senseButtons = Array.prototype.slice.call(sensesGame.querySelectorAll(".sense-btn"));
-    var sensePanels = Array.prototype.slice.call(sensesGame.querySelectorAll(".sense-panel"));
-    var sensesProgressCount = document.getElementById("sensesProgressCount");
-    var sensesProgressBar = document.getElementById("sensesProgressBar");
-    var sensesComplete = document.getElementById("sensesComplete");
-    var visited = {};
-    var maxUnlocked = 0;
+  if (sensesJourney) {
+    var journeyPath = document.getElementById("sensesJourneyPath");
+    var journeyDotGroups = Array.prototype.slice.call(sensesJourney.querySelectorAll(".senses-journey-dot-group"));
+    var journeyCard = document.getElementById("sensesJourneyCard");
+    var journeyCardIcon = document.getElementById("sensesJourneyCardIcon");
+    var journeyCardNum = document.getElementById("sensesJourneyCardNum");
+    var journeyCardTitle = document.getElementById("sensesJourneyCardTitle");
+    var journeyCardDesc = document.getElementById("sensesJourneyCardDesc");
+    var journeyCount = document.getElementById("sensesJourneyCount");
 
-    sensesGame.classList.add("is-enhanced");
-
-    function updateLocks() {
-      senseButtons.forEach(function (btn) {
-        var idx = parseInt(btn.getAttribute("data-index"), 10);
-        var locked = idx > maxUnlocked;
-        btn.classList.toggle("is-locked", locked);
-        btn.setAttribute("aria-disabled", locked ? "true" : "false");
-      });
-    }
-
-    function selectSense(index, isBump) {
-      senseButtons.forEach(function (btn) {
-        var match = btn.getAttribute("data-index") === String(index);
-        btn.classList.toggle("is-active", match);
-        btn.setAttribute("aria-selected", match ? "true" : "false");
-        if (match && isBump) {
-          btn.classList.remove("is-bump");
-          void btn.offsetWidth;
-          btn.classList.add("is-bump");
-        }
-      });
-      sensePanels.forEach(function (panel) {
-        panel.classList.toggle("is-active", panel.getAttribute("data-index") === String(index));
-      });
-    }
-
-    function markVisited(index, btn) {
-      index = parseInt(index, 10);
-      if (visited[index]) return;
-      visited[index] = true;
-      btn.classList.add("is-visited");
-      var count = Object.keys(visited).length;
-      sensesProgressCount.textContent = String(count);
-      sensesProgressBar.style.width = (count / senseButtons.length) * 100 + "%";
-      if (index === maxUnlocked && maxUnlocked < senseButtons.length - 1) {
-        maxUnlocked++;
-        updateLocks();
+    var journeySenses = [
+      {
+        title: "La vue",
+        desc: "Une palette esthétique d'exception : véhicules de collection, céramiques artisanales, motifs méditerranéens et jeux de lumière.",
+        icon: '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3.2"/>'
+      },
+      {
+        title: "Le goût",
+        desc: "Une gastronomie de saison, conçue avec des partenaires de qualité — de l'antipasti à la mixologie.",
+        icon: '<path d="M6 3v7a4 4 0 008 0V3M8 3v5M10 3v5M16 3v18M16 12c2.5 0 4-1.5 4-4s-1.5-5-4-5"/>'
+      },
+      {
+        title: "L'odorat",
+        desc: "Une bulle délicate : fraîcheur des agrumes, du basilic, de l'expresso fraîchement moulu, de l'huile d'olive.",
+        icon: '<path d="M17 8c0 4-3 7-7 9-2-3-4-6-4-9a5.5 5.5 0 0111 0z"/><path d="M10 17c0-4 2-7 5-9"/>'
+      },
+      {
+        title: "L'ouïe",
+        desc: "Une sélection musicale sur-mesure, des classiques italiens aux sonorités de la Dolce Vita.",
+        icon: '<path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/>'
+      },
+      {
+        title: "Le toucher",
+        desc: "L'élégance du geste : initiation à la mixologie, dégustations culinaires et borne photographique.",
+        icon: '<path d="M8 12V6a2 2 0 114 0v5M12 11V4a2 2 0 114 0v7M16 11V6a2 2 0 114 0v7c0 4-2 8-7 8s-6-3-7-6l-1.5-3A1.6 1.6 0 016 9.2v0a1.6 1.6 0 012 .4L9 11"/>'
       }
-      if (count === senseButtons.length) {
-        sensesComplete.classList.add("is-shown");
-      }
+    ];
+
+    var journeyPathLength = journeyPath.getTotalLength();
+    journeyPath.style.strokeDasharray = String(journeyPathLength);
+    journeyPath.style.strokeDashoffset = String(journeyPathLength);
+
+    var journeyActiveIndex = -1;
+    var journeyMaxReached = 0;
+    var journeyTicking = false;
+    var journeyDwellHalf = 0.075;
+
+    function setJourneyCard(index) {
+      var s = journeySenses[index];
+      journeyCardIcon.innerHTML = s.icon;
+      journeyCardNum.textContent = "0" + (index + 1);
+      journeyCardTitle.textContent = s.title;
+      journeyCardDesc.textContent = s.desc;
     }
 
-    senseButtons.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        if (btn.classList.contains("is-locked")) return;
-        var index = btn.getAttribute("data-index");
-        selectSense(index, true);
-        markVisited(index, btn);
-        if (!reducedMotion) {
-          btn.classList.remove("is-rippling");
-          void btn.offsetWidth;
-          btn.classList.add("is-rippling");
-        }
-      });
-    });
+    function updateJourney() {
+      var rect = sensesJourney.getBoundingClientRect();
+      var total = rect.height - window.innerHeight;
+      var scrolled = -rect.top;
+      var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
 
-    updateLocks();
-    selectSense("0", false);
-    markVisited("0", senseButtons[0]);
+      journeyPath.style.strokeDashoffset = String(journeyPathLength * (1 - progress));
+
+      var n = journeySenses.length;
+      var activeIndex = -1;
+      for (var i = 0; i < n; i++) {
+        var center = (i + 0.5) / n;
+        if (Math.abs(progress - center) <= journeyDwellHalf) {
+          activeIndex = i;
+          break;
+        }
+      }
+
+      if (activeIndex !== journeyActiveIndex) {
+        journeyActiveIndex = activeIndex;
+        if (activeIndex >= 0) {
+          setJourneyCard(activeIndex);
+          journeyCard.classList.add("is-visible");
+          if (activeIndex + 1 > journeyMaxReached) {
+            journeyMaxReached = activeIndex + 1;
+            journeyCount.textContent = String(journeyMaxReached);
+          }
+        } else {
+          journeyCard.classList.remove("is-visible");
+        }
+      }
+
+      journeyDotGroups.forEach(function (g, i) {
+        var center = (i + 0.5) / n;
+        g.classList.toggle("is-lit", progress >= center - journeyDwellHalf);
+        g.classList.toggle("is-active", i === activeIndex);
+      });
+
+      journeyTicking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!journeyTicking) {
+          window.requestAnimationFrame(updateJourney);
+          journeyTicking = true;
+        }
+      },
+      { passive: true }
+    );
+
+    setJourneyCard(0);
+    updateJourney();
   }
 
-  /* ---------- Engagements: click-to-flip cards ---------- */
-  var flipCards = document.querySelectorAll("[data-flip]");
-  flipCards.forEach(function (card) {
-    card.addEventListener("click", function () {
-      card.classList.toggle("is-flipped");
-    });
-    card.setAttribute("tabindex", "0");
-    card.setAttribute("role", "button");
-    card.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        card.classList.toggle("is-flipped");
+  /* ---------- Engagements: hover lines with a cursor-following description card ---------- */
+  var engagementLines = Array.prototype.slice.call(document.querySelectorAll(".engagement-line"));
+  var engagementCard = document.getElementById("engagementHoverCard");
+
+  if (engagementLines.length && engagementCard) {
+    var engagementCardNum = engagementCard.querySelector(".num");
+    var engagementCardDesc = engagementCard.querySelector("p");
+    var noHover = window.matchMedia("(hover: none)").matches;
+
+    function positionEngagementCard(x, y) {
+      var w = engagementCard.offsetWidth || 320;
+      var h = engagementCard.offsetHeight || 100;
+      var px = Math.min(window.innerWidth - w - 16, Math.max(16, x - w / 2));
+      var py = Math.min(window.innerHeight - h - 16, Math.max(16, y - h - 28));
+      engagementCard.style.transform = "translate(" + px + "px, " + py + "px)";
+    }
+
+    function fillEngagementCard(line) {
+      engagementCardNum.textContent = line.getAttribute("data-num");
+      engagementCardDesc.textContent = line.getAttribute("data-desc");
+    }
+
+    function closeEngagementCard() {
+      engagementCard.classList.remove("is-visible", "is-centered");
+      engagementLines.forEach(function (l) { l.classList.remove("is-active"); });
+    }
+
+    engagementLines.forEach(function (line) {
+      if (!noHover) {
+        line.addEventListener("mouseenter", function (e) {
+          fillEngagementCard(line);
+          line.classList.add("is-active");
+          engagementCard.classList.add("is-visible");
+          positionEngagementCard(e.clientX, e.clientY);
+        });
+        line.addEventListener("mousemove", function (e) {
+          positionEngagementCard(e.clientX, e.clientY);
+        });
+        line.addEventListener("mouseleave", function () {
+          closeEngagementCard();
+        });
       }
+
+      line.addEventListener("click", function () {
+        if (!noHover) return;
+        var wasActive = line.classList.contains("is-active");
+        closeEngagementCard();
+        if (!wasActive) {
+          fillEngagementCard(line);
+          line.classList.add("is-active");
+          engagementCard.classList.add("is-visible", "is-centered");
+        }
+      });
+
+      line.addEventListener("focus", function () {
+        fillEngagementCard(line);
+        line.classList.add("is-active");
+        engagementCard.classList.add("is-visible", "is-centered");
+      });
+      line.addEventListener("blur", function () {
+        closeEngagementCard();
+      });
     });
-  });
+  }
 
   /* ---------- Projets: seamless draggable mosaic ---------- */
   var mosaicViewport = document.getElementById("mosaicViewport");

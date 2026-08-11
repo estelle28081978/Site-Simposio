@@ -101,89 +101,34 @@
     </div>
   </section>
 
-  <!-- ============================== 5 SENS ============================== -->
-  <section class="experience" id="experience">
-    <div class="container">
-      <div class="section-head center" data-reveal>
+  <!-- ============================== 5 SENS : chemin au scroll ============================== -->
+  <section class="senses-journey" id="sensesJourney">
+    <div class="senses-journey-sticky">
+      <div class="senses-journey-head" data-reveal>
         <span class="eyebrow on-dark">Un jeu de piste sensoriel</span>
-        <h2>5&nbsp;sens à débloquer, un seul voyage</h2>
-        <p class="lede on-dark" style="margin-inline:auto;text-align:center;">
-          Chaque étape ouvre la suivante — comme un itinéraire que l'on découvre pas à pas, jusqu'à la dernière étape du voyage.
-        </p>
+        <h2>5&nbsp;sens, un seul voyage</h2>
       </div>
 
-      <div class="senses-game" id="sensesGame">
-        <p class="senses-progress" id="sensesProgress">
-          <span><span id="sensesProgressCount">0</span>/5 sens débloqués</span>
-          <span class="senses-progress-track"><span class="senses-progress-bar" id="sensesProgressBar"></span></span>
-        </p>
-
-        <div class="senses-buttons" id="sensesButtons" role="tablist" aria-label="Débloquer les sens dans l'ordre">
-          <button type="button" class="sense-btn" data-index="0" role="tab" aria-selected="false">
-            <svg class="sense-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3.2"/></svg>
-            <span class="sense-btn-label">La vue</span>
-            <span class="sense-btn-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span>
-            <span class="sense-btn-check" aria-hidden="true">&#10003;</span>
-          </button>
-          <button type="button" class="sense-btn" data-index="1" role="tab" aria-selected="false">
-            <svg class="sense-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M6 3v7a4 4 0 008 0V3M8 3v5M10 3v5M16 3v18M16 12c2.5 0 4-1.5 4-4s-1.5-5-4-5"/></svg>
-            <span class="sense-btn-label">Le goût</span>
-            <span class="sense-btn-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span>
-            <span class="sense-btn-check" aria-hidden="true">&#10003;</span>
-          </button>
-          <button type="button" class="sense-btn" data-index="2" role="tab" aria-selected="false">
-            <svg class="sense-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M17 8c0 4-3 7-7 9-2-3-4-6-4-9a5.5 5.5 0 0111 0z"/><path d="M10 17c0-4 2-7 5-9"/></svg>
-            <span class="sense-btn-label">L'odorat</span>
-            <span class="sense-btn-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span>
-            <span class="sense-btn-check" aria-hidden="true">&#10003;</span>
-          </button>
-          <button type="button" class="sense-btn" data-index="3" role="tab" aria-selected="false">
-            <svg class="sense-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></svg>
-            <span class="sense-btn-label">L'ouïe</span>
-            <span class="sense-btn-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span>
-            <span class="sense-btn-check" aria-hidden="true">&#10003;</span>
-          </button>
-          <button type="button" class="sense-btn" data-index="4" role="tab" aria-selected="false">
-            <svg class="sense-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 12V6a2 2 0 114 0v5M12 11V4a2 2 0 114 0v7M16 11V6a2 2 0 114 0v7c0 4-2 8-7 8s-6-3-7-6l-1.5-3A1.6 1.6 0 016 9.2v0a1.6 1.6 0 012 .4L9 11"/></svg>
-            <span class="sense-btn-label">Le toucher</span>
-            <span class="sense-btn-lock" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span>
-            <span class="sense-btn-check" aria-hidden="true">&#10003;</span>
-          </button>
-        </div>
-
-        <div class="sense-panels" id="sensePanels">
-          <article class="sense-panel is-active" data-index="0">
-            <span class="num">01</span>
-            <h3>La vue</h3>
-            <p>Une palette esthétique d'exception : véhicules de collection, céramiques artisanales, motifs méditerranéens et jeux de lumière.</p>
-          </article>
-          <article class="sense-panel" data-index="1">
-            <span class="num">02</span>
-            <h3>Le goût</h3>
-            <p>Une gastronomie de saison, conçue avec des partenaires de qualité — de l'antipasti à la mixologie.</p>
-          </article>
-          <article class="sense-panel" data-index="2">
-            <span class="num">03</span>
-            <h3>L'odorat</h3>
-            <p>Une bulle délicate : fraîcheur des agrumes, du basilic, de l'expresso fraîchement moulu, de l'huile d'olive.</p>
-          </article>
-          <article class="sense-panel" data-index="3">
-            <span class="num">04</span>
-            <h3>L'ouïe</h3>
-            <p>Une sélection musicale sur-mesure, des classiques italiens aux sonorités de la Dolce Vita.</p>
-          </article>
-          <article class="sense-panel" data-index="4">
-            <span class="num">05</span>
-            <h3>Le toucher</h3>
-            <p>L'élégance du geste : initiation à la mixologie, dégustations culinaires et borne photographique.</p>
-          </article>
-        </div>
-
-        <p class="senses-complete" id="sensesComplete">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.7 1.6 6.8L12 17l-6.2 3.5 1.6-6.8L2.2 9l6.9-.7L12 2z"/></svg>
-          Voyage complet — vous avez débloqué les 5 sens de l'univers Simposio.
-        </p>
+      <div class="senses-journey-frame">
+        <svg class="senses-journey-svg" viewBox="0 0 320 900" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <path class="senses-journey-path-bg" d="M60,70 C160,120 160,190 260,240 C160,290 160,360 60,410 C160,460 160,530 260,580 C160,630 160,700 60,750" />
+          <path class="senses-journey-path" id="sensesJourneyPath" d="M60,70 C160,120 160,190 260,240 C160,290 160,360 60,410 C160,460 160,530 260,580 C160,630 160,700 60,750" />
+          <g class="senses-journey-dot-group" data-index="0"><circle class="senses-journey-dot" cx="60" cy="70" r="12"/><text class="senses-journey-dot-num" x="60" y="71">1</text></g>
+          <g class="senses-journey-dot-group" data-index="1"><circle class="senses-journey-dot" cx="260" cy="240" r="12"/><text class="senses-journey-dot-num" x="260" y="241">2</text></g>
+          <g class="senses-journey-dot-group" data-index="2"><circle class="senses-journey-dot" cx="60" cy="410" r="12"/><text class="senses-journey-dot-num" x="60" y="411">3</text></g>
+          <g class="senses-journey-dot-group" data-index="3"><circle class="senses-journey-dot" cx="260" cy="580" r="12"/><text class="senses-journey-dot-num" x="260" y="581">4</text></g>
+          <g class="senses-journey-dot-group" data-index="4"><circle class="senses-journey-dot" cx="60" cy="750" r="12"/><text class="senses-journey-dot-num" x="60" y="751">5</text></g>
+        </svg>
       </div>
+
+      <div class="senses-journey-card" id="sensesJourneyCard" aria-live="polite">
+        <svg class="senses-journey-card-icon" id="sensesJourneyCardIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"></svg>
+        <span class="num" id="sensesJourneyCardNum">01</span>
+        <h3 id="sensesJourneyCardTitle">La vue</h3>
+        <p id="sensesJourneyCardDesc"></p>
+      </div>
+
+      <p class="senses-journey-progress"><strong id="sensesJourneyCount">0</strong>/5 sens découverts en chemin</p>
     </div>
   </section>
 
