@@ -1337,6 +1337,60 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .photo-credits a:hover { color: var(--cream); }
 
 /* ==========================================================================
+   Title sweep — homepage only. A full-page-width curtain covers the title,
+   then retreats off the left edge of the screen as the section scrolls into
+   view, so the reveal reads as a sweep coming from the right of the screen
+   toward the left (suited to our left-aligned titles). Piggybacks on the
+   existing [data-reveal] IntersectionObserver — no extra JS needed — but
+   opts the title itself out of the generic fade/translateY so only the
+   curtain animates, not the text underneath it.
+   ========================================================================== */
+[data-reveal].title-sweep { opacity: 1; transform: none; position: relative; }
+.title-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--sweep-left, -50vw);
+  width: calc(100vw + 8px);
+  background: var(--bg);
+  transform: translateX(0);
+  transition: transform 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+  z-index: 2;
+  pointer-events: none;
+}
+.title-sweep.is-visible::after { transform: translateX(-100%); }
+.hero .title-sweep::after { background: var(--navy); }
+.teaser .title-sweep::after { background: var(--bg-dim); }
+.contact .title-sweep::after { background: var(--rosso-ombria); }
+@media (prefers-reduced-motion: reduce) {
+  .title-sweep::after { display: none; }
+}
+
+/* Formula titles (Prestations) — same curtain-sweep mechanic, but alternating
+   direction one formula out of two: sweep-ltr uncovers left-to-right, sweep-rtl
+   (identical to the homepage title-sweep) uncovers right-to-left. */
+[data-reveal].sweep-ltr, [data-reveal].sweep-rtl { opacity: 1; transform: none; position: relative; }
+.sweep-ltr::after, .sweep-rtl::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--sweep-left, -50vw);
+  width: calc(100vw + 8px);
+  background: var(--navy-900);
+  transform: translateX(0);
+  transition: transform 1.1s cubic-bezier(0.65, 0, 0.35, 1);
+  z-index: 2;
+  pointer-events: none;
+}
+.sweep-rtl.is-visible::after { transform: translateX(-100%); }
+.sweep-ltr.is-visible::after { transform: translateX(100%); }
+@media (prefers-reduced-motion: reduce) {
+  .sweep-ltr::after, .sweep-rtl::after { display: none; }
+}
+
+/* ==========================================================================
    Scroll reveal (fallback / general use)
    ========================================================================== */
 [data-reveal] {

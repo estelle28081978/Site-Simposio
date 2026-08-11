@@ -60,6 +60,25 @@
     revealTargets.forEach(function (el) { el.classList.add("is-visible"); });
   }
 
+  /* ---------- Title sweep: align the full-bleed curtain to the real viewport
+     edge (not the title's own, often narrow, containing block) ---------- */
+  var sweepEls = document.querySelectorAll(".title-sweep, .sweep-ltr, .sweep-rtl");
+  if (sweepEls.length) {
+    var syncSweepOffsets = function () {
+      sweepEls.forEach(function (el) {
+        // A few extra px on each side absorbs sub-pixel rounding so the curtain
+        // never leaves a hairline sliver uncovered at the viewport's edge.
+        el.style.setProperty("--sweep-left", -el.getBoundingClientRect().left - 4 + "px");
+      });
+    };
+    syncSweepOffsets();
+    var sweepResizeTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(sweepResizeTimer);
+      sweepResizeTimer = setTimeout(syncSweepOffsets, 150);
+    });
+  }
+
   /* ---------- Hero blob parallax (subtle, scroll-linked) ---------- */
   var parallaxEls = document.querySelectorAll("[data-parallax]");
   if (!reducedMotion && parallaxEls.length) {
