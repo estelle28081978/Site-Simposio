@@ -722,51 +722,147 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .hero::after { z-index: 2; }
 
-.senses-feature {
-  margin-top: var(--space-5);
-  display: grid;
-  gap: var(--space-4);
-}
-@media (min-width: 900px) {
-  .senses-feature { grid-template-columns: 0.9fr 1.1fr; align-items: start; gap: var(--space-6); }
-}
+.senses-game { margin-top: var(--space-5); }
 
-.senses-visual {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  border-radius: var(--radius-lg);
-  background: radial-gradient(120% 120% at 20% 15%, rgba(193, 98, 45, 0.4), transparent 55%), #3a1414;
-  border: 1px solid var(--border-inverse);
+.senses-progress {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  font-family: var(--font-subtitle);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted-inverse);
+}
+.senses-progress-track {
+  width: 8rem;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border-inverse);
   overflow: hidden;
 }
-@media (min-width: 900px) { .senses-visual { position: sticky; top: 7rem; } }
-@media (max-width: 899px) {
-  /* The sticky sync only makes sense while pinned alongside the list;
-     below that breakpoint each row carries its own small icon instead. */
-  .senses-visual { display: none; }
+.senses-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: var(--terracotta-300);
+  border-radius: 999px;
+  transition: width 0.4s var(--ease);
 }
-.senses-visual .icon { width: 34%; height: 34%; color: var(--terracotta-300); transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); }
-.senses-visual .icon.is-hidden { opacity: 0; position: absolute; transform: scale(0.85); }
-.senses-visual .icon.is-active { opacity: 1; transform: scale(1); }
+.senses-progress-done { color: var(--terracotta-300); }
 
-.senses-list .sense-row {
-  padding-block: var(--space-4);
-  border-top: 1px solid var(--border-inverse);
-  cursor: default;
-  transition: opacity var(--dur) var(--ease);
-  opacity: 0.4;
+.senses-buttons {
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
 }
-.senses-list .sense-row:last-child { border-bottom: 1px solid var(--border-inverse); }
-.senses-list .sense-row.is-active { opacity: 1; }
-.senses-list .sense-row .row-head { display: flex; align-items: center; gap: 0.9rem; }
-.senses-list .sense-row .row-icon { display: none; width: 26px; height: 26px; color: var(--terracotta-300); flex-shrink: 0; }
-@media (max-width: 899px) { .senses-list .sense-row .row-icon { display: block; } }
-.senses-list .sense-row .num { font-family: var(--font-display); font-size: 0.85rem; color: var(--terracotta-300); }
-.senses-list .sense-row h3 { font-family: var(--font-body); font-weight: 700; font-size: 1.4rem; letter-spacing: 0; margin-block: 0.4rem 0.5rem; color: var(--cream); }
-.senses-list .sense-row p { font-size: 1rem; color: var(--fg-muted-inverse); max-width: 32rem; }
+@media (min-width: 640px) { .senses-buttons { grid-template-columns: repeat(5, 1fr); } }
+
+.sense-btn {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: var(--space-3) var(--space-2);
+  border-radius: var(--radius-md);
+  background: rgba(246, 241, 231, 0.05);
+  border: 1px solid var(--border-inverse);
+  color: var(--fg-muted-inverse);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.sense-btn:hover { transform: translateY(-3px); border-color: var(--terracotta-300); }
+.sense-btn.is-active {
+  background: rgba(193, 98, 45, 0.22);
+  border-color: var(--terracotta-300);
+  color: var(--cream);
+}
+.sense-btn-icon { width: 30px; height: 30px; color: var(--terracotta-300); transition: transform 0.5s var(--ease); }
+.sense-btn.is-bump .sense-btn-icon { animation: senseBump 0.55s var(--ease); }
+@keyframes senseBump {
+  0% { transform: scale(1) rotate(0); }
+  35% { transform: scale(1.3) rotate(-8deg); }
+  65% { transform: scale(0.92) rotate(6deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.sense-btn-label { font-family: var(--font-subtitle); font-size: 0.76rem; font-weight: 600; letter-spacing: 0.03em; }
+.sense-btn-check {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--terracotta-300);
+  color: var(--rosso-ombria);
+  font-size: 0.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.sense-btn.is-visited .sense-btn-check { opacity: 1; transform: scale(1); }
+
+/* Ripple micro-interaction on click — echoes "le toucher" across every sense */
+.sense-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(246, 241, 231, 0.35);
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
+}
+.sense-btn.is-rippling::after { animation: senseRipple 0.6s var(--ease); }
+@keyframes senseRipple {
+  0% { opacity: 0.6; transform: scale(0); border-radius: 50%; }
+  100% { opacity: 0; transform: scale(2.2); border-radius: var(--radius-md); }
+}
+
+.sense-panels { position: relative; max-width: 40rem; margin-inline: auto; text-align: center; min-height: 11rem; }
+.sense-panel { display: block; text-align: left; margin-bottom: var(--space-4); }
+.sense-panel .num { font-family: var(--font-display); font-size: 0.9rem; color: var(--terracotta-300); }
+.sense-panel h3 { font-family: var(--font-body); font-weight: 700; font-size: 1.6rem; letter-spacing: 0; margin-block: 0.4rem 0.7rem; color: var(--cream); }
+.sense-panel p { font-size: 1.05rem; color: var(--fg-muted-inverse); max-width: 32rem; }
+
+.senses-complete {
+  margin-top: var(--space-4);
+  text-align: center;
+  font-family: var(--font-subtitle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--terracotta-300);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.senses-complete.is-shown { opacity: 1; transform: translateY(0); }
+
+/* Enhanced (JS) state: turn the stacked list into a click-to-reveal game */
+.senses-buttons, .senses-progress { display: none; }
+.senses-game.is-enhanced .senses-buttons { display: grid; }
+.senses-game.is-enhanced .senses-progress { display: flex; }
+.senses-game.is-enhanced .sense-panels { text-align: center; }
+.senses-game.is-enhanced .sense-panel {
+  display: none;
+  text-align: center;
+  margin-bottom: 0;
+  animation: sensePanelIn 0.45s var(--ease);
+}
+.senses-game.is-enhanced .sense-panel.is-active { display: block; }
+.senses-game.is-enhanced .sense-panel p { margin-inline: auto; }
+@keyframes sensePanelIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* ==========================================================================
    Founder — text-only, no fabricated photo

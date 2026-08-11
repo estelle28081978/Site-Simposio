@@ -123,36 +123,62 @@
     promiseQuote.classList.add("static-lit");
   }
 
-  /* ---------- Senses: sticky visual synced to active row ---------- */
-  var sensesList = document.getElementById("sensesList");
-  var sensesVisual = document.getElementById("sensesVisual");
+  /* ---------- Senses: click-to-reveal discovery game ---------- */
+  var sensesGame = document.getElementById("sensesGame");
 
-  if (sensesList && sensesVisual && "IntersectionObserver" in window) {
-    var rows = Array.prototype.slice.call(sensesList.querySelectorAll(".sense-row"));
-    var icons = Array.prototype.slice.call(sensesVisual.querySelectorAll(".icon"));
+  if (sensesGame) {
+    var senseButtons = Array.prototype.slice.call(sensesGame.querySelectorAll(".sense-btn"));
+    var sensePanels = Array.prototype.slice.call(sensesGame.querySelectorAll(".sense-panel"));
+    var sensesProgressCount = document.getElementById("sensesProgressCount");
+    var sensesProgressBar = document.getElementById("sensesProgressBar");
+    var sensesComplete = document.getElementById("sensesComplete");
+    var visited = {};
 
-    function setActiveSense(index) {
-      rows.forEach(function (row) {
-        row.classList.toggle("is-active", row.getAttribute("data-index") === String(index));
+    sensesGame.classList.add("is-enhanced");
+
+    function selectSense(index, isBump) {
+      senseButtons.forEach(function (btn) {
+        var match = btn.getAttribute("data-index") === String(index);
+        btn.classList.toggle("is-active", match);
+        btn.setAttribute("aria-selected", match ? "true" : "false");
+        if (match && isBump) {
+          btn.classList.remove("is-bump");
+          void btn.offsetWidth;
+          btn.classList.add("is-bump");
+        }
       });
-      icons.forEach(function (icon) {
-        var match = icon.getAttribute("data-icon") === String(index);
-        icon.classList.toggle("is-active", match);
-        icon.classList.toggle("is-hidden", !match);
+      sensePanels.forEach(function (panel) {
+        panel.classList.toggle("is-active", panel.getAttribute("data-index") === String(index));
       });
     }
 
-    var sensesObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            setActiveSense(entry.target.getAttribute("data-index"));
-          }
-        });
-      },
-      { threshold: 0.6, rootMargin: "-20% 0px -20% 0px" }
-    );
-    rows.forEach(function (row) { sensesObserver.observe(row); });
+    function markVisited(index, btn) {
+      if (visited[index]) return;
+      visited[index] = true;
+      btn.classList.add("is-visited");
+      var count = Object.keys(visited).length;
+      sensesProgressCount.textContent = String(count);
+      sensesProgressBar.style.width = (count / senseButtons.length) * 100 + "%";
+      if (count === senseButtons.length) {
+        sensesComplete.classList.add("is-shown");
+      }
+    }
+
+    senseButtons.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var index = btn.getAttribute("data-index");
+        selectSense(index, true);
+        markVisited(index, btn);
+        if (!reducedMotion) {
+          btn.classList.remove("is-rippling");
+          void btn.offsetWidth;
+          btn.classList.add("is-rippling");
+        }
+      });
+    });
+
+    selectSense("0", false);
+    markVisited("0", senseButtons[0]);
   }
 
   /* ---------- Hero stat count-up ---------- */
