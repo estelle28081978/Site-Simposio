@@ -729,7 +729,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    avec la position de scroll ; à chaque borne, une carte apparaît au centre
    avec le sens correspondant, puis le tracé continue vers la borne suivante.
    ========================================================================== */
-.senses-journey { position: relative; height: 620vh; }
+.senses-journey { position: relative; height: 1240vh; }
 .senses-journey-sticky {
   position: sticky;
   top: 0;
@@ -775,8 +775,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .senses-journey-frame {
   position: relative;
   z-index: 1;
-  width: min(94vw, 1150px);
-  height: min(72vh, 958px);
+  width: min(97vw, 1600px);
+  height: min(78vh, 1150px);
   margin-top: var(--space-3);
 }
 .senses-journey-svg { width: 100%; height: 100%; overflow: visible; }
@@ -848,8 +848,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .senses-journey-progress strong { color: var(--terracotta-300); }
 
 @media (max-width: 700px) {
-  .senses-journey { height: 500vh; }
-  .senses-journey-frame { width: min(92vw, 480px); height: min(66vh, 640px); margin-top: var(--space-2); }
+  .senses-journey { height: 1000vh; }
+  .senses-journey-frame { width: min(96vw, 540px); height: min(72vh, 820px); margin-top: var(--space-2); }
   .senses-journey-path-bg { stroke-width: 6; }
   .senses-journey-path { stroke-width: 7; }
   .senses-journey-card { padding: var(--space-3); }
@@ -870,7 +870,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   cursor: pointer;
   transition: background var(--dur-fast) var(--ease);
 }
-.engagement-line:hover, .engagement-line.is-active { background: rgba(28, 59, 74, 0.14); }
+.engagement-line:hover, .engagement-line.is-active { background: rgba(193, 98, 45, 0.16); }
 .engagement-line-num {
   display: none;
   position: absolute;
@@ -878,7 +878,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-subtitle);
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--rosso-ombria);
+  color: var(--terracotta-300);
   letter-spacing: 0.06em;
 }
 .engagement-line-text {
@@ -889,7 +889,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-align: center;
   transition: color var(--dur-fast) var(--ease), letter-spacing var(--dur-fast) var(--ease);
 }
-.engagement-line:hover .engagement-line-text, .engagement-line.is-active .engagement-line-text { color: var(--navy); }
+.engagement-line:hover .engagement-line-text, .engagement-line.is-active .engagement-line-text { color: var(--terracotta-300); }
 @media (min-width: 700px) { .engagement-line-num { display: block; } }
 
 /* Outer element: pure position, moved every frame with no transition so it
@@ -908,16 +908,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: min(80vw, 22rem);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius);
-  background: var(--navy);
+  background: var(--terracotta);
   color: var(--cream);
-  box-shadow: 0 30px 60px -20px rgba(28, 59, 74, 0.5);
+  box-shadow: 0 30px 60px -20px rgba(16, 31, 39, 0.6);
   opacity: 0;
   transform: scale(0.92);
   transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
 .engagement-hover-card.is-visible .engagement-hover-card-inner { opacity: 1; transform: scale(1); }
-.engagement-hover-card .num { font-family: var(--font-display); font-size: 0.8rem; color: var(--terracotta-300); }
-.engagement-hover-card p { font-size: 0.95rem; color: var(--fg-muted-inverse); margin-top: 0.4rem; }
+.engagement-hover-card .num { font-family: var(--font-display); font-size: 0.8rem; color: var(--navy-900); }
+.engagement-hover-card p { font-size: 0.95rem; color: rgba(255, 255, 255, 0.92); margin-top: 0.4rem; }
 .engagement-hover-card.is-centered { left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; }
 @media (hover: none) {
   .engagement-line-text { transition: none; }
@@ -1109,19 +1109,21 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .engagements {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(200deg, var(--terracotta) 0%, var(--terracotta-600) 100%);
+  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
   padding-block: var(--space-6);
 }
 .engagements::before {
   content: "";
   position: absolute;
   pointer-events: none;
-  width: 20rem;
-  height: 20rem;
-  right: -7rem;
-  bottom: -8rem;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(246, 241, 231, 0.22);
+  width: 9rem;
+  height: 9rem;
+  right: -2rem;
+  bottom: -2rem;
+  border-radius: var(--radius);
+  background: var(--terracotta);
+  transform: rotate(12deg);
+  opacity: 0.9;
 }
 .engagements .container { position: relative; z-index: 1; }
 .engagements .lede { color: rgba(255, 255, 255, 0.88); }

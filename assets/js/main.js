@@ -172,8 +172,8 @@
     // keeps the wave legible once the frame turns narrow and portrait on mobile,
     // instead of shrinking to nothing.
     var journeyLayouts = {
-      desktop: { viewBox: "0 0 1200 1000", points: [[28, 211], [424, 196], [493, 586], [889, 571], [958, 961]] },
-      mobile: { viewBox: "0 0 440 1000", points: [[27, 127], [246, 268], [172, 517], [391, 658], [317, 907]] }
+      desktop: { viewBox: "0 0 1650 1350", points: [[60, 110], [970, 90], [430, 600], [1560, 820], [1180, 1290]] },
+      mobile: { viewBox: "0 0 540 1550", points: [[35, 110], [470, 210], [90, 650], [480, 1020], [260, 1500]] }
     };
 
     function catmullRomToBezierD(pts) {
