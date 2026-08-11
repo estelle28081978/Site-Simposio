@@ -412,6 +412,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Page header — sober intro band for standalone inner pages (no hero photo)
    ========================================================================== */
 .page-header {
+  position: relative;
+  overflow: hidden;
   padding-top: calc(6.5rem + var(--space-5));
   padding-bottom: var(--space-5);
   background: var(--bg);
@@ -419,12 +421,45 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .page-header .eyebrow { display: block; margin-bottom: var(--space-2); }
 .page-header h1 { max-width: 46rem; margin-inline: auto; }
+.page-header h1 .accent { font-weight: 400; color: var(--accent); }
 .page-header .lede { margin: var(--space-3) auto 0; }
 .page-header.on-dark {
   background: linear-gradient(200deg, rgba(16, 31, 39, 0.96) 0%, var(--navy-900) 100%);
   color: var(--fg-inverse);
 }
 .page-header.on-dark .lede { color: var(--fg-muted-inverse); }
+.page-header.on-dark h1 .accent { color: var(--terracotta-300); }
+
+/* Havas-esque decorative shapes — asymmetric marks on the background, echoed on several pages */
+.page-header::before,
+.page-header::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+}
+.page-header::before {
+  width: 15rem;
+  height: 15rem;
+  right: -5rem;
+  top: -6rem;
+  border: 1.5px dashed rgba(var(--terracotta-rgb), 0.35);
+}
+.page-header::after {
+  width: 5rem;
+  height: 5rem;
+  left: 8%;
+  bottom: -2rem;
+  background: rgba(var(--navy-rgb), 0.08);
+}
+.page-header.on-dark::before { border-color: rgba(246, 241, 231, 0.22); }
+.page-header.on-dark::after { background: rgba(224, 149, 106, 0.14); }
+
+@media (min-width: 900px) {
+  .page-header { text-align: left; }
+  .page-header h1, .page-header .lede { margin-inline: 0; }
+  .page-header .container { position: relative; z-index: 1; }
+}
 
 /* ==========================================================================
    Homepage manifesto — short static pull-quote linking to L'Univers
