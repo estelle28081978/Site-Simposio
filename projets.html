@@ -68,48 +68,18 @@
       <p class="lede" data-reveal>
         Simposio est une jeune agence : nous n'avons pas encore de reportage photo de nos propres événements.
         Voici l'univers d'inspiration — lumières, matières, lieux — qui guide chacune de nos scénographies.
+        Cliquez-glissez (ou balayez à l'écran) pour naviguer librement dans la mosaïque.
       </p>
     </div>
   </div>
 
   <section class="mosaic-section">
-    <div class="mosaic">
-      <figure class="mosaic-item size-xl">
-        <img src="assets/img/portofino-harbour.jpg" alt="Le port de Portofino, sur la Riviera italienne" loading="lazy" width="1920" height="1080" />
-        <figcaption>Portofino, Riviera italienne</figcaption>
-      </figure>
-      <figure class="mosaic-item size-md">
-        <img src="assets/img/fiat-500-positano.jpg" alt="Fiat 500 rouge à Positano" loading="lazy" width="1800" height="1350" />
-        <figcaption>Positano</figcaption>
-      </figure>
-      <figure class="mosaic-item size-tall">
-        <img src="assets/img/piazza-evening-menaggio.jpg" alt="Place italienne au crépuscule à Menaggio" loading="lazy" width="1400" height="2115" />
-        <figcaption>Menaggio, au crépuscule</figcaption>
-      </figure>
-      <figure class="mosaic-item size-md">
-        <img src="assets/img/vespa-assisi.jpg" alt="Vespa rouge devant la Rocca Maggiore, à Assise" loading="lazy" width="1800" height="1198" />
-        <figcaption>Assise</figcaption>
-      </figure>
-      <figure class="mosaic-item size-lg">
-        <img src="assets/img/tuscany-hills.jpg" alt="Collines toscanes à la lumière du soir" loading="lazy" width="1920" height="1278" />
-        <figcaption>Toscane</figcaption>
-      </figure>
-      <figure class="mosaic-item size-sm">
-        <img src="assets/img/lemon-tree-italy.jpg" alt="Citronnier chargé de fruits en Italie" loading="lazy" width="1400" height="1050" />
-        <figcaption>Citronnier italien</figcaption>
-      </figure>
-      <figure class="mosaic-item size-md">
-        <img src="assets/img/terrace-dinner-assisi.jpg" alt="Dîner sur une terrasse à Assise à l'heure dorée" loading="lazy" width="1800" height="1200" />
-        <figcaption>Déjeuner en terrasse, Ombrie</figcaption>
-      </figure>
-      <figure class="mosaic-item size-lg">
-        <img src="assets/img/amalfi-coast-sunset.jpg" alt="Coucher de soleil sur les falaises de la côte amalfitaine" loading="lazy" width="1800" height="1350" />
-        <figcaption>Côte amalfitaine</figcaption>
-      </figure>
-      <figure class="mosaic-item size-sm">
-        <img src="assets/img/alsace-vineyard.jpg" alt="Route des vins d'Alsace, entre les vignes" loading="lazy" width="1920" height="1280" />
-        <figcaption>Notre terrain — l'Alsace</figcaption>
-      </figure>
+    <div class="mosaic-viewport" id="mosaicViewport" tabindex="0" role="img" aria-label="Mosaïque de photos d'inspiration Simposio, navigable au glisser-déposer et aux flèches du clavier">
+      <div class="mosaic-track" id="mosaicTrack"></div>
+      <span class="mosaic-hint" id="mosaicHint" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M12 3v18"/></svg>
+        Glissez pour explorer
+      </span>
     </div>
   </section>
 
@@ -160,7 +130,8 @@
       <a href="https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg" target="_blank" rel="noopener">Hartmut Schmidt Heidelberg</a>,
       <a href="https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg" target="_blank" rel="noopener">Tracey Hind</a>,
       <a href="https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG" target="_blank" rel="noopener">donarreiskoffer</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg" target="_blank" rel="noopener">JIP</a>
+      <a href="https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg" target="_blank" rel="noopener">JIP</a>,
+      <a href="https://commons.wikimedia.org/wiki/File:Limone_and_Limoncello.jpg" target="_blank" rel="noopener">Bill and Kathy</a>
       — Wikimedia Commons, licences CC BY / CC BY-SA.
     </p>
     <p class="photo-credits">

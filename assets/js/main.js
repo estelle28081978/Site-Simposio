@@ -123,7 +123,7 @@
     promiseQuote.classList.add("static-lit");
   }
 
-  /* ---------- Senses: click-to-reveal discovery game ---------- */
+  /* ---------- Senses: sequential unlock discovery game ---------- */
   var sensesGame = document.getElementById("sensesGame");
 
   if (sensesGame) {
@@ -133,8 +133,18 @@
     var sensesProgressBar = document.getElementById("sensesProgressBar");
     var sensesComplete = document.getElementById("sensesComplete");
     var visited = {};
+    var maxUnlocked = 0;
 
     sensesGame.classList.add("is-enhanced");
+
+    function updateLocks() {
+      senseButtons.forEach(function (btn) {
+        var idx = parseInt(btn.getAttribute("data-index"), 10);
+        var locked = idx > maxUnlocked;
+        btn.classList.toggle("is-locked", locked);
+        btn.setAttribute("aria-disabled", locked ? "true" : "false");
+      });
+    }
 
     function selectSense(index, isBump) {
       senseButtons.forEach(function (btn) {
@@ -153,12 +163,17 @@
     }
 
     function markVisited(index, btn) {
+      index = parseInt(index, 10);
       if (visited[index]) return;
       visited[index] = true;
       btn.classList.add("is-visited");
       var count = Object.keys(visited).length;
       sensesProgressCount.textContent = String(count);
       sensesProgressBar.style.width = (count / senseButtons.length) * 100 + "%";
+      if (index === maxUnlocked && maxUnlocked < senseButtons.length - 1) {
+        maxUnlocked++;
+        updateLocks();
+      }
       if (count === senseButtons.length) {
         sensesComplete.classList.add("is-shown");
       }
@@ -166,6 +181,7 @@
 
     senseButtons.forEach(function (btn) {
       btn.addEventListener("click", function () {
+        if (btn.classList.contains("is-locked")) return;
         var index = btn.getAttribute("data-index");
         selectSense(index, true);
         markVisited(index, btn);
@@ -177,6 +193,7 @@
       });
     });
 
+    updateLocks();
     selectSense("0", false);
     markVisited("0", senseButtons[0]);
   }
@@ -196,6 +213,154 @@
       }
     });
   });
+
+  /* ---------- Projets: seamless draggable mosaic ---------- */
+  var mosaicViewport = document.getElementById("mosaicViewport");
+
+  if (mosaicViewport) {
+    var mosaicTrack = document.getElementById("mosaicTrack");
+    var mosaicHint = document.getElementById("mosaicHint");
+    var mosaicImages = [
+      { src: "assets/img/portofino-harbour.jpg", caption: "Portofino, Riviera italienne" },
+      { src: "assets/img/fiat-500-positano.jpg", caption: "Positano" },
+      { src: "assets/img/piazza-evening-menaggio.jpg", caption: "Menaggio, au crépuscule" },
+      { src: "assets/img/vespa-assisi.jpg", caption: "Assise" },
+      { src: "assets/img/tuscany-hills.jpg", caption: "Toscane" },
+      { src: "assets/img/lemon-tree-italy.jpg", caption: "Citronnier italien" },
+      { src: "assets/img/terrace-dinner-assisi.jpg", caption: "Déjeuner en terrasse, Ombrie" },
+      { src: "assets/img/amalfi-coast-sunset.jpg", caption: "Côte amalfitaine" },
+      { src: "assets/img/alsace-vineyard.jpg", caption: "Notre terrain — l'Alsace" },
+      { src: "assets/img/spritz-terrasse.jpg", caption: "L'heure du spritz" },
+      { src: "assets/img/lemon-ceramics-positano.jpg", caption: "Céramiques et citrons de Positano" }
+    ];
+
+    var TILE = window.innerWidth < 640 ? 150 : 240;
+    var EXTRA = 3; // extra rows/cols beyond the exact viewport fit, so there is always room to drag
+    var grid = { cols: 0, rows: 0, w: 0, h: 0 };
+    var posX = 0, posY = 0;
+
+    function buildMosaicGrid() {
+      var vw = mosaicViewport.clientWidth || window.innerWidth;
+      var vh = mosaicViewport.clientHeight || 480;
+      grid.cols = Math.ceil(vw / TILE) + EXTRA;
+      grid.rows = Math.ceil(vh / TILE) + EXTRA;
+      grid.w = grid.cols * TILE;
+      grid.h = grid.rows * TILE;
+
+      mosaicTrack.style.gridTemplateColumns = "repeat(" + grid.cols + ", " + TILE + "px)";
+      mosaicTrack.style.gridAutoRows = TILE + "px";
+      mosaicTrack.innerHTML = "";
+
+      var total = grid.cols * grid.rows;
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < total; i++) {
+        var pic = mosaicImages[i % mosaicImages.length];
+        var fig = document.createElement("figure");
+        fig.className = "mosaic-tile";
+        var img = document.createElement("img");
+        img.src = pic.src;
+        img.alt = pic.caption;
+        img.loading = "lazy";
+        img.draggable = false;
+        var cap = document.createElement("figcaption");
+        cap.textContent = pic.caption;
+        fig.appendChild(img);
+        fig.appendChild(cap);
+        frag.appendChild(fig);
+      }
+      mosaicTrack.appendChild(frag);
+    }
+
+    function clampMosaic() {
+      var vw = mosaicViewport.clientWidth;
+      var vh = mosaicViewport.clientHeight;
+      var minX = Math.min(0, vw - grid.w);
+      var minY = Math.min(0, vh - grid.h);
+      posX = Math.max(minX, Math.min(0, posX));
+      posY = Math.max(minY, Math.min(0, posY));
+    }
+
+    function applyMosaic() {
+      mosaicTrack.style.transform = "translate3d(" + posX + "px, " + posY + "px, 0)";
+    }
+
+    function centerMosaic() {
+      posX = -(grid.w - mosaicViewport.clientWidth) / 2;
+      posY = -(grid.h - mosaicViewport.clientHeight) / 2;
+      clampMosaic();
+      applyMosaic();
+    }
+
+    buildMosaicGrid();
+    centerMosaic();
+
+    var hideHint = function () {
+      if (mosaicHint) mosaicHint.classList.add("is-hidden");
+    };
+
+    var dragging = false, dragStartX = 0, dragStartY = 0, dragOriginX = 0, dragOriginY = 0;
+
+    mosaicViewport.addEventListener("pointerdown", function (e) {
+      dragging = true;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      dragOriginX = posX;
+      dragOriginY = posY;
+      mosaicViewport.classList.add("is-dragging");
+      try { mosaicViewport.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    mosaicViewport.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      posX = dragOriginX + (e.clientX - dragStartX);
+      posY = dragOriginY + (e.clientY - dragStartY);
+      clampMosaic();
+      applyMosaic();
+      hideHint();
+    });
+    function endMosaicDrag() {
+      dragging = false;
+      mosaicViewport.classList.remove("is-dragging");
+    }
+    mosaicViewport.addEventListener("pointerup", endMosaicDrag);
+    mosaicViewport.addEventListener("pointerleave", endMosaicDrag);
+    mosaicViewport.addEventListener("pointercancel", endMosaicDrag);
+
+    mosaicViewport.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      posX -= e.deltaX;
+      posY -= e.deltaY;
+      clampMosaic();
+      applyMosaic();
+      hideHint();
+    }, { passive: false });
+
+    mosaicViewport.addEventListener("keydown", function (e) {
+      var step = TILE * 0.6;
+      var moved = true;
+      if (e.key === "ArrowLeft") posX += step;
+      else if (e.key === "ArrowRight") posX -= step;
+      else if (e.key === "ArrowUp") posY += step;
+      else if (e.key === "ArrowDown") posY -= step;
+      else moved = false;
+      if (moved) {
+        e.preventDefault();
+        clampMosaic();
+        applyMosaic();
+        hideHint();
+      }
+    });
+
+    var mosaicResizeTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(mosaicResizeTimer);
+      mosaicResizeTimer = setTimeout(function () {
+        TILE = window.innerWidth < 640 ? 150 : 240;
+        buildMosaicGrid();
+        clampMosaic();
+        applyMosaic();
+      }, 200);
+    });
+  }
 
   /* ---------- Hero stat count-up ---------- */
   var countEl = document.querySelector("[data-count]");
