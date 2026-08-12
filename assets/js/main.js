@@ -166,16 +166,6 @@
       }
     ];
 
-    // Two hand-tuned "rounded wave" layouts (top-left, snaking right and down to
-    // finish bottom-right), built from 5 waypoints with a Catmull-Rom spline so the
-    // curve stays smooth. The wide one suits landscape/desktop frames; the tall one
-    // keeps the wave legible once the frame turns narrow and portrait on mobile,
-    // instead of shrinking to nothing.
-    var journeyLayouts = {
-      desktop: { viewBox: "0 0 1650 1350", points: [[60, 110], [970, 90], [430, 600], [1560, 820], [1180, 1290]] },
-      mobile: { viewBox: "0 0 540 1550", points: [[35, 110], [470, 210], [90, 650], [480, 1020], [260, 1500]] }
-    };
-
     function catmullRomToBezierD(pts) {
       var p = [pts[0]].concat(pts, [pts[pts.length - 1]]);
       var d = "M" + pts[0][0].toFixed(0) + "," + pts[0][1].toFixed(0) + " ";
@@ -189,6 +179,84 @@
       }
       return d.trim();
     }
+
+    // The journey path spells out "SIMPOSIO" — each letter is a small set of
+    // hand-drawn points (single stroke, no pen lifts within a letter), smoothed
+    // through the same Catmull-Rom spline as before so it keeps the organic,
+    // sketched quality. Letters are separate subpaths (a fresh "M" each time,
+    // like a pen lift between letters in real handwriting) but still animate as
+    // one continuous scroll-drawn stroke via a single shared stroke-dasharray.
+    var LETTER_SHAPES = {
+      S: [[35, 0], [56.2, 21.25], [65, 42.5], [56.2, 63.75], [35, 85], [13.8, 106.25], [5, 127.5], [13.8, 148.75], [35, 170]],
+      I: [[35, 0], [35, 85], [35, 170]],
+      M: [[0, 170], [0, 0], [35, 110], [70, 0], [70, 170]],
+      P: [[10, 170], [10, 0], [45, 0], [58, 25], [45, 55], [10, 58]],
+      O: [[35, 3], [57.6, 27], [67, 85], [57.6, 143], [35, 167], [12.4, 143], [3, 85], [12.4, 27], [29.4, 4]]
+    };
+    var LETTER_WIDTH = { S: 70, I: 40, M: 70, P: 60, O: 70 };
+    var LETTER_HEIGHT = 170;
+
+    function placeLetter(letter, scale, offsetX, offsetY) {
+      return LETTER_SHAPES[letter].map(function (pt) {
+        return [offsetX + pt[0] * scale, offsetY + pt[1] * scale];
+      });
+    }
+
+    // Lays out a word left to right (reading order always advances in x), one
+    // subpath per letter. baselineYs gives each letter's own vertical center,
+    // so the word can wander up and down across the frame like the original
+    // wave did, instead of sitting on a flat line.
+    function layoutWord(word, scale, startX, gap, baselineYs) {
+      var x = startX;
+      var letters = [];
+      for (var i = 0; i < word.length; i++) {
+        var ch = word[i];
+        var h = LETTER_HEIGHT * scale;
+        letters.push(placeLetter(ch, scale, x, baselineYs[i] - h / 2));
+        x += LETTER_WIDTH[ch] * scale + gap;
+      }
+      return letters;
+    }
+
+    // Same idea, wrapped onto fixed-size rows once a row is full — used on
+    // mobile where there isn't enough width to lay the whole word out flat.
+    function layoutWordWrapped(word, scale, startX, gap, perRow, rowBaselineYs) {
+      var letters = [];
+      var x = startX;
+      var row = 0;
+      for (var i = 0; i < word.length; i++) {
+        if (i > 0 && i % perRow === 0) { row += 1; x = startX; }
+        var ch = word[i];
+        var h = LETTER_HEIGHT * scale;
+        letters.push(placeLetter(ch, scale, x, rowBaselineYs[row] - h / 2));
+        x += LETTER_WIDTH[ch] * scale + gap;
+      }
+      return letters;
+    }
+
+    function wordPathD(letterPointLists) {
+      return letterPointLists.map(catmullRomToBezierD).join(" ");
+    }
+
+    // 5 senses need 5 waypoints; "SIMPOSIO" has 8 letters. Spread the markers
+    // across the word (both S's, both O's, and the M) rather than one per
+    // letter — first and last sit at the very start/end of the whole word, so
+    // the journey still visibly starts and ends with the path itself.
+    var MARKER_LETTER_INDEXES = [0, 2, 4, 5, 7];
+    function markersFromLetters(letters) {
+      return MARKER_LETTER_INDEXES.map(function (li, i) {
+        var pts = letters[li];
+        return i === MARKER_LETTER_INDEXES.length - 1 ? pts[pts.length - 1] : pts[0];
+      });
+    }
+
+    var desktopWordLetters = layoutWord("SIMPOSIO", 3, 125, 90, [400, 470, 425, 480, 405, 460, 435, 415]);
+    var mobileWordLetters = layoutWordWrapped("SIMPOSIO", 1.35, 35, 40, 4, [220, 1050]);
+
+    var journeyLayouts = {
+      desktop: { viewBox: "0 0 2400 900", letters: desktopWordLetters, markers: markersFromLetters(desktopWordLetters) },
+      mobile: { viewBox: "0 0 540 1550", letters: mobileWordLetters, markers: markersFromLetters(mobileWordLetters) }
+    };
 
     // Finds, for a given (x,y) waypoint, how far along the drawn path (as a
     // 0..1 fraction of its total length) that point actually sits — by sampling
@@ -223,12 +291,12 @@
       journeyIsMobileLayout = isMobile;
 
       var layout = isMobile ? journeyLayouts.mobile : journeyLayouts.desktop;
-      var d = catmullRomToBezierD(layout.points);
+      var d = wordPathD(layout.letters);
       journeySvg.setAttribute("viewBox", layout.viewBox);
       journeyPath.setAttribute("d", d);
       journeyPathBg.setAttribute("d", d);
       journeyDotGroups.forEach(function (g, i) {
-        var pt = layout.points[i];
+        var pt = layout.markers[i];
         g.querySelector("circle").setAttribute("cx", pt[0]);
         g.querySelector("circle").setAttribute("cy", pt[1]);
         g.querySelector("text").setAttribute("x", pt[0]);
@@ -239,7 +307,7 @@
       journeyPath.style.strokeDasharray = String(journeyPathLength);
       journeyPath.style.strokeDashoffset = String(journeyPathLength);
 
-      journeyWaypointFractions = layout.points.map(function (pt) {
+      journeyWaypointFractions = layout.markers.map(function (pt) {
         return fractionAtPoint(journeyPath, journeyPathLength, pt);
       });
     }
@@ -621,15 +689,14 @@
   }
 
   /* ---------- Contact form: prefill service type from ?service= URL param ---------- */
-  var serviceSelect = document.getElementById("serviceType");
-  if (serviceSelect) {
+  var serviceRadios = document.querySelectorAll('input[name="serviceType"]');
+  if (serviceRadios.length) {
     var params = new URLSearchParams(window.location.search);
     var wanted = params.get("service");
     if (wanted) {
-      var match = Array.prototype.find.call(serviceSelect.options, function (opt) {
-        return opt.value === wanted;
+      serviceRadios.forEach(function (radio) {
+        radio.checked = radio.value === wanted;
       });
-      if (match) serviceSelect.value = wanted;
     }
   }
 
