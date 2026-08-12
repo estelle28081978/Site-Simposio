@@ -72,29 +72,37 @@
     <div class="contact-hero-grid">
 
       <div class="contact-hero-info" data-reveal>
-        <span class="eyebrow on-dark">Deux minutes suffisent</span>
-        <h2>Dites-nous où vous en êtes — même en vrac</h2>
-        <p class="lede on-dark">
-          Nous revenons vers vous sous 48h avec une première proposition adaptée à votre budget
-          et à vos objectifs. Pas de formulaire figé : racontez, on structure ensuite avec vous.
-        </p>
+        <img class="contact-hero-photo" src="assets/img/evenement-tablee-diner-bougies.jpg" alt="" aria-hidden="true" loading="lazy" />
+        <div class="contact-hero-scrim" aria-hidden="true"></div>
+        <div class="contact-hero-info-content">
+          <span class="eyebrow on-dark">Deux minutes suffisent</span>
+          <h2>Dites-nous où vous en êtes — même en vrac</h2>
+          <p class="lede on-dark">
+            Nous revenons vers vous sous 48h avec une première proposition adaptée à votre budget et vos objectifs.
+          </p>
 
-        <div class="contact-info">
-          <a href="mailto:Estellelorusso@eurhekaconseil.com">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
-            Estellelorusso@eurhekaconseil.com
-          </a>
-          <span>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2C7 2 3 6 3 10c0 6 9 12 9 12s9-6 9-12c0-4-4-8-9-8z"/><circle cx="12" cy="10" r="2.6"/></svg>
-            Alsace, France
-          </span>
+          <div class="contact-info">
+            <a href="mailto:Estellelorusso@eurhekaconseil.com">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+              Estellelorusso@eurhekaconseil.com
+            </a>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2C7 2 3 6 3 10c0 6 9 12 9 12s9-6 9-12c0-4-4-8-9-8z"/><circle cx="12" cy="10" r="2.6"/></svg>
+              Alsace, France
+            </span>
+          </div>
+
+          <ol class="contact-steps">
+            <li><span class="step-num">01</span><span>Vous nous racontez votre projet, même vague</span></li>
+            <li><span class="step-num">02</span><span>Nous revenons vers vous sous 48h avec une première piste</span></li>
+            <li><span class="step-num">03</span><span>Nous construisons l'événement ensemble, clé en main</span></li>
+          </ol>
+
+          <div class="contact-founder">
+            <span class="contact-founder-avatar" aria-hidden="true">EL</span>
+            <p><strong>Estelle Lorusso</strong>, fondatrice — vous répond personnellement, pas une équipe support.</p>
+          </div>
         </div>
-
-        <ol class="contact-steps">
-          <li><span class="step-num">01</span><span>Vous nous racontez votre projet, même vague</span></li>
-          <li><span class="step-num">02</span><span>Nous revenons vers vous sous 48h avec une première piste</span></li>
-          <li><span class="step-num">03</span><span>Nous construisons l'événement ensemble, clé en main</span></li>
-        </ol>
       </div>
 
       <div class="contact-hero-form" data-reveal>
@@ -102,7 +110,10 @@
           <form id="leadForm" novalidate>
 
             <div class="form-group">
-              <span class="form-group-label">Vous</span>
+              <span class="form-group-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.5-4 5-5.5 7.5-5.5s6 1.5 7.5 5.5"/></svg>
+                Vous
+              </span>
               <div class="form-row cols-2">
                 <div class="field">
                   <label for="fullName">Nom complet</label>
@@ -130,20 +141,39 @@
             </div>
 
             <div class="form-group">
-              <span class="form-group-label">Votre événement</span>
-              <div class="form-row">
-                <div class="field">
-                  <label for="serviceType">Ça ressemble à quoi&nbsp;?</label>
-                  <select id="serviceType" name="serviceType">
-                    <option value="La Cartolina — Décoration">La Cartolina — Décoration</option>
-                    <option value="L'Esperienza — Expérience signature">L'Esperienza — Expérience signature</option>
-                    <option value="L'Aperitivo — After Work">L'Aperitivo — After Work</option>
-                    <option value="La Tavola — Déjeuner d'affaires">La Tavola — Déjeuner d'affaires</option>
-                    <option value="Je ne sais pas encore">Je ne sais pas encore</option>
-                  </select>
-                </div>
+              <span class="form-group-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+                Votre événement
+              </span>
+              <div class="service-picker" role="radiogroup" aria-label="Type de prestation">
+                <label class="service-option">
+                  <input type="radio" name="serviceType" value="La Cartolina — Décoration" />
+                  <span class="service-option-name">La Cartolina</span>
+                  <span class="service-option-tag">Décoration</span>
+                </label>
+                <label class="service-option">
+                  <input type="radio" name="serviceType" value="L'Esperienza — Expérience signature" />
+                  <span class="service-option-name">L'Esperienza</span>
+                  <span class="service-option-tag">Expérience signature</span>
+                </label>
+                <label class="service-option">
+                  <input type="radio" name="serviceType" value="L'Aperitivo — After Work" />
+                  <span class="service-option-name">L'Aperitivo</span>
+                  <span class="service-option-tag">After work</span>
+                </label>
+                <label class="service-option">
+                  <input type="radio" name="serviceType" value="La Tavola — Déjeuner d'affaires" />
+                  <span class="service-option-name">La Tavola</span>
+                  <span class="service-option-tag">Déjeuner d'affaires</span>
+                </label>
+                <label class="service-option">
+                  <input type="radio" name="serviceType" value="Je ne sais pas encore" checked />
+                  <span class="service-option-name">Je ne sais pas encore</span>
+                  <span class="service-option-tag">On en discute</span>
+                </label>
               </div>
-              <div class="form-row cols-2">
+
+              <div class="form-row cols-2" style="margin-top: var(--space-3);">
                 <div class="field">
                   <label for="guests">Combien serez-vous&nbsp;? <span class="optional">(estim.)</span></label>
                   <input type="number" id="guests" name="guests" min="1" placeholder="Ex. 50" />
@@ -156,7 +186,10 @@
             </div>
 
             <div class="form-group">
-              <span class="form-group-label">Votre projet</span>
+              <span class="form-group-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19l1-4L16 4l3 3L8 18l-4 1z"/></svg>
+                Votre projet
+              </span>
               <div class="form-row">
                 <div class="field">
                   <label for="message">Dites-nous-en un peu plus</label>
@@ -218,15 +251,7 @@
       <span>Alsace, France</span>
     </div>
     <p class="photo-credits">
-      Photos : <a href="https://commons.wikimedia.org/wiki/File:Positano_Fiat_500_car_rally.jpg" target="_blank" rel="noopener">Arnoldius</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg" target="_blank" rel="noopener">Marco Ober</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg" target="_blank" rel="noopener">Matthias Rhomberg</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg" target="_blank" rel="noopener">Nicolas Torquet</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg" target="_blank" rel="noopener">Andrew Parlette</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg" target="_blank" rel="noopener">Hartmut Schmidt Heidelberg</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg" target="_blank" rel="noopener">Tracey Hind</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG" target="_blank" rel="noopener">donarreiskoffer</a>,
-      <a href="https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg" target="_blank" rel="noopener">JIP</a>
+      Photos : <a href="https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg" target="_blank" rel="noopener">Andrew Parlette</a>
       — Wikimedia Commons, licences CC BY / CC BY-SA. Photos d'événements : Simposio.
     </p>
   </div>

@@ -987,33 +987,25 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .world-tavola { --tint-rgb: var(--rosso-ombria-rgb); }
 
 .world-media { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-/* Blurred, oversized copy of the same photo fills the entire section edge to
-   edge (no empty space, ever) while the sharp copy on top is never cropped
-   (object-fit: contain) — the whole photo stays visible at any aspect ratio,
-   including on ultra-wide desktop screens where the section is far wider
-   than the (portrait) source photos. */
-.world-media-bg {
+/* Single full-bleed photo, cropped edge to edge (object-fit: cover) — no
+   split bg/fg layers. object-position leans toward the side opposite the
+   text column so the subject stays clear of the copy on desktop. */
+.world-media-photo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.08);
-  filter: blur(48px) saturate(1.15) brightness(0.68);
-}
-.world-media-fg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
   filter: saturate(1.1) contrast(1.05);
 }
-.world-cartolina .world-media-fg,
-.world-aperitivo .world-media-fg { object-position: right center; }
-.world-esperienza .world-media-fg,
-.world-tavola .world-media-fg { object-position: left center; }
+.world-cartolina .world-media-photo,
+.world-aperitivo .world-media-photo { object-position: right center; }
+.world-esperienza .world-media-photo,
+.world-tavola .world-media-photo { object-position: left center; }
+/* La Cartolina's photo has its subject (the styled ceramics) low in the
+   frame — bias the crop toward the bottom on wide screens so it doesn't get
+   cut off by the default centered vertical crop. */
+.world-media-photo--pos-low { object-position: right 82%; }
 .world-media::after {
   content: "";
   position: absolute;
@@ -1214,7 +1206,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .talent-bio { color: var(--fg-muted); font-size: 0.95rem; }
 
 /* ==========================================================================
-   Contact page — full redesign: navy pitch panel + white form card on cream
+   Contact page — full redesign: photo pitch panel + white form card on cream.
    ========================================================================== */
 .contact-hero { position: relative; overflow: hidden; background: var(--bg); }
 .contact-hero-grid { display: grid; }
@@ -1223,11 +1215,25 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .contact-hero-info {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
   color: var(--fg-inverse);
   padding: var(--space-6) var(--space-3);
 }
 @media (min-width: 768px) { .contact-hero-info { padding: var(--space-6) var(--space-5); } }
+.contact-hero-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.contact-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(200deg, rgba(16, 31, 39, 0.94) 0%, rgba(16, 31, 39, 0.9) 55%, rgba(74, 28, 28, 0.62) 100%);
+}
 .contact-hero-info::before {
   content: "";
   position: absolute;
@@ -1238,8 +1244,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   bottom: -7rem;
   border-radius: 50%;
   border: 1.5px dashed rgba(224, 149, 106, 0.3);
+  z-index: 2;
 }
-.contact-hero-info > * { position: relative; z-index: 1; }
+.contact-hero-info-content { position: relative; z-index: 2; }
 .contact-hero-info h2 { color: var(--cream); margin-block: var(--space-2) var(--space-3); font-size: clamp(2rem, 2.4vw + 1.2rem, 3rem); }
 .contact-hero-info .lede { max-width: 30rem; }
 
@@ -1251,10 +1258,129 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 @media (min-width: 768px) { .contact-hero-form { padding: var(--space-6) var(--space-5); } }
 
-.contact-steps { display: flex; flex-direction: column; gap: var(--space-3); margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border-inverse); max-width: 30rem; }
-.contact-steps li { display: flex; align-items: center; gap: var(--space-3); }
-.step-num { font-family: var(--font-display); font-size: 1.3rem; color: var(--terracotta-300); flex-shrink: 0; width: 2.2em; }
+/* Contact info — pill rows instead of bare links, with a small hover lift */
+.contact-info { margin-top: var(--space-4); display: flex; flex-direction: column; gap: 0.6rem; }
+.contact-info a, .contact-info span {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: 0.95rem;
+  color: var(--cream);
+  padding: 0.6em 1em;
+  border-radius: 999px;
+  background: rgba(246, 241, 231, 0.07);
+  border: 1px solid var(--border-inverse);
+  width: fit-content;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.contact-info svg { width: 16px; height: 16px; color: var(--terracotta-300); flex-shrink: 0; }
+.contact-info a:hover { background: rgba(193, 98, 45, 0.18); border-color: rgba(224, 149, 106, 0.4); transform: translateX(3px); }
+
+/* Steps — vertical timeline with a connecting line, each row highlights on
+   hover (a light, no-JS touch of interactivity). */
+.contact-steps { position: relative; display: flex; flex-direction: column; gap: 0.3rem; margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border-inverse); max-width: 30rem; }
+.contact-steps li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast) var(--ease);
+}
+.contact-steps li:hover { background: rgba(246, 241, 231, 0.06); }
+.contact-steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 1.8rem;
+  top: 2.5rem;
+  width: 1px;
+  height: 1.1rem;
+  background: var(--border-inverse);
+}
+.step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: 1.5px solid rgba(224, 149, 106, 0.4);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--terracotta-300);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.contact-steps li:hover .step-num { background: var(--accent); border-color: var(--accent); color: var(--cream); }
 .contact-steps li span:last-child { font-size: 0.95rem; color: var(--fg-muted-inverse); }
+
+.contact-founder {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-inverse);
+  max-width: 30rem;
+}
+.contact-founder-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--terracotta) 0%, var(--rosso-venezia) 100%);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+.contact-founder p { font-size: 0.88rem; color: var(--fg-muted-inverse); line-height: 1.5; }
+.contact-founder strong { color: var(--cream); }
+
+/* Service picker — visual selectable cards instead of a plain <select>,
+   native radios under the hood so it stays keyboard/screen-reader friendly. */
+.service-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+@media (min-width: 640px) { .service-picker { grid-template-columns: repeat(3, 1fr); } }
+.service-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75em 0.9em;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.service-option:hover { border-color: var(--terracotta-300); transform: translateY(-2px); }
+.service-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.service-option-name { font-family: var(--font-subtitle); font-weight: 600; font-size: 0.84rem; color: var(--navy); letter-spacing: 0.01em; }
+.service-option-tag { font-size: 0.72rem; color: var(--fg-muted); }
+.service-option:has(input:checked) { border-color: var(--accent); background: rgba(193, 98, 45, 0.07); }
+.service-option:has(input:checked) .service-option-name { color: var(--accent-hover); }
+.service-option:has(input:checked)::after {
+  content: "";
+  position: absolute;
+  top: 0.7em;
+  right: 0.7em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.service-option:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.form-group-label svg { width: 15px; height: 15px; flex-shrink: 0; }
 
 /* ==========================================================================
    Contact — gradient CTA + glass form (used for the homepage CTA band)

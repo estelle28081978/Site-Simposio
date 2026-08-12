@@ -33,28 +33,29 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   5 sens, lignes d'engagement au survol, mosaïque pannable, formulaire de
   contact).
 - **Photos** : mélange de photos **Simposio** (vrais événements, fichiers
-  `assets/img/evenement-*.jpg`, aucun crédit requis) et de photos sourcées sur
-  Wikimedia Commons (licences CC0/CC BY/CC BY-SA), redimensionnées/compressées
-  en JPEG. Attribution complète dans `assets/img/CREDITS.md` et en pied de
-  page de chaque page concernée.
-  ⚠️ `evenement-vespa-fleurie-lemon.jpg` (formule L'Esperienza) a une
-  résolution source **limitée** fournie par la cliente (1200×1500 « vrais »
-  pixels) — une session précédente l'avait agrandie artificiellement bien
-  au-delà (×1,6), ce qui produisait un flou d'interpolation visible une fois
-  affichée en fond plein écran. Corrigé : réexport propre en un seul passage
-  depuis le fichier source avec un agrandissement modéré +
+  `assets/img/evenement-*.jpg`, aucun crédit requis), de photos sourcées sur
+  Wikimedia Commons (licences CC BY/CC BY-SA, attribution requise) et de
+  quelques photos **Pexels** (licence Pexels, aucune attribution requise).
+  Les fichiers sans préfixe `evenement-` ne sont **pas** des photos Simposio
+  réelles. **`assets/img/CREDITS.md` est la source de vérité** pour savoir
+  quel fichier est utilisé où (y compris la mosaïque Projets, injectée par
+  JS depuis `mosaicImagesBase` dans `main.js` — invisible à un `grep` sur le
+  HTML seul) et pour l'historique des remplacements de photos ; vérifier
+  ce fichier avant d'ajouter/retirer une photo plutôt que de dupliquer cette
+  information ici.
+  ⚠️ `evenement-vespa-fleurie-lemon.jpg` (actuellement inutilisée, disponible
+  dans `assets/img/`) a une résolution source **limitée** fournie par la
+  cliente (1200×1500 « vrais » pixels) — une session précédente l'avait
+  agrandie artificiellement bien au-delà (×1,6), produisant un flou
+  d'interpolation. Corrigé : réexport propre en un seul passage + léger
   `ImageFilter.UnsharpMask` (Pillow). **Ne pas réagrandir davantage** ce
-  fichier : le plafond de netteté vient de la résolution native fournie, pas
-  d'un mauvais export — si la cliente envoie cette photo en plus haute
-  résolution (directement depuis le téléphone/appareil, pas une version déjà
-  recompressée/exportée d'un réseau social), la réexporter à partir de la
-  nouvelle source. `evenement-parasols-jaunes-table.jpg` (l'ancien fond de La
-  Cartolina, même souci de résolution ×2,3) n'est plus utilisée sur le site —
-  remplacée par `evenement-tablee-diner-bougies.jpg` (1800×2400, déjà bonne
-  résolution native, aussi utilisée dans la mosaïque Projets).
-  `spritz-terrasse.jpg` (L'Aperitivo) avait aussi un bug réel : exportée sans
-  appliquer la rotation EXIF d'origine, la photo apparaissait sur le côté —
-  corrigé via `PIL.ImageOps.exif_transpose()` avant export.
+  fichier si réutilisé : le plafond de netteté vient de la résolution
+  native, pas d'un mauvais export.
+  `positano-ceramiche-decor.jpg` (fond de La Cartolina) a son sujet
+  (céramiques) bas et sur toute la largeur du cadre après recadrage — la
+  classe CSS `.world-media-photo--pos-low` (`style.css`) biaise le crop
+  vertical vers le bas pour ne pas le couper sur grand écran ; si cette
+  photo est remplacée, vérifier si ce biais reste pertinent.
 - **Polices** : Yeseva One (titres, self-hosted) et Glacial Indifference
   (corps de texte, self-hosted, SIL OFL) sont les polices de marque exactes.
   **Canter** (sous-titres) n'a pas pu être obtenue légalement pour un usage
@@ -88,19 +89,48 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   lui-même par rapport au **milieu du viewport** (pas sur le scroll de toute
   la section) — voir `updatePromise()`.
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
-  chemin SVG (spline Catmull-Rom → Bézier, voir `catmullRomToBezierD()`) se
-  dessine progressivement pendant le scroll dans une section pinned/sticky
-  (`.senses-journey`, `height: 1240vh` desktop / `1000vh` mobile). 5 points
-  de repère (`journeyLayouts`) ; `fractionAtPoint()` échantillonne la courbe
+  chemin SVG se dessine progressivement pendant le scroll dans une section
+  pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
+  mobile). Depuis 2026-08-12, ce chemin **épelle "SIMPOSIO"** (demande de la
+  cliente) plutôt qu'une simple vague décorative : chaque lettre est un
+  petit jeu de points dessiné à la main (`LETTER_SHAPES` dans `main.js`,
+  une seule lettre = un seul trait, pas de crayon levé à l'intérieur) lissé
+  par la même spline Catmull-Rom qu'avant (`catmullRomToBezierD()`) pour
+  garder le rendu "tracé à la main". `layoutWord()` place les 8 lettres de
+  gauche à droite (desktop, `journeyLayouts.desktop`, viewBox large
+  2400×900) ; `layoutWordWrapped()` les répartit sur 2 rangées de 4 pour le
+  mobile étroit (`journeyLayouts.mobile`). Entre les lettres, chaque nouvelle
+  lettre est un nouveau sous-chemin (`M` sans relier au trait précédent) —
+  crayon levé comme une vraie écriture, ça se voit à peine à l'animation et
+  ça évite d'avoir à connecter des lettres très différentes en un seul
+  trait illisible. **Piège déjà rencontré** : une première version faisait
+  onduler la ligne de base de chaque lettre bien plus fort (une lettre en
+  haut, la suivante en bas) — ça se lisait comme deux rangées de lettres
+  éparpillées, pas comme un mot. Corrigé en aplatissant la ligne de base
+  (`layoutWord(..., baselineYs)`, variations de ±25 à ±55 seulement) — si
+  la ligne de base est retouchée, vérifier visuellement (voir méthode de
+  vérification ci-dessous) que "SIMPOSIO" reste lisible d'un seul tenant.
+  5 bornes/repères toujours nécessaires (5 sens) pour 8 lettres :
+  `MARKER_LETTER_INDEXES = [0,2,4,5,7]` prend le 1er S, le M, le 1er O, le
+  2ᵉ S et le 2ᵉ O (premier point de chacune, dernier point pour la toute
+  dernière) plutôt qu'une lettre sur deux, pour garder un vrai début/fin de
+  mot sur les 1er/5ᵉ repères. `fractionAtPoint()` échantillonne la courbe
   rendue (500 points) pour retrouver la vraie fraction de longueur d'arc de
-  chaque point de repère (les points ne sont pas espacés uniformément une
-  fois les ondulations ajoutées). Chaque carte ne devient visible que
-  lorsque le scroll a **atteint** la fraction du point (`journeyDwellSpan`),
-  jamais en cours de trajet — c'est le comportement demandé, ne pas le
-  transformer en simple scroll-sync continu. `.senses-journey-head` doit
-  rester en flux normal (`position: relative`, pas `absolute`) dans la
-  colonne flex `.senses-journey-sticky`, sinon le chemin SVG peut chevaucher
-  visuellement le titre (bug déjà rencontré et corrigé).
+  chaque repère (le mécanisme n'a pas changé, seul ce qui alimente
+  `journeyLayouts.letters`/`.markers` a changé — avant, un simple tableau
+  `.points` servait à la fois de tracé et de repères). Chaque carte ne
+  devient visible que lorsque le scroll a **atteint** la fraction du point
+  (`journeyDwellSpan`), jamais en cours de trajet — c'est le comportement
+  demandé, ne pas le transformer en simple scroll-sync continu.
+  `.senses-journey-head` doit rester en flux normal (`position: relative`,
+  pas `absolute`) dans la colonne flex `.senses-journey-sticky`, sinon le
+  chemin SVG peut chevaucher visuellement le titre (bug déjà rencontré et
+  corrigé). **Pour vérifier visuellement le tracé** sans avoir à scroller
+  1240vh : dans la console, forcer
+  `document.getElementById('sensesJourneyPath').style.strokeDashoffset='0'`
+  (trait complet) et `document.querySelector('.senses-journey-sticky').style.position='fixed'`
+  (+ `top:0;left:0;width:100vw;zIndex:9999`) pour amener la section pinned
+  à l'écran sans scroll réel, puis screenshot.
 - **Engagements — lignes au survol** (`#engagementHoverCard`,
   `.engagement-line`) : liste de lignes ; au survol (ou tap sur mobile via
   `matchMedia("(hover: none)")`), une carte de description suit le curseur
@@ -120,27 +150,32 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   transition, ~1.9s) — sinon la photo reste visuellement floue pendant
   qu'elle est encore en train de glisser, ce qui a été signalé comme un bug
   de qualité d'image alors que ce n'en était pas un.
-- **Fonds photo des formules — jamais de recadrage, jamais d'espace vide**
-  (`.world-media`, `prestations.html`) : chaque fond est composé de **deux**
-  `<img>` du même fichier superposées, pas d'une seule. `.world-media-bg`
-  (floutée, assombrie, `object-fit: cover`) remplit tout le bloc bord à bord
-  sans jamais laisser d'espace vide, quel que soit le ratio d'écran.
-  `.world-media-fg` (nette, `object-fit: contain`) affiche la photo
-  **entière, jamais rognée**, calée du côté opposé au texte
-  (`object-position: right/left center` selon la formule). Ne jamais revenir
-  à un simple `object-fit: cover` sur une seule image : sur un écran très
-  large (desktop grand écran), ça recadre agressivement les photos portrait
-  et une bonne partie de l'image disparaît — c'est le bug qui a motivé ce
-  pattern à deux couches.
+- **Fonds photo des formules** (`.world-media`, `prestations.html`) : une
+  seule `<img class="world-media-photo">` par formule, plein cadre
+  (`object-fit: cover`), `object-position: right/left center` selon la
+  formule (côté opposé au texte). Il y a eu un aller-retour sur ce point :
+  une version précédente utilisait deux `<img>` superposées (fond flouté en
+  `cover` + photo nette en `contain`, jamais rognée) pour éviter tout
+  recadrage agressif des photos portrait sur très grand écran — la cliente a
+  explicitement demandé de revenir au plein cadre à une seule image
+  (2026-08-12), en gardant l'effet de balayage (`formula-slide-left/right`,
+  inchangé, appliqué à l'article entier donc indépendant du nombre de
+  couches media). Si des photos très verticales/portrait sont réutilisées
+  ici, vérifier le rendu sur desktop très large avant publication : le
+  recadrage `cover` peut à nouveau couper une partie de l'image.
 - **`.page-header-full`** (modificateur optionnel de `.page-header`, utilisé
-  pour l'instant uniquement sur `contact.html`) : force le bandeau titre à
-  occuper `100vh`/`100svh` avec contenu centré verticalement, pour que le
-  titre remplisse tout l'écran avant que la section suivante (le formulaire)
-  n'apparaisse au scroll. `.page-header` seul (sans ce modificateur, sur les
-  5 autres pages) reste une bande compacte dimensionnée par son contenu —
-  ne pas ajouter `.page-header-full` ailleurs sans que ce soit demandé, et ne
-  pas modifier `.page-header` de base pour ce même effet (ça changerait les
-  5 autres pages).
+  sur `contact.html` et `univers.html`) : force le bandeau titre à occuper
+  `100vh`/`100svh` avec contenu centré verticalement, pour que le titre
+  remplisse tout l'écran avant que la section suivante (formulaire, parcours
+  des 5 sens) n'apparaisse au scroll. `.page-header` seul (sans ce
+  modificateur, sur les 4 autres pages) reste une bande compacte dimensionnée
+  par son contenu — ne pas l'ajouter ailleurs sans que ce soit demandé.
+  **Note de contexte (2026-08-12)** : une session locale (app Claude Code)
+  avait en parallèle construit une version alternative de Contact tenant
+  entièrement sur un seul écran sans scroll (`.page-header--compact` +
+  `.contact-page { height:100dvh }`) — la cliente a tranché en faveur de la
+  version plein-écran-puis-scroll ci-dessus. Si `.page-header--compact`
+  réapparaît dans un diff, c'est cette ancienne piste non retenue.
 - Mosaïque (page Projets) : CSS Grid avec `grid-auto-flow: dense` pour éviter
   tout trou d'affichage — ne jamais réintroduire de `transform: translateY`
   décoratif sur les items, ça casse l'alignement de la grille (bug corrigé).
@@ -188,13 +223,22 @@ ont été retirés des 6 pages restantes.
   remplacer, présents dans les 6 pages.
 - **Grilles tarifaires** du document de marque : volontairement exclues du
   site public (info confidentielle, usage interne uniquement).
-- **Résolution de la photo L'Esperienza** (`evenement-vespa-fleurie-lemon.jpg`) :
-  le fichier fourni par la cliente est nativement plus petit (1200×1500) que
-  les autres photos de formule. Le rendu est net dans cette limite (réexport
-  propre + accentuation, cf. section Photos ci-dessus), mais pour une
-  netteté parfaite sur très grand écran il faudrait le fichier d'origine en
-  plus haute résolution — à demander à la cliente si le rendu
-  n'est pas jugé suffisant.
+- **Résolution de `evenement-vespa-fleurie-lemon.jpg`** : n'est plus utilisée
+  comme fond de formule depuis le 2026-08-12 (voir section Photos), mais si
+  elle est réutilisée un jour, rappel : le fichier fourni par la cliente est
+  nativement plus petit (1200×1500) que les autres photos — le rendu est net
+  dans cette limite (réexport propre + accentuation, cf. section Photos
+  ci-dessus), mais pour une netteté parfaite sur très grand écran il
+  faudrait le fichier d'origine en plus haute résolution.
+- **Deux sessions Claude Code en parallèle (2026-08-12)** : la cliente a
+  travaillé le même jour avec cette session (cloud) et une session locale
+  (app Claude Code desktop) sur les mêmes fichiers sans coordination
+  initiale, produisant deux versions différentes de Contact et des fonds de
+  formule. Réconcilié à la main (voir décisions ci-dessus + branche git
+  `sauvegarde-locale`, qui garde une trace de la version locale d'origine
+  si besoin de comparer). Si ça se reproduit : vérifier `git status`/`git log`
+  en tout début de session avant de supposer que le dépôt local reflète le
+  dernier état poussé.
 
 ## Commandes utiles
 
