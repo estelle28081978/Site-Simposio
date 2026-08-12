@@ -93,12 +93,20 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (`catmullRomToBezierD()`) — une vague classique, pas une lettre ni un mot
   (un essai en 2026-08-12 faisait épeler "SIMPOSIO" en écriture manuscrite,
   explicitement annulé par la cliente le jour même : trop chargé, elle
-  voulait un tracé simple). **Chaque courbure doit rester petite et
-  différente des autres** (jamais une onde répétitive uniforme) — c'est une
-  demande explicite, vérifier visuellement après toute retouche des points.
-  Le tracé part du coin haut-gauche du cadre et rejoint le coin bas-droit,
-  en couvrant toute la largeur/hauteur du viewBox (`0 0 1650 1350` desktop,
-  `0 0 540 1550` mobile). 5 bornes/repères nécessaires (5 sens) parmi les 13
+  voulait un tracé simple). **Chaque courbure doit rester variée** (jamais
+  une onde répétitive uniforme, ni toutes de la même taille) — demande
+  explicite, vérifier visuellement après toute retouche des points. Le
+  tracé part du coin haut-gauche du cadre et rejoint le coin bas-droit, en
+  couvrant toute la largeur/hauteur du viewBox (`0 0 1900 780` desktop,
+  `0 0 540 1500` mobile — **le viewBox desktop est volontairement large et
+  court (~2,44 de ratio) pour matcher l'aspect réel du cadre grand écran**
+  (`.senses-journey-frame`, jusqu'à 1600px de large pour 66vh de haut) ; un
+  viewBox plus carré comme l'ancien 1650×1350 se retrouve "letterboxé" par
+  `preserveAspectRatio="xMidYMid meet"` et le tracé finit coincé dans une
+  colonne centrale au lieu de s'étirer d'un bord à l'autre — c'est le bug
+  que la cliente a signalé ("ça occupe trop le milieu, pas assez étiré") et
+  qui a motivé ce changement de ratio, en plus d'amplitudes de vague
+  nettement plus grandes qu'avant). 5 bornes/repères nécessaires (5 sens) parmi les 13
   points : `markerIndexes` sélectionne 5 indices répartis sur tout le
   tracé (`journeyLayouts.*.markerIndexes`), le premier et le dernier point
   du tracé étant toujours parmi eux pour marquer clairement début et fin.

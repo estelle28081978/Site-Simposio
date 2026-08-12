@@ -180,28 +180,32 @@
       return d.trim();
     }
 
-    // A classic decorative wave, hand-tuned with small rounded bends of
-    // varying size (never a uniform repeating sine) running the length of
-    // the frame from the top-left corner to the bottom-right corner. More
-    // points than there are senses (13 on desktop, 12 on mobile) so the
-    // curve reads as a textured, organic line rather than a handful of big
-    // sweeping arcs; 5 of them are picked out as the sense waypoints.
+    // A classic decorative wave, hand-tuned with big, varied-amplitude bends
+    // (never a uniform repeating sine) running corner to corner. The desktop
+    // viewBox (1900x780, ~2.44 aspect) deliberately matches the real wide
+    // frame's aspect ratio instead of the old, much-more-square 1650x1350 —
+    // with "preserveAspectRatio: meet", a viewBox narrower than the frame
+    // just gets letterboxed and the wave ends up squeezed into a centered
+    // column rather than stretching edge to edge. More points than there
+    // are senses (13 on desktop, 12 on mobile) so the curve reads as a
+    // textured, organic line rather than a handful of big sweeping arcs;
+    // 5 of them are picked out as the sense waypoints.
     var journeyLayouts = {
       desktop: {
-        viewBox: "0 0 1650 1350",
+        viewBox: "0 0 1900 780",
         points: [
-          [40, 90], [180, 60], [320, 220], [460, 180], [600, 380],
-          [760, 320], [920, 520], [1080, 470], [1220, 680], [1360, 780],
-          [1480, 980], [1560, 1120], [1610, 1270]
+          [20, 40], [176, 15], [330, 260], [485, 90], [640, 340],
+          [795, 190], [950, 470], [1105, 330], [1260, 590], [1415, 420],
+          [1570, 650], [1725, 540], [1880, 750]
         ],
         markerIndexes: [0, 3, 6, 9, 12]
       },
       mobile: {
-        viewBox: "0 0 540 1550",
+        viewBox: "0 0 540 1500",
         points: [
-          [50, 70], [220, 130], [370, 260], [280, 380], [140, 470],
-          [230, 610], [400, 700], [330, 880], [160, 1000], [260, 1180],
-          [420, 1300], [480, 1470]
+          [30, 40], [280, 110], [470, 300], [230, 430], [60, 560],
+          [280, 700], [480, 830], [260, 1000], [50, 1130], [260, 1300],
+          [460, 1420], [510, 1470]
         ],
         markerIndexes: [0, 3, 6, 8, 11]
       }
