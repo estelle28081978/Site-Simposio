@@ -60,14 +60,11 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (corps de texte, self-hosted, SIL OFL) sont les polices de marque exactes.
   **Canter** (sous-titres) n'a pas pu être obtenue légalement pour un usage
   self-hosted dans cet environnement — remplacée par **Oswald** (self-hosted,
-  formes géométriques proches) via la variable CSS `--font-subtitle`.
-  Le **logo "Simposio."** (header + footer, `.logo`) utilise une police à
-  part, **Alex Brush** (self-hosted, `assets/fonts/alex-brush/`, SIL OFL,
-  variable CSS `--font-logo`) — un script calligraphique où les lettres sont
-  reliées en un seul tracé, demandé explicitement à la place de Yeseva One
-  (serif, lettres détachées) pour le mot-symbole seul. Ne pas l'utiliser pour
-  autre chose que `.logo` : c'est une police d'accent, illisible en dessous
-  d'une taille assez grande.
+  formes géométriques proches) via la variable CSS `--font-subtitle`. Le
+  **logo "Simposio."** (`.logo`, header + footer) utilise **Yeseva One**
+  comme le reste des titres — un essai avec une police calligraphique
+  script (Alex Brush) a été fait puis explicitement annulé par la cliente
+  (2026-08-12) ; ne pas la réintroduire sans qu'on le redemande.
 - **Palette** (fixe, définie dans le brief de marque) : Bleu Méditerranéen
   `#1c3b4a`, Terracotta Riviera `#c1622d`, Blanc Calcaire `#f6f1e7` (couleurs
   principales) ; Rouge Terre d'Ombrie `#4a1c1c`, Rouge Pourpre de Venise
@@ -91,42 +88,40 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
-  mobile). Depuis 2026-08-12, ce chemin **épelle "SIMPOSIO"** (demande de la
-  cliente) plutôt qu'une simple vague décorative : chaque lettre est un
-  petit jeu de points dessiné à la main (`LETTER_SHAPES` dans `main.js`,
-  une seule lettre = un seul trait, pas de crayon levé à l'intérieur) lissé
-  par la même spline Catmull-Rom qu'avant (`catmullRomToBezierD()`) pour
-  garder le rendu "tracé à la main". `layoutWord()` place les 8 lettres de
-  gauche à droite (desktop, `journeyLayouts.desktop`, viewBox large
-  2400×900) ; `layoutWordWrapped()` les répartit sur 2 rangées de 4 pour le
-  mobile étroit (`journeyLayouts.mobile`). Entre les lettres, chaque nouvelle
-  lettre est un nouveau sous-chemin (`M` sans relier au trait précédent) —
-  crayon levé comme une vraie écriture, ça se voit à peine à l'animation et
-  ça évite d'avoir à connecter des lettres très différentes en un seul
-  trait illisible. **Piège déjà rencontré** : une première version faisait
-  onduler la ligne de base de chaque lettre bien plus fort (une lettre en
-  haut, la suivante en bas) — ça se lisait comme deux rangées de lettres
-  éparpillées, pas comme un mot. Corrigé en aplatissant la ligne de base
-  (`layoutWord(..., baselineYs)`, variations de ±25 à ±55 seulement) — si
-  la ligne de base est retouchée, vérifier visuellement (voir méthode de
-  vérification ci-dessous) que "SIMPOSIO" reste lisible d'un seul tenant.
-  5 bornes/repères toujours nécessaires (5 sens) pour 8 lettres :
-  `MARKER_LETTER_INDEXES = [0,2,4,5,7]` prend le 1er S, le M, le 1er O, le
-  2ᵉ S et le 2ᵉ O (premier point de chacune, dernier point pour la toute
-  dernière) plutôt qu'une lettre sur deux, pour garder un vrai début/fin de
-  mot sur les 1er/5ᵉ repères. `fractionAtPoint()` échantillonne la courbe
-  rendue (500 points) pour retrouver la vraie fraction de longueur d'arc de
-  chaque repère (le mécanisme n'a pas changé, seul ce qui alimente
-  `journeyLayouts.letters`/`.markers` a changé — avant, un simple tableau
-  `.points` servait à la fois de tracé et de repères). Chaque carte ne
-  devient visible que lorsque le scroll a **atteint** la fraction du point
-  (`journeyDwellSpan`), jamais en cours de trajet — c'est le comportement
-  demandé, ne pas le transformer en simple scroll-sync continu.
-  `.senses-journey-head` doit rester en flux normal (`position: relative`,
-  pas `absolute`) dans la colonne flex `.senses-journey-sticky`, sinon le
-  chemin SVG peut chevaucher visuellement le titre (bug déjà rencontré et
-  corrigé). **Pour vérifier visuellement le tracé** sans avoir à scroller
-  1240vh : dans la console, forcer
+  mobile). Chemin construit à partir de `journeyLayouts.desktop/mobile.points`
+  (13 points desktop, 12 mobile) lissés par une spline Catmull-Rom
+  (`catmullRomToBezierD()`) — une vague classique, pas une lettre ni un mot
+  (un essai en 2026-08-12 faisait épeler "SIMPOSIO" en écriture manuscrite,
+  explicitement annulé par la cliente le jour même : trop chargé, elle
+  voulait un tracé simple). **Chaque courbure doit rester petite et
+  différente des autres** (jamais une onde répétitive uniforme) — c'est une
+  demande explicite, vérifier visuellement après toute retouche des points.
+  Le tracé part du coin haut-gauche du cadre et rejoint le coin bas-droit,
+  en couvrant toute la largeur/hauteur du viewBox (`0 0 1650 1350` desktop,
+  `0 0 540 1550` mobile). 5 bornes/repères nécessaires (5 sens) parmi les 13
+  points : `markerIndexes` sélectionne 5 indices répartis sur tout le
+  tracé (`journeyLayouts.*.markerIndexes`), le premier et le dernier point
+  du tracé étant toujours parmi eux pour marquer clairement début et fin.
+  `fractionAtPoint()` échantillonne la courbe rendue (500 points) pour
+  retrouver la vraie fraction de longueur d'arc de chaque repère (les
+  points ne sont pas espacés uniformément une fois les courbures ajoutées).
+  Chaque carte ne devient visible que lorsque le scroll a **atteint** la
+  fraction du point (`journeyDwellSpan`), jamais en cours de trajet — c'est
+  le comportement demandé, ne pas le transformer en simple scroll-sync
+  continu. `.senses-journey-head` doit rester en flux normal
+  (`position: relative`, pas `absolute`) dans la colonne flex
+  `.senses-journey-sticky`, sinon le chemin SVG peut chevaucher visuellement
+  le titre (bug déjà rencontré et corrigé). **Piège Catmull-Rom déjà
+  rencontré** : des points qui inversent la direction horizontale de façon
+  trop marquée (grands allers-retours en x) font largement déborder la
+  courbe et cassent l'échantillonnage de `fractionAtPoint()` (`bestDist`
+  qui explose, fractions non croissantes) — garder des variations
+  horizontales modérées, surtout sur le tracé mobile qui serpente déjà
+  gauche/droite. Avant de commiter de nouveaux points, valider avec un
+  script Node autonome (reproduire `catmullRomToBezierD`/`fractionAtPoint`
+  et vérifier `bestDist` proche de 0 + fractions strictement croissantes)
+  plutôt que de juger seulement au visuel. **Pour vérifier visuellement le
+  tracé** sans avoir à scroller 1240vh : dans la console, forcer
   `document.getElementById('sensesJourneyPath').style.strokeDashoffset='0'`
   (trait complet) et `document.querySelector('.senses-journey-sticky').style.position='fixed'`
   (+ `top:0;left:0;width:100vw;zIndex:9999`) pour amener la section pinned
