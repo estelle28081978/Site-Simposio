@@ -180,34 +180,32 @@
       return d.trim();
     }
 
-    // A classic decorative wave, hand-tuned with big, varied-amplitude bends
-    // (never a uniform repeating sine) running corner to corner. The desktop
-    // viewBox (1900x780, ~2.44 aspect) deliberately matches the real wide
-    // frame's aspect ratio instead of the old, much-more-square 1650x1350 —
-    // with "preserveAspectRatio: meet", a viewBox narrower than the frame
-    // just gets letterboxed and the wave ends up squeezed into a centered
-    // column rather than stretching edge to edge. More points than there
-    // are senses (13 on desktop, 12 on mobile) so the curve reads as a
-    // textured, organic line rather than a handful of big sweeping arcs;
-    // 5 of them are picked out as the sense waypoints.
+    // A big zigzag/snake — each segment sweeps almost the full width of the
+    // frame before reversing direction, while y is strictly increasing
+    // point to point (never doubles back vertically), which is what
+    // guarantees the drawn curve can never cross itself. Reference: a
+    // hand-sketched zigzag the client provided, reproduced here as 7 wide
+    // alternating swings rather than the many small bumps used before. The
+    // desktop viewBox (1900x850, ~2.24 aspect) matches the real wide
+    // frame's aspect ratio — with "preserveAspectRatio: meet", a viewBox
+    // narrower than the frame just gets letterboxed and the path ends up
+    // squeezed into a centered column rather than stretching edge to edge.
     var journeyLayouts = {
       desktop: {
-        viewBox: "0 0 1900 780",
+        viewBox: "0 0 1900 850",
         points: [
-          [20, 40], [176, 15], [330, 260], [485, 90], [640, 340],
-          [795, 190], [950, 470], [1105, 330], [1260, 590], [1415, 420],
-          [1570, 650], [1725, 540], [1880, 750]
+          [1410, 79], [1672, 217], [602, 315], [1497, 483],
+          [201, 611], [1298, 750], [1058, 794]
         ],
-        markerIndexes: [0, 3, 6, 9, 12]
+        markerIndexes: [0, 2, 3, 4, 6]
       },
       mobile: {
         viewBox: "0 0 540 1500",
         points: [
-          [30, 40], [280, 110], [470, 300], [230, 430], [60, 560],
-          [280, 700], [480, 830], [260, 1000], [50, 1130], [260, 1300],
-          [460, 1420], [510, 1470]
+          [350, 60], [510, 220], [110, 400], [480, 620],
+          [60, 850], [460, 1100], [250, 1450]
         ],
-        markerIndexes: [0, 3, 6, 8, 11]
+        markerIndexes: [0, 2, 3, 4, 6]
       }
     };
     Object.keys(journeyLayouts).forEach(function (key) {

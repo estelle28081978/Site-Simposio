@@ -89,47 +89,50 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
   mobile). Chemin construit à partir de `journeyLayouts.desktop/mobile.points`
-  (13 points desktop, 12 mobile) lissés par une spline Catmull-Rom
-  (`catmullRomToBezierD()`) — une vague classique, pas une lettre ni un mot
-  (un essai en 2026-08-12 faisait épeler "SIMPOSIO" en écriture manuscrite,
-  explicitement annulé par la cliente le jour même : trop chargé, elle
-  voulait un tracé simple). **Chaque courbure doit rester variée** (jamais
-  une onde répétitive uniforme, ni toutes de la même taille) — demande
-  explicite, vérifier visuellement après toute retouche des points. Le
-  tracé part du coin haut-gauche du cadre et rejoint le coin bas-droit, en
-  couvrant toute la largeur/hauteur du viewBox (`0 0 1900 780` desktop,
-  `0 0 540 1500` mobile — **le viewBox desktop est volontairement large et
-  court (~2,44 de ratio) pour matcher l'aspect réel du cadre grand écran**
-  (`.senses-journey-frame`, jusqu'à 1600px de large pour 66vh de haut) ; un
-  viewBox plus carré comme l'ancien 1650×1350 se retrouve "letterboxé" par
+  lissés par une spline Catmull-Rom (`catmullRomToBezierD()`) — un grand
+  zigzag (7 points, 6 grands virages) plutôt qu'une vague à petites bosses
+  ou qu'une lettre/un mot (deux essais précédents le 2026-08-12,
+  explicitement annulés par la cliente : le premier épelait "SIMPOSIO" en
+  écriture manuscrite — trop chargé — le second faisait des petites bosses
+  — trop petit, pas assez étiré). Le design actuel reproduit un croquis
+  fourni par la cliente : chaque segment balaie presque toute la largeur du
+  cadre avant de repartir dans l'autre sens, en descendant régulièrement.
+  **Piège Catmull-Rom** : ce qui casse la courbe (débordement, points non
+  ordonnés le long du tracé) n'est pas l'amplitude horizontale en soi, mais
+  des allers-retours en x **sans progression verticale claire entre deux
+  points consécutifs**. Tant que `y` est strictement croissant d'un point
+  au suivant, de très grands écarts en x sont sûrs et ne peuvent pas faire
+  que le tracé se croise lui-même (contrainte explicite de la cliente : « le
+  trait ne doit jamais se couper ») — c'est exactement ce que fait le
+  design actuel. Avant de commiter de nouveaux points, valider avec un
+  script Node autonome (reproduire `catmullRomToBezierD`/`fractionAtPoint`,
+  vérifier `bestDist` proche de 0, fractions strictement croissantes, et
+  qu'aucune paire de points échantillonnés loin l'un de l'autre en longueur
+  d'arc ne se retrouve proche dans l'espace) plutôt que de juger seulement
+  au visuel. Le viewBox desktop (`0 0 1900 850`, ~2,24 de ratio) est
+  volontairement large et court pour matcher l'aspect réel du cadre grand
+  écran (`.senses-journey-frame`, jusqu'à 1600px de large pour 66vh de
+  haut) ; un viewBox plus carré se retrouve "letterboxé" par
   `preserveAspectRatio="xMidYMid meet"` et le tracé finit coincé dans une
-  colonne centrale au lieu de s'étirer d'un bord à l'autre — c'est le bug
-  que la cliente a signalé ("ça occupe trop le milieu, pas assez étiré") et
-  qui a motivé ce changement de ratio, en plus d'amplitudes de vague
-  nettement plus grandes qu'avant). 5 bornes/repères nécessaires (5 sens) parmi les 13
-  points : `markerIndexes` sélectionne 5 indices répartis sur tout le
-  tracé (`journeyLayouts.*.markerIndexes`), le premier et le dernier point
-  du tracé étant toujours parmi eux pour marquer clairement début et fin.
-  `fractionAtPoint()` échantillonne la courbe rendue (500 points) pour
-  retrouver la vraie fraction de longueur d'arc de chaque repère (les
-  points ne sont pas espacés uniformément une fois les courbures ajoutées).
-  Chaque carte ne devient visible que lorsque le scroll a **atteint** la
-  fraction du point (`journeyDwellSpan`), jamais en cours de trajet — c'est
-  le comportement demandé, ne pas le transformer en simple scroll-sync
-  continu. `.senses-journey-head` doit rester en flux normal
-  (`position: relative`, pas `absolute`) dans la colonne flex
-  `.senses-journey-sticky`, sinon le chemin SVG peut chevaucher visuellement
-  le titre (bug déjà rencontré et corrigé). **Piège Catmull-Rom déjà
-  rencontré** : des points qui inversent la direction horizontale de façon
-  trop marquée (grands allers-retours en x) font largement déborder la
-  courbe et cassent l'échantillonnage de `fractionAtPoint()` (`bestDist`
-  qui explose, fractions non croissantes) — garder des variations
-  horizontales modérées, surtout sur le tracé mobile qui serpente déjà
-  gauche/droite. Avant de commiter de nouveaux points, valider avec un
-  script Node autonome (reproduire `catmullRomToBezierD`/`fractionAtPoint`
-  et vérifier `bestDist` proche de 0 + fractions strictement croissantes)
-  plutôt que de juger seulement au visuel. **Pour vérifier visuellement le
-  tracé** sans avoir à scroller 1240vh : dans la console, forcer
+  colonne centrale au lieu de s'étirer d'un bord à l'autre — bug déjà
+  rencontré et corrigé, à surveiller si le viewBox est retouché. 5
+  bornes/repères nécessaires (5 sens) parmi les 7 points du tracé :
+  `markerIndexes` sélectionne 5 indices (`journeyLayouts.*.markerIndexes`),
+  le premier et le dernier point du tracé étant toujours parmi eux pour
+  marquer clairement début et fin ; choisir les indices en testant
+  plusieurs combinaisons pour une répartition à peu près régulière des
+  fractions de longueur d'arc (pas forcément un espacement d'index régulier
+  — les segments n'ont pas tous la même longueur). `fractionAtPoint()`
+  échantillonne la courbe rendue (500 points) pour retrouver la vraie
+  fraction de longueur d'arc de chaque repère. Chaque carte ne devient
+  visible que lorsque le scroll a **atteint** la fraction du point
+  (`journeyDwellSpan`), jamais en cours de trajet — c'est le comportement
+  demandé, ne pas le transformer en simple scroll-sync continu.
+  `.senses-journey-head` doit rester en flux normal (`position: relative`,
+  pas `absolute`) dans la colonne flex `.senses-journey-sticky`, sinon le
+  chemin SVG peut chevaucher visuellement le titre (bug déjà rencontré et
+  corrigé). **Pour vérifier visuellement le tracé** sans avoir à scroller
+  1240vh : dans la console, forcer
   `document.getElementById('sensesJourneyPath').style.strokeDashoffset='0'`
   (trait complet) et `document.querySelector('.senses-journey-sticky').style.position='fixed'`
   (+ `top:0;left:0;width:100vw;zIndex:9999`) pour amener la section pinned
