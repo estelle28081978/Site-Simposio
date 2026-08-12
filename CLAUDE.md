@@ -37,18 +37,21 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Wikimedia Commons (licences CC0/CC BY/CC BY-SA), redimensionnées/compressées
   en JPEG. Attribution complète dans `assets/img/CREDITS.md` et en pied de
   page de chaque page concernée.
-  ⚠️ `evenement-parasols-jaunes-table.jpg` et `evenement-vespa-fleurie-lemon.jpg`
-  (formules La Cartolina / L'Esperienza) ont une résolution source **limitée**
-  fournie par la cliente (736×1104 et 1200×1500 « vrais » pixels) — une session
-  précédente les avait agrandies artificiellement bien au-delà (jusqu'à ×2,3),
-  ce qui produisait un flou d'interpolation visible une fois affichées en
-  fond plein écran. Corrigé : réexport propre en un seul passage depuis les
-  fichiers source avec un agrandissement modéré + `ImageFilter.UnsharpMask`
-  (Pillow). **Ne pas réagrandir davantage** ces deux fichiers : le plafond de
-  netteté vient de la résolution native fournie, pas d'un mauvais export — si
-  la cliente envoie ces deux photos en plus haute résolution (directement
-  depuis le téléphone/appareil, pas une version déjà recompressée/exportée
-  d'un réseau social), les réexporter à partir de la nouvelle source.
+  ⚠️ `evenement-vespa-fleurie-lemon.jpg` (formule L'Esperienza) a une
+  résolution source **limitée** fournie par la cliente (1200×1500 « vrais »
+  pixels) — une session précédente l'avait agrandie artificiellement bien
+  au-delà (×1,6), ce qui produisait un flou d'interpolation visible une fois
+  affichée en fond plein écran. Corrigé : réexport propre en un seul passage
+  depuis le fichier source avec un agrandissement modéré +
+  `ImageFilter.UnsharpMask` (Pillow). **Ne pas réagrandir davantage** ce
+  fichier : le plafond de netteté vient de la résolution native fournie, pas
+  d'un mauvais export — si la cliente envoie cette photo en plus haute
+  résolution (directement depuis le téléphone/appareil, pas une version déjà
+  recompressée/exportée d'un réseau social), la réexporter à partir de la
+  nouvelle source. `evenement-parasols-jaunes-table.jpg` (l'ancien fond de La
+  Cartolina, même souci de résolution ×2,3) n'est plus utilisée sur le site —
+  remplacée par `evenement-tablee-diner-bougies.jpg` (1800×2400, déjà bonne
+  résolution native, aussi utilisée dans la mosaïque Projets).
   `spritz-terrasse.jpg` (L'Aperitivo) avait aussi un bug réel : exportée sans
   appliquer la rotation EXIF d'origine, la photo apparaissait sur le côté —
   corrigé via `PIL.ImageOps.exif_transpose()` avant export.
@@ -110,6 +113,18 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   transition, ~1.9s) — sinon la photo reste visuellement floue pendant
   qu'elle est encore en train de glisser, ce qui a été signalé comme un bug
   de qualité d'image alors que ce n'en était pas un.
+- **Fonds photo des formules — jamais de recadrage, jamais d'espace vide**
+  (`.world-media`, `prestations.html`) : chaque fond est composé de **deux**
+  `<img>` du même fichier superposées, pas d'une seule. `.world-media-bg`
+  (floutée, assombrie, `object-fit: cover`) remplit tout le bloc bord à bord
+  sans jamais laisser d'espace vide, quel que soit le ratio d'écran.
+  `.world-media-fg` (nette, `object-fit: contain`) affiche la photo
+  **entière, jamais rognée**, calée du côté opposé au texte
+  (`object-position: right/left center` selon la formule). Ne jamais revenir
+  à un simple `object-fit: cover` sur une seule image : sur un écran très
+  large (desktop grand écran), ça recadre agressivement les photos portrait
+  et une bonne partie de l'image disparaît — c'est le bug qui a motivé ce
+  pattern à deux couches.
 - Mosaïque (page Projets) : CSS Grid avec `grid-auto-flow: dense` pour éviter
   tout trou d'affichage — ne jamais réintroduire de `transform: translateY`
   décoratif sur les items, ça casse l'alignement de la grille (bug corrigé).
@@ -157,13 +172,12 @@ ont été retirés des 6 pages restantes.
   remplacer, présents dans les 6 pages.
 - **Grilles tarifaires** du document de marque : volontairement exclues du
   site public (info confidentielle, usage interne uniquement).
-- **Résolution des photos La Cartolina / L'Esperienza** (`evenement-parasols-
-  jaunes-table.jpg`, `evenement-vespa-fleurie-lemon.jpg`) : les fichiers
-  fournis par la cliente sont nativement plus petits (736×1104 / 1200×1500)
-  que les deux autres photos de formule. Le rendu est net dans cette limite
-  (réexport propre + accentuation, cf. section Photos ci-dessus), mais pour
-  une netteté parfaite sur très grand écran il faudrait les fichiers
-  d'origine en plus haute résolution — à demander à la cliente si le rendu
+- **Résolution de la photo L'Esperienza** (`evenement-vespa-fleurie-lemon.jpg`) :
+  le fichier fourni par la cliente est nativement plus petit (1200×1500) que
+  les autres photos de formule. Le rendu est net dans cette limite (réexport
+  propre + accentuation, cf. section Photos ci-dessus), mais pour une
+  netteté parfaite sur très grand écran il faudrait le fichier d'origine en
+  plus haute résolution — à demander à la cliente si le rendu
   n'est pas jugé suffisant.
 
 ## Commandes utiles

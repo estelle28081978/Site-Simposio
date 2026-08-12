@@ -9,12 +9,12 @@ sont pas soumises aux licences Wikimedia ci-dessous.
 
 | Fichier | Utilisée sur |
 |---|---|
-| `evenement-parasols-jaunes-table.jpg` | Prestations — La Cartolina (fond) |
+| `evenement-parasols-jaunes-table.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) |
 | `evenement-vespa-fleurie-lemon.jpg` | Prestations — L'Esperienza (fond) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets |
-| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets |
+| `evenement-tablee-diner-bougies.jpg` | Prestations — La Cartolina (fond) + Mosaïque Projets |
 | `evenement-rangee-spritz.jpg` | Mosaïque Projets |
 | `evenement-vespas-vintage.jpg` | Mosaïque Projets |
 | `evenement-fiat500-blanche.jpg` | Mosaïque Projets |

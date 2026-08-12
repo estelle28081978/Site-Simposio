@@ -970,11 +970,34 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .world-aperitivo { --tint-rgb: var(--rosso-venezia-rgb); }
 .world-tavola { --tint-rgb: var(--rosso-ombria-rgb); }
 
-.world-media { position: absolute; inset: 0; z-index: 0; }
-.world-media img { width: 100%; height: 100%; object-fit: cover; filter: saturate(1.1) contrast(1.05); }
-.world-cartolina .world-media img { object-position: center 45%; }
-.world-esperienza .world-media img { object-position: center 40%; }
-.world-aperitivo .world-media img { object-position: center 32%; }
+.world-media { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+/* Blurred, oversized copy of the same photo fills the entire section edge to
+   edge (no empty space, ever) while the sharp copy on top is never cropped
+   (object-fit: contain) — the whole photo stays visible at any aspect ratio,
+   including on ultra-wide desktop screens where the section is far wider
+   than the (portrait) source photos. */
+.world-media-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  filter: blur(48px) saturate(1.15) brightness(0.68);
+}
+.world-media-fg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: saturate(1.1) contrast(1.05);
+}
+.world-cartolina .world-media-fg,
+.world-aperitivo .world-media-fg { object-position: right center; }
+.world-esperienza .world-media-fg,
+.world-tavola .world-media-fg { object-position: left center; }
 .world-media::after {
   content: "";
   position: absolute;
