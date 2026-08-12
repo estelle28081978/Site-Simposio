@@ -60,6 +60,13 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   **Canter** (sous-titres) n'a pas pu être obtenue légalement pour un usage
   self-hosted dans cet environnement — remplacée par **Oswald** (self-hosted,
   formes géométriques proches) via la variable CSS `--font-subtitle`.
+  Le **logo "Simposio."** (header + footer, `.logo`) utilise une police à
+  part, **Alex Brush** (self-hosted, `assets/fonts/alex-brush/`, SIL OFL,
+  variable CSS `--font-logo`) — un script calligraphique où les lettres sont
+  reliées en un seul tracé, demandé explicitement à la place de Yeseva One
+  (serif, lettres détachées) pour le mot-symbole seul. Ne pas l'utiliser pour
+  autre chose que `.logo` : c'est une police d'accent, illisible en dessous
+  d'une taille assez grande.
 - **Palette** (fixe, définie dans le brief de marque) : Bleu Méditerranéen
   `#1c3b4a`, Terracotta Riviera `#c1622d`, Blanc Calcaire `#f6f1e7` (couleurs
   principales) ; Rouge Terre d'Ombrie `#4a1c1c`, Rouge Pourpre de Venise
@@ -125,6 +132,15 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   large (desktop grand écran), ça recadre agressivement les photos portrait
   et une bonne partie de l'image disparaît — c'est le bug qui a motivé ce
   pattern à deux couches.
+- **`.page-header-full`** (modificateur optionnel de `.page-header`, utilisé
+  pour l'instant uniquement sur `contact.html`) : force le bandeau titre à
+  occuper `100vh`/`100svh` avec contenu centré verticalement, pour que le
+  titre remplisse tout l'écran avant que la section suivante (le formulaire)
+  n'apparaisse au scroll. `.page-header` seul (sans ce modificateur, sur les
+  5 autres pages) reste une bande compacte dimensionnée par son contenu —
+  ne pas ajouter `.page-header-full` ailleurs sans que ce soit demandé, et ne
+  pas modifier `.page-header` de base pour ce même effet (ça changerait les
+  5 autres pages).
 - Mosaïque (page Projets) : CSS Grid avec `grid-auto-flow: dense` pour éviter
   tout trou d'affichage — ne jamais réintroduire de `transform: translateY`
   décoratif sur les items, ça casse l'alignement de la grille (bug corrigé).

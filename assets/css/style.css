@@ -42,6 +42,13 @@
   font-display: swap;
   src: url("../fonts/oswald/oswald-variable.woff2") format("woff2-variations"), url("../fonts/oswald/oswald-variable.woff2") format("woff2");
 }
+@font-face {
+  font-family: "Alex Brush";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/alex-brush/alex-brush-400.woff2") format("woff2");
+}
 
 /* ==========================================================================
    Simposio — Design tokens (Apple-inspired: huge type, glass, gradients,
@@ -92,6 +99,7 @@
   --font-display: "Yeseva One", "Georgia", serif;
   --font-subtitle: "Canter", "Oswald", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Glacial Indifference", "Helvetica Neue", Arial, sans-serif;
+  --font-logo: "Alex Brush", "Yeseva One", cursive;
 
   /* Spacing scale — generous, Apple-like breathing room */
   --space-1: 0.5rem;
@@ -263,10 +271,12 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .site-header.is-scrolled .container { padding-block: 0.45rem; }
 
 .logo {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-family: var(--font-logo);
+  font-weight: 400;
+  font-size: 2.1rem;
+  line-height: 1;
   color: var(--cream);
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
 }
 .logo span { color: var(--terracotta-300); }
 
@@ -423,6 +433,12 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .page-header h1 { max-width: 46rem; margin-inline: auto; }
 .page-header h1 .accent { font-weight: 400; color: var(--accent); }
 .page-header .lede { margin: var(--space-3) auto 0; }
+.page-header-full {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+}
 .page-header.on-dark {
   background: linear-gradient(200deg, rgba(16, 31, 39, 0.96) 0%, var(--navy-900) 100%);
   color: var(--fg-inverse);
