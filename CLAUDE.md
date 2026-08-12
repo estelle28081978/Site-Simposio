@@ -29,13 +29,29 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   tokens en variables `:root` (couleurs, espacements, rayons, durées). Pas de
   préprocesseur.
 - **JS** : `assets/js/main.js` (vanilla, IIFE unique, pas de dépendances) pour
-  tous les comportements interactifs communs (reveal au scroll, jeu des 5 sens,
-  cartes à retourner, mosaïque pannable, formulaire de contact).
+  tous les comportements interactifs communs (reveal au scroll, parcours des
+  5 sens, lignes d'engagement au survol, mosaïque pannable, formulaire de
+  contact).
 - **Photos** : mélange de photos **Simposio** (vrais événements, fichiers
   `assets/img/evenement-*.jpg`, aucun crédit requis) et de photos sourcées sur
   Wikimedia Commons (licences CC0/CC BY/CC BY-SA), redimensionnées/compressées
   en JPEG. Attribution complète dans `assets/img/CREDITS.md` et en pied de
   page de chaque page concernée.
+  ⚠️ `evenement-parasols-jaunes-table.jpg` et `evenement-vespa-fleurie-lemon.jpg`
+  (formules La Cartolina / L'Esperienza) ont une résolution source **limitée**
+  fournie par la cliente (736×1104 et 1200×1500 « vrais » pixels) — une session
+  précédente les avait agrandies artificiellement bien au-delà (jusqu'à ×2,3),
+  ce qui produisait un flou d'interpolation visible une fois affichées en
+  fond plein écran. Corrigé : réexport propre en un seul passage depuis les
+  fichiers source avec un agrandissement modéré + `ImageFilter.UnsharpMask`
+  (Pillow). **Ne pas réagrandir davantage** ces deux fichiers : le plafond de
+  netteté vient de la résolution native fournie, pas d'un mauvais export — si
+  la cliente envoie ces deux photos en plus haute résolution (directement
+  depuis le téléphone/appareil, pas une version déjà recompressée/exportée
+  d'un réseau social), les réexporter à partir de la nouvelle source.
+  `spritz-terrasse.jpg` (L'Aperitivo) avait aussi un bug réel : exportée sans
+  appliquer la rotation EXIF d'origine, la photo apparaissait sur le côté —
+  corrigé via `PIL.ImageOps.exif_transpose()` avant export.
 - **Polices** : Yeseva One (titres, self-hosted) et Glacial Indifference
   (corps de texte, self-hosted, SIL OFL) sont les polices de marque exactes.
   **Canter** (sous-titres) n'a pas pu être obtenue légalement pour un usage
@@ -53,15 +69,47 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 ## Patterns JS notables (`assets/js/main.js`)
 
 - `[data-reveal]` / `[data-reveal-group]` : reveal au scroll via
-  IntersectionObserver.
+  IntersectionObserver (seuil 0.15, `rootMargin "0px 0px -60px 0px"`) — ajoute
+  `.is-visible` une seule fois puis `unobserve()`, jamais de re-trigger au
+  retour en arrière. Sert de socle à toutes les animations de reveal
+  ci-dessous (il suffit d'ajouter une classe CSS en plus de `data-reveal`).
 - Citation "Suspendre le quotidien..." (page Univers) : la coloration
   progressive des mots est synchronisée sur la position de l'élément
   lui-même par rapport au **milieu du viewport** (pas sur le scroll de toute
   la section) — voir `updatePromise()`.
-- 5 sens (page Univers) : mini-jeu cliquable (pas un simple scroll-sync) avec
-  suivi de progression et micro-interactions (rebond d'icône, ondulation).
-- Cartes à retourner (page Engagements) : flip 3D CSS déclenché au clic/tap
-  et au clavier (`[data-flip]`).
+- **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
+  chemin SVG (spline Catmull-Rom → Bézier, voir `catmullRomToBezierD()`) se
+  dessine progressivement pendant le scroll dans une section pinned/sticky
+  (`.senses-journey`, `height: 1240vh` desktop / `1000vh` mobile). 5 points
+  de repère (`journeyLayouts`) ; `fractionAtPoint()` échantillonne la courbe
+  rendue (500 points) pour retrouver la vraie fraction de longueur d'arc de
+  chaque point de repère (les points ne sont pas espacés uniformément une
+  fois les ondulations ajoutées). Chaque carte ne devient visible que
+  lorsque le scroll a **atteint** la fraction du point (`journeyDwellSpan`),
+  jamais en cours de trajet — c'est le comportement demandé, ne pas le
+  transformer en simple scroll-sync continu. `.senses-journey-head` doit
+  rester en flux normal (`position: relative`, pas `absolute`) dans la
+  colonne flex `.senses-journey-sticky`, sinon le chemin SVG peut chevaucher
+  visuellement le titre (bug déjà rencontré et corrigé).
+- **Engagements — lignes au survol** (`#engagementHoverCard`,
+  `.engagement-line`) : liste de lignes ; au survol (ou tap sur mobile via
+  `matchMedia("(hover: none)")`), une carte de description suit le curseur
+  (`positionEngagementCard()`/`scheduleEngagementMove()`, throttlée par
+  `requestAnimationFrame`). Il n'y a plus de flip-card (`[data-flip]`
+  n'existe plus dans le code) — ne pas réintroduire ce pattern sans
+  qu'on le redemande explicitement.
+- **Balayage des titres et des formules** (`title-slide` / `formula-slide-left`
+  / `formula-slide-right` dans `style.css`, purement CSS, piggyback sur
+  `[data-reveal]`) : le tout premier `<h1>` de chaque page glisse depuis la
+  droite (`title-slide`). Sur `prestations.html`, chaque `<article class="world">`
+  glisse en entier (photo + texte, la photo étant positionnée en absolu à
+  l'intérieur donc elle suit le bloc) en alternant gauche/droite, avec un
+  effet de point net progressif (`filter: blur()` → 0). **Important** : la
+  durée du flou (`filter` transition, ~0.55s) doit rester **découplée et
+  nettement plus courte** que la durée du déplacement (`transform`
+  transition, ~1.9s) — sinon la photo reste visuellement floue pendant
+  qu'elle est encore en train de glisser, ce qui a été signalé comme un bug
+  de qualité d'image alors que ce n'en était pas un.
 - Mosaïque (page Projets) : CSS Grid avec `grid-auto-flow: dense` pour éviter
   tout trou d'affichage — ne jamais réintroduire de `transform: translateY`
   décoratif sur les items, ça casse l'alignement de la grille (bug corrigé).
@@ -77,13 +125,15 @@ Le cahier des charges a été appliqué intégralement :
 ✅ Fait : charte graphique (esprit Havas Events — en-têtes asymétriques,
 formes décoratives, contraste gras/normal), hero accueil réduit à
 bannière/baseline/CTA avec chiffres clés sur bande dédiée, page Univers (5
-sens à déblocage séquentiel, storytelling resserré), page Prestations avec
-vraies photos d'événements Simposio, mosaïque Projets reconstruite en grille
-pannable sans trou (glisser-déposer/clavier) affichant les photos
-d'événements réelles, page Engagements gamifiée avec emplacements photo pour
-l'équipe, page Contact repensée (panneau bleu marine + carte formulaire),
-page Réalisations (immersion 3D) **retirée du site** à la demande de la
-cliente — voir ci-dessous.
+sens en parcours scroll-dessiné le long d'un chemin SVG, storytelling
+resserré), page Prestations avec vraies photos d'événements Simposio et
+balayage d'entrée sur les titres/formules, mosaïque Projets reconstruite en
+grille pannable sans trou (glisser-déposer/clavier) affichant les photos
+d'événements réelles, page Engagements sur fond bleu marine avec lignes
+d'engagement au survol + emplacements photo pour l'équipe, page Contact
+repensée (panneau bleu marine + carte formulaire), page Réalisations
+(immersion 3D) **retirée du site** à la demande de la cliente — voir
+ci-dessous.
 
 🗑️ **Page Réalisations retirée** : la page `realisations.html` et tout ce qui
 lui était propre ont été supprimés (Three.js self-hébergé dans
@@ -107,6 +157,14 @@ ont été retirés des 6 pages restantes.
   remplacer, présents dans les 6 pages.
 - **Grilles tarifaires** du document de marque : volontairement exclues du
   site public (info confidentielle, usage interne uniquement).
+- **Résolution des photos La Cartolina / L'Esperienza** (`evenement-parasols-
+  jaunes-table.jpg`, `evenement-vespa-fleurie-lemon.jpg`) : les fichiers
+  fournis par la cliente sont nativement plus petits (736×1104 / 1200×1500)
+  que les deux autres photos de formule. Le rendu est net dans cette limite
+  (réexport propre + accentuation, cf. section Photos ci-dessus), mais pour
+  une netteté parfaite sur très grand écran il faudrait les fichiers
+  d'origine en plus haute résolution — à demander à la cliente si le rendu
+  n'est pas jugé suffisant.
 
 ## Commandes utiles
 
