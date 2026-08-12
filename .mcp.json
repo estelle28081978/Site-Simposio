@@ -1,11 +1,12 @@
 {
-  "$schema": "https://json.schemastore.org/mcp.json",
   "mcpServers": {
-    "magic": {
+    "stock-images": {
       "command": "npx",
-      "args": ["-y", "@21st-dev/magic@latest"],
+      "args": ["-y", "stock-images-mcp"],
       "env": {
-        "API_KEY": "${MAGIC_API_KEY}"
+        "PEXELS_API_KEY": "${PEXELS_API_KEY}",
+        "UNSPLASH_API_KEY": "${UNSPLASH_API_KEY}",
+        "PIXABAY_API_KEY": "${PIXABAY_API_KEY}"
       }
     }
   }
