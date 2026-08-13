@@ -442,6 +442,25 @@
     });
   }
 
+  /* ---------- Engagements: valeurs façon "paroles" au scroll (Deezer) ----------
+     Chaque .values-line devient .is-active quand elle traverse une fine bande
+     horizontale au milieu du viewport (rootMargin -45% haut/bas laisse une
+     bande de 10% de hauteur au centre) — pas un simple reveal one-shot comme
+     [data-reveal], la classe s'ajoute ET se retire au passage, dans les deux
+     sens de scroll, pour un effet de "ligne actuelle" qui suit le scroll. */
+  var valuesLines = document.querySelectorAll(".values-line");
+  if (valuesLines.length && "IntersectionObserver" in window) {
+    var valuesObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          entry.target.classList.toggle("is-active", entry.isIntersecting);
+        });
+      },
+      { threshold: 0, rootMargin: "-45% 0px -45% 0px" }
+    );
+    valuesLines.forEach(function (line) { valuesObserver.observe(line); });
+  }
+
   /* ---------- Projets: seamless draggable mosaic ---------- */
   var mosaicViewport = document.getElementById("mosaicViewport");
 
