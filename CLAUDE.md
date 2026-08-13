@@ -210,25 +210,48 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   1. `.page-header.page-header-full` (titre plein écran, inchangé) : eyebrow/h1/lede
      puis une ligne `.page-header-location` (pin + « Basée en Alsace, France »).
   2. `.contact-band` — bandeau plein-largeur fond terracotta juste sous le
-     titre, généreusement padded (`padding-block: var(--space-4)`, agrandi
-     à la demande de la cliente) : `.contact-band-logo` (placeholder rond en
-     pointillés, **TODO** vrai logo) + nom de marque, puis trois
-     `.contact-band-method` — chacun affiche désormais un `.contact-band-icon`
-     **et** une valeur texte (`.contact-band-method-value`), pas juste une
-     icône seule. **Coordonnées actuellement provisoires/fictives** (demandé
+     titre. **Agrandi à deux reprises** à la demande de la cliente
+     (« encore plus large ») : `padding-block: var(--space-5)`, logo
+     placeholder `4.4rem`, nom de marque en `clamp(1.9rem, 1.4vw + 1.5rem,
+     2.6rem)`, labels de méthode `0.95rem`, valeurs `1.15rem`, icônes
+     `3.4rem` — jouer sur ces tailles (et non juste le padding) est ce qui
+     donne au bandeau son poids visuel, la cliente a insisté explicitement
+     sur ce point. Le placeholder logo (`.contact-band-logo`) est un simple
+     cercle en pointillés **sans texte** — le texte "Logo à venir" qui s'y
+     trouvait a été retiré à la demande de la cliente (visuellement trop
+     chargé), le rappel `TODO` vers le vrai logo reste uniquement en
+     commentaire HTML, invisible sur la page. Chaque `.contact-band-method`
+     affiche un `.contact-band-icon` **et** une valeur texte
+     (`.contact-band-method-value`), pas juste une icône seule.
+     **Coordonnées actuellement provisoires/fictives** (demandé
      explicitement par la cliente pour prévisualiser la densité visuelle
      réelle, cf. commentaire `TODO` juste au-dessus de `.contact-band-methods`
      dans `contact.html`) : email `contact@simposio.fr` (lien `mailto:`),
      téléphone `03 88 00 00 00` (lien `tel:`), comptes réseaux sociaux
      `@simposio.events` / `Simposio` sous les icônes Instagram/LinkedIn
      (markup dérivé de `.nav-social`) — **à remplacer par les vraies avant
-     mise en ligne**.
+     mise en ligne**. **Apparition de bas en haut** : `.contact-band-methods`
+     porte `data-reveal-group` (les 3 blocs "Nous écrire"/"Nous appeler"/
+     "Réseaux sociaux" sont ses 3 enfants directs) — réutilise le système
+     déjà en place (`[data-reveal-group].is-visible > *`, `main.js` : IIFE
+     unique qui observe `[data-reveal], [data-reveal-group]` et ajoute
+     `.is-visible` une fois via IntersectionObserver) plutôt que d'inventer
+     une nouvelle animation : chaque titre glisse de `translateY(20px)`
+     (donc du bas) vers sa position finale en fondu, avec un décalage
+     échelonné (0/80/160ms) entre les trois. Ne pas dupliquer ce mécanisme
+     avec du CSS ad hoc si d'autres titres du bandeau doivent un jour
+     recevoir le même traitement — ajouter `data-reveal-group` au bon
+     conteneur parent suffit.
   3. `.contact-devis` (fond `--bg-dim`) — **deux colonnes** sur desktop
-     (`.contact-devis-inner`, `grid-template-columns: 0.85fr 1.15fr` à partir
-     de 960px, empilé en une colonne en dessous) reproduisant la maquette
-     Canva de la cliente (texte à gauche, carte formulaire à droite — **pas
-     centré**, correction explicite après un premier essai en colonne unique
-     centrée qui ne respectait pas la maquette) :
+     (`.contact-devis-inner`, `grid-template-columns: 0.85fr 1.15fr`,
+     **`align-items: start`** à partir de 960px — pas `center` : la cliente
+     a explicitement demandé que le texte de gauche commence à la même
+     hauteur que le haut de la carte formulaire, pas qu'il soit centré
+     verticalement par rapport à elle — empilé en une colonne en dessous)
+     reproduisant la maquette Canva de la cliente (texte à gauche, carte
+     formulaire à droite — **pas centré**, correction explicite après un
+     premier essai en colonne unique centrée qui ne respectait pas la
+     maquette) :
      - `.contact-devis-text` (gauche) : eyebrow/h2/lede alignés à gauche
        (repris de l'ancien `.contact-hero-info-content`), puis
        `.contact-founder-strip` (pastille compacte avatar "EL"

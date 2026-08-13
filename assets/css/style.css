@@ -1251,38 +1251,28 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .page-header-location svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
 
-/* Bandeau — logo placeholder + brand name + the three ways to reach Simposio */
+/* Bandeau — logo placeholder + brand name + the three ways to reach Simposio.
+   Sized deliberately large (padding + type scale) so it reads as its own
+   statement band, not a thin utility strip. */
 .contact-band { background: var(--terracotta); }
 .contact-band-inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-4);
-  padding-block: var(--space-4);
+  gap: var(--space-5);
+  padding-block: var(--space-5);
 }
-.contact-band-brand { display: flex; align-items: center; gap: var(--space-2); }
+.contact-band-brand { display: flex; align-items: center; gap: var(--space-3); }
 .contact-band-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 4.4rem;
+  height: 4.4rem;
   border-radius: 50%;
   border: 1.5px dashed rgba(246, 241, 231, 0.55);
   background: rgba(246, 241, 231, 0.12);
-  text-align: center;
 }
-.contact-band-logo span {
-  font-family: var(--font-subtitle);
-  font-size: 0.56rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--cream);
-  line-height: 1.15;
-}
-.contact-band-name { font-family: var(--font-display); font-size: 1.5rem; color: var(--cream); }
+.contact-band-name { font-family: var(--font-display); font-size: clamp(1.9rem, 1.4vw + 1.5rem, 2.6rem); color: var(--cream); }
 .contact-band-dot { color: var(--navy); }
 
 .contact-band-methods { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-6); }
@@ -1290,20 +1280,20 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.85rem;
 }
 .contact-band-method-label {
   font-family: var(--font-subtitle);
-  font-size: 0.7rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--cream);
 }
-.contact-band-method-row { display: flex; align-items: center; gap: 0.7rem; }
+.contact-band-method-row { display: flex; align-items: center; gap: 0.8rem; }
 .contact-band-method-value {
   font-family: var(--font-subtitle);
-  font-size: 0.85rem;
+  font-size: 1.15rem;
   font-weight: 500;
   color: var(--cream);
 }
@@ -1312,15 +1302,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 2.8rem;
-  height: 2.8rem;
+  width: 3.4rem;
+  height: 3.4rem;
   border-radius: 50%;
   background: rgba(246, 241, 231, 0.14);
   border: 1px solid rgba(246, 241, 231, 0.3);
   color: var(--cream);
   transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
 }
-.contact-band-icon svg { width: 16px; height: 16px; }
+.contact-band-icon svg { width: 18px; height: 18px; }
 a.contact-band-method:hover .contact-band-icon { background: var(--navy); border-color: var(--navy); transform: translateY(-2px); }
 a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 
@@ -1329,11 +1319,13 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 .contact-band-social-icons a:hover .contact-band-icon { background: var(--navy); border-color: var(--navy); transform: translateY(-2px); }
 .contact-band-social-icons a:hover .contact-band-method-value { color: var(--navy); }
 
+/* Each title in the bandeau rises up + fades in on scroll, staggered —
+   [data-reveal-group] on .contact-band-methods, base rule further below. */
 @media (max-width: 699px) {
   .contact-band-inner { justify-content: center; text-align: center; }
   .contact-band-methods { justify-content: center; width: 100%; gap: var(--space-5); row-gap: var(--space-4); }
@@ -1343,7 +1335,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 .contact-devis { position: relative; background: var(--bg-dim); padding-block: var(--space-6); overflow: hidden; }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-5); }
 @media (min-width: 960px) {
-  .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: center; gap: var(--space-6); }
+  .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: start; gap: var(--space-6); }
 }
 .contact-devis::before {
   content: "";
