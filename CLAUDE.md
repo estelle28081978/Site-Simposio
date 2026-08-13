@@ -392,6 +392,49 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (mise à jour de la colonne "Utilisée sur" nécessaire) et retirer le
   crédit correspondant du footer si une photo Wikimedia n'est plus utilisée
   nulle part sur le site.
+- **Valeurs — 6ᵉ itération (2026-08-13) : encore agrandi, centrage strict,
+  lignes d'arrière-plan rapprochées de la taille active** : trois demandes
+  supplémentaires sur la même section, en plus de l'ajout de
+  `.page-header-full` documenté ci-dessus.
+  **Tout encore agrandi** : `.values-text .eyebrow` repasse de
+  `clamp(1.7rem,…,3.2rem)` à `clamp(2.1rem,…,4.2rem)` ; `.values-line`
+  (base/actif) de `clamp(1.4rem,…,2.2rem)`/`clamp(2.2rem,…,3.8rem)` à
+  `clamp(2.1rem,…,3.6rem)`/`clamp(2.4rem,…,4rem)` ; `.values-window` de
+  `30rem` à `36rem` de hauteur, `translateY` prev/next de `±8.8rem` à
+  `±10.4rem` — même piège de chevauchement que la fois précédente, revérifié
+  au pire cas (3 lignes de large sur `L'Italie comme art de vivre, pas
+  comme décor` en position prev/next) sans collision.
+  **Centrage "pile au milieu"** : la cliente a précisé que les colonnes
+  1fr/1fr de l'itération précédente ne donnaient pas un espacement
+  symétrique — chaque bloc (texte, photo) était centré dans sa propre
+  moitié de conteneur, donc l'espace entre le bord gauche de l'écran et le
+  texte variait selon la longueur du texte, sans rapport garanti avec
+  l'espace entre le texte et la photo. **`.values-inner` passe de
+  `display:grid; grid-template-columns:1fr 1fr; justify-items:center` à
+  `display:flex; justify-content:center`**, avec `.values-text`
+  (`width:min(100%,40rem); flex:0 0 auto`) et `.values-media`
+  (dimensionnée par `aspect-ratio` + `height` plutôt que `width:100%`,
+  `flex:0 0 auto`) qui ne s'étirent plus pour remplir une colonne — les
+  deux blocs se comportent comme une unité compacte centrée dans le
+  conteneur, avec un `gap` fixe (`var(--space-6)`) entre eux. Résultat
+  vérifié par mesure Playwright (`getBoundingClientRect`) : marge gauche et
+  marge droite strictement égales (150,4px chacune à 1600px de large),
+  quelle que soit la valeur affichée. Si `grid-template-columns:1fr 1fr`
+  avec `justify-items:center` réapparaît ici, c'est l'ancienne version à
+  largeurs de colonnes égales mais spacing non garanti — ne pas la
+  réintroduire sans qu'on le redemande.
+  **Lignes prev/next rapprochées de la taille active** ("juste légèrement
+  moins grand que la taille de la police principale") : au-delà de
+  l'agrandissement général ci-dessus, l'écart relatif entre actif et
+  prev/next a aussi été réduit délibérément — le `scale()` appliqué aux
+  lignes non actives passe de `0.84` à `0.92` (`.values-line`, transform de
+  base, et `.is-prev`/`.is-next`), rapprochant la taille effective
+  (`font-size × scale`) des lignes d'arrière-plan de celle de la ligne
+  active (≈83% de la taille active en pire cas, contre ≈49% avant) tout en
+  gardant `opacity:0.45` (déjà proche de l'ancien `0.4`) pour que la
+  distinction actif/inactif reste lisible via l'opacité et le poids de
+  police (`font-weight:700` actif vs `400` inactif) plutôt que via un écart
+  de taille marqué.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
@@ -442,12 +485,20 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   ici, vérifier le rendu sur desktop très large avant publication : le
   recadrage `cover` peut à nouveau couper une partie de l'image.
 - **`.page-header-full`** (modificateur optionnel de `.page-header`, utilisé
-  sur `contact.html` et `univers.html`) : force le bandeau titre à occuper
-  `100vh`/`100svh` avec contenu centré verticalement, pour que le titre
-  remplisse tout l'écran avant que la section suivante (formulaire, parcours
-  des 5 sens) n'apparaisse au scroll. `.page-header` seul (sans ce
-  modificateur, sur les 4 autres pages) reste une bande compacte dimensionnée
-  par son contenu — ne pas l'ajouter ailleurs sans que ce soit demandé.
+  sur `contact.html`, `univers.html` et, depuis le 2026-08-13,
+  `engagements.html`) : force le bandeau titre à occuper `100vh`/`100svh`
+  avec contenu centré verticalement, pour que le titre remplisse tout
+  l'écran avant que la section suivante (formulaire, parcours des 5 sens,
+  lignes d'engagement) n'apparaisse au scroll. Ajouté à `engagements.html`
+  à la demande explicite de la cliente, qui voulait que le titre « Un
+  partenaire, pas un prestataire de plus » (fond calcaire) apparaisse en
+  plein écran comme le fait déjà le titre d'`univers.html` — simple ajout
+  de la classe, aucun changement structurel nécessaire (`.title-force-3-lines`
+  reste correct, vérifié aux mêmes 3 lignes sur 12 largeurs de 320 à
+  1920px après l'ajout). `.page-header` seul (sans ce modificateur, sur les
+  3 autres pages : index, prestations, projets) reste une bande compacte
+  dimensionnée par son contenu — ne pas l'ajouter ailleurs sans que ce soit
+  demandé.
   **Note de contexte (2026-08-12)** : une session locale (app Claude Code)
   avait en parallèle construit une version alternative de Contact tenant
   entièrement sur un seul écran sans scroll (`.page-header--compact` +
