@@ -1311,50 +1311,74 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .talent-bio { color: var(--fg-muted); font-size: 0.95rem; }
 
 /* ==========================================================================
-   Engagements — Valeurs : défilement façon "paroles" (Deezer), une ligne
-   active à la fois selon la position de scroll (IntersectionObserver sur
-   .values-line dans main.js, rootMargin -45% : une fine bande au centre du
-   viewport). Bandeau terracotta plein-bleed (comme .contact-band) — la
-   cliente a explicitement demandé de repasser du panneau étroit centré à un
-   bandeau pleine largeur, mais avec une hauteur ("largeur" du bandeau au
-   sens ruban) réduite à environ la moitié de celle du panneau précédent.
+   Engagements — Valeurs : carrousel "paroles" façon Deezer, épinglé au
+   scroll (même mécanique que .senses-journey : long wrapper + position:
+   sticky). Seules 3 lignes sont visibles à la fois (précédente / active /
+   suivante) empilées au même endroit ; toutes les autres sont invisibles et
+   se révèlent en glissant à mesure qu'on avance dans le scroll — voir
+   updateValuesActive() dans main.js. Hauteur du bandeau épinglé calée sur
+   la somme de l'ancien bandeau terracotta + la petite bande blanche qui le
+   suivait (mesuré avant ce changement : ~515px à 1400/1920px, ~510px en
+   mobile, ~413px vers 768px) — demande explicite de la cliente pour ne pas
+   agrandir la place prise par la section. Fond Bleu Méditerranéen (`--navy`).
    ========================================================================== */
-.values { background: var(--bg); padding-block: var(--space-6); }
-.values-panel {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-top: var(--space-5);
-  background: var(--terracotta);
-  padding-block: 1rem;
+.values {
+  position: relative;
+  height: 480vh;
+  background: var(--navy);
 }
-@media (max-width: 900px) {
-  .values-panel { padding-block: 1rem; }
-}
-.values-list {
-  max-width: 44rem;
-  margin-inline: auto;
-  padding-inline: var(--space-3);
+.values-sticky {
+  position: sticky;
+  top: 0;
+  height: min(58vh, 515px);
+  min-height: 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.6rem, 1.2vw, 1rem);
-  text-align: center;
+  justify-content: center;
+  gap: var(--space-3);
+  overflow: hidden;
 }
+@media (max-width: 900px) and (min-width: 641px) {
+  .values-sticky { height: min(54vh, 413px); min-height: 340px; }
+}
+@media (max-width: 640px) {
+  .values-sticky { height: min(66vh, 510px); min-height: 320px; }
+}
+.values-window {
+  position: relative;
+  width: 100%;
+  max-width: 44rem;
+  padding-inline: var(--space-4);
+  height: 14rem;
+}
+.values-list { list-style: none; margin: 0; padding: 0; }
 .values-line {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.3rem, 1.6vw + 1rem, 2rem);
+  font-size: clamp(1.15rem, 1.4vw + 0.85rem, 1.7rem);
   line-height: 1.3;
-  color: rgba(246, 241, 231, 0.4);
-  opacity: 0.7;
-  transform: scale(0.96);
-  transition: color 0.5s var(--ease), opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  color: var(--fg-muted-inverse);
+  opacity: 0;
+  transform: translateY(0) scale(0.92);
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), font-size 0.55s var(--ease);
+  pointer-events: none;
 }
 .values-line.is-active {
-  color: var(--cream);
   opacity: 1;
-  transform: scale(1);
+  color: var(--cream);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2.2rem);
+  transform: translateY(0) scale(1);
 }
+.values-line.is-prev { opacity: 0.4; transform: translateY(-4.6rem) scale(0.86); }
+.values-line.is-next { opacity: 0.4; transform: translateY(4.6rem) scale(0.86); }
 
 /* ==========================================================================
    Contact page — full-screen title, contact bandeau, single-column premium

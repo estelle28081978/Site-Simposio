@@ -443,37 +443,32 @@
   }
 
   /* ---------- Engagements: valeurs façon "paroles" au scroll (Deezer) ----------
-     Exactement une .values-line active à la fois : celle dont le centre est
-     le plus proche du milieu du viewport, recalculé au scroll (throttlé par
-     requestAnimationFrame, même pattern que updatePromise() ci-dessus).
-     Un premier essai utilisait un IntersectionObserver avec une bande fixe
-     au centre (rootMargin -45%) — ça marchait tant que les lignes étaient
-     très espacées, mais une fois le bandeau resserré (demande cliente,
-     bandeau plein-largeur mais deux fois moins haut), deux lignes pouvaient
-     se retrouver dans la bande en même temps et devenir actives ensemble —
-     bug réel rencontré et corrigé en passant à un calcul "ligne la plus
-     proche du centre" : garantit toujours exactement une ligne active, quel
-     que soit l'espacement entre les lignes. */
+     Carrousel épinglé (même mécanique que .senses-journey : long wrapper +
+     position:sticky, progress = scroll traversé ÷ distance totale). Le
+     scroll dans le wrapper .values choisit un index actif parmi les 6
+     valeurs ; seules 3 lignes portent une classe visible à la fois
+     (.is-prev / .is-active / .is-next), toutes les autres restent sans
+     classe et donc invisibles (opacity:0 par défaut sur .values-line) —
+     c'est ce qui donne l'effet "les lignes se révèlent en glissant" plutôt
+     qu'un simple dimming de liste complète (ancienne version). */
+  var valuesSection = document.getElementById("valuesSection");
   var valuesLines = document.querySelectorAll(".values-line");
-  if (valuesLines.length) {
+  if (valuesSection && valuesLines.length) {
     if (reducedMotion) {
       valuesLines.forEach(function (line) { line.classList.add("is-active"); });
     } else {
       var vTicking = false;
       function updateValuesActive() {
-        var center = window.innerHeight / 2;
-        var closest = null;
-        var closestDist = Infinity;
-        valuesLines.forEach(function (line) {
-          var rect = line.getBoundingClientRect();
-          var dist = Math.abs(rect.top + rect.height / 2 - center);
-          if (dist < closestDist) {
-            closestDist = dist;
-            closest = line;
-          }
-        });
-        valuesLines.forEach(function (line) {
-          line.classList.toggle("is-active", line === closest);
+        var rect = valuesSection.getBoundingClientRect();
+        var total = rect.height - window.innerHeight;
+        var scrolled = -rect.top;
+        var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
+        var activeIndex = Math.min(valuesLines.length - 1, Math.floor(progress * valuesLines.length));
+        valuesLines.forEach(function (line, i) {
+          line.classList.remove("is-active", "is-prev", "is-next");
+          if (i === activeIndex) line.classList.add("is-active");
+          else if (i === activeIndex - 1) line.classList.add("is-prev");
+          else if (i === activeIndex + 1) line.classList.add("is-next");
         });
         vTicking = false;
       }

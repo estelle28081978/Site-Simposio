@@ -220,41 +220,66 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   droite — affordance visible en plus de la carte au survol, demandée
   explicitement ; le `+` se remplit en terracotta au survol/actif comme le
   reste de la ligne.
-- **Valeurs — défilement façon "paroles" (2026-08-13)** (`.values`,
-  `.values-panel`, `.values-list`/`.values-line`, sous la section Talents,
-  `engagements.html`) : demandé explicitement par la cliente sur le modèle
-  des paroles synchronisées de Deezer (capture d'écran fournie) — au scroll,
-  une seule ligne de valeur est active (blanc cassé, opaque) à la fois,
-  toutes les autres restent estompées (`rgba(246,241,231,0.4)`, `opacity:
-  0.7`). **Mécanique dans `main.js`** : à chaque scroll (throttlé par
-  `requestAnimationFrame`, même pattern que `updatePromise()` pour la
-  citation d'univers.html), on recalcule quelle `.values-line` a son centre
-  le plus proche du milieu du viewport et on lui seule ajoute `.is-active`
-  — garantit **toujours exactement une** ligne active, jamais deux, jamais
-  zéro. **Un premier essai utilisait un `IntersectionObserver`** avec
-  `rootMargin: "-45% 0px -45% 0px"` (bande fixe au centre du viewport,
-  `isIntersecting` → `.is-active`) : ça fonctionnait tant que les lignes
-  étaient très espacées, mais une fois le bandeau resserré (voir
-  ci-dessous), deux lignes tombaient parfois ensemble dans la bande et
-  devenaient actives simultanément — bug réel rencontré et corrigé en
-  passant au calcul "ligne la plus proche du centre", robuste quel que soit
-  l'espacement. Si un `IntersectionObserver` à bande fixe réapparaît ici
-  dans un diff, c'est l'ancienne approche, ne pas la réintroduire.
-  **Bandeau plein-largeur, hauteur réduite** (`.values-panel`, `width:
-  100vw; margin-left: calc(50% - 50vw)`, comme `.contact-band`) : la
-  cliente a d'abord demandé un panneau étroit centré (« pas une partie
-  entière... un demi écran »), puis explicitement redemandé de repasser en
-  bandeau plein largeur mais avec une hauteur (`padding-block: 1rem`, gap
-  des lignes réduit) calée à peu près sur la **moitié de la hauteur** du
-  panneau précédent (~797px → ~403px à 1400px de large, vérifié). Si
-  `.values-panel` réapparaît avec un `width` en `vw`/`px` limité (panneau
-  étroit centré), c'est l'ancienne version à ne pas réintroduire sans
-  qu'on le redemande. 6 valeurs actuellement (texte éditorial à valider
-  avec la cliente, pas un contenu qu'elle a fourni directement) :
-  « L'exigence comme point de départ », « L'Italie comme art de vivre, pas
-  comme décor », « Un interlocuteur, jamais un standard », « Le détail qui
-  change tout », « La confiance avant la prestation », « Chaque événement,
-  une signature ».
+- **Valeurs — carrousel "paroles" épinglé au scroll, fond navy (2026-08-13,
+  refonte)** (`.values`, `.values-sticky`, `.values-window`,
+  `.values-list`/`.values-line`, sous la section Talents,
+  `engagements.html`) : troisième itération de cette section, demandée
+  explicitement par la cliente à partir d'une capture d'écran de la version
+  précédente (bandeau terracotta plein largeur + bandeau blanc séparé
+  "Nos valeurs"/"Ce qui nous guide" au-dessus). **Fond Bleu Méditerranéen**
+  (`var(--navy)`), pas terracotta. **Seules 3 lignes visibles à la fois**
+  (précédente / active / suivante), empilées au même endroit — toutes les
+  autres lignes sont complètement invisibles (`opacity: 0` par défaut sur
+  `.values-line`, sans classe), pas juste estompées comme dans la version
+  précédente : c'est la vraie différence architecturale avec l'itération
+  d'avant, qui gardait toutes les lignes visibles en flux normal et ne
+  faisait varier que l'opacité/couleur. **Bandeau blanc "Nos valeurs"/"Ce
+  qui nous guide" entièrement supprimé** (l'ancien `.section-head` séparé) —
+  il ne reste plus qu'un seul titre, l'eyebrow "Nos valeurs" (`.eyebrow
+  on-dark`), directement à l'intérieur du bandeau navy lui-même, au-dessus
+  du carrousel de valeurs. Si ce `.section-head` séparé ou un `.values-panel`
+  terracotta réapparaissent dans un diff, ce sont les deux itérations
+  précédentes, à ne pas réintroduire sans qu'on le redemande.
+  **Mécanique** : reprend le pattern pinné déjà utilisé par
+  `.senses-journey` (univers.html) plutôt que d'inventer un nouveau système
+  — long wrapper `.values` (`height: 480vh`) contenant `.values-sticky`
+  (`position: sticky; top: 0`) qui reste à l'écran pendant tout le scroll du
+  wrapper. Dans `main.js`, `updateValuesActive()` (throttlée par
+  `requestAnimationFrame`, écouteur `scroll` passif) calcule `progress =
+  scrolled ÷ (hauteur du wrapper − hauteur du viewport)` clampé 0-1, puis
+  `activeIndex = floor(progress × nombre de valeurs)` ; chaque ligne reçoit
+  `.is-active` (l'index courant), `.is-prev` (index − 1) ou `.is-next`
+  (index + 1) — jamais deux classes à la fois, garanti par construction
+  puisqu'un seul index peut être égal à `activeIndex`, `activeIndex − 1` ou
+  `activeIndex + 1` pour une ligne donnée. Vérifié par un balayage de scroll
+  en 10 étapes (Playwright) confirmant l'assignation correcte à chaque
+  étape (pas de `.is-prev` sur la première ligne, pas de `.is-next` sur la
+  dernière, exactement un de chaque classe entre les deux). Remplace
+  l'approche "ligne la plus proche du centre" de l'itération précédente
+  (toujours correcte en soi, mais incompatible avec l'exigence de nouvelle
+  fenêtre à 3 lignes seulement) — si ce calcul de proximité réapparaît ici,
+  c'est l'ancienne version.
+  **Hauteur du bandeau calée au pixel près sur l'ancien total** (contrainte
+  « TRÈS IMPORTANT » de la cliente : le nouveau bandeau ne doit pas prendre
+  plus de place que l'ancien bandeau terracotta + la petite bande blanche
+  qui le suivait) : hauteur de l'ancien design mesurée par Playwright AVANT
+  la refonte (`getBoundingClientRect()`) à 4 largeurs de référence, puis
+  `.values-sticky` calé sur ces valeurs exactes après coup : desktop large
+  (1400/1920px) → `min(58vh, 515px)` (cible mesurée ≈515,16px) ; tablette
+  (641–900px, ex. 768px) → `min(54vh, 413px)` (cible mesurée ≈412,56px) ;
+  mobile (≤640px, ex. 390px) → `min(66vh, 510px)` (cible mesurée
+  ≈509,77px). Les seuils desktop/tablette/mobile sont donc **trois**
+  media queries distinctes (pas juste un `max-width: 900px` générique) car
+  768px et 390px n'ont pas la même cible mesurée — si une seule requête
+  couvrant tout le sous-900px réapparaît ici, c'est une régression de
+  précision, revenir aux trois paliers. Mesurer avant de deviner, comme
+  pour le calibrage de `.title-force-3-lines` : approche à reproduire si
+  une future contrainte de "taille identique à l'existant" se représente.
+  6 valeurs actuellement (texte éditorial à valider avec la cliente, pas un
+  contenu qu'elle a fourni directement) : « L'exigence comme point de
+  départ », « L'Italie comme art de vivre, pas comme décor », « Un
+  interlocuteur, jamais un standard », « Le détail qui change tout », « La
+  confiance avant la prestation », « Chaque événement, une signature ».
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
