@@ -93,7 +93,17 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   cet effet — le texte HTML des eyebrows était déjà écrit en casse normale
   ("Notre promesse", pas "NOTRE PROMESSE"), seul le CSS les mettait en
   majuscules visuellement, donc ce retrait ne demandait aucun changement de
-  contenu.
+  contenu. **Taille doublée puis 2,5×** : après un premier doublement,
+  la cliente a redemandé explicitement une taille « 2,5 fois plus grande »
+  que l'originale (0,95rem) — `.eyebrow` utilise maintenant
+  `font-size: clamp(1.3rem, 2.6vw + 0.75rem, 2.375rem)` (2,375rem = 0,95rem
+  × 2,5 sur desktop), avec un `clamp()` pour éviter que le plus long eyebrow
+  du site (`index.html`, bandeau hero : « Dolce Vita · Événementiel B2B
+  premium en Alsace ») ne déborde ou ne passe sur deux lignes en mobile —
+  vérifié à 390px de large, tient sur une seule ligne. `letter-spacing`
+  réduit de `0.06em` à `0.03em` en même temps : à cette taille, l'ancien
+  espacement (pensé pour un petit label façon Oswald) devenait visuellement
+  trop aéré avec les formes propres de Canter.
 - **Palette** (fixe, définie dans le brief de marque) : Bleu Méditerranéen
   `#1c3b4a`, Terracotta Riviera `#c1622d`, Blanc Calcaire `#f6f1e7` (couleurs
   principales) ; Rouge Terre d'Ombrie `#4a1c1c`, Rouge Pourpre de Venise
@@ -160,7 +170,27 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `.senses-journey-head` doit rester en flux normal (`position: relative`,
   pas `absolute`) dans la colonne flex `.senses-journey-sticky`, sinon le
   chemin SVG peut chevaucher visuellement le titre (bug déjà rencontré et
-  corrigé). **`.senses-journey-card` doit rester à fond opaque** (`var(--navy-900)`,
+  corrigé). **`.senses-journey-progress`** (le compteur "X/5 sens découverts
+  en chemin" en bas) **doit rester un enfant flex normal** (`position:
+  relative`, avec `flex-shrink: 0` et `margin-top`), **pas**
+  `position: absolute; bottom: …` — un vrai bug est survenu avec l'ancienne
+  version : un élément en position absolue ancré au bas de
+  `.senses-journey-sticky` (100vh) ne réserve aucun espace dans la colonne
+  flex au-dessus de lui, donc rien ne force `.senses-journey-frame`
+  (dimensionné en `vh`) à rétrécir pour lui laisser de la place. Sur une
+  fenêtre de navigateur courte (grand écran mais peu de hauteur, ou fenêtre
+  non maximisée), le tracé pouvait alors s'étendre jusqu'à chevaucher
+  visuellement ce texte — signalé par la cliente via capture d'écran, où le
+  trait touchait littéralement "5/5 SENS DÉCOUVERTS EN CHEMIN". Corrigé en
+  remettant `.senses-journey-progress` dans le flux (`flex-shrink: 0` pour
+  qu'il ne rétrécisse jamais, lui, puisqu'il est déjà minuscule) : le
+  navigateur réserve alors toujours son espace en premier, et c'est
+  `.senses-journey-frame` (qui a déjà `flex-shrink: 1; min-height: 0;`) qui
+  absorbe la contrainte en rétrécissant si besoin — plus jamais de
+  chevauchement, quelle que soit la hauteur de la fenêtre. Si ce genre de
+  chevauchement réapparaît ailleurs dans cette section, vérifier en premier
+  qu'aucun élément n'est sorti du flux flex par erreur.
+  **`.senses-journey-card` doit rester à fond opaque** (`var(--navy-900)`,
   pas de transparence/`backdrop-filter`) : avec le grand zigzag actuel, le
   trait (avec son glow `drop-shadow`) passe forcément derrière la carte à
   un moment ou un autre du scroll puisque la carte est toujours centrée au
