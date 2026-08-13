@@ -196,6 +196,30 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 - Mosaïque (page Projets) : CSS Grid avec `grid-auto-flow: dense` pour éviter
   tout trou d'affichage — ne jamais réintroduire de `transform: translateY`
   décoratif sur les items, ça casse l'alignement de la grille (bug corrigé).
+- **Contenu enrichi de la page Contact** (`contact.html`, hérité de la
+  réconciliation des deux sessions du 2026-08-12 — voir « Limites connues »
+  ci-dessous) : sous le bandeau titre plein écran (`.page-header-full`, cf.
+  ci-dessus), la section `.contact-hero` est en deux colonnes
+  (`.contact-hero-grid`) :
+  - `.contact-hero-info` : photo de fond plein cadre (`.contact-hero-photo`)
+    + dégradé de lisibilité (`.contact-hero-scrim`), par-dessus laquelle
+    `.contact-hero-info-content` empile l'eyebrow/h2/lede, une liste de
+    coordonnées en pastilles (`.contact-info`, icônes SVG inline), une
+    timeline connectée des étapes du process (`.contact-steps`, badges
+    ronds numérotés `.step-num` reliés par un connecteur `::after`), et un
+    mot de la fondatrice (`.contact-founder`, avec avatar rond initiales
+    "EL" `.contact-founder-avatar`).
+  - `.contact-hero-form` : la carte formulaire elle-même, avec icônes SVG
+    dans chaque `.form-group-label` (contraintes à 15×15px) et un sélecteur
+    de type d'événement en cartes visuelles cliquables
+    (`.service-picker`/`.service-option`, boutons radio natifs masqués +
+    état sélectionné via `:has(input:checked)`) **remplaçant** l'ancien
+    `<select id="serviceType">`. Important si le formulaire est retouché :
+    `main.js` pré-remplit le type de prestation depuis le paramètre d'URL
+    `?service=` via
+    `document.querySelectorAll('input[name="serviceType"]')` (et non plus
+    `getElementById("serviceType")`) — garder ce sélecteur cohérent avec le
+    balisage radio si la structure change.
 - Formulaire de contact : validation + construction du `mailto:` dans
   `buildMailto()`/`validate()`. Les champs sont repérés par leur `id`/`name`
   (`fullName`, `company`, `email`, `phone`, `serviceType`, `guests`,
