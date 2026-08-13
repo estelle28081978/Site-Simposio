@@ -220,66 +220,80 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   droite — affordance visible en plus de la carte au survol, demandée
   explicitement ; le `+` se remplit en terracotta au survol/actif comme le
   reste de la ligne.
-- **Valeurs — carrousel "paroles" épinglé au scroll, fond navy (2026-08-13,
-  refonte)** (`.values`, `.values-sticky`, `.values-window`,
-  `.values-list`/`.values-line`, sous la section Talents,
-  `engagements.html`) : troisième itération de cette section, demandée
-  explicitement par la cliente à partir d'une capture d'écran de la version
-  précédente (bandeau terracotta plein largeur + bandeau blanc séparé
-  "Nos valeurs"/"Ce qui nous guide" au-dessus). **Fond Bleu Méditerranéen**
-  (`var(--navy)`), pas terracotta. **Seules 3 lignes visibles à la fois**
-  (précédente / active / suivante), empilées au même endroit — toutes les
-  autres lignes sont complètement invisibles (`opacity: 0` par défaut sur
-  `.values-line`, sans classe), pas juste estompées comme dans la version
-  précédente : c'est la vraie différence architecturale avec l'itération
-  d'avant, qui gardait toutes les lignes visibles en flux normal et ne
-  faisait varier que l'opacité/couleur. **Bandeau blanc "Nos valeurs"/"Ce
-  qui nous guide" entièrement supprimé** (l'ancien `.section-head` séparé) —
-  il ne reste plus qu'un seul titre, l'eyebrow "Nos valeurs" (`.eyebrow
-  on-dark`), directement à l'intérieur du bandeau navy lui-même, au-dessus
-  du carrousel de valeurs. Si ce `.section-head` séparé ou un `.values-panel`
-  terracotta réapparaissent dans un diff, ce sont les deux itérations
-  précédentes, à ne pas réintroduire sans qu'on le redemande.
-  **Mécanique** : reprend le pattern pinné déjà utilisé par
-  `.senses-journey` (univers.html) plutôt que d'inventer un nouveau système
-  — long wrapper `.values` (`height: 480vh`) contenant `.values-sticky`
-  (`position: sticky; top: 0`) qui reste à l'écran pendant tout le scroll du
-  wrapper. Dans `main.js`, `updateValuesActive()` (throttlée par
-  `requestAnimationFrame`, écouteur `scroll` passif) calcule `progress =
-  scrolled ÷ (hauteur du wrapper − hauteur du viewport)` clampé 0-1, puis
-  `activeIndex = floor(progress × nombre de valeurs)` ; chaque ligne reçoit
-  `.is-active` (l'index courant), `.is-prev` (index − 1) ou `.is-next`
-  (index + 1) — jamais deux classes à la fois, garanti par construction
-  puisqu'un seul index peut être égal à `activeIndex`, `activeIndex − 1` ou
-  `activeIndex + 1` pour une ligne donnée. Vérifié par un balayage de scroll
-  en 10 étapes (Playwright) confirmant l'assignation correcte à chaque
-  étape (pas de `.is-prev` sur la première ligne, pas de `.is-next` sur la
-  dernière, exactement un de chaque classe entre les deux). Remplace
-  l'approche "ligne la plus proche du centre" de l'itération précédente
-  (toujours correcte en soi, mais incompatible avec l'exigence de nouvelle
-  fenêtre à 3 lignes seulement) — si ce calcul de proximité réapparaît ici,
-  c'est l'ancienne version.
-  **Hauteur du bandeau calée au pixel près sur l'ancien total** (contrainte
-  « TRÈS IMPORTANT » de la cliente : le nouveau bandeau ne doit pas prendre
-  plus de place que l'ancien bandeau terracotta + la petite bande blanche
-  qui le suivait) : hauteur de l'ancien design mesurée par Playwright AVANT
-  la refonte (`getBoundingClientRect()`) à 4 largeurs de référence, puis
-  `.values-sticky` calé sur ces valeurs exactes après coup : desktop large
-  (1400/1920px) → `min(58vh, 515px)` (cible mesurée ≈515,16px) ; tablette
-  (641–900px, ex. 768px) → `min(54vh, 413px)` (cible mesurée ≈412,56px) ;
-  mobile (≤640px, ex. 390px) → `min(66vh, 510px)` (cible mesurée
-  ≈509,77px). Les seuils desktop/tablette/mobile sont donc **trois**
-  media queries distinctes (pas juste un `max-width: 900px` générique) car
-  768px et 390px n'ont pas la même cible mesurée — si une seule requête
-  couvrant tout le sous-900px réapparaît ici, c'est une régression de
-  précision, revenir aux trois paliers. Mesurer avant de deviner, comme
-  pour le calibrage de `.title-force-3-lines` : approche à reproduire si
-  une future contrainte de "taille identique à l'existant" se représente.
-  6 valeurs actuellement (texte éditorial à valider avec la cliente, pas un
-  contenu qu'elle a fourni directement) : « L'exigence comme point de
-  départ », « L'Italie comme art de vivre, pas comme décor », « Un
-  interlocuteur, jamais un standard », « Le détail qui change tout », « La
-  confiance avant la prestation », « Chaque événement, une signature ».
+- **Valeurs — carrousel "paroles" plein écran, deux colonnes avec photo en
+  fondu (2026-08-13, 4ᵉ itération)** (`.values`, `.values-sticky`,
+  `.values-inner`, `.values-text`, `.values-window`,
+  `.values-list`/`.values-line`, `.values-media`/`.values-media-photo`, sous
+  la section Talents, `engagements.html`) : refonte demandée par la cliente
+  à partir d'une maquette Canva (capture d'un « ordinateur » fictif montrant
+  le rendu attendu). **Remplace la contrainte de hauteur de l'itération
+  précédente** (« doit faire la même hauteur que l'ancien bandeau
+  terracotta », ~515px/413px/510px selon la largeur) par une contrainte
+  différente et explicite : « ne doit pas dépasser la taille d'un écran
+  d'ordinateur, doit être entièrement visible en un seul écran ».
+  `.values-sticky` est donc calée sur `height: 100vh` (même valeur que
+  `.senses-journey-sticky`, univers.html — pas de media query par largeur,
+  contrairement à l'itération précédente ; si un `min(Xvh, Ypx)` avec
+  plusieurs paliers desktop/tablette/mobile réapparaît ici, c'est
+  l'ancienne contrainte de hauteur, à ne pas réintroduire sans qu'on le
+  redemande). Le wrapper pinné `.values` est passé de `480vh` à `420vh`
+  (ajusté empiriquement, la fenêtre visible n'ayant plus que 4 états actifs
+  au lieu de 6 — voir ci-dessous — donc moins de distance de scroll
+  nécessaire).
+  **Layout deux colonnes** (`.values-inner`, `grid-template-columns:
+  1.05fr 0.95fr` à partir de 900px, une seule colonne empilée en dessous) :
+  à gauche `.values-text` (eyebrow "Nos valeurs" + le carrousel de 3 lignes,
+  aligné à gauche sur desktop, centré en dessous de 900px) ; à droite
+  `.values-media`, une photo plein cadre (`object-fit: cover`, ratio 4/5,
+  coins arrondis `--radius-lg`, ombre portée) **masquée sous 900px** — sur
+  mobile/tablette portrait, seul le carrousel de texte reste visible,
+  centré, occupant tout l'écran (comportement hérité de l'itération
+  précédente, la maquette de la cliente étant explicitement un rendu
+  "écran d'ordinateur").
+  **Toujours 3 lignes visibles dès l'entrée dans la section** : contrainte
+  explicite de la cliente — "je veux que la valeur principale commence par
+  la deuxième valeur pour qu'on retrouve la valeur 1 juste au-dessus et la
+  valeur 3 juste en dessous". Dans `main.js`, `updateValuesActive()` calcule
+  `activeIndex` **borné à `[1, n-2]`** (jamais l'index 0 ni le dernier) :
+  `activeIndex = min(n-2, 1 + floor(progress × (n-2)))`. Avec 6 valeurs,
+  l'index actif circule donc uniquement entre 1 et 4 (les valeurs 2 à 5) ;
+  la toute première et la toute dernière valeur n'occupent jamais le rôle
+  "actif" (`.is-active`), seulement `.is-prev`/`.is-next` en retrait — c'est
+  le prix nécessaire pour garantir "toujours 3 lignes remplies" du tout
+  début à la toute fin du scroll, plutôt que 2 lignes seulement aux
+  extrémités (comme le ferait un simple `activeIndex = floor(progress × n)`
+  parcourant tout l'intervalle `[0, n-1]`, l'itération précédente). Si ce
+  calcul plus simple réapparaît ici, c'est l'ancienne version à ne pas
+  réintroduire sans qu'on le redemande. Le reste de la mécanique
+  `.is-prev`/`.is-active`/`.is-next` (jamais deux classes à la fois par
+  ligne, lignes sans classe invisibles à `opacity: 0`) est inchangé par
+  rapport à l'itération précédente, vérifié par un balayage de scroll
+  Playwright confirmant l'assignation correcte à chaque étape.
+  **Photo de droite synchronisée avec la valeur active** : 6 `<img
+  class="values-media-photo">` empilées en `position: absolute` dans
+  `.values-media` (une par valeur, même ordre d'index que `.values-line`),
+  `opacity: 0` par défaut, `.is-active` (ajoutée/retirée par
+  `updateValuesActive()` sur l'image dont l'index correspond à
+  `activeIndex`) → `opacity: 1`, transition `1s` = l'effet de fondu
+  enchaîné demandé ("faisant disparaître la photo actuelle pour laisser
+  apparaître la photo suivante"). Comme `activeIndex` ne descend jamais à 0
+  ni ne monte jamais au dernier index, les photos aux positions 0 et 5 ne
+  s'affichent jamais — accepté comme conséquence du choix
+  ci-dessus, cohérent avec le fait que ces deux valeurs n'occupent elles
+  non plus jamais le rôle "actif" en texte. Photos choisies parmi les
+  vraies photos d'événements Simposio déjà présentes dans `assets/img/`
+  (aucun crédit requis, cf. `assets/img/CREDITS.md`) pour correspondre au
+  sens de chaque valeur : `evenement-carte-degustation.jpg` (exigence),
+  `evenement-vespa-gelato-brindapino.jpg` (art de vivre italien),
+  `evenement-tablee-diner-bougies.jpg` (interlocuteur/chaleur humaine),
+  `evenement-assiette-agrume-ceramique.jpg` (détail), 
+  `evenement-planche-charcuterie.jpg` (confiance/partage),
+  `evenement-stand-raye-guirlande.jpg` (signature) — texte éditorial des 6
+  valeurs inchangé depuis l'itération précédente, toujours à valider avec
+  la cliente : « L'exigence comme point de départ », « L'Italie comme art
+  de vivre, pas comme décor », « Un interlocuteur, jamais un standard »,
+  « Le détail qui change tout », « La confiance avant la prestation »,
+  « Chaque événement, une signature ».
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le

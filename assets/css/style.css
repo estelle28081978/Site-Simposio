@@ -1313,44 +1313,64 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Engagements — Valeurs : carrousel "paroles" façon Deezer, épinglé au
    scroll (même mécanique que .senses-journey : long wrapper + position:
-   sticky). Seules 3 lignes sont visibles à la fois (précédente / active /
-   suivante) empilées au même endroit ; toutes les autres sont invisibles et
-   se révèlent en glissant à mesure qu'on avance dans le scroll — voir
-   updateValuesActive() dans main.js. Hauteur du bandeau épinglé calée sur
-   la somme de l'ancien bandeau terracotta + la petite bande blanche qui le
-   suivait (mesuré avant ce changement : ~515px à 1400/1920px, ~510px en
-   mobile, ~413px vers 768px) — demande explicite de la cliente pour ne pas
-   agrandir la place prise par la section. Fond Bleu Méditerranéen (`--navy`).
+   sticky, .values-sticky calée sur height:100vh comme .senses-journey-sticky).
+   Seules 3 lignes sont visibles à la fois (précédente / active / suivante)
+   empilées au même endroit ; toutes les autres sont invisibles et se
+   révèlent en glissant à mesure qu'on avance dans le scroll — voir
+   updateValuesActive() dans main.js. Refonte 2026-08-13 à partir d'une
+   maquette Canva de la cliente : la contrainte n'est plus "même hauteur que
+   l'ancien bandeau terracotta" (itération précédente) mais "ne dépasse
+   jamais un écran d'ordinateur" — .values-sticky est donc pleine hauteur de
+   viewport (100vh), pas une bande compacte. Fond Bleu Méditerranéen
+   (`--navy`). Layout deux colonnes sur desktop (texte/carrousel à gauche,
+   photo à droite) ; la colonne photo est masquée sous 900px, le mobile
+   garde le carrousel seul en une colonne centrée (comportement identique à
+   l'itération précédente sur petit écran).
    ========================================================================== */
 .values {
   position: relative;
-  height: 480vh;
+  height: 420vh;
   background: var(--navy);
 }
 .values-sticky {
   position: sticky;
   top: 0;
-  height: min(58vh, 515px);
-  min-height: 380px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.values-inner {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: var(--space-5);
+}
+@media (min-width: 900px) {
+  .values-inner { grid-template-columns: 1.05fr 0.95fr; gap: var(--space-6); padding-inline: var(--space-5); }
+}
+.values-text {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  overflow: hidden;
+  text-align: center;
 }
-@media (max-width: 900px) and (min-width: 641px) {
-  .values-sticky { height: min(54vh, 413px); min-height: 340px; }
-}
-@media (max-width: 640px) {
-  .values-sticky { height: min(66vh, 510px); min-height: 320px; }
+@media (min-width: 900px) {
+  .values-text { align-items: flex-start; text-align: left; }
 }
 .values-window {
   position: relative;
   width: 100%;
-  max-width: 44rem;
+  max-width: 34rem;
   padding-inline: var(--space-4);
   height: 14rem;
+}
+@media (min-width: 900px) {
+  .values-window { padding-inline: 0; }
 }
 .values-list { list-style: none; margin: 0; padding: 0; }
 .values-line {
@@ -1370,6 +1390,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), font-size 0.55s var(--ease);
   pointer-events: none;
 }
+@media (min-width: 900px) {
+  .values-line { justify-content: flex-start; text-align: left; }
+}
 .values-line.is-active {
   opacity: 1;
   color: var(--cream);
@@ -1379,6 +1402,30 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .values-line.is-prev { opacity: 0.4; transform: translateY(-4.6rem) scale(0.86); }
 .values-line.is-next { opacity: 0.4; transform: translateY(4.6rem) scale(0.86); }
+
+.values-media {
+  position: relative;
+  display: none;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: min(60vh, 32rem);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(8, 16, 20, 0.45);
+}
+@media (min-width: 900px) {
+  .values-media { display: block; justify-self: end; }
+}
+.values-media-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s var(--ease);
+}
+.values-media-photo.is-active { opacity: 1; }
 
 /* ==========================================================================
    Contact page — full-screen title, contact bandeau, single-column premium
