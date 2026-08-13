@@ -435,6 +435,65 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   distinction actif/inactif reste lisible via l'opacité et le poids de
   police (`font-weight:700` actif vs `400` inactif) plutôt que via un écart
   de taille marqué.
+- **Valeurs — 7ᵉ itération (2026-08-13) : eyebrow aligné sur "L'équipe",
+  police des valeurs réduite, plus d'espace, arrière-plan re-réduit,
+  carrousel non circulaire** : la cliente a testé le rendu réel de la 6ᵉ
+  itération et signalé un chevauchement visible entre lignes (capture
+  d'écran fournie, montrant une valeur active sur 3 lignes — « L'Italie
+  comme art de vivre, pas comme décor » — touchant les lignes prev/next).
+  **Cause identifiée** : le pire cas vérifié lors de la 6ᵉ itération ne
+  testait que 2 lignes pour la ligne active ; à la taille alors en vigueur,
+  cette valeur précise (la plus longue du jeu, 7 mots) passe en réalité sur
+  **3 lignes** une fois active (police plus grande que prev/next), un cas
+  non couvert par le test précédent — retenue : toujours tester le pire
+  cas avec le texte réellement le plus long de la liste, pas seulement un
+  nombre de lignes supposé.
+  **Eyebrow "Nos valeurs" aligné sur "L'équipe"** : la règle locale
+  `.values-text .eyebrow` (qui surchargeait la taille) a été supprimée —
+  l'eyebrow hérite maintenant directement de la règle `.eyebrow` générique
+  du site (`clamp(1.3rem, 2.6vw + 0.75rem, 2.375rem)`), identique à
+  "L'équipe" (section Talents juste au-dessus, qui utilise aussi `.eyebrow`
+  sans override). Si une règle `.values-text .eyebrow { font-size: … }`
+  réapparaît ici, c'est une régression vers un eyebrow plus gros que le
+  reste du site — à ne pas réintroduire sans qu'on le redemande.
+  **Polices des valeurs réduites** : `.values-line` (base/actif) passe de
+  `clamp(2.1rem,…,3.6rem)`/`clamp(2.4rem,…,4rem)` à
+  `clamp(1.2rem,…,1.8rem)`/`clamp(1.7rem,…,2.6rem)` — nettement plus petit
+  que la 6ᵉ itération, réglant le chevauchement à la racine (le pire cas à
+  3 lignes tient maintenant confortablement).
+  **Plus d'espace entre les valeurs** : `translateY` de `.is-prev`/`.is-next`
+  passe de `±10.4rem` à `±11rem` — une augmentation modeste en valeur
+  absolue, mais un espacement relatif bien plus généreux vu la police
+  réduite (demande explicite de la cliente indépendante de la correction
+  du chevauchement). `.values-window` réduite de `36rem` à `28rem` de
+  hauteur (les textes plus petits n'ont plus besoin d'autant de place).
+  **Arrière-plan re-réduit par rapport à l'actif** : la 6ᵉ itération avait
+  rapproché la taille effective de prev/next de celle de l'actif (`scale`
+  0.84→0.92, opacity 0.4→0.45) suite à une demande de la cliente. Cette
+  7ᵉ itération **inverse partiellement** ce changement (nouvelle demande
+  explicite, "réduit encore un peu la taille des valeurs en arrière-plan
+  par rapport à la principale") : `scale` repasse de `0.92` à `0.82`,
+  `opacity` de `0.45` à `0.4`. Ne pas remonter `scale` à 0.92 sans qu'on le
+  redemande — deux demandes contradictoires successives sur ce curseur,
+  la version actuelle (0.82) est la dernière en date.
+  **Carrousel non circulaire** (`updateValuesActive()`, `main.js`) : la
+  cliente a signalé ne pas pouvoir "mettre la valeur 1 et 6 en tant que
+  principales" malgré le bouclage par modulo de la 5ᵉ itération (qui
+  fonctionnait techniquement — vérifié par balayage Playwright à
+  l'époque — mais montrait une valeur sans rapport thématique comme
+  "précédente"/"suivante" à ces deux extrémités, probablement perçu comme
+  un artefact plutôt qu'un vrai accès à la valeur). Remplacé par la version
+  la plus simple : `prevIndex = activeIndex - 1` / `nextIndex =
+  activeIndex + 1`, **sans** `% n` — la cliente a explicitement autorisé
+  que la 1re valeur active n'ait pas de "précédente" visible et que la
+  dernière n'ait pas de "suivante" visible ("règle ça même si à
+  l'affichage il y a pas de valeur qui précède pour la 1 et de valeur qui
+  succède pour la 6"). Vérifié par balayage Playwright : `activeIndex=0` →
+  motif `AN....` (2 lignes seulement, pas de `.is-prev`) ; `activeIndex=5`
+  → motif `....PA` (2 lignes seulement, pas de `.is-next`) ; toutes les
+  valeurs intermédiaires gardent 3 lignes. Si un `(activeIndex ± 1 + n) % n`
+  réapparaît ici, c'est l'ancienne version bouclée, à ne pas réintroduire
+  sans qu'on le redemande.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
@@ -444,21 +503,34 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (balisage dupliqué, cf. note en tête de fichier). Si `>Engagements<`
   réapparaît comme libellé de nav dans un diff, c'est l'ancien nom à ne pas
   réintroduire sans qu'on le redemande.
-- **Titre Engagements forcé sur 3 lignes** (`.title-force-3-lines`, en plus
-  de `title-slide` sur ce `<h1>` uniquement) : « Un partenaire, pas un
-  prestataire de plus » utilise 2 `<br>` manuels dans le HTML pour définir
-  les 3 lignes (« Un partenaire, » / « pas un prestataire » / « de plus »),
-  demandé explicitement par la cliente. **Piège** : le `clamp()` standard
-  des `h1` (`3.4rem` → `8.8rem`) combiné au `max-width: 46rem` habituel de
-  `.page-header h1` ne suffit pas à garder ces segments sur une seule ligne
-  chacun à toutes les largeurs d'écran — le mot "prestataire" à lui seul
-  frôle déjà les 46rem à la taille maximale du clamp. `.title-force-3-lines`
-  retire le `max-width` et impose un `clamp()` plus petit et plafonné
-  (`clamp(1.5rem, 15vw - 1.85rem, 3.5rem)`), **calé empiriquement** par un
-  script Playwright testant le nombre de lignes réel sur une vingtaine de
-  largeurs de 320px à 1920px plutôt que par calcul de métriques de police —
-  approche à réutiliser si un autre titre a besoin du même traitement,
-  plutôt que de deviner une taille de police au jugé.
+- **Titre Engagements — abandon du forçage à 3 lignes (2026-08-13)** : une
+  précédente itération forçait « Un partenaire, pas un prestataire de plus »
+  sur exactement 3 lignes via 2 `<br>` manuels + une classe dédiée
+  `.title-force-3-lines` (clamp plus petit et plafonné, sans `max-width`) —
+  **remplacé** à la demande explicite de la cliente, qui veut désormais que
+  ce titre ait « les mêmes tailles de police que la première partie de la
+  page Univers » (eyebrow "L'Univers Simposio" / h1 "Le sens du nom,
+  l'esprit de la maison"). Le `<h1>` d'`engagements.html` utilise donc
+  maintenant uniquement `title-slide` (comme celui d'`univers.html`),
+  **sans** `.title-force-3-lines`, **sans** les `<br>` manuels — juste
+  « Un partenaire, pas un prestataire de plus » en texte continu, wrappé
+  naturellement par le `clamp()` standard des `h1` (`3.4rem` → `8.8rem`) +
+  `max-width: 46rem` de `.page-header h1`, exactement comme `univers.html`.
+  **Vérifié avant d'appliquer** : à taille standard, ce titre wrappe sur 4-5
+  lignes selon la largeur d'écran (contre 3-4 lignes pour le titre
+  d'`univers.html`, texte différent) — **c'est le même ordre de grandeur et
+  le même comportement que le titre d'`univers.html` déjà en prod** (testé
+  côte à côte via Playwright aux mêmes largeurs, 320px à 2560px), donc
+  cohérent avec l'attente de la cliente plutôt qu'un bug. `.page-header-full`
+  utilise `min-height` (pas `max-height`), la section grandit simplement
+  au-delà d'un écran si le titre est long — comportement déjà accepté sur
+  univers.html. La classe CSS `.title-force-3-lines` (règle
+  `.page-header h1.title-force-3-lines`, dans `style.css`) reste présente
+  mais n'est plus appliquée nulle part : ne pas la reproposer pour ce titre
+  sans qu'on le redemande ; elle reste disponible si un autre titre a un
+  jour besoin d'un nombre de lignes strictement forcé (calée empiriquement
+  par balayage Playwright plutôt que par calcul de métriques de police —
+  approche à réutiliser dans ce cas précis).
 - **Balayage des titres et des formules** (`title-slide` / `formula-slide-left`
   / `formula-slide-right` dans `style.css`, purement CSS, piggyback sur
   `[data-reveal]`) : le tout premier `<h1>` de chaque page glisse depuis la
@@ -493,9 +565,10 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   à la demande explicite de la cliente, qui voulait que le titre « Un
   partenaire, pas un prestataire de plus » (fond calcaire) apparaisse en
   plein écran comme le fait déjà le titre d'`univers.html` — simple ajout
-  de la classe, aucun changement structurel nécessaire (`.title-force-3-lines`
-  reste correct, vérifié aux mêmes 3 lignes sur 12 largeurs de 320 à
-  1920px après l'ajout). `.page-header` seul (sans ce modificateur, sur les
+  de la classe au départ. Peu après, la cliente a aussi demandé que ce
+  titre partage les **mêmes tailles de police** que celui d'`univers.html`
+  (voir bullet dédié ci-dessus : `.title-force-3-lines` a depuis été retiré
+  de ce `<h1>`). `.page-header` seul (sans ce modificateur, sur les
   3 autres pages : index, prestations, projets) reste une bande compacte
   dimensionnée par son contenu — ne pas l'ajouter ailleurs sans que ce soit
   demandé.

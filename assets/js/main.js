@@ -451,16 +451,17 @@
      classe et donc invisibles (opacity:0 par défaut sur .values-line) —
      c'est ce qui donne l'effet "les lignes se révèlent en glissant" plutôt
      qu'un simple dimming de liste complète.
-     Carrousel **circulaire** : activeIndex parcourt tout [0, n-1]
-     (contrairement à une itération précédente qui le bornait à [1, n-2]
-     pour garantir "toujours 3 lignes visibles" — au prix d'exclure la 1re
-     et la dernière valeur du rôle actif). prevIndex/nextIndex bouclent via
-     modulo (`(activeIndex - 1 + n) % n` / `(activeIndex + 1) % n`), donc il
-     y a toujours un prev et un next valides même quand activeIndex vaut 0
-     ou n-1 — ça satisfait "toujours 3 lignes" ET "chaque valeur doit
-     pouvoir devenir active", demandé explicitement par la cliente. Si un
-     `Math.min(n-2, 1 + ...)` borné réapparaît ici, c'est l'ancienne version
-     à ne pas réintroduire sans qu'on le redemande.
+     activeIndex parcourt tout [0, n-1] (`Math.min(n-1, Math.floor(progress*n))`),
+     donc chaque valeur — y compris la 1re et la dernière — peut devenir
+     active. prevIndex/nextIndex sont simplement `activeIndex-1`/`activeIndex+1`,
+     **sans boucler** : à `activeIndex=0` il n'y a pas de `.is-prev` (aucune
+     ligne ne correspond à l'index -1), à `activeIndex=n-1` il n'y a pas de
+     `.is-next` — seulement 2 lignes visibles à ces deux extrémités, accepté
+     explicitement par la cliente plutôt que de boucler artificiellement sur
+     la valeur opposée (ancienne version testée puis écartée : boucler avec
+     `% n` faisait techniquement passer par les index 0/n-1, mais montrait
+     une valeur sans rapport thématique comme "précédente"/"suivante", jugé
+     confus). Si un `% n` réapparaît ici, c'est cette ancienne version.
      La photo dans `.values-media` (masquée sous 900px) suit le même index
      actif et change via un effet de rideau (`.is-active` sur
      `.values-media-photo`, voir le clip-path dans style.css). */
@@ -480,8 +481,8 @@
         var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
         var n = valuesLines.length;
         var activeIndex = Math.min(n - 1, Math.floor(progress * n));
-        var prevIndex = (activeIndex - 1 + n) % n;
-        var nextIndex = (activeIndex + 1) % n;
+        var prevIndex = activeIndex - 1;
+        var nextIndex = activeIndex + 1;
         valuesLines.forEach(function (line, i) {
           line.classList.remove("is-active", "is-prev", "is-next");
           if (i === activeIndex) line.classList.add("is-active");
