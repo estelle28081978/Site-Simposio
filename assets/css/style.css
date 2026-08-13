@@ -473,6 +473,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .page-header .eyebrow { display: block; margin-bottom: var(--space-2); }
 .page-header h1 { max-width: 46rem; margin-inline: auto; }
 .page-header h1 .accent { font-weight: 400; color: var(--accent); }
+/* Engagements title only: forced onto exactly 3 lines via 2 manual <br> in
+   the HTML ("Un partenaire," / "pas un prestataire" / "de plus"). The
+   site's normal h1 clamp(3.4rem...8.8rem) + 46rem max-width can't hold
+   19-character segments on one line at every viewport (the word
+   "prestataire" alone nearly fills 46rem at the larger end of that clamp),
+   so this title needs its own smaller, capped-lower font-size and no
+   max-width — tuned empirically against real viewport widths from 360px
+   to 1920px, not just estimated from font metrics. */
+.page-header h1.title-force-3-lines {
+  max-width: none;
+  font-size: clamp(1.5rem, 15vw - 1.85rem, 3.5rem);
+}
 .page-header .lede { margin: var(--space-3) auto 0; }
 .page-header-full {
   min-height: 100vh;

@@ -220,6 +220,21 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   droite — affordance visible en plus de la carte au survol, demandée
   explicitement ; le `+` se remplit en terracotta au survol/actif comme le
   reste de la ligne.
+- **Titre Engagements forcé sur 3 lignes** (`.title-force-3-lines`, en plus
+  de `title-slide` sur ce `<h1>` uniquement) : « Un partenaire, pas un
+  prestataire de plus » utilise 2 `<br>` manuels dans le HTML pour définir
+  les 3 lignes (« Un partenaire, » / « pas un prestataire » / « de plus »),
+  demandé explicitement par la cliente. **Piège** : le `clamp()` standard
+  des `h1` (`3.4rem` → `8.8rem`) combiné au `max-width: 46rem` habituel de
+  `.page-header h1` ne suffit pas à garder ces segments sur une seule ligne
+  chacun à toutes les largeurs d'écran — le mot "prestataire" à lui seul
+  frôle déjà les 46rem à la taille maximale du clamp. `.title-force-3-lines`
+  retire le `max-width` et impose un `clamp()` plus petit et plafonné
+  (`clamp(1.5rem, 15vw - 1.85rem, 3.5rem)`), **calé empiriquement** par un
+  script Playwright testant le nombre de lignes réel sur une vingtaine de
+  largeurs de 320px à 1920px plutôt que par calcul de métriques de police —
+  approche à réutiliser si un autre titre a besoin du même traitement,
+  plutôt que de deviner une taille de police au jugé.
 - **Balayage des titres et des formules** (`title-slide` / `formula-slide-left`
   / `formula-slide-right` dans `style.css`, purement CSS, piggyback sur
   `[data-reveal]`) : le tout premier `<h1>` de chaque page glisse depuis la
