@@ -210,37 +210,41 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   1. `.page-header.page-header-full` (titre plein écran, inchangé) : eyebrow/h1/lede
      puis une ligne `.page-header-location` (pin + « Basée en Alsace, France »).
   2. `.contact-band` — bandeau plein-largeur fond terracotta juste sous le
-     titre. **Agrandi à trois reprises** à la demande de la cliente
-     (« encore plus large ») : `padding-block: var(--space-5)`, logo
-     placeholder `4.4rem`, nom de marque en `clamp(1.9rem, 1.4vw + 1.5rem,
-     2.6rem)`, labels de méthode `1.15rem`/`font-weight:700` (agrandis une
-     2ᵉ fois après une remarque « nous écrire/nous appeler/réseaux sociaux
-     doit être écrit en plus gros », avec une image de référence — labels
-     bold, sans-serif, plus imposants que juste le corps de texte), valeurs
-     `1.15rem`, icônes `3.4rem` — jouer sur ces tailles (et non juste le
-     padding) est ce qui donne au bandeau son poids visuel, la cliente a
-     insisté explicitement sur ce point à plusieurs reprises.
-     **Répartition toujours équilibrée, quel que soit la largeur d'écran**
-     (bug réel corrigé) : `.contact-band-inner` est un flex **en colonne**
-     (`flex-direction: column`) — la marque (`.contact-band-brand`) sur sa
-     propre ligne, puis `.contact-band-methods` sur une ligne à `width:
-     100%` avec `justify-content: space-between`, pour que les 3 méthodes
-     s'étirent toujours d'un bord à l'autre du bandeau. **Avant ce
-     correctif**, `.contact-band-inner` était un simple `flex-wrap` avec
-     `justify-content: space-between` sur DEUX enfants (marque + méthodes) —
-     ça fonctionnait tant que les deux tenaient sur une seule ligne, mais dès
-     que l'agrandissement des polices (ci-dessus) les a fait passer sur deux
-     lignes séparées, `.contact-band-methods` héritait de son
-     `justify-content: flex-start` par défaut et les 3 méthodes se
-     retrouvaient collées à gauche avec un grand vide à droite de l'écran —
-     signalé par la cliente avec une capture d'écran. Le layout en colonne
-     explicite élimine ce cas limite : peu importe la largeur, la ligne des
-     méthodes est toujours pleine largeur et toujours répartie
-     équitablement. Le placeholder logo (`.contact-band-logo`) est un simple
-     cercle en pointillés **sans texte** — le texte "Logo à venir" qui s'y
-     trouvait a été retiré à la demande de la cliente (visuellement trop
-     chargé), le rappel `TODO` vers le vrai logo reste uniquement en
-     commentaire HTML, invisible sur la page. Chaque `.contact-band-method`
+     titre, ne contenant **plus que** les trois façons de contacter Simposio
+     (« Nous écrire » / « Nous appeler » / « Réseaux sociaux »). **Le nom de
+     marque et le placeholder logo (`.contact-band-brand`/`.contact-band-logo`/
+     `.contact-band-name`/`.contact-band-dot`) ont été entièrement retirés**
+     à la demande explicite de la cliente (2026-08-13, « enlève le nom de la
+     marque... pour ne laisser que les autres informations ») — si ces
+     classes réapparaissent dans un diff, ne pas les réintroduire sans que ce
+     soit redemandé. `.contact-band-methods` est directement l'unique
+     contenu de `.contact-band-inner`, en flex `justify-content:
+     space-between; width: 100%` pour que les 3 méthodes s'étirent toujours
+     d'un bord à l'autre du bandeau, quelle que soit la largeur d'écran —
+     ceci corrige un vrai bug rencontré avant le retrait de la marque
+     (`.contact-band-inner` en simple `flex-wrap` avec deux enfants
+     — marque + méthodes — qui, dès qu'ils passaient sur deux lignes
+     séparées, laissaient `.contact-band-methods` hériter d'un
+     `justify-content: flex-start` et coller les 3 méthodes à gauche avec un
+     grand vide à droite, signalé par la cliente via capture d'écran).
+     Les labels des méthodes (`.contact-band-method-label`) ont été **doublés
+     à la demande explicite de la cliente** (« double au moins les titres »,
+     avec une image de référence montrant des labels bold/imposants) :
+     `font-size: 2.3rem` desktop (`1.6rem` sous 700px), `font-weight: 700`.
+     **Piège de dégagement du header fixe** : `.contact-band-inner` utilise
+     `padding-block: 6.5rem var(--space-4)` — le `6.5rem` en haut n'est pas
+     arbitraire, c'est la même constante que `.page-header` utilise pour
+     dégager le `.site-header` fixe (~91px de haut, glass/backdrop-blur).
+     Avant ce correctif le padding-top était plus petit (`var(--space-4)`,
+     hérité d'un ancien padding symétrique) : ça passait quand la marque
+     (plus haute, avec le cercle logo) occupait la première ligne du
+     bandeau, mais une fois la marque retirée, les labels — désormais
+     doublés — sont devenus la première ligne et se retrouvaient
+     partiellement masqués sous le header dès que le bandeau est scrollé
+     jusqu'en haut de l'écran (bug réel rencontré et corrigé). Si ce padding
+     est retouché, vérifier que le haut des labels reste visible quand la
+     section est scrollée pile au ras du haut du viewport (pas seulement en
+     l'observant après un scroll généreux). Chaque `.contact-band-method`
      affiche un `.contact-band-icon` **et** une valeur texte
      (`.contact-band-method-value`), pas juste une icône seule.
      **Coordonnées actuellement provisoires/fictives** (demandé
