@@ -58,13 +58,46 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   photo est remplacée, vérifier si ce biais reste pertinent.
 - **Polices** : Yeseva One (titres, self-hosted) et Glacial Indifference
   (corps de texte, self-hosted, SIL OFL) sont les polices de marque exactes.
-  **Canter** (sous-titres) n'a pas pu être obtenue légalement pour un usage
-  self-hosted dans cet environnement — remplacée par **Oswald** (self-hosted,
-  formes géométriques proches) via la variable CSS `--font-subtitle`. Le
+  **Canter** (sous-titres, usage systématique) reste remplacée par **Oswald**
+  (self-hosted, formes géométriques proches) via `--font-subtitle` — voir
+  ci-dessous pour l'usage réel de Canter, désormais disponible. Le
   **logo "Simposio."** (`.logo`, header + footer) utilise **Yeseva One**
   comme le reste des titres — un essai avec une police calligraphique
   script (Alex Brush) a été fait puis explicitement annulé par la cliente
   (2026-08-12) ; ne pas la réintroduire sans qu'on le redemande.
+  **Canter — touches premium (2026-08-13)** : la cliente a fourni directement
+  les fichiers `Canter_Light.otf`/`Canter_Bold.otf` (licence déjà détenue
+  pour la charte graphique), convertis en woff2/woff et auto-hébergés dans
+  `assets/fonts/canter/` (détails de conversion, licence et piège de nommage
+  dans `assets/fonts/README.md`). Demande explicite de la cliente : « je veux
+  des touches de Canter ici et là, harmonieuses, mais je ne veux pas que ça
+  prenne une importance principale, juste qu'on la remarque » — donc **pas**
+  branchée sur `--font-subtitle` (qui reste Oswald partout), mais sur une
+  variable dédiée `--font-accent` + classe utilitaire `.font-accent`
+  (`font-weight:300` par défaut, `.font-accent-bold` pour le poids 700),
+  posée à la main sur un seul élément court par page — jamais un rôle
+  structurel répété partout sur une page. **Piège de nommage évité** :
+  l'`@font-face` est enregistrée sous le nom **"Canter Accent"**, pas
+  "Canter" — `--font-subtitle` listait déjà le littéral `"Canter"` en
+  première position de son fallback stack depuis le début du projet (en
+  attendant les fichiers), donc utiliser ce nom exact aurait fait basculer
+  silencieusement TOUT le sous-titrage du site (eyebrows, nav, labels)
+  d'Oswald vers Canter dès que la police se serait chargée — bug potentiel
+  identifié et évité avant publication, pas rencontré en prod. **À utiliser
+  en casse normale/mixte, jamais en majuscules** : les bas-de-casse de
+  Canter sont des petites capitales stylisées, `text-transform: uppercase`
+  aplatit cet effet (piège rencontré sur `.founder-signature`/`.talent-role`,
+  qui étaient en majuscules par défaut — retiré spécifiquement pour leur
+  variante `.font-accent`). Touches actuellement posées (un élément par
+  page, ne pas en ajouter d'autres sans redemander) :
+  `index.html` (le `<em>` "l'Italie iconique" dans le manifeste),
+  `univers.html` (`.founder-signature`, la ligne de signature d'Estelle),
+  `prestations.html` (le `.tagline` de La Cartolina **uniquement** — pas les
+  3 autres formules, pour rester une touche et non un motif systématique),
+  `projets.html` (la phrase "l'univers Simposio" dans le `.lede`),
+  `engagements.html` (`.talent-role`, les deux fiches talents),
+  `contact.html` (`<strong>Estelle Lorusso</strong>` dans
+  `.contact-founder-strip`, en `.font-accent-bold`).
 - **Palette** (fixe, définie dans le brief de marque) : Bleu Méditerranéen
   `#1c3b4a`, Terracotta Riviera `#c1622d`, Blanc Calcaire `#f6f1e7` (couleurs
   principales) ; Rouge Terre d'Ombrie `#4a1c1c`, Rouge Pourpre de Venise
