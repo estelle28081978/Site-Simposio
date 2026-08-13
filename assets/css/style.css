@@ -1317,15 +1317,21 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Seules 3 lignes sont visibles à la fois (précédente / active / suivante)
    empilées au même endroit ; toutes les autres sont invisibles et se
    révèlent en glissant à mesure qu'on avance dans le scroll — voir
-   updateValuesActive() dans main.js. Refonte 2026-08-13 à partir d'une
-   maquette Canva de la cliente : la contrainte n'est plus "même hauteur que
-   l'ancien bandeau terracotta" (itération précédente) mais "ne dépasse
-   jamais un écran d'ordinateur" — .values-sticky est donc pleine hauteur de
-   viewport (100vh), pas une bande compacte. Fond Bleu Méditerranéen
-   (`--navy`). Layout deux colonnes sur desktop (texte/carrousel à gauche,
-   photo à droite) ; la colonne photo est masquée sous 900px, le mobile
-   garde le carrousel seul en une colonne centrée (comportement identique à
-   l'itération précédente sur petit écran).
+   updateValuesActive() dans main.js. Fond Bleu Méditerranéen (`--navy`).
+   Layout deux colonnes sur desktop, chacune centrée dans sa moitié d'écran
+   (texte centré dans la moitié gauche, photo centrée dans la moitié
+   droite — PAS calé sur les bords intérieurs comme un layout formulaire
+   classique) ; la colonne photo est masquée sous 900px, le mobile garde le
+   carrousel seul en une colonne centrée.
+   2026-08-13, 5ᵉ itération : typographie et photo agrandies ("prendre plus
+   d'espace sur la page"), carrousel rendu **circulaire** — activeIndex
+   parcourt tout [0, n-1] et prev/next bouclent via modulo, pour que la 1re
+   et la dernière valeur deviennent elles aussi actives (la version
+   précédente les excluait volontairement pour garantir "toujours 3 lignes
+   dès l'entrée" — cette contrainte est maintenant satisfaite autrement, par
+   le bouclage, donc plus besoin d'exclure les extrémités). Transition photo
+   remplacée par un effet de "rideau" (clip-path) + léger zoom, plus
+   dynamique qu'un simple fondu d'opacité — voir .values-media-photo.
    ========================================================================== */
 .values {
   position: relative;
@@ -1342,32 +1348,34 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   overflow: hidden;
 }
 .values-inner {
-  width: min(100%, 72rem);
+  width: min(100%, 96rem);
   margin-inline: auto;
   padding-inline: var(--space-4);
   display: grid;
   grid-template-columns: 1fr;
   align-items: center;
+  justify-items: center;
   gap: var(--space-5);
 }
 @media (min-width: 900px) {
-  .values-inner { grid-template-columns: 1.05fr 0.95fr; gap: var(--space-6); padding-inline: var(--space-5); }
+  .values-inner { grid-template-columns: 1fr 1fr; gap: var(--space-5); padding-inline: var(--space-6); }
 }
 .values-text {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  width: 100%;
 }
-@media (min-width: 900px) {
-  .values-text { align-items: flex-start; text-align: left; }
+.values-text .eyebrow {
+  font-size: clamp(1.7rem, 3.4vw + 1rem, 3.2rem);
 }
 .values-window {
   position: relative;
   width: 100%;
-  max-width: 34rem;
+  max-width: 40rem;
   padding-inline: var(--space-4);
-  height: 14rem;
+  height: 30rem;
 }
 @media (min-width: 900px) {
   .values-window { padding-inline: 0; }
@@ -1382,39 +1390,36 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-align: center;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.15rem, 1.4vw + 0.85rem, 1.7rem);
-  line-height: 1.3;
+  font-size: clamp(1.4rem, 1.7vw + 1rem, 2.2rem);
+  line-height: 1.2;
   color: var(--fg-muted-inverse);
   opacity: 0;
-  transform: translateY(0) scale(0.92);
+  transform: translateY(0) scale(0.9);
   transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), font-size 0.55s var(--ease);
   pointer-events: none;
-}
-@media (min-width: 900px) {
-  .values-line { justify-content: flex-start; text-align: left; }
 }
 .values-line.is-active {
   opacity: 1;
   color: var(--cream);
   font-weight: 700;
-  font-size: clamp(1.5rem, 2vw + 1rem, 2.2rem);
+  font-size: clamp(2.2rem, 3vw + 1.3rem, 3.8rem);
   transform: translateY(0) scale(1);
 }
-.values-line.is-prev { opacity: 0.4; transform: translateY(-4.6rem) scale(0.86); }
-.values-line.is-next { opacity: 0.4; transform: translateY(4.6rem) scale(0.86); }
+.values-line.is-prev { opacity: 0.4; transform: translateY(-8.8rem) scale(0.84); }
+.values-line.is-next { opacity: 0.4; transform: translateY(8.8rem) scale(0.84); }
 
 .values-media {
   position: relative;
   display: none;
   width: 100%;
   aspect-ratio: 4 / 5;
-  max-height: min(60vh, 32rem);
+  max-height: min(76vh, 44rem);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 30px 70px rgba(8, 16, 20, 0.45);
 }
 @media (min-width: 900px) {
-  .values-media { display: block; justify-self: end; }
+  .values-media { display: block; justify-self: center; }
 }
 .values-media-photo {
   position: absolute;
@@ -1423,9 +1428,17 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 1s var(--ease);
+  transform: scale(1.14) rotate(0.7deg);
+  filter: blur(14px) saturate(0.7);
+  transition: opacity 0.9s var(--ease), transform 1.9s var(--ease), filter 1.2s var(--ease);
+  z-index: 1;
 }
-.values-media-photo.is-active { opacity: 1; }
+.values-media-photo.is-active {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  filter: blur(0) saturate(1);
+  z-index: 2;
+}
 
 /* ==========================================================================
    Contact page — full-screen title, contact bandeau, single-column premium

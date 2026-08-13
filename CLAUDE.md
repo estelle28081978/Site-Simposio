@@ -294,6 +294,104 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   de vivre, pas comme décor », « Un interlocuteur, jamais un standard »,
   « Le détail qui change tout », « La confiance avant la prestation »,
   « Chaque événement, une signature ».
+- **Valeurs — 5ᵉ itération (2026-08-13) : typographie/photo agrandies,
+  carrousel circulaire, transition zoom+flou, nouvelles photos** : quatre
+  demandes distinctes sur la même section, toutes dans `engagements.html` /
+  `style.css` / `main.js`.
+  **Typographie et photo agrandies** ("prendre plus d'espace sur la
+  page") : `.values-text .eyebrow` a son propre `font-size` (`clamp(1.7rem,
+  3.4vw + 1rem, 3.2rem)`, plus grand que le `.eyebrow` générique du reste du
+  site — scoping local, ne touche pas la règle de base) ; `.values-line`
+  passe de `clamp(1.15rem,…,1.7rem)`/`clamp(1.5rem,…,2.2rem)` (base/actif) à
+  `clamp(1.4rem,…,2.2rem)`/`clamp(2.2rem,…,3.8rem)` ; `.values-media`
+  (`max-height`) passe de `min(60vh,32rem)` à `min(76vh,44rem)`. **Piège
+  rencontré** : agrandir la police sans agrandir l'espacement vertical fait
+  chevaucher les lignes prev/next (souvent sur 2 lignes à cette taille)
+  avec la ligne active — `.values-window` est passée de `14rem`/`22rem` à
+  `30rem` de hauteur et le `translateY` de prev/next de `±4.6rem`/`±6.6rem`
+  à `±8.8rem` pour garder un espacement propre même quand active+prev/next
+  sont tous les trois sur 2 lignes simultanément (pire cas observé en
+  Playwright à 1600px de large). Si un chevauchement de lignes réapparaît
+  après un futur agrandissement de police, recalculer cet écart plutôt que
+  le réduire.
+  **Centrage gauche/droite plutôt qu'alignement aux bords** : demande
+  explicite de la cliente — le texte doit être centré *dans la moitié
+  gauche* de l'écran, la photo centrée *dans la moitié droite*, pas calé
+  contre le bord intérieur comme un layout formulaire classique.
+  `.values-inner` est passée de colonnes asymétriques (`1.05fr 0.95fr`,
+  texte aligné à gauche via `align-items:flex-start`) à deux colonnes
+  strictement égales (`1fr 1fr`) avec `justify-items:center` sur le grid et
+  `.values-text`/`.values-line` recentrés (`align-items:center;
+  text-align:center` inconditionnel, plus de override desktop à gauche) ;
+  `.values-media` passe de `justify-self:end` à `justify-self:center`. Le
+  conteneur `.values-inner` est aussi élargi (`72rem` → `96rem` de
+  `max-width`) pour laisser de la place aux éléments agrandis.
+  **Carrousel rendu circulaire** ("il faut qu'on puisse accéder à la valeur
+  1 et 6 aussi") : l'itération précédente bornait volontairement
+  `activeIndex` à `[1, n-2]` pour garantir "toujours 3 lignes visibles dès
+  l'entrée", ce qui excluait la 1re et la dernière valeur du rôle actif.
+  Remplacé par un carrousel **bouclé** dans `updateValuesActive()`
+  (`main.js`) : `activeIndex` parcourt tout `[0, n-1]`
+  (`Math.min(n-1, Math.floor(progress*n))`), et `prevIndex`/`nextIndex` se
+  calculent par modulo (`(activeIndex-1+n)%n` / `(activeIndex+1)%n`) — il y
+  a donc toujours un prev/next valide même à `activeIndex=0` ou `n-1` (le
+  prev de la 1re valeur est la dernière, le next de la dernière est la
+  1re), satisfaisant à la fois "toujours 3 lignes" et "chaque valeur doit
+  pouvoir devenir active". Vérifié par balayage de scroll Playwright :
+  motif `AN...P` à l'entrée (valeur 1 active, valeur 6 en prev par
+  bouclage) et `N...PA` à la sortie (valeur 6 active, valeur 1 en next par
+  bouclage), jamais plus d'une ligne/photo active à la fois.
+  **Transition photo : zoom+flou, pas un fondu plat** ("un effet plus
+  original et dynamique") : `.values-media-photo` anime désormais `opacity`
+  **+** `transform: scale(1.14) rotate(0.7deg)` **+**
+  `filter: blur(14px) saturate(0.7)` vers l'état actif (`opacity:1;
+  scale(1) rotate(0); blur(0) saturate(1)`), façon "point net progressif"
+  façon mise au point d'objectif — plus dynamique qu'un simple fondu
+  d'opacité (l'ancienne version) sans le risque de bug ci-dessous.
+  **Piège réellement rencontré et écarté** : une première version utilisait
+  un effet de "rideau" (`clip-path: inset()` animé sur le seul côté gauche,
+  entrant ET sortant avec la même règle de base) — repéré en capturant un
+  screenshot à mi-transition (Playwright, `waitForTimeout` court après un
+  changement de scroll) : ça laissait un **trou visible** (fond navy nu)
+  entre la zone déjà révélée par la photo entrante et la zone déjà
+  rétractée par la photo sortante, les deux animant depuis/vers le même
+  bord au lieu de bords complémentaires. Un `clip-path` à deux bords
+  complémentaires aurait résolu le trou mais complique inutilement le CSS ;
+  l'opacité (qui ne peut jamais laisser de trou, les deux calques couvrant
+  toujours 100% du cadre) combinée au zoom+flou a été préférée, plus sûre
+  pour un site sans build step/sans tests visuels automatisés. Si un
+  `clip-path` réapparaît ici, vérifier d'abord l'absence de ce trou à
+  mi-transition avant de le garder.
+  **Nouvelles photos, aucune déjà affichée ailleurs sur le site** ("prend
+  des photos pas encore présentes sur le site") : la recherche de nouvelles
+  photos de banque (`mcp__stock-images__search_images`) s'est révélée
+  non fonctionnelle dans cet environnement (0 provider configuré,
+  résultats vides quelle que soit la requête) et l'accès direct aux CDN
+  Pexels/Unsplash est bloqué par la politique réseau de l'environnement
+  (`EGRESS_BLOCKED` sur `images.pexels.com`) — repli assumé et transparent
+  auprès de la cliente : réutilisation de photos **déjà présentes dans
+  `assets/img/` mais encore jamais affichées sur aucune page du site**
+  (`CREDITS.md` les listait "non utilisée actuellement"), plutôt que de
+  laisser la tâche bloquée ou de dupliquer des photos déjà visibles
+  ailleurs (mosaïque, hero...). 6 photos choisies pour leur lien direct
+  avec le sens de chaque valeur : `spritz-terrasse.jpg` (Wikimedia, exigence
+  — cocktail soigné au geste précis), `piazza-evening-menaggio.jpg`
+  (Wikimedia, art de vivre italien — rue authentique au crépuscule, non
+  touristique), `spritz-duo-sicile.jpg` (Pexels, interlocuteur — moment
+  partagé à deux), `terrasse-lanternes-soir.jpg` (Pexels, détail —
+  lanternes en gros plan/bokeh), `alsace-vineyard.jpg` (Wikimedia, confiance
+  — vignoble alsacien, métaphore du soin patient),
+  `evenement-parasols-jaunes-table.jpg` (photo Simposio réelle, signature —
+  garden party parasols rayés jaunes, jamais utilisée ailleurs sur le
+  site). Les 3 photos Wikimedia exigent une attribution : un bloc
+  `.photo-credits` a été ajouté au footer d'`engagements.html` (qui n'en
+  avait aucun avant, n'utilisant jusque-là aucune photo Wikimedia) citant
+  JIP, Hartmut Schmidt Heidelberg et Nicolas Torquet — voir
+  `assets/img/CREDITS.md` pour le détail complet et l'historique. Si le
+  choix des photos est revu, vérifier `CREDITS.md` avant d'en retirer une
+  (mise à jour de la colonne "Utilisée sur" nécessaire) et retirer le
+  crédit correspondant du footer si une photo Wikimedia n'est plus utilisée
+  nulle part sur le site.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le

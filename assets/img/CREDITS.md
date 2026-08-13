@@ -15,7 +15,7 @@ plus avant de marquer un fichier « non utilisé ».
 
 | Fichier | Utilisée sur |
 |---|---|
-| `evenement-parasols-jaunes-table.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) |
+| `evenement-parasols-jaunes-table.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") |
 | `evenement-vespa-fleurie-lemon.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
@@ -48,24 +48,31 @@ plus avant de marquer un fichier « non utilisé ».
 ## Photos Wikimedia Commons (banque libre)
 
 Les photos suivantes viennent de Wikimedia Commons, sous licence libre (CC BY /
-CC BY-SA), qui **exige de créditer l'auteur**. Seule `terrace-dinner-assisi.jpg`
-est encore utilisée sur le site (La Tavola, Prestations) — c'est pourquoi le
-pied de page des 5 pages ne cite plus qu'Andrew Parlette depuis le
-2026-08-12. Les autres fichiers ci-dessous sont désormais inutilisés (voir
-détail dans « Important » plus bas) ; s'ils sont un jour réutilisés, remettre
-leur lien de crédit dans les footers.
+CC BY-SA), qui **exige de créditer l'auteur**. `terrace-dinner-assisi.jpg`
+(La Tavola, Prestations) est actuellement utilisée sur le site — son crédit
+(Andrew Parlette) apparaît en bas de page sur les 5 pages qui partagent ce
+bloc footer (`index.html`, `univers.html`, `prestations.html`,
+`projets.html`, `contact.html`). Depuis le 2026-08-13, `spritz-terrasse.jpg`,
+`piazza-evening-menaggio.jpg` et `alsace-vineyard.jpg` sont aussi utilisées
+(carrousel Valeurs, `engagements.html`) — leurs 3 auteurs (JIP, Hartmut
+Schmidt Heidelberg, Nicolas Torquet) sont crédités dans un bloc
+`.photo-credits` dédié ajouté au footer de cette page (`engagements.html`
+n'affichait aucun crédit avant, n'ayant jusque-là aucune photo Wikimedia).
+Les fichiers restants ci-dessous sont inutilisés (voir détail dans
+« Important » plus bas) ; s'ils sont un jour réutilisés, remettre leur lien
+de crédit dans les footers concernés.
 
-| Fichier | Source | Auteur | Licence |
-|---|---|---|---|
-| `terrace-dinner-assisi.jpg` | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
-| `fiat-500-positano.jpg` | [Positano Fiat 500 car rally.jpg](https://commons.wikimedia.org/wiki/File:Positano_Fiat_500_car_rally.jpg) | Arnoldius | CC BY-SA 3.0 |
-| `vespa-assisi.jpg` | [Red Vespa scooter in front of Rocca Maggiore, Assisi.jpg](https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg) | Marco Ober | CC BY-SA 4.0 |
-| `tuscany-hills.jpg` | [Hills of Tuscany at evening light.jpg](https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg) | Matthias Rhomberg | CC BY 2.0 |
-| `alsace-vineyard.jpg` | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
-| `lemon-tree-italy.jpg` | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
-| `spritz-terrasse.jpg` | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
-| `piazza-evening-menaggio.jpg` | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
-| `amalfi-coast-sunset.jpg` | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
+| Fichier | Utilisée sur | Source | Auteur | Licence |
+|---|---|---|---|---|
+| `terrace-dinner-assisi.jpg` | Prestations — La Tavola | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
+| `spritz-terrasse.jpg` | Engagements — carrousel Valeurs ("L'exigence comme point de départ") | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
+| `piazza-evening-menaggio.jpg` | Engagements — carrousel Valeurs ("L'Italie comme art de vivre, pas comme décor") | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
+| `alsace-vineyard.jpg` | Engagements — carrousel Valeurs ("La confiance avant la prestation") | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
+| `fiat-500-positano.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Positano Fiat 500 car rally.jpg](https://commons.wikimedia.org/wiki/File:Positano_Fiat_500_car_rally.jpg) | Arnoldius | CC BY-SA 3.0 |
+| `vespa-assisi.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Red Vespa scooter in front of Rocca Maggiore, Assisi.jpg](https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg) | Marco Ober | CC BY-SA 4.0 |
+| `tuscany-hills.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Hills of Tuscany at evening light.jpg](https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg) | Matthias Rhomberg | CC BY 2.0 |
+| `lemon-tree-italy.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
+| `amalfi-coast-sunset.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 
 Les licences CC BY et CC BY-SA autorisent l'usage commercial, mais exigent de
 créditer l'auteur *tant que la photo est utilisée sur le site* ; CC BY-SA
@@ -85,8 +92,8 @@ de fichier, pour ne pas les confondre avec les vraies photos de la cliente.
 |---|---|---|---|
 | `positano-ceramiche-decor.jpg` | Prestations — La Cartolina (fond) | [Pexels photo 12986066](https://www.pexels.com/photo/12986066/) | Paco de Bydzia |
 | `vespa-fleuriste-rue.jpg` | Prestations — L'Esperienza (fond) | [Pexels photo 7539898](https://www.pexels.com/photo/7539898/) | ROMAN ODINTSOV |
-| `terrasse-lanternes-soir.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Pexels photo 18331431](https://www.pexels.com/photo/18331431/) | Chris F |
-| `spritz-duo-sicile.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Pexels photo 36786940](https://www.pexels.com/photo/36786940/) | Ilma Elsberga |
+| `terrasse-lanternes-soir.jpg` | Engagements — carrousel Valeurs ("Le détail qui change tout") | [Pexels photo 18331431](https://www.pexels.com/photo/18331431/) | Chris F |
+| `spritz-duo-sicile.jpg` | Engagements — carrousel Valeurs ("Un interlocuteur, jamais un standard") | [Pexels photo 36786940](https://www.pexels.com/photo/36786940/) | Ilma Elsberga |
 
 ## Important — à savoir avant publication
 
