@@ -226,23 +226,35 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   des paroles synchronisées de Deezer (capture d'écran fournie) — au scroll,
   une seule ligne de valeur est active (blanc cassé, opaque) à la fois,
   toutes les autres restent estompées (`rgba(246,241,231,0.4)`, `opacity:
-  0.7`). Mécanique dans `main.js` : un `IntersectionObserver` dédié sur
-  chaque `.values-line` avec `rootMargin: "-45% 0px -45% 0px"` (ne laisse
-  qu'une fine bande horizontale au milieu du viewport) et `threshold: 0` —
-  `entry.isIntersecting` bascule directement `.is-active` en `classList.toggle`,
-  **dans les deux sens** de scroll (contrairement à `[data-reveal]` qui ne
-  se déclenche qu'une fois et ne s'annule jamais). Ne pas réutiliser
-  `[data-reveal-group]` ici, ce n'est pas un simple reveal one-shot.
-  **Fond terracotta volontairement étroit** (`.values-panel`, `width:
-  min(52vw, 640px)` desktop / `min(90vw, 560px)` sous 900px) — demande
-  explicite de la cliente (« pas une partie entière... quelque chose comme
-  un demi écran ») à la différence de toutes les autres sections sombres du
-  site qui sont plein-bleed ; ne pas l'étendre en pleine largeur sans qu'on
-  le redemande. 6 valeurs actuellement (texte éditorial à valider avec la
-  cliente, pas un contenu qu'elle a fourni directement) : « L'exigence
-  comme point de départ », « L'Italie comme art de vivre, pas comme décor »,
-  « Un interlocuteur, jamais un standard », « Le détail qui change tout »,
-  « La confiance avant la prestation », « Chaque événement, une signature ».
+  0.7`). **Mécanique dans `main.js`** : à chaque scroll (throttlé par
+  `requestAnimationFrame`, même pattern que `updatePromise()` pour la
+  citation d'univers.html), on recalcule quelle `.values-line` a son centre
+  le plus proche du milieu du viewport et on lui seule ajoute `.is-active`
+  — garantit **toujours exactement une** ligne active, jamais deux, jamais
+  zéro. **Un premier essai utilisait un `IntersectionObserver`** avec
+  `rootMargin: "-45% 0px -45% 0px"` (bande fixe au centre du viewport,
+  `isIntersecting` → `.is-active`) : ça fonctionnait tant que les lignes
+  étaient très espacées, mais une fois le bandeau resserré (voir
+  ci-dessous), deux lignes tombaient parfois ensemble dans la bande et
+  devenaient actives simultanément — bug réel rencontré et corrigé en
+  passant au calcul "ligne la plus proche du centre", robuste quel que soit
+  l'espacement. Si un `IntersectionObserver` à bande fixe réapparaît ici
+  dans un diff, c'est l'ancienne approche, ne pas la réintroduire.
+  **Bandeau plein-largeur, hauteur réduite** (`.values-panel`, `width:
+  100vw; margin-left: calc(50% - 50vw)`, comme `.contact-band`) : la
+  cliente a d'abord demandé un panneau étroit centré (« pas une partie
+  entière... un demi écran »), puis explicitement redemandé de repasser en
+  bandeau plein largeur mais avec une hauteur (`padding-block: 1rem`, gap
+  des lignes réduit) calée à peu près sur la **moitié de la hauteur** du
+  panneau précédent (~797px → ~403px à 1400px de large, vérifié). Si
+  `.values-panel` réapparaît avec un `width` en `vw`/`px` limité (panneau
+  étroit centré), c'est l'ancienne version à ne pas réintroduire sans
+  qu'on le redemande. 6 valeurs actuellement (texte éditorial à valider
+  avec la cliente, pas un contenu qu'elle a fourni directement) :
+  « L'exigence comme point de départ », « L'Italie comme art de vivre, pas
+  comme décor », « Un interlocuteur, jamais un standard », « Le détail qui
+  change tout », « La confiance avant la prestation », « Chaque événement,
+  une signature ».
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le

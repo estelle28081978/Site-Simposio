@@ -1314,26 +1314,30 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Engagements — Valeurs : défilement façon "paroles" (Deezer), une ligne
    active à la fois selon la position de scroll (IntersectionObserver sur
    .values-line dans main.js, rootMargin -45% : une fine bande au centre du
-   viewport). Panneau terracotta volontairement étroit — environ la moitié
-   de la largeur de l'écran, pas plein-bleed comme les autres sections
-   sombres du site — demande explicite de la cliente.
+   viewport). Bandeau terracotta plein-bleed (comme .contact-band) — la
+   cliente a explicitement demandé de repasser du panneau étroit centré à un
+   bandeau pleine largeur, mais avec une hauteur ("largeur" du bandeau au
+   sens ruban) réduite à environ la moitié de celle du panneau précédent.
    ========================================================================== */
 .values { background: var(--bg); padding-block: var(--space-6); }
 .values-panel {
-  width: min(52vw, 640px);
-  margin: var(--space-5) auto 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: var(--space-5);
   background: var(--terracotta);
-  border-radius: var(--radius-lg);
-  padding: var(--space-6) var(--space-4);
+  padding-block: 1rem;
 }
 @media (max-width: 900px) {
-  .values-panel { width: min(90vw, 560px); padding: var(--space-5) var(--space-3); }
+  .values-panel { padding-block: 1rem; }
 }
 .values-list {
+  max-width: 44rem;
+  margin-inline: auto;
+  padding-inline: var(--space-3);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(1.75rem, 3.5vw, 3rem);
+  gap: clamp(0.6rem, 1.2vw, 1rem);
   text-align: center;
 }
 .values-line {
