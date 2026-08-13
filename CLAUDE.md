@@ -131,7 +131,14 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `.senses-journey-head` doit rester en flux normal (`position: relative`,
   pas `absolute`) dans la colonne flex `.senses-journey-sticky`, sinon le
   chemin SVG peut chevaucher visuellement le titre (bug déjà rencontré et
-  corrigé). **Pour vérifier visuellement le tracé** sans avoir à scroller
+  corrigé). **`.senses-journey-card` doit rester à fond opaque** (`var(--navy-900)`,
+  pas de transparence/`backdrop-filter`) : avec le grand zigzag actuel, le
+  trait (avec son glow `drop-shadow`) passe forcément derrière la carte à
+  un moment ou un autre du scroll puisque la carte est toujours centrée au
+  même endroit — un fond même légèrement transparent (l'ancien
+  `rgba(16,31,39,0.85)` + blur) laissait le glow transparaître à travers et
+  « toucher » visuellement le texte, bug déjà rencontré et corrigé. **Pour
+  vérifier visuellement le tracé** sans avoir à scroller
   1240vh : dans la console, forcer
   `document.getElementById('sensesJourneyPath').style.strokeDashoffset='0'`
   (trait complet) et `document.querySelector('.senses-journey-sticky').style.position='fixed'`
@@ -143,7 +150,11 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (`positionEngagementCard()`/`scheduleEngagementMove()`, throttlée par
   `requestAnimationFrame`). Il n'y a plus de flip-card (`[data-flip]`
   n'existe plus dans le code) — ne pas réintroduire ce pattern sans
-  qu'on le redemande explicitement.
+  qu'on le redemande explicitement. Chaque ligne affiche en permanence un
+  petit indicateur `.engagement-line-discover` (« + Découvrir ») en bas à
+  droite — affordance visible en plus de la carte au survol, demandée
+  explicitement ; le `+` se remplit en terracotta au survol/actif comme le
+  reste de la ligne.
 - **Balayage des titres et des formules** (`title-slide` / `formula-slide-left`
   / `formula-slide-right` dans `style.css`, purement CSS, piggyback sur
   `[data-reveal]`) : le tout premier `<h1>` de chaque page glisse depuis la
