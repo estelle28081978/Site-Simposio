@@ -44,13 +44,13 @@
 }
 /* Canter — real brand font, supplied directly by the client (licensed for
    this project) on 2026-08-13. Named "Canter Accent" here (not "Canter")
-   and kept out of --font-subtitle on purpose: --font-subtitle's stack
-   already lists "Canter" first as a placeholder for whenever the real font
+   and kept out of --font-subtitle on purpose: --font-subtitle's stack used
+   to list "Canter" first as a placeholder for whenever the real font
    arrived, so registering it under that exact name would have silently
-   flipped every Oswald-styled eyebrow/label/nav-link site-wide to Canter
-   the moment this @font-face loaded — the opposite of what was asked
-   (occasional accent touches, not a systematic replacement). Used only via
-   --font-accent / .font-accent, hand-placed a couple of times per page. */
+   flipped every Oswald-styled label/nav-link site-wide to Canter the
+   moment this @font-face loaded. Used only via --font-accent, exclusively
+   for .eyebrow (the client tried it as scattered one-off touches first,
+   then explicitly asked to consolidate it to just this one role). */
 @font-face {
   font-family: "Canter Accent";
   font-style: normal;
@@ -115,15 +115,15 @@
   /* Type — brand system: Yeseva One (titre) / Canter (sous-titre) / Glacial
      Indifference (corps). Canter's real files were supplied by the client
      on 2026-08-13, but deliberately kept out of this systematic
-     --font-subtitle stack — see --font-accent below and the @font-face
-     comment above for why. Oswald remains the everyday sous-titre font. */
+     --font-subtitle stack — see --font-accent and the @font-face comment
+     above for why. Oswald remains the everyday sous-titre font (nav links,
+     form labels, footer headings...) — Canter is reserved for .eyebrow only. */
   --font-display: "Yeseva One", "Georgia", serif;
   --font-subtitle: "Oswald", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Glacial Indifference", "Helvetica Neue", Arial, sans-serif;
-  /* Canter — used sparingly as a premium accent touch (a phrase, a quote, a
-     proper name here and there), never as the systematic subtitle font.
-     Looks best in its natural mixed case (small-caps character), not
-     uppercase — see .font-accent below. */
+  /* Canter — exclusively the .eyebrow font (the small baseline label before
+     a title). Looks best in its natural mixed case (small-caps character),
+     not uppercase — see .eyebrow below. */
   --font-accent: "Canter Accent", "Oswald", "Helvetica Neue", Arial, sans-serif;
 
   /* Spacing scale — generous, Apple-like breathing room */
@@ -199,27 +199,22 @@ h1, h2, h3, .font-display {
   letter-spacing: -0.02em;
 }
 
-/* Canter accent — a handful of hand-placed touches per page (a phrase, a
-   quote, a proper name), never a systematic role. Left in its natural mixed
-   case on purpose: Canter's lowercase renders as small caps, which is the
-   whole appeal — text-transform:uppercase here would flatten that. */
-.font-accent {
-  font-family: var(--font-accent);
-  font-weight: 300;
-  letter-spacing: 0.01em;
-}
-.font-accent.font-accent-bold { font-weight: 700; }
-
 h1 { font-size: clamp(3.4rem, 6.2vw + 2rem, 8.8rem); letter-spacing: -0.03em; }
 h2 { font-size: clamp(2.4rem, 4.2vw + 1.2rem, 5.6rem); letter-spacing: -0.025em; }
 h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 
+/* Eyebrows — the small baseline label before a title ("Notre promesse",
+   "Nos prestations", "Questions fréquentes"...) — are Canter's one and only
+   role on the site (client's explicit call, 2026-08-13, after trying it as
+   scattered one-off touches elsewhere first). Deliberately NOT uppercase:
+   Canter's lowercase renders as small caps, which is the whole appeal —
+   text-transform:uppercase would flatten that, so the underlying HTML text
+   (already natural/title case, never literal caps) shows through as-is. */
 .eyebrow {
-  font-family: var(--font-subtitle);
-  font-weight: 600;
-  font-size: 0.76rem;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
+  font-family: var(--font-accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
   color: var(--accent);
 }
 .eyebrow.on-dark { color: var(--terracotta-300); }
@@ -232,7 +227,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   max-width: 40rem;
 }
 .lede.on-dark { color: var(--fg-muted-inverse); }
-.lede .font-accent { color: var(--accent); font-size: 1.08em; }
 
 .section-head { max-width: 46rem; margin-bottom: var(--space-5); }
 .section-head.center { margin-inline: auto; text-align: center; }
@@ -526,7 +520,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   color: var(--navy);
 }
 .manifesto blockquote em { font-style: italic; color: var(--accent); }
-.manifesto blockquote em.font-accent { font-style: normal; }
 .manifesto .link-arrow { margin-top: var(--space-4); }
 
 /* ==========================================================================
@@ -1036,16 +1029,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-transform: uppercase;
   color: var(--fg-muted);
 }
-/* Canter accent touch — mixed case on purpose, uppercase would flatten its
-   small-caps character (see .font-accent comment). */
-.founder-signature.font-accent {
-  font-family: var(--font-accent);
-  font-size: 1rem;
-  font-weight: 300;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  color: var(--accent);
-}
 
 /* ==========================================================================
    Prestations — four full-viewport "worlds", each with its own dominant
@@ -1110,10 +1093,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .world-copy-inner .eyebrow.on-dark { display: block; margin-bottom: 0.6rem; }
 .world-copy-inner h2 { font-size: clamp(2.9rem, 4vw + 1.6rem, 5.6rem); color: var(--cream); margin-bottom: var(--space-2); }
 .world-copy-inner .tagline { font-family: var(--font-subtitle); font-weight: 600; font-size: clamp(1.2rem, 0.6vw + 1.05rem, 1.5rem); color: var(--terracotta-300); margin-bottom: var(--space-3); }
-/* Canter accent touch — La Cartolina only, deliberately not applied to
-   every formula's tagline so it stays a one-off touch, not a systematic
-   pattern the client explicitly didn't want. */
-.world-copy-inner .tagline.font-accent { font-family: var(--font-accent); font-weight: 300; font-size: clamp(1.35rem, 0.7vw + 1.15rem, 1.7rem); }
 .world-copy-inner .desc { color: var(--fg-muted-inverse); font-size: 1.08rem; line-height: 1.65; margin-bottom: var(--space-2); }
 .world-esperienza .world-copy-inner .desc,
 .world-tavola .world-copy-inner .desc { margin-left: auto; }
@@ -1290,14 +1269,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-transform: uppercase;
   color: var(--accent);
   margin-block: 0.4rem 0.6rem;
-}
-/* Canter accent touch — mixed case on purpose, see .font-accent comment. */
-.talent-role.font-accent {
-  font-family: var(--font-accent);
-  font-size: 1.05rem;
-  font-weight: 300;
-  letter-spacing: 0.02em;
-  text-transform: none;
 }
 .talent-bio { color: var(--fg-muted); font-size: 0.95rem; }
 

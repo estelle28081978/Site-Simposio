@@ -65,39 +65,35 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   comme le reste des titres — un essai avec une police calligraphique
   script (Alex Brush) a été fait puis explicitement annulé par la cliente
   (2026-08-12) ; ne pas la réintroduire sans qu'on le redemande.
-  **Canter — touches premium (2026-08-13)** : la cliente a fourni directement
-  les fichiers `Canter_Light.otf`/`Canter_Bold.otf` (licence déjà détenue
-  pour la charte graphique), convertis en woff2/woff et auto-hébergés dans
-  `assets/fonts/canter/` (détails de conversion, licence et piège de nommage
-  dans `assets/fonts/README.md`). Demande explicite de la cliente : « je veux
-  des touches de Canter ici et là, harmonieuses, mais je ne veux pas que ça
-  prenne une importance principale, juste qu'on la remarque » — donc **pas**
-  branchée sur `--font-subtitle` (qui reste Oswald partout), mais sur une
-  variable dédiée `--font-accent` + classe utilitaire `.font-accent`
-  (`font-weight:300` par défaut, `.font-accent-bold` pour le poids 700),
-  posée à la main sur un seul élément court par page — jamais un rôle
-  structurel répété partout sur une page. **Piège de nommage évité** :
+  **Canter — police des eyebrows (2026-08-13)** : la cliente a fourni
+  directement les fichiers `Canter_Light.otf`/`Canter_Bold.otf` (licence déjà
+  détenue pour la charte graphique), convertis en woff2/woff et
+  auto-hébergés dans `assets/fonts/canter/` (détails de conversion, licence
+  et piège de nommage dans `assets/fonts/README.md`). **Deux itérations** sur
+  où l'utiliser : essayée d'abord en touches ponctuelles éparpillées (un
+  élément différent par page — citation, signature, tagline...), la cliente
+  a explicitement demandé de tout retirer et de la réserver **uniquement**
+  aux `.eyebrow` — la petite baseline avant un titre ("Notre promesse", "Nos
+  prestations", "Questions fréquentes"...). C'est donc directement la police
+  de `.eyebrow` (`font-family: var(--font-accent)`, `font-weight:700`), pas
+  `--font-subtitle` (qui reste Oswald pour tout le reste : nav, form labels,
+  footer, talent-role, founder-signature...). Si des classes `.font-accent`/
+  `.font-accent-bold` ou des touches Canter isolées ailleurs que `.eyebrow`
+  réapparaissent dans un diff, c'est l'ancienne approche à ne pas
+  réintroduire sans qu'on le redemande. **Piège de nommage évité** :
   l'`@font-face` est enregistrée sous le nom **"Canter Accent"**, pas
   "Canter" — `--font-subtitle` listait déjà le littéral `"Canter"` en
   première position de son fallback stack depuis le début du projet (en
   attendant les fichiers), donc utiliser ce nom exact aurait fait basculer
-  silencieusement TOUT le sous-titrage du site (eyebrows, nav, labels)
-  d'Oswald vers Canter dès que la police se serait chargée — bug potentiel
-  identifié et évité avant publication, pas rencontré en prod. **À utiliser
-  en casse normale/mixte, jamais en majuscules** : les bas-de-casse de
-  Canter sont des petites capitales stylisées, `text-transform: uppercase`
-  aplatit cet effet (piège rencontré sur `.founder-signature`/`.talent-role`,
-  qui étaient en majuscules par défaut — retiré spécifiquement pour leur
-  variante `.font-accent`). Touches actuellement posées (un élément par
-  page, ne pas en ajouter d'autres sans redemander) :
-  `index.html` (le `<em>` "l'Italie iconique" dans le manifeste),
-  `univers.html` (`.founder-signature`, la ligne de signature d'Estelle),
-  `prestations.html` (le `.tagline` de La Cartolina **uniquement** — pas les
-  3 autres formules, pour rester une touche et non un motif systématique),
-  `projets.html` (la phrase "l'univers Simposio" dans le `.lede`),
-  `engagements.html` (`.talent-role`, les deux fiches talents),
-  `contact.html` (`<strong>Estelle Lorusso</strong>` dans
-  `.contact-founder-strip`, en `.font-accent-bold`).
+  silencieusement TOUT le sous-titrage du site (nav, labels) d'Oswald vers
+  Canter dès que la police se serait chargée — bug potentiel identifié et
+  évité avant publication, pas rencontré en prod. **`.eyebrow` n'est plus en
+  majuscules** (`text-transform: uppercase` retiré) : les bas-de-casse de
+  Canter sont des petites capitales stylisées, les majuscules aplatissent
+  cet effet — le texte HTML des eyebrows était déjà écrit en casse normale
+  ("Notre promesse", pas "NOTRE PROMESSE"), seul le CSS les mettait en
+  majuscules visuellement, donc ce retrait ne demandait aucun changement de
+  contenu.
 - **Palette** (fixe, définie dans le brief de marque) : Bleu Méditerranéen
   `#1c3b4a`, Terracotta Riviera `#c1622d`, Blanc Calcaire `#f6f1e7` (couleurs
   principales) ; Rouge Terre d'Ombrie `#4a1c1c`, Rouge Pourpre de Venise
