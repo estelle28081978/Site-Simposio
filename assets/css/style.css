@@ -449,6 +449,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--fg-muted-inverse); font-size: 0.95rem; }
 .mobile-menu-info a:hover { color: var(--cream); }
 .mobile-menu-info .eyebrow:not(:first-child) { margin-top: 0.8rem; }
+/* "Contact" / "Basée en" in the mobile menu keep the old small Oswald
+   eyebrow style — client's explicit call, these two stay out of Canter. */
+.mobile-menu-info .eyebrow {
+  font-family: var(--font-subtitle);
+  font-weight: 600;
+  font-size: 0.76rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
 
 /* ==========================================================================
    Page header — sober intro band for standalone inner pages (no hero photo)
@@ -1131,13 +1140,20 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   position: relative;
   width: 100vw;
   margin-left: calc(50% - 50vw);
-  height: min(78vh, 760px);
-  min-height: 420px;
+  /* +480px = 2 extra rows at the desktop TILE size (240px, see main.js) on
+     top of the previous min(78vh, 760px), so two more rows of photos are
+     visible at once instead of only reachable by panning. */
+  height: min(calc(78vh + 480px), 1240px);
+  min-height: 900px;
   overflow: hidden;
   background: var(--navy-900);
   cursor: grab;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
+}
+@media (max-width: 639px) {
+  /* Same +2 rows, scaled to the mobile TILE size (130px, see main.js). */
+  .mosaic-viewport { height: min(calc(78vh + 260px), 1020px); min-height: 680px; }
 }
 .mosaic-viewport:active,
 .mosaic-viewport.is-dragging { cursor: grabbing; }

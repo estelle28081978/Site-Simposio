@@ -103,7 +103,13 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   vérifié à 390px de large, tient sur une seule ligne. `letter-spacing`
   réduit de `0.06em` à `0.03em` en même temps : à cette taille, l'ancien
   espacement (pensé pour un petit label façon Oswald) devenait visuellement
-  trop aéré avec les formes propres de Canter.
+  trop aéré avec les formes propres de Canter. **Exception — menu mobile** :
+  `.mobile-menu-info .eyebrow` (les libellés "Contact"/"Basée en" dans le
+  panneau du menu mobile) reste explicitement sur l'ancien style Oswald
+  (0,76rem, `letter-spacing: 0.34em`, majuscules) — retiré de Canter à la
+  demande de la cliente, ces deux libellés ne doivent pas suivre la règle
+  générale de `.eyebrow`. Règle scoping ajoutée après la règle de base pour
+  gagner la cascade sans toucher `.eyebrow` ailleurs.
 - **Palette** (fixe, définie dans le brief de marque) : Bleu Méditerranéen
   `#1c3b4a`, Terracotta Riviera `#c1622d`, Blanc Calcaire `#f6f1e7` (couleurs
   principales) ; Rouge Terre d'Ombrie `#4a1c1c`, Rouge Pourpre de Venise
@@ -255,6 +261,16 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 - Mosaïque (page Projets) : CSS Grid avec `grid-auto-flow: dense` pour éviter
   tout trou d'affichage — ne jamais réintroduire de `transform: translateY`
   décoratif sur les items, ça casse l'alignement de la grille (bug corrigé).
+  `#mosaicViewport`/`.mosaic-viewport` dimensionne le nombre de lignes
+  visibles (`buildMosaicGrid()` dans `main.js` calcule `grid.rows` à partir
+  de la hauteur réelle du conteneur ÷ `TILE`, pas d'un nombre de lignes en
+  dur) — pour agrandir la mosaïque, on augmente donc la `height` CSS du
+  viewport, pas une valeur JS. Agrandie de 2 lignes de tuiles à la demande
+  de la cliente (2026-08-13) : `height: min(calc(78vh + 480px), 1240px)`
+  desktop (+480px = 2 lignes à `TILE=240px`), `min(calc(78vh + 260px),
+  1020px)` sous 640px (+260px = 2 lignes à `TILE=130px`, le breakpoint
+  mobile de `TILE` dans `main.js`) — garder ces deux valeurs synchronisées
+  si `TILE` est retouché.
 - **Page Contact — refonte du 2026-08-13** (`contact.html`), demandée par la
   cliente à partir d'une maquette Canva basse-fidélité (annotations
   structurelles, pas un design pixel-exact) : la page suit maintenant un
