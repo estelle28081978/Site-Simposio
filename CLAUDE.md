@@ -196,30 +196,50 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 - Mosaïque (page Projets) : CSS Grid avec `grid-auto-flow: dense` pour éviter
   tout trou d'affichage — ne jamais réintroduire de `transform: translateY`
   décoratif sur les items, ça casse l'alignement de la grille (bug corrigé).
-- **Contenu enrichi de la page Contact** (`contact.html`, hérité de la
-  réconciliation des deux sessions du 2026-08-12 — voir « Limites connues »
-  ci-dessous) : sous le bandeau titre plein écran (`.page-header-full`, cf.
-  ci-dessus), la section `.contact-hero` est en deux colonnes
-  (`.contact-hero-grid`) :
-  - `.contact-hero-info` : photo de fond plein cadre (`.contact-hero-photo`)
-    + dégradé de lisibilité (`.contact-hero-scrim`), par-dessus laquelle
-    `.contact-hero-info-content` empile l'eyebrow/h2/lede, une liste de
-    coordonnées en pastilles (`.contact-info`, icônes SVG inline), une
-    timeline connectée des étapes du process (`.contact-steps`, badges
-    ronds numérotés `.step-num` reliés par un connecteur `::after`), et un
-    mot de la fondatrice (`.contact-founder`, avec avatar rond initiales
-    "EL" `.contact-founder-avatar`).
-  - `.contact-hero-form` : la carte formulaire elle-même, avec icônes SVG
-    dans chaque `.form-group-label` (contraintes à 15×15px) et un sélecteur
-    de type d'événement en cartes visuelles cliquables
-    (`.service-picker`/`.service-option`, boutons radio natifs masqués +
-    état sélectionné via `:has(input:checked)`) **remplaçant** l'ancien
-    `<select id="serviceType">`. Important si le formulaire est retouché :
-    `main.js` pré-remplit le type de prestation depuis le paramètre d'URL
-    `?service=` via
-    `document.querySelectorAll('input[name="serviceType"]')` (et non plus
-    `getElementById("serviceType")`) — garder ce sélecteur cohérent avec le
-    balisage radio si la structure change.
+- **Page Contact — refonte du 2026-08-13** (`contact.html`), demandée par la
+  cliente à partir d'une maquette Canva basse-fidélité (annotations
+  structurelles, pas un design pixel-exact) : la page suit maintenant un
+  flux linéaire de 5 sections, alternant les fonds (calcaire → terracotta →
+  calcaire-dim → navy) plutôt que de rester en deux colonnes. **Remplace
+  entièrement** l'ancienne structure `.contact-hero`/`.contact-hero-grid`
+  deux-colonnes (photo de fond + panneau formulaire) documentée
+  précédemment ici — si `.contact-hero-grid`/`.contact-hero-info`/
+  `.contact-hero-photo`/`.contact-steps`/`.step-num` réapparaissent dans un
+  diff, c'est cette ancienne version, à ne pas réintroduire sans qu'on le
+  redemande.
+  1. `.page-header.page-header-full` (titre plein écran, inchangé) : eyebrow/h1/lede
+     puis une ligne `.page-header-location` (pin + « Basée en Alsace, France »).
+  2. `.contact-band` — bandeau plein-largeur fond terracotta juste sous le
+     titre : `.contact-band-logo` (placeholder rond en pointillés, **TODO**
+     vrai logo) + nom de marque, puis trois `.contact-band-method`
+     (« Nous écrire » = lien `mailto:`, « Nous appeler » = **TODO** vrai
+     numéro — actuellement un `<span>` non cliquable, volontairement pas de
+     faux numéro affiché —, « Réseaux sociaux » = icônes Instagram/LinkedIn
+     réutilisant le markup de `.nav-social`), chaque méthode = label
+     `.contact-band-method-label` + badge rond `.contact-band-icon`.
+  3. `.contact-devis` (fond `--bg-dim`) — colonne unique centrée
+     (`.contact-devis-inner`, max 46rem) : eyebrow/h2/lede (repris de
+     l'ancien `.contact-hero-info-content`), puis `.contact-founder-strip`
+     (pastille compacte avatar "EL" `.contact-founder-avatar` + citation,
+     variante claire de l'ancien `.contact-founder` qui était stylée pour
+     fond sombre), puis le `.form-card.form-card-premium` (le même
+     `#leadForm` qu'avant, ids/names de champs inchangés, `.service-picker`
+     inchangé). L'ancien `.contact-steps` (timeline 3 étapes) a été retiré
+     de cette colonne et son contenu absorbé dans la 1ʳᵉ question de la FAQ
+     ci-dessous plutôt que dupliqué.
+  4. `.contact-scroll-cta` — bouton flèche-vers-le-bas (rebond CSS
+     `@keyframes contact-scroll-bounce`, désactivé si
+     `prefers-reduced-motion`) sous la carte formulaire, ancre vers `#faq`.
+  5. `.contact-faq` (fond `--navy-900`) — accordéon FAQ en **`<details>`/
+     `<summary>` natifs** (pas de JS requis, cohérent avec le reste du site
+     qui n'ajoute du JS que quand c'est nécessaire) ; `.faq-item-icon` est un
+     rond avec un `+` en `::before`/`::after` qui pivote à 45° (devient un
+     `×`) via `.faq-item[open]`.
+  Important si le formulaire est retouché : `main.js` pré-remplit le type
+  de prestation depuis le paramètre d'URL `?service=` via
+  `document.querySelectorAll('input[name="serviceType"]')` (et non plus
+  `getElementById("serviceType")`) — garder ce sélecteur cohérent avec le
+  balisage radio si la structure change.
 - Formulaire de contact : validation + construction du `mailto:` dans
   `buildMailto()`/`validate()`. Les champs sont repérés par leur `id`/`name`
   (`fullName`, `company`, `email`, `phone`, `serviceType`, `guests`,

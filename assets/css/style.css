@@ -1234,123 +1234,132 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .talent-bio { color: var(--fg-muted); font-size: 0.95rem; }
 
 /* ==========================================================================
-   Contact page — full redesign: photo pitch panel + white form card on cream.
+   Contact page — full-screen title, contact bandeau, single-column premium
+   devis form, scroll-to-FAQ cue and FAQ accordion.
    ========================================================================== */
-.contact-hero { position: relative; overflow: hidden; background: var(--bg); }
-.contact-hero-grid { display: grid; }
-@media (min-width: 960px) { .contact-hero-grid { grid-template-columns: 0.85fr 1.15fr; } }
-
-.contact-hero-info {
-  position: relative;
-  overflow: hidden;
-  color: var(--fg-inverse);
-  padding: var(--space-6) var(--space-3);
-}
-@media (min-width: 768px) { .contact-hero-info { padding: var(--space-6) var(--space-5); } }
-.contact-hero-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-.contact-hero-scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    linear-gradient(200deg, rgba(16, 31, 39, 0.94) 0%, rgba(16, 31, 39, 0.9) 55%, rgba(74, 28, 28, 0.62) 100%);
-}
-.contact-hero-info::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  width: 16rem;
-  height: 16rem;
-  right: -6rem;
-  bottom: -7rem;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(224, 149, 106, 0.3);
-  z-index: 2;
-}
-.contact-hero-info-content { position: relative; z-index: 2; }
-.contact-hero-info h2 { color: var(--cream); margin-block: var(--space-2) var(--space-3); font-size: clamp(2rem, 2.4vw + 1.2rem, 3rem); }
-.contact-hero-info .lede { max-width: 30rem; }
-
-.contact-hero-form {
-  background: var(--bg-dim);
-  padding: var(--space-5) var(--space-3);
-  display: flex;
+.page-header-location {
+  display: inline-flex;
   align-items: center;
+  gap: 0.6rem;
+  margin-top: var(--space-4);
+  font-family: var(--font-subtitle);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
 }
-@media (min-width: 768px) { .contact-hero-form { padding: var(--space-6) var(--space-5); } }
+.page-header-location svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
 
-/* Contact info — pill rows instead of bare links, with a small hover lift */
-.contact-info { margin-top: var(--space-4); display: flex; flex-direction: column; gap: 0.6rem; }
-.contact-info a, .contact-info span {
+/* Bandeau — logo placeholder + brand name + the three ways to reach Simposio */
+.contact-band { background: var(--terracotta); }
+.contact-band-inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.7rem;
-  font-size: 0.95rem;
-  color: var(--cream);
-  padding: 0.6em 1em;
-  border-radius: 999px;
-  background: rgba(246, 241, 231, 0.07);
-  border: 1px solid var(--border-inverse);
-  width: fit-content;
-  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
 }
-.contact-info svg { width: 16px; height: 16px; color: var(--terracotta-300); flex-shrink: 0; }
-.contact-info a:hover { background: rgba(193, 98, 45, 0.18); border-color: rgba(224, 149, 106, 0.4); transform: translateX(3px); }
-
-/* Steps — vertical timeline with a connecting line, each row highlights on
-   hover (a light, no-JS touch of interactivity). */
-.contact-steps { position: relative; display: flex; flex-direction: column; gap: 0.3rem; margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border-inverse); max-width: 30rem; }
-.contact-steps li {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: 0.6rem 0.7rem;
-  border-radius: var(--radius-sm);
-  transition: background var(--dur-fast) var(--ease);
-}
-.contact-steps li:hover { background: rgba(246, 241, 231, 0.06); }
-.contact-steps li:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  left: 1.8rem;
-  top: 2.5rem;
-  width: 1px;
-  height: 1.1rem;
-  background: var(--border-inverse);
-}
-.step-num {
+.contact-band-brand { display: flex; align-items: center; gap: var(--space-2); }
+.contact-band-logo {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 2.4rem;
-  height: 2.4rem;
+  width: 3.2rem;
+  height: 3.2rem;
   border-radius: 50%;
-  border: 1.5px solid rgba(224, 149, 106, 0.4);
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  color: var(--terracotta-300);
-  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  border: 1.5px dashed rgba(246, 241, 231, 0.55);
+  background: rgba(246, 241, 231, 0.12);
+  text-align: center;
 }
-.contact-steps li:hover .step-num { background: var(--accent); border-color: var(--accent); color: var(--cream); }
-.contact-steps li span:last-child { font-size: 0.95rem; color: var(--fg-muted-inverse); }
+.contact-band-logo span {
+  font-family: var(--font-subtitle);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+  line-height: 1.15;
+}
+.contact-band-name { font-family: var(--font-display); font-size: 1.5rem; color: var(--cream); }
+.contact-band-dot { color: var(--navy); }
 
-.contact-founder {
+.contact-band-methods { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); }
+.contact-band-method {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.contact-band-method-label {
+  font-family: var(--font-subtitle);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+.contact-band-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: rgba(246, 241, 231, 0.14);
+  border: 1px solid rgba(246, 241, 231, 0.3);
+  color: var(--cream);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.contact-band-icon svg { width: 16px; height: 16px; }
+a.contact-band-method:hover .contact-band-icon { background: var(--navy); border-color: var(--navy); transform: translateY(-2px); }
+.contact-band-social-icons { display: flex; align-items: center; gap: 0.5rem; }
+.contact-band-social-icons a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: rgba(246, 241, 231, 0.14);
+  border: 1px solid rgba(246, 241, 231, 0.3);
+  color: var(--cream);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.contact-band-social-icons svg { width: 16px; height: 16px; }
+.contact-band-social-icons a:hover { background: var(--navy); border-color: var(--navy); transform: translateY(-2px); }
+
+@media (max-width: 699px) {
+  .contact-band-inner { justify-content: center; text-align: center; }
+  .contact-band-methods { justify-content: center; width: 100%; gap: var(--space-4); }
+}
+
+/* Devis form — single centered column, premium card on a soft cream backdrop */
+.contact-devis { position: relative; background: var(--bg-dim); padding-block: var(--space-6); overflow: hidden; }
+.contact-devis-inner { position: relative; z-index: 1; max-width: 46rem; margin-inline: auto; }
+.contact-devis::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 22rem;
+  height: 22rem;
+  right: -8rem;
+  top: -8rem;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(193, 98, 45, 0.18);
+}
+
+.contact-founder-strip {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-top: var(--space-5);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border-inverse);
   max-width: 30rem;
+  margin: 0 auto var(--space-4);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 999px;
+  background: var(--white);
+  border: 1px solid var(--border);
 }
 .contact-founder-avatar {
   display: flex;
@@ -1365,8 +1374,99 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-display);
   font-size: 0.95rem;
 }
-.contact-founder p { font-size: 0.88rem; color: var(--fg-muted-inverse); line-height: 1.5; }
-.contact-founder strong { color: var(--cream); }
+.contact-founder-strip p { font-size: 0.85rem; color: var(--fg-muted); line-height: 1.4; }
+.contact-founder-strip strong { color: var(--navy); }
+
+.form-card-premium {
+  max-width: none;
+  border-radius: calc(var(--radius-lg) + 0.75rem);
+  box-shadow: 0 40px 80px -40px rgba(28, 59, 74, 0.28);
+}
+
+/* Scroll-to-FAQ cue */
+.contact-scroll-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  width: fit-content;
+  margin: var(--space-5) auto 0;
+  text-align: center;
+  font-family: var(--font-subtitle);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+.contact-scroll-cta:hover { color: var(--accent); }
+.contact-scroll-cta-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  color: var(--accent);
+  animation: contact-scroll-bounce 2.2s var(--ease) infinite;
+}
+.contact-scroll-cta-arrow svg { width: 16px; height: 16px; }
+.contact-scroll-cta:hover .contact-scroll-cta-arrow { background: var(--accent); border-color: var(--accent); color: var(--cream); }
+@keyframes contact-scroll-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-scroll-cta-arrow { animation: none; }
+}
+
+/* FAQ — native <details>/<summary> accordion, no JS required */
+.contact-faq { background: var(--navy-900); color: var(--fg-inverse); padding-block: var(--space-6); }
+.faq-list { max-width: 44rem; margin-inline: auto; display: flex; flex-direction: column; gap: 0.9rem; }
+.faq-item {
+  border: 1px solid var(--border-inverse);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  background: rgba(246, 241, 231, 0.03);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+.faq-item:hover { border-color: rgba(224, 149, 106, 0.35); }
+.faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-subtitle);
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--cream);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  border: 1px solid rgba(224, 149, 106, 0.4);
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.faq-item-icon::before, .faq-item-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--terracotta-300);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.faq-item-icon::before { width: 9px; height: 1.5px; transform: translate(-50%, -50%); }
+.faq-item-icon::after { width: 1.5px; height: 9px; transform: translate(-50%, -50%); }
+.faq-item[open] .faq-item-icon { background: var(--accent); border-color: var(--accent); transform: rotate(45deg); }
+.faq-item[open] .faq-item-icon::before, .faq-item[open] .faq-item-icon::after { background: var(--cream); }
+.faq-item p { margin-top: var(--space-2); font-size: 0.95rem; color: var(--fg-muted-inverse); line-height: 1.6; max-width: 38rem; }
 
 /* Service picker — visual selectable cards instead of a plain <select>,
    native radios under the hood so it stays keyboard/screen-reader friendly. */
