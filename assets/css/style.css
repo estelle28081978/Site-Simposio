@@ -485,6 +485,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   max-width: none;
   font-size: clamp(1.5rem, 15vw - 1.85rem, 3.5rem);
 }
+/* Engagements title, 2nd approach (2026-08-13): the client wants the same
+   font-size as univers.html's title (see CLAUDE.md), but still exactly 3
+   lines ("Un partenaire," / "pas un prestataire" / "de plus" via 2 manual
+   <br> in the HTML) — without touching the font-size. Only max-width is
+   removed here (font-size is inherited unchanged from the plain h1 rule
+   above); at that large size the 46rem cap would make the 2nd segment
+   ("pas un prestataire") wrap onto a 4th line on narrower viewports. */
+.page-header h1.title-3-lines-same-size {
+  max-width: none;
+}
 .page-header .lede { margin: var(--space-3) auto 0; }
 .page-header-full {
   min-height: 100vh;
@@ -1371,9 +1381,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .values-window {
   position: relative;
   width: 100%;
-  max-width: 40rem;
+  max-width: 44rem;
   padding-inline: var(--space-4);
-  height: 28rem;
+  height: 38rem;
 }
 @media (min-width: 900px) {
   .values-window { padding-inline: 0; }
@@ -1388,23 +1398,29 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-align: center;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.2rem, 1.3vw + 0.75rem, 1.8rem);
+  font-size: clamp(1.8rem, 1.95vw + 1.125rem, 2.7rem);
   line-height: 1.25;
   color: var(--fg-muted-inverse);
   opacity: 0;
   transform: translateY(0) scale(0.9);
-  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease), font-size 0.55s var(--ease);
+  /* Pas de transition sur font-size : c'est une propriété qui déclenche un
+     reflow de mise en page à chaque frame si elle est animée, ce qui rendait
+     le défilement entre valeurs saccadé. Elle change donc instantanément
+     (snap) pendant que opacity/transform (peu coûteuses, compositées par le
+     GPU) s'animent en douceur — c'est ce qui rend la transition fluide. Ne
+     pas rajouter font-size ici sans re-tester la fluidité du scroll. */
+  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
   pointer-events: none;
 }
 .values-line.is-active {
   opacity: 1;
   color: var(--cream);
   font-weight: 700;
-  font-size: clamp(1.7rem, 2vw + 1rem, 2.6rem);
+  font-size: clamp(2.55rem, 3vw + 1.5rem, 3.9rem);
   transform: translateY(0) scale(1);
 }
-.values-line.is-prev { opacity: 0.4; transform: translateY(-11rem) scale(0.82); }
-.values-line.is-next { opacity: 0.4; transform: translateY(11rem) scale(0.82); }
+.values-line.is-prev { opacity: 0.4; transform: translateY(-13.5rem) scale(0.82); }
+.values-line.is-next { opacity: 0.4; transform: translateY(13.5rem) scale(0.82); }
 
 .values-media {
   position: relative;
@@ -1436,6 +1452,23 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   transform: scale(1) rotate(0deg);
   filter: blur(0) saturate(1);
   z-index: 2;
+}
+.values-scroll-hint {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  display: flex;
+  color: var(--fg-muted-inverse);
+  opacity: 0.55;
+  animation: valuesScrollHintBounce 2.2s var(--ease) infinite;
+}
+.values-scroll-hint svg { width: 15px; height: 15px; }
+@keyframes valuesScrollHintBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .values-scroll-hint { animation: none; }
 }
 
 /* ==========================================================================

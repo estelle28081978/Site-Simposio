@@ -494,6 +494,50 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   valeurs intermédiaires gardent 3 lignes. Si un `(activeIndex ± 1 + n) % n`
   réapparaît ici, c'est l'ancienne version bouclée, à ne pas réintroduire
   sans qu'on le redemande.
+- **Valeurs — 8ᵉ itération (2026-08-13) : fluidité du scroll, tailles
+  ré-agrandies (×1,5), flèche d'incitation** : trois demandes distinctes.
+  **Bug de fluidité identifié et corrigé** : la cliente a signalé des
+  saccades pendant le scroll entre valeurs. Cause : `.values-line`
+  animait `font-size` dans sa `transition` (en plus de `opacity` et
+  `transform`) — `font-size` déclenche un recalcul de mise en page
+  (reflow) à chaque frame de la transition, contrairement à
+  `opacity`/`transform` qui sont compositées par le GPU sans reflow.
+  Comme 6 lignes changent de classe à chaque scroll (et donc potentiellement
+  de `font-size` simultanément), ces reflows répétés étaient la cause
+  probable des saccades. **Corrigé en retirant `font-size` de la liste
+  `transition`** : la taille change désormais instantanément (snap) au
+  moment du changement de classe, pendant que `opacity`/`transform`
+  continuent d'animer en douceur — le changement de taille n'est pas
+  animé mais reste peu perceptible car simultané au fondu/déplacement.
+  Si `font-size` réapparaît dans la `transition` de `.values-line`, revérifier
+  la fluidité du scroll avant de la garder.
+  **Tailles ré-agrandies (×1,5 des tailles précédentes)** : suite à la
+  réduction de la 7ᵉ itération (qui corrigeait un chevauchement réel),
+  la cliente a demandé de réagrandir, en proposant elle-même un facteur
+  de départ ("essaye d'abord 1,5 fois plus grand"). `.values-line`
+  (base/actif) passe de `clamp(1.2rem,…,1.8rem)`/`clamp(1.7rem,…,2.6rem)`
+  à `clamp(1.8rem,…,2.7rem)`/`clamp(2.55rem,…,3.9rem)` (×1,5 exact sur
+  les 3 valeurs du clamp). Pour ne pas réintroduire le chevauchement
+  corrigé à la 7ᵉ itération, l'espacement a été ré-augmenté en proportion :
+  `.values-window` de `28rem` à `38rem` de hauteur, `translateY` de
+  `.is-prev`/`.is-next` de `±11rem` à `±13.5rem` — revérifié au pire cas
+  (la valeur la plus longue passant sur 3 lignes en position active **et**
+  sur 3 lignes en position prev/next, le double pire cas) via capture
+  Playwright, aucun chevauchement à ces tailles. Si l'agrandissement doit
+  être poussé encore plus loin, réappliquer la même méthode : agrandir
+  proportionnellement l'espacement en même temps que la police, puis
+  revérifier avec le texte le plus long du jeu de valeurs.
+  **Flèche d'incitation au scroll** (`.values-scroll-hint`, coin bas-droit
+  de `.values-sticky`) : petite flèche SVG fine (`stroke-width:1.2`,
+  15×15px, plus fine que les icônes du reste du site qui utilisent
+  1.6-1.8), légèrement estompée (`opacity:0.55`), avec un léger rebond
+  vertical en boucle (`@keyframes valuesScrollHintBounce`, désactivé sous
+  `prefers-reduced-motion`) — reprend le principe du bouton
+  `.contact-scroll-cta` de la page Contact mais en version minimale, sans
+  le cercle bordé ni le label texte, juste l'icône, positionnée en
+  `position:absolute` dans le coin de `.values-sticky` (visible en
+  permanence pendant tout le scroll de la section, ne disparaît pas après
+  la première interaction — comportement volontairement simple).
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
@@ -503,34 +547,44 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (balisage dupliqué, cf. note en tête de fichier). Si `>Engagements<`
   réapparaît comme libellé de nav dans un diff, c'est l'ancien nom à ne pas
   réintroduire sans qu'on le redemande.
-- **Titre Engagements — abandon du forçage à 3 lignes (2026-08-13)** : une
-  précédente itération forçait « Un partenaire, pas un prestataire de plus »
-  sur exactement 3 lignes via 2 `<br>` manuels + une classe dédiée
-  `.title-force-3-lines` (clamp plus petit et plafonné, sans `max-width`) —
-  **remplacé** à la demande explicite de la cliente, qui veut désormais que
-  ce titre ait « les mêmes tailles de police que la première partie de la
-  page Univers » (eyebrow "L'Univers Simposio" / h1 "Le sens du nom,
-  l'esprit de la maison"). Le `<h1>` d'`engagements.html` utilise donc
-  maintenant uniquement `title-slide` (comme celui d'`univers.html`),
-  **sans** `.title-force-3-lines`, **sans** les `<br>` manuels — juste
-  « Un partenaire, pas un prestataire de plus » en texte continu, wrappé
-  naturellement par le `clamp()` standard des `h1` (`3.4rem` → `8.8rem`) +
-  `max-width: 46rem` de `.page-header h1`, exactement comme `univers.html`.
-  **Vérifié avant d'appliquer** : à taille standard, ce titre wrappe sur 4-5
-  lignes selon la largeur d'écran (contre 3-4 lignes pour le titre
-  d'`univers.html`, texte différent) — **c'est le même ordre de grandeur et
-  le même comportement que le titre d'`univers.html` déjà en prod** (testé
-  côte à côte via Playwright aux mêmes largeurs, 320px à 2560px), donc
-  cohérent avec l'attente de la cliente plutôt qu'un bug. `.page-header-full`
-  utilise `min-height` (pas `max-height`), la section grandit simplement
-  au-delà d'un écran si le titre est long — comportement déjà accepté sur
-  univers.html. La classe CSS `.title-force-3-lines` (règle
-  `.page-header h1.title-force-3-lines`, dans `style.css`) reste présente
-  mais n'est plus appliquée nulle part : ne pas la reproposer pour ce titre
-  sans qu'on le redemande ; elle reste disponible si un autre titre a un
-  jour besoin d'un nombre de lignes strictement forcé (calée empiriquement
-  par balayage Playwright plutôt que par calcul de métriques de police —
-  approche à réutiliser dans ce cas précis).
+- **Titre Engagements — allers-retours sur le forçage à 3 lignes
+  (2026-08-13)** : trois versions successives.
+  1. Version initiale : forcé sur 3 lignes via 2 `<br>` manuels + classe
+     dédiée `.title-force-3-lines` (`clamp()` plus petit et plafonné, sans
+     `max-width`).
+  2. La cliente a demandé « les mêmes tailles de police que la première
+     partie de la page Univers » → `.title-force-3-lines` retirée, `<br>`
+     manuels retirés, texte continu wrappé naturellement par le `clamp()`
+     standard des `h1` (`3.4rem`→`8.8rem`) + `max-width:46rem`, exactement
+     comme `univers.html`. **Vérifié avant d'appliquer** : à cette taille,
+     le titre wrappe sur 4-5 lignes selon la largeur — le même ordre de
+     grandeur que le titre d'`univers.html` (3-4 lignes, texte différent),
+     donc cohérent avec le comportement déjà en prod sur cette page-là.
+  3. La cliente a ensuite précisé vouloir la même taille de police **ET**
+     exactement 3 lignes, sans changer la taille ni « le reste de la
+     page ». **`.title-3-lines-same-size`** (nouvelle classe, `style.css`,
+     à ne pas confondre avec `.title-force-3-lines` qui change aussi la
+     taille) retire uniquement `max-width` — le `font-size` reste hérité
+     de la règle `h1` standard, inchangé. Les 2 `<br>` manuels sont
+     remis dans le HTML (« Un partenaire, » / « pas un prestataire » /
+     « de plus »). **Limite physique vérifiée et assumée** : à cette
+     taille de police (jusqu'à 8.8rem), retirer `max-width` suffit à tenir
+     3 lignes sur la plage **1024px–1600px** (la plus probable pour la
+     cliente, testé via Playwright), mais pas au-delà : sous ~1000px de
+     large l'écran est physiquement trop étroit pour que le segment « pas
+     un prestataire » (le plus long) tienne sur une seule ligne à cette
+     taille de police (4-5 lignes), et au-delà de ~1920px le `max-width:
+     1320px` du `.container` sitewide (« le reste de la page », volontairement
+     non modifié) plafonne la largeur disponible pendant que le `clamp()`
+     du `h1` continue de grandir jusqu'à 1920px, donc 4 lignes au-delà.
+     Aucune des deux contraintes n'est contournable sans toucher au
+     `font-size` ou à la largeur du site — les deux étant explicitement
+     exclus par la cliente. Si la précision à ces largeurs extrêmes
+     s'avère importante, il faudra la retrouver et arbitrer avec elle.
+  La classe `.title-force-3-lines` (`clamp()` réduit) reste présente dans
+  `style.css` mais n'est plus appliquée nulle part — disponible si un futur
+  titre a besoin d'un nombre de lignes forcé ET d'une taille réduite ; ne
+  pas la réintroduire sur ce titre-ci sans qu'on le redemande.
 - **Balayage des titres et des formules** (`title-slide` / `formula-slide-left`
   / `formula-slide-right` dans `style.css`, purement CSS, piggyback sur
   `[data-reveal]`) : le tout premier `<h1>` de chaque page glisse depuis la
