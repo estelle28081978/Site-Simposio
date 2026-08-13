@@ -210,23 +210,56 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   1. `.page-header.page-header-full` (titre plein écran, inchangé) : eyebrow/h1/lede
      puis une ligne `.page-header-location` (pin + « Basée en Alsace, France »).
   2. `.contact-band` — bandeau plein-largeur fond terracotta juste sous le
-     titre : `.contact-band-logo` (placeholder rond en pointillés, **TODO**
-     vrai logo) + nom de marque, puis trois `.contact-band-method`
-     (« Nous écrire » = lien `mailto:`, « Nous appeler » = **TODO** vrai
-     numéro — actuellement un `<span>` non cliquable, volontairement pas de
-     faux numéro affiché —, « Réseaux sociaux » = icônes Instagram/LinkedIn
-     réutilisant le markup de `.nav-social`), chaque méthode = label
-     `.contact-band-method-label` + badge rond `.contact-band-icon`.
-  3. `.contact-devis` (fond `--bg-dim`) — colonne unique centrée
-     (`.contact-devis-inner`, max 46rem) : eyebrow/h2/lede (repris de
-     l'ancien `.contact-hero-info-content`), puis `.contact-founder-strip`
-     (pastille compacte avatar "EL" `.contact-founder-avatar` + citation,
-     variante claire de l'ancien `.contact-founder` qui était stylée pour
-     fond sombre), puis le `.form-card.form-card-premium` (le même
-     `#leadForm` qu'avant, ids/names de champs inchangés, `.service-picker`
-     inchangé). L'ancien `.contact-steps` (timeline 3 étapes) a été retiré
-     de cette colonne et son contenu absorbé dans la 1ʳᵉ question de la FAQ
-     ci-dessous plutôt que dupliqué.
+     titre, généreusement padded (`padding-block: var(--space-4)`, agrandi
+     à la demande de la cliente) : `.contact-band-logo` (placeholder rond en
+     pointillés, **TODO** vrai logo) + nom de marque, puis trois
+     `.contact-band-method` — chacun affiche désormais un `.contact-band-icon`
+     **et** une valeur texte (`.contact-band-method-value`), pas juste une
+     icône seule. **Coordonnées actuellement provisoires/fictives** (demandé
+     explicitement par la cliente pour prévisualiser la densité visuelle
+     réelle, cf. commentaire `TODO` juste au-dessus de `.contact-band-methods`
+     dans `contact.html`) : email `contact@simposio.fr` (lien `mailto:`),
+     téléphone `03 88 00 00 00` (lien `tel:`), comptes réseaux sociaux
+     `@simposio.events` / `Simposio` sous les icônes Instagram/LinkedIn
+     (markup dérivé de `.nav-social`) — **à remplacer par les vraies avant
+     mise en ligne**.
+  3. `.contact-devis` (fond `--bg-dim`) — **deux colonnes** sur desktop
+     (`.contact-devis-inner`, `grid-template-columns: 0.85fr 1.15fr` à partir
+     de 960px, empilé en une colonne en dessous) reproduisant la maquette
+     Canva de la cliente (texte à gauche, carte formulaire à droite — **pas
+     centré**, correction explicite après un premier essai en colonne unique
+     centrée qui ne respectait pas la maquette) :
+     - `.contact-devis-text` (gauche) : eyebrow/h2/lede alignés à gauche
+       (repris de l'ancien `.contact-hero-info-content`), puis
+       `.contact-founder-strip` (pastille compacte avatar "EL"
+       `.contact-founder-avatar` + citation, variante claire de l'ancien
+       `.contact-founder` qui était stylée pour fond sombre).
+     - `.contact-devis-form` (droite) : `.form-card.form-card-premium` — fond
+       **bleu Méditerranéen** (`linear-gradient(200deg, var(--navy) 0%,
+       var(--navy-900) 100%)`, demandé explicitement par la cliente à la
+       place du blanc initial), avec tous les textes/bordures adaptés pour
+       rester lisibles sur fond sombre (`.form-card-premium .field label`,
+       `.form-group-label`, `.form-note`, `.form-success`, etc. — voir le
+       bloc CSS dédié). **Piège de spécificité CSS** : le sélecteur doit
+       être le composé `.form-card.form-card-premium` et pas seulement
+       `.form-card-premium` seul, sinon la règle `.form-card` de base
+       (définie plus bas dans le fichier, même spécificité, background
+       blanc) gagne la cascade par ordre de source et écrase le fond navy —
+       bug réel rencontré et corrigé, à surveiller si ce bloc est retouché.
+       Le `#leadForm` interne est inchangé (ids/names de champs,
+       `.service-picker`). L'ancien `.contact-steps` (timeline 3 étapes) a
+       été retiré et son contenu absorbé dans la 1ʳᵉ question de la FAQ
+       ci-dessous plutôt que dupliqué.
+     **Champ date** (`#eventDate`) : `type="text"` avec placeholder
+     `JJ/MM/AAAA`, **pas** `type="date"` — un `<input type="date">` a été
+     essayé mais son surlignage interne du segment actif (jour/mois/année)
+     reste bleu natif du navigateur (Chromium/Safari) quel que soit ce qui
+     est tenté en CSS (`accent-color`, `color-scheme` n'ont aucun effet sur
+     ce surlignage précis, seulement sur les cases à cocher/curseurs) —
+     limitation navigateur non contournable sans un composant JS de
+     date-picker custom, hors scope pour un champ optionnel sur un site
+     sans build step. Ne pas revenir à `type="date"` ici sans construire un
+     picker maison.
   4. `.contact-scroll-cta` — bouton flèche-vers-le-bas (rebond CSS
      `@keyframes contact-scroll-bounce`, désactivé si
      `prefers-reduced-motion`) sous la carte formulaire, ancre vers `#faq`.
@@ -282,6 +315,13 @@ ont été retirés des 6 pages restantes.
   fichier).
 - **Liens réseaux sociaux** (`#` dans le header) : placeholders `TODO` à
   remplacer, présents dans les 6 pages.
+- **Coordonnées du bandeau Contact** (`.contact-band`, `contact.html`) :
+  email, téléphone et comptes réseaux sociaux affichés sont **provisoires/
+  fictifs** (`contact@simposio.fr`, `03 88 00 00 00`, `@simposio.events` /
+  `Simposio`), demandés tels quels par la cliente pour prévisualiser le
+  rendu visuel — à remplacer par les vraies coordonnées avant mise en ligne
+  (voir commentaire `TODO` dans le HTML, juste au-dessus de
+  `.contact-band-methods`).
 - **Grilles tarifaires** du document de marque : volontairement exclues du
   site public (info confidentielle, usage interne uniquement).
 - **Résolution de `evenement-vespa-fleurie-lemon.jpg`** : n'est plus utilisée
