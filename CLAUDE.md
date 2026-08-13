@@ -210,13 +210,33 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   1. `.page-header.page-header-full` (titre plein écran, inchangé) : eyebrow/h1/lede
      puis une ligne `.page-header-location` (pin + « Basée en Alsace, France »).
   2. `.contact-band` — bandeau plein-largeur fond terracotta juste sous le
-     titre. **Agrandi à deux reprises** à la demande de la cliente
+     titre. **Agrandi à trois reprises** à la demande de la cliente
      (« encore plus large ») : `padding-block: var(--space-5)`, logo
      placeholder `4.4rem`, nom de marque en `clamp(1.9rem, 1.4vw + 1.5rem,
-     2.6rem)`, labels de méthode `0.95rem`, valeurs `1.15rem`, icônes
-     `3.4rem` — jouer sur ces tailles (et non juste le padding) est ce qui
-     donne au bandeau son poids visuel, la cliente a insisté explicitement
-     sur ce point. Le placeholder logo (`.contact-band-logo`) est un simple
+     2.6rem)`, labels de méthode `1.15rem`/`font-weight:700` (agrandis une
+     2ᵉ fois après une remarque « nous écrire/nous appeler/réseaux sociaux
+     doit être écrit en plus gros », avec une image de référence — labels
+     bold, sans-serif, plus imposants que juste le corps de texte), valeurs
+     `1.15rem`, icônes `3.4rem` — jouer sur ces tailles (et non juste le
+     padding) est ce qui donne au bandeau son poids visuel, la cliente a
+     insisté explicitement sur ce point à plusieurs reprises.
+     **Répartition toujours équilibrée, quel que soit la largeur d'écran**
+     (bug réel corrigé) : `.contact-band-inner` est un flex **en colonne**
+     (`flex-direction: column`) — la marque (`.contact-band-brand`) sur sa
+     propre ligne, puis `.contact-band-methods` sur une ligne à `width:
+     100%` avec `justify-content: space-between`, pour que les 3 méthodes
+     s'étirent toujours d'un bord à l'autre du bandeau. **Avant ce
+     correctif**, `.contact-band-inner` était un simple `flex-wrap` avec
+     `justify-content: space-between` sur DEUX enfants (marque + méthodes) —
+     ça fonctionnait tant que les deux tenaient sur une seule ligne, mais dès
+     que l'agrandissement des polices (ci-dessus) les a fait passer sur deux
+     lignes séparées, `.contact-band-methods` héritait de son
+     `justify-content: flex-start` par défaut et les 3 méthodes se
+     retrouvaient collées à gauche avec un grand vide à droite de l'écran —
+     signalé par la cliente avec une capture d'écran. Le layout en colonne
+     explicite élimine ce cas limite : peu importe la largeur, la ligne des
+     méthodes est toujours pleine largeur et toujours répartie
+     équitablement. Le placeholder logo (`.contact-band-logo`) est un simple
      cercle en pointillés **sans texte** — le texte "Logo à venir" qui s'y
      trouvait a été retiré à la demande de la cliente (visuellement trop
      chargé), le rappel `TODO` vers le vrai logo reste uniquement en

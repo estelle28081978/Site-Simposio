@@ -1257,10 +1257,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .contact-band { background: var(--terracotta); }
 .contact-band-inner {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
+  flex-direction: column;
+  gap: var(--space-4);
   padding-block: var(--space-5);
 }
 .contact-band-brand { display: flex; align-items: center; gap: var(--space-3); }
@@ -1275,7 +1273,17 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .contact-band-name { font-family: var(--font-display); font-size: clamp(1.9rem, 1.4vw + 1.5rem, 2.6rem); color: var(--cream); }
 .contact-band-dot { color: var(--navy); }
 
-.contact-band-methods { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-6); }
+/* Its own full-width row below the brand, spread edge-to-edge so the three
+   methods never cluster on one side — was the bug (huge empty gap on the
+   right) when this only had flex-wrap without an explicit full-width row. */
+.contact-band-methods {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--space-5);
+}
 .contact-band-method {
   display: flex;
   flex-direction: column;
@@ -1284,9 +1292,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .contact-band-method-label {
   font-family: var(--font-subtitle);
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   color: var(--cream);
 }
@@ -1327,8 +1335,8 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 /* Each title in the bandeau rises up + fades in on scroll, staggered —
    [data-reveal-group] on .contact-band-methods, base rule further below. */
 @media (max-width: 699px) {
-  .contact-band-inner { justify-content: center; text-align: center; }
-  .contact-band-methods { justify-content: center; width: 100%; gap: var(--space-5); row-gap: var(--space-4); }
+  .contact-band-inner { align-items: center; text-align: center; }
+  .contact-band-methods { justify-content: center; gap: var(--space-5); row-gap: var(--space-4); }
 }
 
 /* Devis — two columns: pitch text on the left, premium navy form card on the right */
