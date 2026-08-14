@@ -1351,7 +1351,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .values-sticky {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 50vh;
+  min-height: 20rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1383,7 +1384,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 100%;
   max-width: 44rem;
   padding-inline: var(--space-4);
-  height: 28rem;
+  height: 15rem;
 }
 @media (min-width: 900px) {
   .values-window { padding-inline: 0; }
@@ -1398,13 +1399,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-align: center;
   font-family: var(--font-display);
   font-weight: 400;
-  /* Bornes basses très réduites (1.2rem/0.88rem) : calées empiriquement pour
-     que même la valeur la plus longue ("L'Italie comme art de vivre, pas
-     comme décor") tienne sur 2 lignes maximum dès 320px de large, où la
-     fenêtre de texte n'a plus que ~280px de large — vérifié par script
-     Node autonome mesurant le nombre de lignes réel, pas par calcul de
-     métriques. Ne pas remonter ces bornes basses sans revérifier ce cas. */
-  font-size: clamp(0.88rem, 2.4vw + 0.33rem, 1.8rem);
+  /* Bornes basses gardées lisibles (0.82rem/1.1rem, ~13-17px) : le passage
+     en demi-écran a réduit la borne HAUTE (desktop) pour tenir dans la
+     hauteur disponible, mais la borne BASSE (mobile) n'a pas besoin d'être
+     réduite dans les mêmes proportions — elle répondait à une contrainte de
+     LARGEUR (2 lignes max à 320px), pas de hauteur, et il reste une bonne
+     marge sur ce point à cette taille de police (vérifié : la valeur la
+     plus longue tient sur 1-2 lignes, jamais plus, sur toute la plage
+     320px-1920px). Ne pas la réduire à nouveau sans un vrai besoin vérifié. */
+  font-size: clamp(0.82rem, 0.8vw + 0.62rem, 1rem);
   line-height: 1.25;
   color: var(--fg-muted-inverse);
   opacity: 0;
@@ -1422,16 +1425,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   opacity: 1;
   color: var(--cream);
   font-weight: 700;
-  font-size: clamp(1.2rem, 3.4vw + 0.45rem, 2.6rem);
+  font-size: clamp(1.1rem, 1vw + 0.9rem, 1.4rem);
   transform: translateY(0) scale(1);
 }
-.values-line.is-prev { opacity: 0.4; transform: translateY(-11rem) scale(0.82); }
-.values-line.is-next { opacity: 0.4; transform: translateY(11rem) scale(0.82); }
+.values-line.is-prev { opacity: 0.4; transform: translateY(-5.8rem) scale(0.82); }
+.values-line.is-next { opacity: 0.4; transform: translateY(5.8rem) scale(0.82); }
 
 .values-media {
   position: relative;
   display: none;
-  height: min(76vh, 44rem);
+  height: min(38vh, 22rem);
   aspect-ratio: 4 / 5;
   flex: 0 0 auto;
   border-radius: var(--radius-lg);
@@ -1458,44 +1461,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   transform: scale(1) rotate(0deg);
   filter: blur(0) saturate(1);
   z-index: 2;
-}
-/* "Faites défiler" — comble les vides laissés par l'absence de ligne
-   .is-prev (avant la 1re valeur) / .is-next (après la dernière), au même
-   emplacement que ces lignes (mêmes translateY). Visible uniquement à ces
-   deux positions de bord (voir updateValuesActive() dans main.js), pas un
-   élément fixe permanent. */
-.values-edge-hint {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  font-family: var(--font-subtitle);
-  font-weight: 500;
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--fg-muted-inverse);
-  opacity: 0;
-  transition: opacity 0.55s var(--ease);
-  pointer-events: none;
-}
-.values-edge-hint.is-visible { opacity: 0.5; }
-.values-edge-hint svg {
-  width: 13px;
-  height: 13px;
-  animation: valuesEdgeHintBounce 2.2s var(--ease) infinite;
-}
-.values-edge-hint--top { transform: translateY(-11rem); }
-.values-edge-hint--bottom { transform: translateY(11rem); }
-@keyframes valuesEdgeHintBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(4px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .values-edge-hint svg { animation: none; }
 }
 
 /* ==========================================================================

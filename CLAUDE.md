@@ -563,7 +563,9 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `activeIndex===0`, le bas uniquement quand `activeIndex===n-1` — jamais
   les deux en même temps, vérifié par balayage Playwright (24 pas).
   Remplace `.values-scroll-hint` (coin bas-droit, itération précédente),
-  qui a été entièrement retirée du HTML et du CSS.
+  qui a été entièrement retirée du HTML et du CSS. **`.values-edge-hint`
+  a lui-même été retiré à la 10ᵉ itération** ci-dessous — voir cette
+  entrée avant de le réintroduire.
   **2 lignes maximum par valeur, active ou en arrière-plan** : la cliente a
   demandé que chaque valeur — quel que soit son état — tienne toujours sur
   2 lignes au plus, "donc adapte la police en conséquence". La 8ᵉ itération
@@ -593,6 +595,49 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   hautes sans re-vérifier le pire cas à 320px avec la méthode `Range`
   ci-dessus, le risque de dépassement à 3 lignes sur mobile étroit
   réapparaît.
+- **Valeurs — 10ᵉ itération (2026-08-13) : bandeau demi-écran, indices
+  "Faites défiler" retirés** : la cliente a voulu essayer un format
+  différent — "au lieu que le texte et les images soient affichés sur un
+  écran entier, fait sur un demi-écran", en précisant explicitement ne pas
+  vouloir changer le contenu, seulement rétrécir le format. **`.values-sticky`
+  passe de `height:100vh` à `height:50vh`** (+ `min-height:20rem` en
+  garde-fou sur les très petites hauteurs de viewport) — le mécanisme de
+  pin (`.values`, `height:420vh`) est inchangé, seul le bandeau visible
+  pendant le scroll est maintenant deux fois moins haut ; la moitié basse
+  du viewport affiche simplement le fond navy uni pendant tout le scroll
+  de la section (comportement normal d'un élément `position:sticky` plus
+  petit que son wrapper).
+  **Rétrécissement en cascade, mais pas partout de la même façon** :
+  `.values-window` `28rem`→`15rem`, `translateY` prev/next `±11rem`→
+  `±5.8rem`, `.values-media` `min(76vh,44rem)`→`min(38vh,22rem)` — ces
+  valeurs ont été purement divisées par ~2 (la contrainte est verticale,
+  proportionnelle à la réduction de hauteur du bandeau). **Piège évité** :
+  un premier essai a aussi divisé par 2 les bornes **basses** (mobile) des
+  `clamp()` de `.values-line`, ce qui donnait un texte illisible sur
+  mobile (~10px actif, ~7px arrière-plan) — erreur de raisonnement, car la
+  borne basse répond à une contrainte de **largeur** (tenir en 2 lignes à
+  320px, cf. 9ᵉ itération), pas de hauteur ; elle n'avait donc aucune
+  raison de rétrécir avec le passage en demi-écran. Corrigé en ne
+  réduisant que la borne **haute** (desktop, contrainte par la hauteur
+  disponible) et en gardant la borne basse proche de sa valeur lisible
+  d'origine : `.values-line` (base/actif) devient
+  `clamp(0.82rem, 0.8vw + 0.62rem, 1rem)`/`clamp(1.1rem, 1vw + 0.9rem,
+  1.4rem)` — vérifié : la marge sur la contrainte 2-lignes-max est
+  large à cette taille (la valeur la plus longue tient même sur 1 seule
+  ligne sur tout l'intervalle 320px-1920px), donc aucun risque de
+  régression en gardant la borne basse plus grande. Si un futur
+  rétrécissement de `.values-sticky` est demandé, refaire ce
+  raisonnement : ne réduire que ce qui répond à la contrainte de hauteur,
+  pas systématiquement tout le clamp.
+  **Indices "Faites défiler" retirés** (`.values-edge-hint`, 9ᵉ itération) :
+  demande explicite ("enlève la flèche pour défiler en arrière plan"),
+  interprétée comme le retrait complet du composant (texte + flèche), pas
+  seulement l'icône seule — un texte "Faites défiler" sans flèche aurait
+  semblé incomplet. Entièrement supprimé du HTML (`engagements.html`), du
+  CSS (`.values-edge-hint*`, `@keyframes valuesEdgeHintBounce`) et du JS
+  (`updateValuesActive()` ne référence plus `valuesHintTop`/
+  `valuesHintBottom`). Si ces éléments réapparaissent dans un diff, ne pas
+  les réintroduire sans qu'on le redemande.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
