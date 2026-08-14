@@ -464,10 +464,16 @@
      confus). Si un `% n` réapparaît ici, c'est cette ancienne version.
      La photo dans `.values-media` (masquée sous 900px) suit le même index
      actif et change via un effet de rideau (`.is-active` sur
-     `.values-media-photo`, voir le clip-path dans style.css). */
+     `.values-media-photo`, voir le clip-path dans style.css).
+     `#valuesHintTop`/`#valuesHintBottom` ("Faites défiler" + flèche fine)
+     comblent les vides laissés par l'absence de `.is-prev`/`.is-next` aux
+     deux extrémités (activeIndex=0 ou n-1) — visibles uniquement à ces
+     positions, via `.is-visible`. */
   var valuesSection = document.getElementById("valuesSection");
   var valuesLines = document.querySelectorAll(".values-line");
   var valuesPhotos = document.querySelectorAll(".values-media-photo");
+  var valuesHintTop = document.getElementById("valuesHintTop");
+  var valuesHintBottom = document.getElementById("valuesHintBottom");
   if (valuesSection && valuesLines.length) {
     if (reducedMotion) {
       valuesLines.forEach(function (line) { line.classList.add("is-active"); });
@@ -492,6 +498,8 @@
         valuesPhotos.forEach(function (photo, i) {
           photo.classList.toggle("is-active", i === activeIndex);
         });
+        if (valuesHintTop) valuesHintTop.classList.toggle("is-visible", activeIndex === 0);
+        if (valuesHintBottom) valuesHintBottom.classList.toggle("is-visible", activeIndex === n - 1);
         vTicking = false;
       }
       window.addEventListener(

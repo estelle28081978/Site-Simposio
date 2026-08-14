@@ -675,6 +675,45 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   aveuglément aux deux bornes à la fois — leçon déjà tirée à la 10ᵉ
   itération (dans l'autre sens : bornes basses trop réduites), qui
   s'applique symétriquement en agrandissant.
+- **Valeurs — 12ᵉ itération (2026-08-13) : bandeau à 3/4 d'écran, fond
+  dynamique, retour des indices "Faites défiler"** : trois demandes sur la
+  même section, la cliente ayant explicitement demandé de repartir du
+  rendu de la 11ᵉ itération ("reprend exactement comment c'est là") plutôt
+  que d'une nouvelle refonte.
+  **`.values-sticky` passe de `100vh` à `75vh`** (3/4 de l'espace, au lieu
+  de la moitié testée puis rejetée à la 10ᵉ itération). Contrairement à la
+  10ᵉ itération, **le contenu n'a volontairement presque pas été réduit** —
+  seul un ajustement mineur a été nécessaire pour éviter un léger
+  débordement détecté par script (`.values-window` `30rem→27rem`,
+  `.values-media` `min(76vh,44rem)→min(64vh,40rem)`), vérifié comme
+  suffisant par un script Node comparant les bornes de `.values-inner` à
+  celles de `.values-sticky` à 11 largeurs (320px-1920px) : plus aucun
+  débordement, ~50-84px de marge selon la largeur. Les tailles de police
+  (bornes du 11ᵉ itération) n'ont **pas** été touchées.
+  **Fond dynamique** (`.values-sticky::before`, nouveau) : trois
+  `radial-gradient` (lueur terracotta, lueur pourpre/rouge, halo navy plus
+  sombre) superposés, fortement flambés (`blur(60px)`) et positionnés sur
+  un `inset:-25%` généreux pour qu'aucun bord net ne soit visible pendant
+  le mouvement, animés en boucle douce (`@keyframes valuesBgDrift`, 24s,
+  `translate`+`scale` légers) — désactivé sous `prefers-reduced-motion`.
+  Objectif explicite de la cliente : que le quart d'écran non occupé par
+  le bandeau (`.values`, `height:420vh`, fond `--navy` uni en dessous du
+  `.values-sticky` pendant le scroll) ne se lise plus comme un vide, sans
+  revenir à un format 100vh. `.values-inner` passe en
+  `position:relative; z-index:1` pour rester au-dessus de ce nouveau
+  calque décoratif.
+  **Indices "Faites défiler" réintroduits** : retirés à la 10ᵉ itération,
+  la cliente les redemande explicitement ("Ajoute avant la 1ère valeur
+  'Faites défiler' avec une petite flèche vers le bas et après la 6e
+  valeur 'faites défiler' avec une petite flèche vers le haut") —
+  implémentation identique à la 9ᵉ itération (`#valuesHintTop`/
+  `#valuesHintBottom`, `.values-edge-hint`, visibilité pilotée par
+  `activeIndex===0`/`activeIndex===n-1` dans `updateValuesActive()`),
+  seul le `translateY` a été réaligné sur le décalage prev/next actuel
+  (`±11.5rem`, inchangé depuis la 11ᵉ itération). Si `.values-edge-hint`
+  disparaît à nouveau dans un futur diff sans qu'on l'ait redemandé, ne
+  pas le retirer par réflexe — cette fois la cliente l'a explicitement
+  redemandé après l'avoir fait retirer une fois.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le

@@ -1351,13 +1351,43 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .values-sticky {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 75vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: var(--navy);
+}
+/* Fond dynamique : lueurs terracotta/pourpre qui dérivent lentement derrière
+   le carrousel, pour que le quart d'écran restant (au-delà du bandeau
+   .values-sticky lui-même — voir .values, height:420vh) ne se lise jamais
+   comme un vide, contrairement au fond uni de l'itération précédente. Sur un
+   grand `inset` négatif pour que le flou (`blur`) ne laisse jamais voir de
+   bord net pendant le déplacement. */
+.values-sticky::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  background:
+    radial-gradient(42% 38% at 18% 22%, rgba(193, 98, 45, 0.32), transparent 60%),
+    radial-gradient(48% 44% at 84% 78%, rgba(157, 54, 54, 0.24), transparent 65%),
+    radial-gradient(55% 50% at 55% 45%, rgba(28, 59, 74, 0.55), transparent 70%);
+  filter: blur(60px);
+  animation: valuesBgDrift 24s ease-in-out infinite alternate;
+  z-index: 0;
+  pointer-events: none;
+}
+@keyframes valuesBgDrift {
+  0% { transform: translate(-3%, -2%) scale(1); }
+  50% { transform: translate(3%, 2%) scale(1.1); }
+  100% { transform: translate(-2%, 3%) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .values-sticky::before { animation: none; }
 }
 .values-inner {
+  position: relative;
+  z-index: 1;
   width: min(100%, 96rem);
   margin-inline: auto;
   padding-inline: var(--space-4);
@@ -1383,7 +1413,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 100%;
   max-width: 44rem;
   padding-inline: var(--space-4);
-  height: 30rem;
+  height: 27rem;
 }
 @media (min-width: 900px) {
   .values-window { padding-inline: 0; }
@@ -1433,7 +1463,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .values-media {
   position: relative;
   display: none;
-  height: min(76vh, 44rem);
+  height: min(64vh, 40rem);
   aspect-ratio: 4 / 5;
   flex: 0 0 auto;
   border-radius: var(--radius-lg);
@@ -1460,6 +1490,44 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   transform: scale(1) rotate(0deg);
   filter: blur(0) saturate(1);
   z-index: 2;
+}
+/* "Faites défiler" — comble les vides laissés par l'absence de ligne
+   .is-prev (avant la 1re valeur) / .is-next (après la dernière), au même
+   emplacement que ces lignes (mêmes translateY). Visible uniquement à ces
+   deux positions de bord (voir updateValuesActive() dans main.js), pas un
+   élément fixe permanent. */
+.values-edge-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  font-family: var(--font-subtitle);
+  font-weight: 500;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-muted-inverse);
+  opacity: 0;
+  transition: opacity 0.55s var(--ease);
+  pointer-events: none;
+}
+.values-edge-hint.is-visible { opacity: 0.5; }
+.values-edge-hint svg {
+  width: 13px;
+  height: 13px;
+  animation: valuesEdgeHintBounce 2.2s var(--ease) infinite;
+}
+.values-edge-hint--top { transform: translateY(-11.5rem); }
+.values-edge-hint--bottom { transform: translateY(11.5rem); }
+@keyframes valuesEdgeHintBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .values-edge-hint svg { animation: none; }
 }
 
 /* ==========================================================================
