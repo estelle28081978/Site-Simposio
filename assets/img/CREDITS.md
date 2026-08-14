@@ -32,7 +32,7 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-plateau-agrumes.jpg` | Mosaïque Projets + Accueil (hero) |
 | `evenement-ceramiques-citrons.jpg` | Mosaïque Projets |
 | `evenement-tomates-bougeoir.jpg` | Mosaïque Projets |
-| `evenement-fiat500-creme-mur-pierre.jpg` | Mosaïque Projets + Accueil (hero) |
+| `evenement-fiat500-creme-mur-pierre.jpg` | Mosaïque Projets + Accueil (hero) + Contact (fond du bandeau coordonnées) |
 | `evenement-bruschetta-burrata-jardin.jpg` | Mosaïque Projets |
 | `evenement-lampe-rotin-citrons.jpg` | Mosaïque Projets |
 | `evenement-vases-oranges-fleurs.jpg` | Mosaïque Projets |

@@ -975,6 +975,34 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `document.querySelectorAll('input[name="serviceType"]')` (et non plus
   `getElementById("serviceType")`) — garder ce sélecteur cohérent avec le
   balisage radio si la structure change.
+- **Bandeau Contact — photo de fond « dolce vita » (2026-08-14)**
+  (`.contact-band`, `contact.html`) : demande explicite de la cliente
+  (« met une photo en rapport avec la dolce vita qui prend la place de tout
+  le fond terracotta ») — le fond terracotta uni du bandeau des 3 méthodes
+  de contact est remplacé par une photo plein cadre. Photo choisie :
+  `evenement-fiat500-creme-mur-pierre.jpg` (Fiat 500 vintage crème devant un
+  mur en pierre et des branches d'olivier), déjà utilisée en photo Simposio
+  réelle sur l'accueil (hero) et la mosaïque Projets — aucun nouveau crédit
+  requis (cf. `assets/img/CREDITS.md`, colonne « Utilisée sur » mise à
+  jour). Choisie pour son identité « dolce vita » immédiatement lisible
+  (voiture italienne d'époque, pierre chaude, cadrage paysage adapté à un
+  bandeau large) plutôt qu'une nouvelle recherche de photo — recherche de
+  banque d'images non fonctionnelle dans cet environnement (cf. section
+  Photos ci-dessus, même limitation déjà rencontrée pour les valeurs
+  d'Engagements). **Structure** : `<img class="contact-band-photo">` en
+  premier enfant de `.contact-band` (`position:absolute; inset:0;
+  object-fit:cover; z-index:0`), puis `.contact-band-scrim` (dégradé
+  terracotta semi-transparent, `z-index:1`) par-dessus pour garder
+  l'identité de couleur de marque et la lisibilité du texte crème sur une
+  photo par nature plus chargée visuellement qu'un fond uni, puis
+  `.contact-band-inner` repassé en `position:relative; z-index:2` pour
+  rester au-dessus des deux calques. `.contact-band` reçoit
+  `position:relative; overflow:hidden` (le fond terracotta uni reste
+  déclaré comme base/fallback, désormais entièrement recouvert). Vérifié
+  par capture Playwright desktop (1600px) et mobile (390px) : photo visible
+  sur toute la largeur/hauteur du bandeau, texte et icônes des 3 méthodes
+  parfaitement lisibles, aucun débordement horizontal, aucune régression
+  sur la mise en page à 3 colonnes.
 - Formulaire de contact : validation + construction du `mailto:` dans
   `buildMailto()`/`validate()`. Les champs sont repérés par leur `id`/`name`
   (`fullName`, `company`, `email`, `phone`, `serviceType`, `guests`,

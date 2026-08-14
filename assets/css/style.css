@@ -1570,13 +1570,32 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    placeholder removed at the client's request, 2026-08-13). Sized
    deliberately large (padding + type scale) so it reads as its own
    statement band, not a thin utility strip. */
-.contact-band { background: var(--terracotta); }
+.contact-band { position: relative; overflow: hidden; background: var(--terracotta); }
+/* Photo plein cadre "dolce vita" (Fiat 500 vintage devant un mur en pierre,
+   déjà utilisée en hero) à la place du fond terracotta uni — demande
+   explicite de la cliente. Un voile terracotta semi-transparent par-dessus
+   garde l'identité de couleur de la marque et la lisibilité du texte
+   crème, plutôt qu'un simple assombrissement neutre. */
+.contact-band-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+.contact-band-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(193, 98, 45, 0.86) 0%, rgba(157, 74, 33, 0.9) 100%);
+}
 /* Top padding reuses the site's fixed-header clearance constant (see
    .page-header's padding-top) so the now much bigger labels never sit
    under the glass nav bar when this band is scrolled flush to the top —
    real bug hit when the brand row above was removed, since the labels
    became the band's first line instead of sitting below it. */
-.contact-band-inner { padding-block: 6.5rem var(--space-4); }
+.contact-band-inner { position: relative; z-index: 2; padding-block: 6.5rem var(--space-4); }
 
 /* Spread edge-to-edge so the three methods never cluster on one side —
    was a real bug (huge empty gap on the right) when this relied on wrapping
