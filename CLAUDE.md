@@ -710,10 +710,40 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `#valuesHintBottom`, `.values-edge-hint`, visibilité pilotée par
   `activeIndex===0`/`activeIndex===n-1` dans `updateValuesActive()`),
   seul le `translateY` a été réaligné sur le décalage prev/next actuel
-  (`±11.5rem`, inchangé depuis la 11ᵉ itération). Si `.values-edge-hint`
-  disparaît à nouveau dans un futur diff sans qu'on l'ait redemandé, ne
-  pas le retirer par réflexe — cette fois la cliente l'a explicitement
-  redemandé après l'avoir fait retirer une fois.
+  (`±11.5rem`, inchangé depuis la 11ᵉ itération). Ce bloc `.values-edge-hint`
+  est resté inchangé depuis, ne pas le retirer par réflexe si on le
+  retrouve dans un diff.
+- **Valeurs — 13ᵉ itération (2026-08-13) : fond "expérience" (photos
+  floutées du carrousel), retour définitif à `100vh`** : la cliente a jugé
+  que même avec le fond dynamique en dégradés de la 12ᵉ itération, le
+  quart d'écran sous le bandeau `75vh` se lisait encore comme "où il n'y a
+  rien" — au lieu de retoucher encore le dégradé, **`.values-sticky`
+  repasse définitivement à `height:100vh`** (plus de zone non couverte du
+  tout, quelle que soit la nature du fond) et `.values-window`/
+  `.values-media` reviennent à leurs tailles de la 11ᵉ itération
+  (`30rem`/`min(76vh,44rem)`, annulant le rabotage mineur de la 12ᵉ).
+  **Fond remplacé par quelque chose "davantage sur l'expérience"** (demande
+  explicite, plutôt que les lueurs abstraites de dégradés) : nouveau
+  calque `.values-bg` (premier enfant de `.values-sticky`, derrière
+  `.values-inner`) contenant 6 `<img class="values-bg-photo">` — **les
+  mêmes fichiers, dans le même ordre, que `.values-media-photo`** (pas de
+  nouvelles images) — en plein cadre, fortement flouté et assombri
+  (`blur(55px) saturate(1.3) brightness(0.5)`), avec un léger zoom lent en
+  boucle pendant qu'une photo est active (`@keyframes
+  valuesBgPhotoDrift`, 16s, scale 1.15→1.3 + léger déplacement — désactivé
+  sous `prefers-reduced-motion`) et un dégradé sombre par-dessus
+  (`.values-bg::after`) pour garder le texte lisible. **Synchronisé sur le
+  même `activeIndex`** que `.values-media-photo` (`updateValuesActive()`
+  bascule `.is-active` sur les deux jeux d'images en même temps, via une
+  nouvelle NodeList `valuesBgPhotos`) : quand une valeur devient active,
+  tout l'écran se teinte de l'ambiance de sa photo (pas seulement la
+  vignette de droite) — objectif explicite "à partir de ce qui est déjà
+  fait pour les valeurs, créer quelque chose davantage sur l'expérience".
+  Comme le fond couvre maintenant tout le viewport (retour à `100vh`), le
+  souci de "zone vide" des itérations 10-12 disparaît structurellement,
+  pas seulement visuellement. Si un fond en dégradés abstraits (`.values-sticky::before`
+  avec des `radial-gradient`) réapparaît ici, c'est la version de la 12ᵉ
+  itération, à ne pas réintroduire sans qu'on le redemande.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le

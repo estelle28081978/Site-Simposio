@@ -1351,39 +1351,57 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .values-sticky {
   position: sticky;
   top: 0;
-  height: 75vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   background: var(--navy);
 }
-/* Fond dynamique : lueurs terracotta/pourpre qui dérivent lentement derrière
-   le carrousel, pour que le quart d'écran restant (au-delà du bandeau
-   .values-sticky lui-même — voir .values, height:420vh) ne se lise jamais
-   comme un vide, contrairement au fond uni de l'itération précédente. Sur un
-   grand `inset` négatif pour que le flou (`blur`) ne laisse jamais voir de
-   bord net pendant le déplacement. */
-.values-sticky::before {
+/* Fond dynamique "expérience" : version floutée et assombrie de la photo
+   déjà active dans le carrousel (.values-media), en plein cadre derrière
+   tout le contenu — pas un décor abstrait indépendant. Mêmes fichiers,
+   mêmes indices, même activeIndex (voir updateValuesActive() dans
+   main.js qui bascule `.is-active` sur les deux jeux de <img> en même
+   temps) : quand la valeur "L'Italie comme art de vivre" est active, tout
+   l'écran se teinte de l'ambiance de sa photo (rue au crépuscule), pas
+   juste la vignette de droite — objectif explicite de la cliente d'aller
+   "davantage sur l'expérience" plutôt qu'un fond décoratif générique. Le
+   plein écran (`height:100vh` ci-dessus) garantit que ce fond couvre tout
+   le viewport, donc plus de zone vide en dessous du bandeau. */
+.values-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.values-bg-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: blur(55px) saturate(1.3) brightness(0.5);
+  transform: scale(1.15);
+  transition: opacity 1.8s var(--ease);
+}
+.values-bg-photo.is-active {
+  opacity: 1;
+  animation: valuesBgPhotoDrift 16s ease-in-out infinite alternate;
+}
+@keyframes valuesBgPhotoDrift {
+  0% { transform: scale(1.15) translate(0, 0); }
+  100% { transform: scale(1.3) translate(-2%, 2%); }
+}
+.values-bg::after {
   content: "";
   position: absolute;
-  inset: -25%;
-  background:
-    radial-gradient(42% 38% at 18% 22%, rgba(193, 98, 45, 0.32), transparent 60%),
-    radial-gradient(48% 44% at 84% 78%, rgba(157, 54, 54, 0.24), transparent 65%),
-    radial-gradient(55% 50% at 55% 45%, rgba(28, 59, 74, 0.55), transparent 70%);
-  filter: blur(60px);
-  animation: valuesBgDrift 24s ease-in-out infinite alternate;
-  z-index: 0;
-  pointer-events: none;
-}
-@keyframes valuesBgDrift {
-  0% { transform: translate(-3%, -2%) scale(1); }
-  50% { transform: translate(3%, 2%) scale(1.1); }
-  100% { transform: translate(-2%, 3%) scale(1); }
+  inset: 0;
+  background: linear-gradient(180deg, rgba(16, 31, 39, 0.72) 0%, rgba(16, 31, 39, 0.85) 100%);
 }
 @media (prefers-reduced-motion: reduce) {
-  .values-sticky::before { animation: none; }
+  .values-bg-photo.is-active { animation: none; }
 }
 .values-inner {
   position: relative;
@@ -1413,7 +1431,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 100%;
   max-width: 44rem;
   padding-inline: var(--space-4);
-  height: 27rem;
+  height: 30rem;
 }
 @media (min-width: 900px) {
   .values-window { padding-inline: 0; }
@@ -1463,7 +1481,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .values-media {
   position: relative;
   display: none;
-  height: min(64vh, 40rem);
+  height: min(76vh, 44rem);
   aspect-ratio: 4 / 5;
   flex: 0 0 auto;
   border-radius: var(--radius-lg);

@@ -465,6 +465,10 @@
      La photo dans `.values-media` (masquée sous 900px) suit le même index
      actif et change via un effet de rideau (`.is-active` sur
      `.values-media-photo`, voir le clip-path dans style.css).
+     `.values-bg-photo` (fond plein écran flouté, mêmes fichiers que
+     `.values-media-photo`, même ordre) suit exactement le même
+     `activeIndex` — le fond ambiant reflète toujours la photo active au
+     premier plan, pas un élément décoratif indépendant.
      `#valuesHintTop`/`#valuesHintBottom` ("Faites défiler" + flèche fine)
      comblent les vides laissés par l'absence de `.is-prev`/`.is-next` aux
      deux extrémités (activeIndex=0 ou n-1) — visibles uniquement à ces
@@ -472,12 +476,14 @@
   var valuesSection = document.getElementById("valuesSection");
   var valuesLines = document.querySelectorAll(".values-line");
   var valuesPhotos = document.querySelectorAll(".values-media-photo");
+  var valuesBgPhotos = document.querySelectorAll(".values-bg-photo");
   var valuesHintTop = document.getElementById("valuesHintTop");
   var valuesHintBottom = document.getElementById("valuesHintBottom");
   if (valuesSection && valuesLines.length) {
     if (reducedMotion) {
       valuesLines.forEach(function (line) { line.classList.add("is-active"); });
       if (valuesPhotos.length) valuesPhotos[0].classList.add("is-active");
+      if (valuesBgPhotos.length) valuesBgPhotos[0].classList.add("is-active");
     } else {
       var vTicking = false;
       function updateValuesActive() {
@@ -496,6 +502,9 @@
           else if (i === nextIndex) line.classList.add("is-next");
         });
         valuesPhotos.forEach(function (photo, i) {
+          photo.classList.toggle("is-active", i === activeIndex);
+        });
+        valuesBgPhotos.forEach(function (photo, i) {
           photo.classList.toggle("is-active", i === activeIndex);
         });
         if (valuesHintTop) valuesHintTop.classList.toggle("is-visible", activeIndex === 0);
