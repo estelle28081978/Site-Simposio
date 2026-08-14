@@ -638,6 +638,43 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (`updateValuesActive()` ne référence plus `valuesHintTop`/
   `valuesHintBottom`). Si ces éléments réapparaissent dans un diff, ne pas
   les réintroduire sans qu'on le redemande.
+- **Valeurs — 11ᵉ itération (2026-08-13) : retour à `100vh`, tailles
+  poussées au maximum sans chevauchement** : la cliente a jugé le format
+  demi-écran de la 10ᵉ itération raté — "enlève complètement la deuxième
+  moitié où il y a rien" (le bas du viewport restait en fond navy vide
+  pendant tout le scroll de la section, comportement normal d'un élément
+  `position:sticky` deux fois plus petit que son wrapper, mais visuellement
+  perçu comme un trou). Plutôt que de retirer le mécanisme de pin,
+  **`.values-sticky` repasse à `height:100vh`** (comme avant la 10ᵉ
+  itération) et le vide est comblé en agrandissant vraiment le contenu
+  jusqu'à occuper l'espace ("agrandis au maximum... pour occuper l'espace"),
+  au lieu de laisser un bandeau à moitié vide comme les itérations
+  précédentes le faisaient parfois. `.values-window` repasse à `30rem`,
+  `translateY` prev/next à `±11.5rem`, `.values-media` à
+  `min(76vh, 44rem)` (tous doublés depuis la 10ᵉ itération, cohérent avec
+  le retour à `100vh`).
+  **Tailles poussées au maximum, calées au pixel près par script Node
+  autonome** (pas par estimation) : pour chaque borne du `clamp()` de
+  `.values-line.is-active`, un script a balayé des tailles en px et
+  cherché la plus grande qui garde la valeur la plus longue ("L'Italie
+  comme art de vivre, pas comme décor") sur 2 lignes maximum — séparément
+  pour les largeurs étroites (320px : max sûr 19px) et les largeurs larges
+  (1400-1920px, où le conteneur est plafonné par `max-width:44rem` donc la
+  largeur du viewport au-delà n'aide plus : max sûr 54px). Résultat :
+  `.values-line` (base/actif) = `clamp(0.85rem, 1.9vw + 0.55rem, 2.2rem)`/
+  `clamp(1.1rem, 2.6vw + 0.6rem, 3.3rem)` (bornes hautes largement
+  augmentées vs 9ᵉ itération, bornes basses quasiment inchangées).
+  **Piège reproduit puis corrigé** : un premier essai a remonté à la fois
+  la borne basse ET la borne haute du clamp actif (`clamp(1.8rem,…,3.4rem)`)
+  en supposant qu'un simple doublement suffirait — repéré immédiatement
+  par le balayage automatisé (`worstActive=4` lignes), qui a révélé que
+  cette borne haute (3.4rem=54.4px) dépassait de peu le seuil réel de
+  sécurité à 1600-1920px (54px), et que la borne basse remontée cassait la
+  marge de sécurité à 320px. Toujours valider une borne de clamp par un
+  balayage réel de largeurs, jamais par un facteur multiplicatif appliqué
+  aveuglément aux deux bornes à la fois — leçon déjà tirée à la 10ᵉ
+  itération (dans l'autre sens : bornes basses trop réduites), qui
+  s'applique symétriquement en agrandissant.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
