@@ -129,7 +129,15 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 - Citation "Suspendre le quotidien..." (page Univers) : la coloration
   progressive des mots est synchronisée sur la position de l'élément
   lui-même par rapport au **milieu du viewport** (pas sur le scroll de toute
-  la section) — voir `updatePromise()`.
+  la section) — voir `updatePromise()`. **Bloc `.promise-footnote` retiré
+  (2026-08-13)** : les deux paragraphes qui suivaient la citation
+  ("Des parenthèses hors du temps" / "Une œuvre globale, pas un
+  empilement de prestataires") ont été supprimés à la demande explicite de
+  la cliente, avec leur conteneur (`<div class="promise-inner">` +
+  `<div class="promise-footnote" data-reveal-group>`, devenu vide) — la
+  section `#positionnement` ne contient donc plus que `.promise-pin` (la
+  citation). Si ces deux `<article>` réapparaissent dans un diff, ne pas
+  les réintroduire sans qu'on le redemande.
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
@@ -528,16 +536,63 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   proportionnellement l'espacement en même temps que la police, puis
   revérifier avec le texte le plus long du jeu de valeurs.
   **Flèche d'incitation au scroll** (`.values-scroll-hint`, coin bas-droit
-  de `.values-sticky`) : petite flèche SVG fine (`stroke-width:1.2`,
-  15×15px, plus fine que les icônes du reste du site qui utilisent
-  1.6-1.8), légèrement estompée (`opacity:0.55`), avec un léger rebond
-  vertical en boucle (`@keyframes valuesScrollHintBounce`, désactivé sous
-  `prefers-reduced-motion`) — reprend le principe du bouton
-  `.contact-scroll-cta` de la page Contact mais en version minimale, sans
-  le cercle bordé ni le label texte, juste l'icône, positionnée en
-  `position:absolute` dans le coin de `.values-sticky` (visible en
-  permanence pendant tout le scroll de la section, ne disparaît pas après
-  la première interaction — comportement volontairement simple).
+  de `.values-sticky`) : petite flèche SVG fine, légèrement estompée, avec
+  un léger rebond vertical en boucle — **retirée à la 9ᵉ itération**
+  ci-dessous, remplacée par les indices "Faites défiler" en haut/bas du
+  carrousel. Si `.values-scroll-hint` réapparaît dans un diff, c'est cette
+  ancienne version à ne pas réintroduire sans qu'on le redemande.
+- **Valeurs — 9ᵉ itération (2026-08-13) : indices "Faites défiler" aux deux
+  bords, 2 lignes maximum par valeur** : trois demandes distinctes.
+  **Indices "Faites défiler" comblant les vides** (`#valuesHintTop`/
+  `#valuesHintBottom`, classe partagée `.values-edge-hint`, dans
+  `engagements.html`/`style.css`) : la cliente a explicitement demandé de
+  combler les vides visuels laissés par l'absence de `.is-prev` (avant la
+  1re valeur) et `.is-next` (après la dernière) — voir 7ᵉ itération, qui
+  avait accepté "seulement 2 lignes visibles à ces deux extrémités". Les 2
+  nouveaux éléments occupent exactement le même emplacement que
+  `.is-prev`/`.is-next` (mêmes `translateY(∓11rem)`), avec un texte
+  "Faites défiler" fin (`font-family: var(--font-subtitle)`, `0.78rem`,
+  `letter-spacing:0.1em`, majuscules) et une flèche SVG fine
+  (`stroke-width:1.2`) qui rebondit doucement en boucle. **Directions
+  opposées, demandé explicitement** : la flèche du haut (avant la 1re
+  valeur) pointe vers le **bas** (`M12 4v15M6 13l6 6 6-6`), celle du bas
+  (après la dernière) pointe vers le **haut** (`M12 20V5M6 11l6-6 6 6`) —
+  les deux flèches "pointent vers" le carrousel, comme des marque-pages
+  encadrant le contenu. Visibilité pilotée dans `updateValuesActive()`
+  (`main.js`) via `.is-visible` : le haut s'affiche uniquement quand
+  `activeIndex===0`, le bas uniquement quand `activeIndex===n-1` — jamais
+  les deux en même temps, vérifié par balayage Playwright (24 pas).
+  Remplace `.values-scroll-hint` (coin bas-droit, itération précédente),
+  qui a été entièrement retirée du HTML et du CSS.
+  **2 lignes maximum par valeur, active ou en arrière-plan** : la cliente a
+  demandé que chaque valeur — quel que soit son état — tienne toujours sur
+  2 lignes au plus, "donc adapte la police en conséquence". La 8ᵉ itération
+  (agrandissement ×1,5) faisait déjà remonter la valeur la plus longue
+  ("L'Italie comme art de vivre, pas comme décor", 7 mots) à 3-4 lignes
+  selon la largeur — non conforme à cette nouvelle contrainte. **Piège
+  méthodologique corrigé en cours de route** : mesurer le nombre de lignes
+  via `element.getBoundingClientRect().height ÷ line-height` ne fonctionne
+  **pas** sur `.values-line` car cet élément a `position:absolute;
+  inset:0` — sa hauteur reflète toujours la hauteur du conteneur
+  `.values-window` (28rem), pas la hauteur réelle du texte. Il faut passer
+  par un `Range` sur le contenu (`range.selectNodeContents(el);
+  range.getClientRects()`, puis compter les valeurs `top` distinctes) pour
+  obtenir le vrai nombre de lignes visuelles — à réutiliser pour toute
+  future vérification de nombre de lignes sur un élément `inset:0`.
+  Une fois cette mesure fiable en place, calibrage empirique (script Node
+  autonome balayant 320px à 1920px) : `.values-line` (base/actif) passe de
+  `clamp(1.8rem,…,2.7rem)`/`clamp(2.55rem,…,3.9rem)` à
+  `clamp(0.88rem, 2.4vw + 0.33rem, 1.8rem)`/`clamp(1.2rem, 3.4vw + 0.45rem,
+  2.6rem)` — bornes **basses** très réduites (0.88rem/1.2rem) car à 320px
+  de large la fenêtre de texte ne fait plus que ~280px, insuffisant pour 2
+  lignes à une taille plus grande ; bornes hautes ramenées à ce qu'elles
+  étaient en 7ᵉ itération (2.6rem/1.8rem, déjà vérifiées 2-lignes-max à
+  l'époque). Espacement (`.values-window` 38rem→28rem,
+  `translateY` prev/next `±13.5rem`→`±11rem`) ramené en proportion aux
+  valeurs de la 7ᵉ itération. Si le clamp remonte au-delà de ces bornes
+  hautes sans re-vérifier le pire cas à 320px avec la méthode `Range`
+  ci-dessus, le risque de dépassement à 3 lignes sur mobile étroit
+  réapparaît.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
