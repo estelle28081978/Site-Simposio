@@ -217,6 +217,41 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (trait complet) et `document.querySelector('.senses-journey-sticky').style.position='fixed'`
   (+ `top:0;left:0;width:100vw;zIndex:9999`) pour amener la section pinned
   à l'écran sans scroll réel, puis screenshot.
+  **Bug réel trouvé et corrigé (2026-08-17, audit général du site)** :
+  malgré le fond opaque ci-dessus, la carte redevenait "fantôme" (trait
+  visible à travers, texte à peine lisible) PENDANT le fondu d'ouverture/
+  fermeture (`opacity` fait partie de la `transition` de
+  `.senses-journey-card`) — un fond "opaque" en `background-color` ne
+  protège de rien quand c'est l'`opacity` de l'ÉLÉMENT LUI-MÊME (pas
+  seulement son fond) qui est animée : CSS compose alors tout l'élément,
+  fond inclus, comme un groupe semi-transparent, donc le glow du trait
+  transperce quand même pendant la transition. Repéré via un balayage
+  Playwright fin (60 pas) qui capturait `getComputedStyle(carte).opacity`
+  à chaque étape et confirmé par capture d'écran mi-transition. Avec
+  `journeyDwellSpan` assez court (0.05), une bonne partie de la fenêtre
+  d'affichage pouvait même se passer en fondu plutôt qu'à pleine opacité.
+  **Corrigé en retirant `opacity` de la `transition`** de
+  `.senses-journey-card` (ne reste que `transform`) : l'opacité bascule
+  désormais instantanément entre 0 et 1 au changement de classe — jamais
+  d'état intermédiaire translucide — pendant que le `transform: scale()`
+  continue d'animer en douceur pour garder un effet d'apparition. Si
+  `opacity` réapparaît dans cette `transition`, revérifier ce bug avant de
+  le garder.
+  **Second bug trouvé au même audit** : le compteur "X/5 sens découverts
+  en chemin" pouvait rester bloqué sous 5 même une fois le tracé
+  entièrement dessiné et les 5 points allumés — reproduit en simulant un
+  scroll rapide (glisser la barre de défilement jusqu'en bas d'un coup) :
+  `journeyMaxReached` n'augmentait que lorsque `activeIndex` (fenêtre de
+  détection étroite, `journeyDwellSpan=0.05`) passait explicitement par
+  chaque point, ce qu'un grand saut de scroll peut sauter entièrement,
+  contrairement aux points eux-mêmes (`is-lit`) qui s'allument dès que
+  `progress` dépasse leur fraction, sans fenêtre étroite — les deux
+  indicateurs pouvaient donc se désynchroniser. Corrigé dans
+  `updateJourney()` (`main.js`) : le compteur utilise maintenant le même
+  test à base de `progress` que les points (`reachedCount`, calculé à
+  chaque frame indépendamment de la fenêtre de la carte), donc toujours
+  cohérent avec eux. Vérifié : sauter directement en bas de la section
+  affiche bien "5/5" avec les 5 points allumés, plus jamais désynchronisé.
 - **Engagements — lignes au survol** (`#engagementHoverCard`,
   `.engagement-line`) : liste de lignes ; au survol (ou tap sur mobile via
   `matchMedia("(hover: none)")`), une carte de description suit le curseur
@@ -744,6 +779,91 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   pas seulement visuellement. Si un fond en dégradés abstraits (`.values-sticky::before`
   avec des `radial-gradient`) réapparaît ici, c'est la version de la 12ᵉ
   itération, à ne pas réintroduire sans qu'on le redemande.
+- **Valeurs — 14ᵉ itération (2026-08-17) : refonte complète en album
+  filmique horizontal**, remplaçant entièrement le carrousel de texte
+  "façon Deezer" des 13 itérations précédentes ci-dessus. Demande explicite
+  de la cliente : "quelque chose de très original, immersif dans
+  l'expérience client... une version améliorée plus visuelle". Le
+  mécanisme texte (3 lignes empilées, `.values-line`/`.values-window`) est
+  remplacé par 6 **scènes plein écran** qu'on traverse en glissant
+  HORIZONTALEMENT au scroll — comme un album de voyage qu'on feuillette —
+  plutôt qu'un JT défilant verticalement. Toutes les classes/variables de
+  l'ancien carrousel (`.values`, `.values-sticky`, `.values-bg*`,
+  `.values-inner`, `.values-text`, `.values-window`, `.values-line`,
+  `.values-media*`, `.values-edge-hint*`, `updateValuesActive()`) ont été
+  supprimées de `engagements.html`/`style.css`/`main.js` — si l'une d'elles
+  réapparaît dans un diff, c'est cette ancienne version, à ne pas
+  réintroduire sans qu'on le redemande.
+  **Structure** : même principe d'épinglage que `.senses-journey`
+  (long wrapper `.values-reel` de `500vh` + `.values-reel-sticky` en
+  `position:sticky; height:100vh`), mais au lieu de dessiner un tracé SVG,
+  le scroll pilote un `translateX` JS sur `.values-reel-track` (large de
+  `600%`, 6 `.values-reel-scene` de `100%/6` chacune) — la bande glisse
+  horizontalement devant la fenêtre `.values-reel-viewport`. Chaque scène :
+  une photo plein cadre (`.values-reel-photo`, mêmes 6 fichiers que
+  l'ancien carrousel : `spritz-terrasse.jpg`, `piazza-evening-menaggio.jpg`,
+  `spritz-duo-sicile.jpg`, `terrasse-lanternes-soir.jpg`,
+  `alsace-vineyard.jpg`, `evenement-parasols-jaunes-table.jpg` — mêmes
+  crédits/licences déjà couverts, cf. `assets/img/CREDITS.md`, aucune
+  photo neuve), un dégradé de lisibilité (`.values-reel-scrim`), et une
+  légende (`.values-reel-caption`) avec un **tampon numéroté façon sceau de
+  passeport** (`.values-reel-stamp`, cercle en pointillés terracotta,
+  légèrement de travers, qui "atterrit" avec un léger rebond au moment où
+  sa scène s'active) au-dessus du titre de la valeur — le motif "tampon de
+  voyage" fait écho à l'identité Dolce Vita/carnet de voyage de la marque,
+  plus original qu'une simple pastille numérotée. Zoom Ken Burns lent
+  (`@keyframes valuesReelKenBurns`, 9s, `scale(1.12)→scale(1)`, une seule
+  fois par activation via `forwards`, pas `infinite` — jamais l'effet
+  "gif qui boucle"). 6 points de navigation (`.values-reel-dot`) en bas de
+  section, cliquables pour sauter directement à une valeur
+  (`window.scrollTo` vers la position de scroll correspondante dans le
+  wrapper épinglé), plus un indice "Faites défiler →" horizontal
+  (`#valuesReelHint`) visible uniquement tout au début (`progress < 0.03`).
+  **Sous `prefers-reduced-motion`** : le `translateX` reste actif (mapping
+  1:1 avec la position de scroll, pas une animation autoplay — même
+  raisonnement que le tracé SVG des 5 sens, qui reste lui aussi actif sous
+  cette préférence) ; seuls le zoom Ken Burns et le rebond de la flèche
+  sont coupés en CSS.
+  **Trois bugs réels rencontrés et corrigés pendant la construction**
+  (aucun n'était visible dans le code lui-même, tous trouvés par capture
+  d'écran/mesure automatisée à chaque étape du scroll plutôt que supposés
+  corrects après un seul coup d'œil) :
+  1. *Photos manquantes en plein milieu du scroll* — 5 des 6 `<img>`
+     avaient `loading="lazy"`, mais dans ce layout elles sont TOUJOURS très
+     loin du viewport en position de mise en page réelle (jusqu'à -9700px,
+     puisque `.values-reel-track` fait 600% de large et que c'est un
+     `transform` JS, pas un vrai scroll, qui les ramène à l'écran) — le
+     lazy-loading natif du navigateur ne "voit" jamais qu'elles sont sur le
+     point d'apparaître et ne les charge donc jamais. Corrigé en retirant
+     `loading="lazy"` sur ces 6 images (seulement 6, chargement anticipé
+     acceptable pour une section de toute façon accessible qu'après scroll).
+     Piège à surveiller pour tout futur carrousel/bande transformée en JS :
+     `loading="lazy"` et positionnement par `transform` (plutôt que par
+     scroll réel) ne font pas bon ménage.
+  2. *Toute la bande partait hors champ dès qu'on scrollait* — le
+     `translateX` était posé en pourcentage
+     (`translateX(-progress×(n-1)×100%)`), mais un `%` dans `translateX()`
+     se calcule par rapport à la boîte de l'ÉLÉMENT LUI-MÊME (`.values-reel-track`,
+     large de 600%), pas par rapport au viewport — un bug de unités classique
+     et facile à ne pas voir en relisant juste le code. Résultat : à
+     `progress≈0.2` déjà, chaque scène se retrouvait hors du viewport (vérifié
+     via un dump des `getBoundingClientRect()` de chaque scène, aucune
+     n'avait `left≈0`). Corrigé en mesurant la largeur réelle en pixels de
+     `.values-reel-viewport` et en posant un `translateX` en `px`, recalculé
+     au `resize`. Si un `translateX` en `%` réapparaît ici, revérifier ce
+     calcul avant de le garder.
+  3. *Le tampon numéroté chevauchait le titre sur la valeur la plus longue*
+     ("L'Italie comme art de vivre, pas comme décor", 3 lignes à cette
+     taille de police) — le tampon et le titre étaient chacun positionnés
+     indépendamment en `bottom:` fixe, une distance calée pour un titre de
+     1-2 lignes ; le titre à 3 lignes grandissait vers le haut et traversait
+     le tampon (repéré par capture d'écran, pas supposé). Corrigé en
+     regroupant tampon + titre dans un seul conteneur en flux normal
+     (`.values-reel-caption`, `flex-direction:column; gap:`) au lieu de
+     deux éléments en `position:absolute` synchronisés à la main — le
+     tampon se retrouve alors TOUJOURS directement au-dessus du titre, quel
+     que soit son nombre de lignes, sans calcul à maintenir. Vérifié sur
+     les 6 valeurs, y compris la plus longue.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
@@ -1110,6 +1230,49 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `buildMailto()`/`validate()`. Les champs sont repérés par leur `id`/`name`
   (`fullName`, `company`, `email`, `phone`, `serviceType`, `guests`,
   `eventDate`, `message`) — à conserver si le formulaire est retouché.
+- **Audit général du site (2026-08-17)** : demande explicite de la
+  cliente ("corrige tous les bugs et incohérences, visuels ou autre") —
+  passage systématique des 6 pages × 2 viewports (regression Playwright
+  automatisée : débordement horizontal, erreurs console, images cassées,
+  liens morts/ancres orphelines, IDs dupliqués), balayage visuel image par
+  image de chaque page en plusieurs segments de scroll, et test manuel des
+  interactions (formulaire, menu mobile, survol engagements, glisser-
+  déposer + clavier de la mosaïque, accordéon FAQ). Deux bugs sur la page
+  Univers sont documentés ci-dessus (carte des 5 sens translucide pendant
+  le fondu, compteur désynchronisé des points) ; trois autres trouvés,
+  détaillés ici :
+  - **"@" quasi invisible dans l'email du menu mobile** (`.mobile-menu-info
+    a`, "Estellelorusso@eurhekaconseil.com", dupliqué sur les 6 pages) :
+    repéré uniquement grâce à une capture d'écran en haute résolution
+    (×4) — à la résolution d'écran normale (×1, la plupart des écrans non
+    Retina), le glyphe "@" de la police self-hébergée Glacial Indifference
+    (400, normal) se rendait avec des traits beaucoup plus fins que le
+    reste de la police à cette taille, quasiment invisible à l'œil nu sur
+    fond sombre. Vérifié que ce n'était ni un problème de police non
+    chargée, ni de largeur de boîte/ellipsis (le caractère occupait bien
+    sa place dans la mise en page, juste peint quasi vide) — un vrai
+    défaut du fichier de police à cette taille précise. Corrigé en
+    isolant uniquement le caractère "@" dans un `<span class="mailto-at">`
+    avec `font-family: "Helvetica Neue", Arial, sans-serif` (le reste de
+    l'email garde Glacial Indifference) — chirurgical, ne change
+    l'apparence d'aucun autre caractère. Si un autre "@" affiché en corps
+    de texte (pas dans un `href`) doit être ajouté ailleurs sur le site,
+    vérifier d'abord qu'il n'utilise pas Glacial Indifference à une petite
+    taille, ou appliquer le même correctif.
+  - **Incohérence de code (pas un bug visuel)** : le bloc `.manifesto`
+    d'`index.html` (citation "Suspendre le quotidien...", teaser vers
+    Univers) utilisait des styles inline (`style="display:block;
+    margin-bottom:..."`, `style="margin-top:..."`) au lieu de classes CSS
+    scopées comme partout ailleurs sur le site (ex. `.page-header .eyebrow`
+    pour le même besoin). Remplacé par `.manifesto-eyebrow`/`.manifesto-cta`
+    dans `style.css` — aucun changement visuel, juste une mise en
+    cohérence avec la convention du reste du code.
+  - Les seuls autres éléments signalés par l'audit (liens `href="#"` du
+    header/footer, coordonnées provisoires du bandeau Contact, photos
+    d'équipe manquantes) sont des placeholders déjà documentés et
+    intentionnels (voir « Limites connues » ci-dessous) — pas des bugs.
+  Regression complète re-vérifiée après chaque correctif : 0 débordement,
+  0 erreur console, sur les 6 pages × 2 viewports.
 
 ## État d'avancement
 

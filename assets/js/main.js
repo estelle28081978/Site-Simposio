@@ -316,13 +316,25 @@
         if (activeIndex >= 0) {
           setJourneyCard(activeIndex);
           journeyCard.classList.add("is-visible");
-          if (activeIndex + 1 > journeyMaxReached) {
-            journeyMaxReached = activeIndex + 1;
-            journeyCount.textContent = String(journeyMaxReached);
-          }
         } else {
           journeyCard.classList.remove("is-visible");
         }
+      }
+
+      // Counted independently from the card's dwell window (same fraction
+      // check as the dots below): a fast scroll — scrollbar dragged straight
+      // to the bottom, Page Down mashed repeatedly — can jump clean over a
+      // narrow dwell window without ever triggering activeIndex for it, which
+      // left the "X/5 sens découverts" counter stuck below 5 even once the
+      // path was fully drawn and every dot lit. Tying it to progress instead
+      // keeps it consistent with the dots in every case.
+      var reachedCount = 0;
+      for (var j = 0; j < n; j++) {
+        if (progress >= journeyWaypointFractions[j] - 0.01) reachedCount = j + 1;
+      }
+      if (reachedCount > journeyMaxReached) {
+        journeyMaxReached = reachedCount;
+        journeyCount.textContent = String(journeyMaxReached);
       }
 
       journeyDotGroups.forEach(function (g, i) {
@@ -442,87 +454,92 @@
     });
   }
 
-  /* ---------- Engagements: valeurs façon "paroles" au scroll (Deezer) ----------
-     Carrousel épinglé (même mécanique que .senses-journey : long wrapper +
-     position:sticky, progress = scroll traversé ÷ distance totale). Le
-     scroll dans le wrapper .values choisit un index actif parmi les 6
-     valeurs ; seules 3 lignes portent une classe visible à la fois
-     (.is-prev / .is-active / .is-next), toutes les autres restent sans
-     classe et donc invisibles (opacity:0 par défaut sur .values-line) —
-     c'est ce qui donne l'effet "les lignes se révèlent en glissant" plutôt
-     qu'un simple dimming de liste complète.
-     activeIndex parcourt tout [0, n-1] (`Math.min(n-1, Math.floor(progress*n))`),
-     donc chaque valeur — y compris la 1re et la dernière — peut devenir
-     active. prevIndex/nextIndex sont simplement `activeIndex-1`/`activeIndex+1`,
-     **sans boucler** : à `activeIndex=0` il n'y a pas de `.is-prev` (aucune
-     ligne ne correspond à l'index -1), à `activeIndex=n-1` il n'y a pas de
-     `.is-next` — seulement 2 lignes visibles à ces deux extrémités, accepté
-     explicitement par la cliente plutôt que de boucler artificiellement sur
-     la valeur opposée (ancienne version testée puis écartée : boucler avec
-     `% n` faisait techniquement passer par les index 0/n-1, mais montrait
-     une valeur sans rapport thématique comme "précédente"/"suivante", jugé
-     confus). Si un `% n` réapparaît ici, c'est cette ancienne version.
-     La photo dans `.values-media` (masquée sous 900px) suit le même index
-     actif et change via un effet de rideau (`.is-active` sur
-     `.values-media-photo`, voir le clip-path dans style.css).
-     `.values-bg-photo` (fond plein écran flouté, mêmes fichiers que
-     `.values-media-photo`, même ordre) suit exactement le même
-     `activeIndex` — le fond ambiant reflète toujours la photo active au
-     premier plan, pas un élément décoratif indépendant.
-     `#valuesHintTop`/`#valuesHintBottom` ("Faites défiler" + flèche fine)
-     comblent les vides laissés par l'absence de `.is-prev`/`.is-next` aux
-     deux extrémités (activeIndex=0 ou n-1) — visibles uniquement à ces
-     positions, via `.is-visible`. */
+  /* ---------- Engagements: valeurs — album filmique horizontal (2026-08-17) ----------
+     Remplace l'ancien carrousel de texte façon "paroles" (voir CLAUDE.md pour
+     l'historique complet des 13 itérations précédentes) par un mécanisme
+     différent : un long wrapper épinglé (même principe que .senses-journey :
+     position:sticky + progress = scroll traversé ÷ distance totale), mais au
+     lieu de faire défiler du texte verticalement, le scroll fait glisser
+     HORIZONTALEMENT une bande de 6 scènes plein cadre (`.values-reel-track`,
+     large de 600% pour 6 enfants de 100%/6 chacun) — comme un album/pellicule
+     qu'on fait défiler photo par photo. `translateX` est appliqué directement
+     en JS à chaque frame de scroll, jamais via une transition CSS : c'est un
+     mapping 1:1 avec la position de scroll, pas une animation autoplay, donc
+     ça reste cohérent même sous `prefers-reduced-motion` sans traitement
+     spécial (même logique que le tracé SVG des 5 sens).
+     activeIndex = arrondi de `progress × (n-1)` (pas `× n` comme l'ancien
+     carrousel) car il y a n-1 intervalles entre n scènes disposées bord à
+     bord — avec `× n` le dernier index ne serait quasiment jamais atteint
+     pile à progress=1. */
   var valuesSection = document.getElementById("valuesSection");
-  var valuesLines = document.querySelectorAll(".values-line");
-  var valuesPhotos = document.querySelectorAll(".values-media-photo");
-  var valuesBgPhotos = document.querySelectorAll(".values-bg-photo");
-  var valuesHintTop = document.getElementById("valuesHintTop");
-  var valuesHintBottom = document.getElementById("valuesHintBottom");
-  if (valuesSection && valuesLines.length) {
-    if (reducedMotion) {
-      valuesLines.forEach(function (line) { line.classList.add("is-active"); });
-      if (valuesPhotos.length) valuesPhotos[0].classList.add("is-active");
-      if (valuesBgPhotos.length) valuesBgPhotos[0].classList.add("is-active");
-    } else {
-      var vTicking = false;
-      function updateValuesActive() {
+  var valuesReelTrack = document.getElementById("valuesReelTrack");
+  var valuesReelViewport = document.querySelector(".values-reel-viewport");
+  var valuesReelScenes = document.querySelectorAll(".values-reel-scene");
+  var valuesReelDots = document.querySelectorAll(".values-reel-dot");
+  var valuesReelHint = document.getElementById("valuesReelHint");
+  if (valuesSection && valuesReelTrack && valuesReelViewport && valuesReelScenes.length) {
+    var vn = valuesReelScenes.length;
+    // Pixel-based, not %: a `%` in translateX() resolves against the
+    // element's OWN box (the track is 600% wide), not the viewport — using
+    // "-progress×(n-1)×100%" moved the track by up to 6× too far, pushing
+    // every scene past the visible area (confirmed via a bounding-rect
+    // dump: at progress≈0.2 every scene's rect sat off past x=-1600, none
+    // near x=0). Measuring the viewport's real pixel width sidesteps that
+    // percentage-of-self gotcha entirely.
+    var valuesReelSceneWidth = valuesReelViewport.getBoundingClientRect().width;
+    window.addEventListener("resize", function () {
+      valuesReelSceneWidth = valuesReelViewport.getBoundingClientRect().width;
+    });
+
+    function setValuesReelIndex(activeIndex) {
+      valuesReelScenes.forEach(function (scene, i) {
+        scene.classList.toggle("is-active", i === activeIndex);
+      });
+      valuesReelDots.forEach(function (dot, i) {
+        dot.classList.toggle("is-active", i === activeIndex);
+      });
+    }
+
+    function updateValuesReel() {
+      var rect = valuesSection.getBoundingClientRect();
+      var total = rect.height - window.innerHeight;
+      var scrolled = -rect.top;
+      var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
+      var activeIndex = Math.min(vn - 1, Math.round(progress * (vn - 1)));
+      valuesReelTrack.style.transform = "translateX(-" + progress * (vn - 1) * valuesReelSceneWidth + "px)";
+      setValuesReelIndex(activeIndex);
+      if (valuesReelHint) valuesReelHint.classList.toggle("is-visible", progress < 0.03);
+      vTicking = false;
+    }
+
+    // translateX is a direct 1:1 mapping of scroll position, not an autoplay
+    // animation, so it stays active under prefers-reduced-motion too (same
+    // reasoning as the 5-senses SVG path) — only the decorative Ken Burns
+    // zoom and hint bounce are disabled for that preference, in CSS.
+    var vTicking = false;
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!vTicking) {
+          window.requestAnimationFrame(updateValuesReel);
+          vTicking = true;
+        }
+      },
+      { passive: true }
+    );
+    updateValuesReel();
+
+    // Dots double as a jump-to-value control: scroll straight to the point
+    // in the pinned wrapper where that scene becomes active.
+    valuesReelDots.forEach(function (dot, i) {
+      dot.addEventListener("click", function () {
         var rect = valuesSection.getBoundingClientRect();
         var total = rect.height - window.innerHeight;
-        var scrolled = -rect.top;
-        var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
-        var n = valuesLines.length;
-        var activeIndex = Math.min(n - 1, Math.floor(progress * n));
-        var prevIndex = activeIndex - 1;
-        var nextIndex = activeIndex + 1;
-        valuesLines.forEach(function (line, i) {
-          line.classList.remove("is-active", "is-prev", "is-next");
-          if (i === activeIndex) line.classList.add("is-active");
-          else if (i === prevIndex) line.classList.add("is-prev");
-          else if (i === nextIndex) line.classList.add("is-next");
-        });
-        valuesPhotos.forEach(function (photo, i) {
-          photo.classList.toggle("is-active", i === activeIndex);
-        });
-        valuesBgPhotos.forEach(function (photo, i) {
-          photo.classList.toggle("is-active", i === activeIndex);
-        });
-        if (valuesHintTop) valuesHintTop.classList.toggle("is-visible", activeIndex === 0);
-        if (valuesHintBottom) valuesHintBottom.classList.toggle("is-visible", activeIndex === n - 1);
-        vTicking = false;
-      }
-      window.addEventListener(
-        "scroll",
-        function () {
-          if (!vTicking) {
-            window.requestAnimationFrame(updateValuesActive);
-            vTicking = true;
-          }
-        },
-        { passive: true }
-      );
-      updateValuesActive();
-    }
+        var targetProgress = i / (vn - 1);
+        var targetY = window.scrollY + rect.top + targetProgress * total;
+        window.scrollTo({ top: targetY, behavior: reducedMotion ? "auto" : "smooth" });
+      });
+    });
   }
 
   /* ---------- Projets: seamless draggable mosaic ---------- */

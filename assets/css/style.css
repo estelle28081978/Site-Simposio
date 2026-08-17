@@ -457,6 +457,14 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mobile-menu-info { display: flex; flex-direction: column; gap: 0.4rem; }
 .mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--fg-muted-inverse); font-size: 0.95rem; }
 .mobile-menu-info a:hover { color: var(--cream); }
+/* The "@" glyph in self-hosted Glacial Indifference (400 normal) is drawn
+   with much thinner strokes than the rest of the font's character set —
+   at this element's small size it's borderline invisible on standard
+   (non-HiDPI) screens, found via a zoomed/high-DPI screenshot comparison.
+   Rendering just this one character in the fallback sans-serif (which has
+   a normal-weight "@") fixes legibility without changing how the rest of
+   the email address looks. */
+.mobile-menu-info .mailto-at { font-family: "Helvetica Neue", Arial, sans-serif; }
 .mobile-menu-info .eyebrow:not(:first-child) { margin-top: 0.8rem; }
 /* "Contact" / "Basée en" in the mobile menu keep the old small Oswald
    eyebrow style — client's explicit call, these two stay out of Canter. */
@@ -574,6 +582,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .manifesto blockquote em { font-style: italic; color: var(--accent); }
 .manifesto .link-arrow { margin-top: var(--space-4); }
+.manifesto-eyebrow { display: block; margin-bottom: var(--space-3); }
+.manifesto-cta { margin-top: var(--space-4); }
 
 /* ==========================================================================
    Homepage prestations teaser — text-forward, no photos (kept for inner page)
@@ -931,7 +941,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-align: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  /* opacity is NOT transitioned on purpose: this card sits over the glowing
+     terracotta path, and a mid-fade translucent state (opacity between 0
+     and 1) lets the glow bleed through even though the background color
+     itself is fully opaque navy-900 — CSS opacity composites the whole
+     element as one semi-transparent group, background included. Snapping
+     opacity instantly avoids that "ghosted card" artifact (confirmed via
+     screenshot mid-transition) while the transform keeps a soft
+     scale-in/settle reveal instead of an abrupt pop. */
+  transition: transform 0.5s var(--ease);
   z-index: 3;
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
 }
@@ -1350,231 +1368,229 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .talent-bio { color: var(--fg-muted); font-size: 0.95rem; }
 
 /* ==========================================================================
-   Engagements — Valeurs : carrousel "paroles" façon Deezer, épinglé au
-   scroll (même mécanique que .senses-journey : long wrapper + position:
-   sticky, .values-sticky calée sur height:100vh comme .senses-journey-sticky).
-   Seules 3 lignes sont visibles à la fois (précédente / active / suivante)
-   empilées au même endroit ; toutes les autres sont invisibles et se
-   révèlent en glissant à mesure qu'on avance dans le scroll — voir
-   updateValuesActive() dans main.js. Fond Bleu Méditerranéen (`--navy`).
-   Layout deux colonnes sur desktop, chacune centrée dans sa moitié d'écran
-   (texte centré dans la moitié gauche, photo centrée dans la moitié
-   droite — PAS calé sur les bords intérieurs comme un layout formulaire
-   classique) ; la colonne photo est masquée sous 900px, le mobile garde le
-   carrousel seul en une colonne centrée.
-   2026-08-13, 5ᵉ itération : typographie et photo agrandies ("prendre plus
-   d'espace sur la page"), carrousel rendu **circulaire** — activeIndex
-   parcourt tout [0, n-1] et prev/next bouclent via modulo, pour que la 1re
-   et la dernière valeur deviennent elles aussi actives (la version
-   précédente les excluait volontairement pour garantir "toujours 3 lignes
-   dès l'entrée" — cette contrainte est maintenant satisfaite autrement, par
-   le bouclage, donc plus besoin d'exclure les extrémités). Transition photo
-   remplacée par un effet de "rideau" (clip-path) + léger zoom, plus
-   dynamique qu'un simple fondu d'opacité — voir .values-media-photo.
-   ========================================================================== */
-.values {
+   Engagements — Valeurs : album filmique horizontal (2026-08-17, refonte).
+   Remplace l'ancien carrousel de texte "façon Deezer" (13 itérations
+   documentées dans CLAUDE.md) par un mécanisme différent, plus visuel :
+   un long wrapper épinglé (même principe que .senses-journey), mais le
+   scroll fait glisser HORIZONTALEMENT une bande de 6 scènes plein cadre
+   (`.values-reel-track`, 600% de large, 6 enfants de 100%/6) — comme un
+   album de voyage qu'on feuillette photo par photo, chaque valeur devenant
+   sa propre "scène" plein écran (photo + titre + tampon numéroté façon
+   sceau de passeport) plutôt qu'une ligne de texte parmi d'autres. Le
+   `translateX` est posé directement en JS à chaque frame de scroll — un
+   mapping 1:1 avec la position de scroll, pas une animation autoplay — donc
+   il reste actif même sous `prefers-reduced-motion` (voir main.js) ; seules
+   les animations décoratives (zoom Ken Burns, rebond de la flèche) sont
+   coupées pour cette préférence, ci-dessous.
+   Si l'ancien carrousel texte (.values, .values-line, .values-media, etc.)
+   réapparaît dans un diff, c'est cette version précédente — ne pas la
+   réintroduire sans qu'on le redemande. */
+.values-reel {
   position: relative;
-  height: 420vh;
-  background: var(--navy);
+  height: 500vh;
+  background: var(--navy-900);
 }
-.values-sticky {
+.values-reel-sticky {
   position: sticky;
   top: 0;
   height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   overflow: hidden;
-  background: var(--navy);
+  background: var(--navy-900);
 }
-/* Fond dynamique "expérience" : version floutée et assombrie de la photo
-   déjà active dans le carrousel (.values-media), en plein cadre derrière
-   tout le contenu — pas un décor abstrait indépendant. Mêmes fichiers,
-   mêmes indices, même activeIndex (voir updateValuesActive() dans
-   main.js qui bascule `.is-active` sur les deux jeux de <img> en même
-   temps) : quand la valeur "L'Italie comme art de vivre" est active, tout
-   l'écran se teinte de l'ambiance de sa photo (rue au crépuscule), pas
-   juste la vignette de droite — objectif explicite de la cliente d'aller
-   "davantage sur l'expérience" plutôt qu'un fond décoratif générique. Le
-   plein écran (`height:100vh` ci-dessus) garantit que ce fond couvre tout
-   le viewport, donc plus de zone vide en dessous du bandeau. */
-.values-bg {
+.values-reel-eyebrow {
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  top: 6.5rem;
+  left: var(--space-4);
+  z-index: 5;
+  text-shadow: 0 2px 14px rgba(16, 31, 39, 0.9);
+}
+@media (min-width: 768px) {
+  .values-reel-eyebrow { left: var(--space-5); }
+}
+
+.values-reel-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
 }
-.values-bg-photo {
+.values-reel-track {
+  display: flex;
+  height: 100%;
+  width: 600%;
+  will-change: transform;
+}
+.values-reel-scene {
+  position: relative;
+  flex: 0 0 calc(100% / 6);
+  height: 100%;
+  overflow: hidden;
+}
+.values-reel-photo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;
-  filter: blur(55px) saturate(1.3) brightness(0.5);
-  transform: scale(1.15);
-  transition: opacity 1.8s var(--ease);
+  transform: scale(1.12);
+  transition: transform 1s var(--ease);
 }
-.values-bg-photo.is-active {
-  opacity: 1;
-  animation: valuesBgPhotoDrift 16s ease-in-out infinite alternate;
+/* Slow Ken Burns settle while a scene is on screen — only runs once per
+   activation (`forwards`, not `infinite`) so it never feels like a looping
+   gif, just a photo quietly "arriving" into focus. */
+.values-reel-scene.is-active .values-reel-photo {
+  animation: valuesReelKenBurns 9s var(--ease) forwards;
 }
-@keyframes valuesBgPhotoDrift {
-  0% { transform: scale(1.15) translate(0, 0); }
-  100% { transform: scale(1.3) translate(-2%, 2%); }
+@keyframes valuesReelKenBurns {
+  from { transform: scale(1.12); }
+  to { transform: scale(1); }
 }
-.values-bg::after {
-  content: "";
+.values-reel-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(16, 31, 39, 0.72) 0%, rgba(16, 31, 39, 0.85) 100%);
+  background: linear-gradient(180deg,
+    rgba(16, 31, 39, 0.38) 0%,
+    rgba(16, 31, 39, 0.08) 28%,
+    rgba(16, 31, 39, 0.5) 66%,
+    rgba(16, 31, 39, 0.93) 100%);
 }
-@media (prefers-reduced-motion: reduce) {
-  .values-bg-photo.is-active { animation: none; }
-}
-.values-inner {
-  position: relative;
-  z-index: 1;
-  width: min(100%, 96rem);
-  margin-inline: auto;
-  padding-inline: var(--space-4);
+/* Stamp + title live in one normal-flow flex column (.values-reel-caption),
+   not two independently `bottom:`-positioned elements: an earlier version
+   fixed the stamp at a hardcoded `bottom` distance above the title, sized
+   for a 1-2 line title — the longest value text ("L'Italie comme art de
+   vivre, pas comme décor") wraps to 3 lines at this font size and grew
+   upward straight through the stamp (caught via screenshot, not assumed).
+   Stacking them in flow with a `gap` means the stamp always sits directly
+   above the title with consistent spacing, however many lines it wraps to,
+   with no line-count math to keep in sync by hand. Only the outer
+   .values-reel-caption is absolutely positioned, anchored to the scene. */
+.values-reel-caption {
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: 2.75rem;
+  max-width: 40rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-5);
+  align-items: flex-start;
+  gap: 0.85rem;
 }
-@media (min-width: 900px) {
-  .values-inner { flex-direction: row; justify-content: center; gap: var(--space-6); padding-inline: var(--space-5); }
+@media (min-width: 768px) {
+  .values-reel-caption { left: var(--space-5); right: var(--space-5); bottom: 3.25rem; }
 }
-.values-text {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: min(100%, 40rem);
+/* Numbered stamp — a wax-seal/passport-stamp motif tying back to the
+   "travel album" concept: each value gets its own stamp, slightly canted,
+   that "lands" with a small overshoot bounce as its scene activates. */
+.values-reel-stamp {
   flex: 0 0 auto;
-}
-.values-window {
-  position: relative;
-  width: 100%;
-  max-width: 44rem;
-  padding-inline: var(--space-4);
-  height: 30rem;
-}
-@media (min-width: 900px) {
-  .values-window { padding-inline: 0; }
-}
-.values-list { list-style: none; margin: 0; padding: 0; }
-.values-line {
-  position: absolute;
-  inset: 0;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(224, 149, 106, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  font-family: var(--font-subtitle);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: var(--terracotta-300);
+  background: rgba(16, 31, 39, 0.5);
+  opacity: 0;
+  transform: rotate(-10deg) scale(0.55);
+  transition: opacity 0.4s var(--ease), transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.values-reel-scene.is-active .values-reel-stamp {
+  opacity: 1;
+  transform: rotate(-8deg) scale(1);
+  transition-delay: 0.15s;
+}
+.values-reel-title {
   font-family: var(--font-display);
   font-weight: 400;
-  /* Bornes basses gardées lisibles (0.82rem/1.1rem, ~13-17px) : le passage
-     en demi-écran a réduit la borne HAUTE (desktop) pour tenir dans la
-     hauteur disponible, mais la borne BASSE (mobile) n'a pas besoin d'être
-     réduite dans les mêmes proportions — elle répondait à une contrainte de
-     LARGEUR (2 lignes max à 320px), pas de hauteur, et il reste une bonne
-     marge sur ce point à cette taille de police (vérifié : la valeur la
-     plus longue tient sur 1-2 lignes, jamais plus, sur toute la plage
-     320px-1920px). Ne pas la réduire à nouveau sans un vrai besoin vérifié. */
-  font-size: clamp(0.85rem, 1.9vw + 0.55rem, 2.2rem);
-  line-height: 1.25;
-  color: var(--fg-muted-inverse);
-  opacity: 0;
-  transform: translateY(0) scale(0.9);
-  /* Pas de transition sur font-size : c'est une propriété qui déclenche un
-     reflow de mise en page à chaque frame si elle est animée, ce qui rendait
-     le défilement entre valeurs saccadé. Elle change donc instantanément
-     (snap) pendant que opacity/transform (peu coûteuses, compositées par le
-     GPU) s'animent en douceur — c'est ce qui rend la transition fluide. Ne
-     pas rajouter font-size ici sans re-tester la fluidité du scroll. */
-  transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
-  pointer-events: none;
-}
-.values-line.is-active {
-  opacity: 1;
+  font-size: clamp(1.7rem, 3.4vw + 1rem, 3.6rem);
+  line-height: 1.15;
   color: var(--cream);
-  font-weight: 700;
-  font-size: clamp(1.1rem, 2.6vw + 0.6rem, 3.3rem);
-  transform: translateY(0) scale(1);
-}
-.values-line.is-prev { opacity: 0.4; transform: translateY(-11.5rem) scale(0.82); }
-.values-line.is-next { opacity: 0.4; transform: translateY(11.5rem) scale(0.82); }
-
-.values-media {
-  position: relative;
-  display: none;
-  height: min(76vh, 44rem);
-  aspect-ratio: 4 / 5;
-  flex: 0 0 auto;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 30px 70px rgba(8, 16, 20, 0.45);
-}
-@media (min-width: 900px) {
-  .values-media { display: block; }
-}
-.values-media-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   opacity: 0;
-  transform: scale(1.14) rotate(0.7deg);
-  filter: blur(14px) saturate(0.7);
-  transition: opacity 0.9s var(--ease), transform 1.9s var(--ease), filter 1.2s var(--ease);
-  z-index: 1;
+  transform: translateY(24px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  transition-delay: 0.1s;
 }
-.values-media-photo.is-active {
+.values-reel-scene.is-active .values-reel-title {
   opacity: 1;
-  transform: scale(1) rotate(0deg);
-  filter: blur(0) saturate(1);
-  z-index: 2;
+  transform: translateY(0);
 }
-/* "Faites défiler" — comble les vides laissés par l'absence de ligne
-   .is-prev (avant la 1re valeur) / .is-next (après la dernière), au même
-   emplacement que ces lignes (mêmes translateY). Visible uniquement à ces
-   deux positions de bord (voir updateValuesActive() dans main.js), pas un
-   élément fixe permanent. */
-.values-edge-hint {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
+@media (min-width: 768px) {
+  .values-reel-stamp { width: 3.8rem; height: 3.8rem; font-size: 0.95rem; }
+}
+
+/* Footer: a 3-column grid (spacer / dots / hint) keeps the dots visually
+   centered regardless of the hint's width, instead of dots drifting off
+   -center whenever the hint fades in or out — a normal flex row here would
+   shift them. Kept as a normal flex child of .values-reel-sticky (never
+   position:absolute) so it always reserves its own space above the viewport,
+   the same fix already applied once to .senses-journey-progress: an
+   absolutely positioned footer doesn't push the sibling viewport to shrink,
+   so on a short window the photo could grow tall enough to sit under it. */
+.values-reel-footer {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
+  gap: var(--space-3);
+  padding-inline: var(--space-4);
+  padding-block: var(--space-3);
+}
+@media (min-width: 768px) {
+  .values-reel-footer { padding-inline: var(--space-5); }
+}
+.values-reel-dots { grid-column: 2; display: flex; align-items: center; gap: 0.6rem; }
+.values-reel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: rgba(246, 241, 231, 0.28);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.values-reel-dot:hover { background: rgba(246, 241, 231, 0.5); }
+.values-reel-dot.is-active { background: var(--terracotta-300); transform: scale(1.35); }
+
+.values-reel-hint {
+  grid-column: 3;
+  justify-self: end;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-family: var(--font-subtitle);
   font-weight: 500;
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-muted-inverse);
   opacity: 0;
-  transition: opacity 0.55s var(--ease);
-  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.5s var(--ease);
 }
-.values-edge-hint.is-visible { opacity: 0.5; }
-.values-edge-hint svg {
-  width: 13px;
-  height: 13px;
-  animation: valuesEdgeHintBounce 2.2s var(--ease) infinite;
+.values-reel-hint.is-visible { opacity: 0.6; }
+.values-reel-hint svg { width: 14px; height: 14px; flex-shrink: 0; animation: valuesReelHintNudge 1.8s ease-in-out infinite; }
+@keyframes valuesReelHintNudge {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
 }
-.values-edge-hint--top { transform: translateY(-11.5rem); }
-.values-edge-hint--bottom { transform: translateY(11.5rem); }
-@keyframes valuesEdgeHintBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(4px); }
+@media (max-width: 479px) {
+  .values-reel-hint span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .values-edge-hint svg { animation: none; }
+  .values-reel-scene.is-active .values-reel-photo { animation: none; }
+  .values-reel-hint svg { animation: none; }
 }
 
 /* ==========================================================================
