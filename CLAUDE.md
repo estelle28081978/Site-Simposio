@@ -335,6 +335,60 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Vérifié par regression Playwright complète (6 pages × 2 viewports,
   modification touchant `style.css`/`main.js` partagés) : 0 débordement,
   0 erreur console.
+- **Promesse — 4ᵉ itération, typographie massivement agrandie (2026-08-17)**
+  (`.promise-line`, `univers.html`) : la cliente a rejugé le rendu de la
+  3e refonte "pas du tout bon" et a renvoyé la même capture d'inspiration
+  (wantedfornothing.com) une seconde fois, en précisant cette fois
+  explicitement le problème : la taille de police devait être "beaucoup
+  plus grosse", pour "utiliser beaucoup plus d'espace sur l'écran" — un
+  problème d'échelle, pas de structure (le principe de lignes décalées de
+  la 3e refonte restait bon).
+  **Piège découvert pendant le calibrage** : la première tentative
+  dimensionnait `.promise-line` en unités `vw` (comme le reste du site,
+  ex. les tailles de la mosaïque ou des titres), mais la contrainte réelle
+  ici est la **hauteur** disponible ("tenir sur un seul écran d'ordi"), pas
+  la largeur — résultat, un écran 1600×900 (plus large mais pas plus haut
+  qu'un 1440×900) affichait un texte plus gros ET une section qui dépassait
+  la hauteur de viewport, alors qu'un 1440×900 restait correct. **Corrigé
+  en indexant `font-size` sur `vh` plutôt que `vw`**
+  (`clamp(2rem, 9vh, 5.4rem)`) : la taille suit désormais la hauteur
+  réellement disponible, identique à hauteur de fenêtre égale quelle que
+  soit la largeur — cohérent avec la contrainte réelle de la cliente.
+  **Découpage réextrait en 8 lignes courtes** (au lieu de 3 dans la 3e
+  refonte) : à cette échelle très agrandie, les groupes plus longs comme
+  "professionnel pour transporter vos invités" ne tenaient plus sur une
+  seule ligne à 1440px de large et retombaient sur 2 lignes, cassant
+  l'effet poster et faisant déborder la hauteur — séparés en unités plus
+  courtes (« Suspendre le » / « quotidien » / « professionnel » / « pour
+  transporter » / « vos invités » / « au cœur de » / « l'Italie, iconique »
+  / « et intemporelle », ces deux dernières en accent terracotta comme
+  avant) pour garantir une seule ligne rendue par groupe à toutes les
+  largeurs testées. Chaque ligne garde un `margin-left` propre
+  (0 pour les groupes longs, jusqu'à `clamp(0, 12vw, 7.5rem)` pour les plus
+  courts) pour conserver l'effet de décalage horizontal irrégulier.
+  **`.promise .container` élargi** (`max-width:100rem`, padding réduit à
+  `clamp(1rem, 2.5vw, 2rem)`) pour laisser le texte utiliser presque toute
+  la largeur de l'écran, au lieu du `max-width:58rem` de la 3e refonte qui
+  gardait une colonne étroite — cohérent avec la demande "utilise beaucoup
+  plus d'espace sur l'écran" (plus seulement une question de taille de
+  police, la largeur de la zone de texte a aussi été élargie).
+  **`.promise` : `padding-block` remplacé** par une valeur `clamp(1.25rem,
+  4vh, 3.5rem)` au lieu de la constante sitewide `var(--space-6)` (7rem) :
+  à ce niveau de remplissage vertical, un padding fixe de 7rem haut+bas
+  suffisait à lui seul à faire dépasser la section de ~27px à 900px de
+  haut — retenue : sur une section calée en `vh`/`min-height:100vh` pour
+  "tenir sur un seul écran", tout padding fixe non lié au viewport rogne
+  directement sur ce budget et doit lui aussi être exprimé en unités
+  relatives à la hauteur, pas seulement la typographie.
+  **Calibrage validé par script Playwright** mesurant, à 1440×900,
+  1600×900, 1920×1080 et 390×844 : le nombre de lignes réellement rendu
+  par groupe (technique `Range.selectNodeContents()` + `getClientRects()`,
+  déjà établie ailleurs sur le site pour ce type de mesure) et la hauteur
+  réelle de `#positionnement` comparée à la hauteur de viewport — résultat
+  final : 1 seule ligne rendue par groupe et hauteur de section strictement
+  égale à la hauteur de viewport aux trois largeurs desktop testées, aucun
+  débordement horizontal nulle part. Regression complète 6 pages ×
+  2 viewports revérifiée après coup : 0 débordement, 0 erreur console.
 - **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
   (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
   carte postale inclinée sur photo floutée (refonte précédente, bullet
