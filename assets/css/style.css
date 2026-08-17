@@ -822,14 +822,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .promise {
   position: relative;
   overflow: hidden;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
-  align-items: center;
-  /* Tight, viewport-relative padding rather than the sitewide --space-6:
-     at the type scale below (sized off vh to use most of the screen), a
-     fixed 7rem top+bottom would eat into the same budget the text needs
-     to stay within one screen. */
-  padding-block: clamp(1.25rem, 4vh, 3.5rem);
+  flex-direction: column;
+  justify-content: center;
+  /* Reserves clearance under the fixed .site-header (~6.5rem, same constant
+     used sitewide for this) — centering 9 lines of near-full-height type
+     inside a plain 100vh box let the first line creep up behind the
+     header on some widths; this keeps it below the header no matter how
+     tall the centered block gets. */
+  padding-top: 6.5rem;
   background: var(--navy-900);
   color: var(--fg-inverse);
 }
@@ -839,6 +841,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: brightness(0.5);
   transform: scale(1.08);
   animation: promisePhotoDrift 22s ease-in-out infinite alternate;
 }
@@ -849,50 +852,37 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .promise-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(16, 31, 39, 0.28) 0%, rgba(16, 31, 39, 0.38) 55%, rgba(16, 31, 39, 0.5) 100%);
+  background: rgba(0, 0, 0, 0.4);
 }
 .promise .container { position: relative; z-index: 1; max-width: 100rem; padding-inline: clamp(1rem, 2.5vw, 2rem); }
-.promise-pin { min-height: 60vh; display: flex; align-items: center; }
 
 .promise-quote {
   width: 100%;
-  text-align: left;
   font-family: var(--font-display);
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.005em;
-  color: var(--cream);
-  text-shadow: 0 10px 34px rgba(8, 16, 20, 0.65), 0 2px 10px rgba(8, 16, 20, 0.5);
+  color: #f5f5f5;
 }
 .promise-line {
   display: block;
-  /* Sized off viewport HEIGHT, not width: the binding constraint is fitting
-     one computer screen, so the font must stay proportional to the space
-     actually available top-to-bottom, not grow with a wider-but-not-taller
-     monitor (that was the bug in the first pass — 1600px-wide/900px-tall
-     rendered taller than 1440x900 even though the height budget was the
-     same, because size was tied to vw). */
-  font-size: clamp(2rem, 9vh, 5.4rem);
-  line-height: 1.05;
+  font-size: clamp(2.6rem, 4.2vw, 5.6rem);
+  line-height: 0.85;
 }
-.promise-line-a { margin-left: clamp(0px, 7vw, 4.5rem); }
-.promise-line-b { margin-top: 0.04em; margin-left: clamp(0px, 10vw, 6.5rem); }
-.promise-line-c { margin-top: 0.04em; margin-left: 0; }
-.promise-line-d { margin-top: 0.04em; margin-left: clamp(0px, 4vw, 2.5rem); }
-.promise-line-e { margin-top: 0.04em; margin-left: clamp(0px, 12vw, 7.5rem); }
-.promise-line-f { margin-top: 0.04em; margin-left: clamp(0px, 6vw, 3.5rem); }
-.promise-line-g { margin-top: 0.04em; margin-left: 0; }
-.promise-line-h { margin-top: 0.04em; margin-left: clamp(0px, 9vw, 5.5rem); }
-.promise-quote .accent, .promise-line.accent { color: var(--terracotta-300); }
+.promise-line + .promise-line { margin-top: 0.02em; }
+.promise-line-1 { margin-left: 0; }
+.promise-line-2 { margin-left: 25%; }
+.promise-line-3 { margin-left: 5%; }
+.promise-line-4 { margin-left: 15%; }
+.promise-line-5 { margin-left: 0; }
+.promise-line-6 { width: fit-content; margin-left: auto; margin-right: 0; }
 @media (max-width: 640px) {
   .promise-line {
-    font-size: clamp(1.7rem, 8.5vw, 2.6rem);
-    line-height: 1.12;
+    font-size: clamp(1.9rem, 9vw, 3rem);
+    line-height: 1.05;
   }
-  .promise-line-a, .promise-line-b, .promise-line-c, .promise-line-d,
-  .promise-line-e, .promise-line-f, .promise-line-g, .promise-line-h {
-    margin-left: 0;
-  }
+  .promise-line-2, .promise-line-3, .promise-line-4 { margin-left: 0; }
+  .promise-line-6 { width: auto; margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .promise-photo { animation: none; }

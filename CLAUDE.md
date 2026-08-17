@@ -389,6 +389,93 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   égale à la hauteur de viewport aux trois largeurs desktop testées, aucun
   débordement horizontal nulle part. Regression complète 6 pages ×
   2 viewports revérifiée après coup : 0 débordement, 0 erreur console.
+- **Promesse — 5ᵉ itération, "prompt de correction" avec spec CSS exacte
+  puis découpage figé à 6 lignes (2026-08-17)** (`.promise*`,
+  `univers.html`) : la cliente a jugé la 4e itération encore insuffisante
+  et fourni un prompt de correction technique très précis (probablement
+  généré par un outil d'analyse de design externe) donnant des valeurs CSS
+  exactes, puis — dans le même échange — un second prompt figeant le
+  découpage du texte à exactement 6 lignes avec un contenu et des
+  `margin-left` donnés mot pour mot. **Le second prompt prime sur le
+  premier** pour tout ce qu'il précise explicitement (nombre de lignes,
+  texte par ligne, décalages) ; ce qui suit décrit l'état final réellement
+  livré, pas l'étape intermédiaire à 9 lignes (jamais commitée).
+  **Changements structurels retenus des deux prompts** :
+  - `line-height: 0.85` — lignes très resserrées, quasiment superposées,
+    demandé explicitement dans les deux prompts.
+  - Alignement asymétrique par ligne via `margin-left` (plus de centrage) :
+    1re ligne à gauche, lignes suivantes décalées à des pourcentages
+    différents, dernière ligne alignée tout à droite
+    (`width:fit-content; margin-left:auto`).
+  - Couleur unifiée `#f5f5f5` (au lieu du duo crème/terracotta des
+    itérations précédentes) — **écart assumé et documenté par rapport à la
+    palette de marque fixe** (Bleu Méditerranéen/Terracotta/Blanc Calcaire,
+    cf. section Décisions techniques) : la cliente a donné un hex précis
+    hors palette, suivi tel quel plutôt que substitué silencieusement par
+    `--cream`. Si la couleur du texte doit repasser dans la palette de
+    marque, le redemander explicitement.
+  - `filter: brightness(0.5)` sur `.promise-photo` **en plus** de
+    `.promise-scrim` repassé en overlay noir uni `rgba(0,0,0,0.4)` (au
+    lieu du dégradé bleu marine plus léger des itérations précédentes).
+  - `.promise` : `height:100vh; overflow:hidden; display:flex;
+    flex-direction:column; justify-content:center` — remplace
+    `min-height:100vh; align-items:center` (qui laissait la section
+    grandir si le contenu dépassait) par une hauteur strictement fixe qui
+    **rogne** tout dépassement au lieu de pousser la section plus haute
+    que l'écran ; `.promise-pin` (wrapper de centrage devenu redondant) et
+    `data-scroll-highlight` sont retirés du HTML.
+  **`font-size` explicitement réduit par rapport aux deux valeurs demandées
+  dans les prompts** (`clamp(3rem,7vw,9rem)` puis `clamp(3.5rem,8vw,10rem)`)
+  — **la seule valeur de cette itération où le chiffre exact du prompt
+  n'a pas pu être suivi tel quel**, et documenté ici pour cette raison.
+  Cause : le second prompt fige un texte français par ligne (ex. "POUR
+  TRANSPORTER VOS INVITÉS", "SUSPENDRE LE QUOTIDIEN") bien plus long que
+  les mots-clés anglais de la référence visuelle (wantedfornothing.com,
+  "WITH" / "CHANGE COMES" / "OPPORTUNITY") — au `clamp()` demandé, ces
+  groupes ne tenaient plus sur une seule ligne rendue (repérés jusqu'à 3
+  lignes repliées pour "pour transporter vos invités" sur certaines
+  largeurs) et, combiné à `overflow:hidden`, la 1re ligne se retrouvait
+  rognée en haut (`top:-68px` observé à 1920×1080). Réduit empiriquement
+  par script Playwright (balayage de plusieurs valeurs de `clamp()`,
+  mesure du nombre de lignes réellement rendu par groupe via
+  `Range.selectNodeContents()`/`getClientRects()`) jusqu'à
+  `clamp(2.6rem, 4.2vw, 5.6rem)` — la plus grande taille qui garde les 6
+  lignes de la cliente sur une seule ligne rendue chacune, sans
+  débordement, aux 3 largeurs desktop testées (1440×900, 1600×900,
+  1920×1080). Si la cliente redemande une taille encore plus grande,
+  prévenir explicitement que le texte français plus long que la référence
+  anglaise est la contrainte réelle — la solution passerait par accepter
+  des lignes reformulées plus courtes (comme le découpage à 9 lignes de
+  l'itération précédente), pas par une valeur de `clamp()` plus grande
+  avec ce texte-ci.
+  **`padding-top:6.5rem` conservé sur `.promise`** (même constante que
+  `.page-header` utilise déjà pour se dégager du header fixe ailleurs sur
+  le site) — nécessaire pour la même raison que documentée lors du
+  calibrage à 9 lignes : avec `justify-content:center` sur une boîte
+  `height:100vh`, un bloc de texte proche de la hauteur du viewport se
+  centre en laissant peu de marge en haut, risquant de faire passer la
+  1re ligne derrière le bandeau translucide du header.
+  **Découpage final, texte et décalages donnés explicitement par la
+  cliente, appliqués mot pour mot** : « Suspendre le quotidien »
+  (`margin-left:0`) / « Professionnel » (`25%`) / « Pour transporter vos
+  invités » (`5%`) / « Au cœur de l'Italie, » (`15%`) / « Iconique »
+  (`0`) / « Et intemporelle » (dernière ligne, `width:fit-content;
+  margin-left:auto`, alignée tout à droite). Sous 640px, tous les
+  décalages sont retirés (`margin-left:0` partout) et la taille repasse à
+  `clamp(1.9rem, 9vw, 3rem)` pour rester lisible sur mobile — contrainte
+  "un seul écran d'ordinateur" jamais appliquée au mobile, cohérent avec
+  les itérations précédentes ; sur mobile certaines lignes se replient
+  naturellement sur 2-3 lignes, accepté (hors scope de la contrainte).
+  Vérifié par script Playwright aux 4 largeurs habituelles (1440×900,
+  1600×900, 1920×1080, 390×844), avec mesure explicite du nombre de
+  lignes rendu par groupe et de la position haut/bas de chaque ligne par
+  rapport au viewport : 1 seule ligne rendue par groupe et aucun
+  débordement haut/bas aux 3 largeurs desktop, animation d'apparition
+  (`[data-reveal]`) revérifiée fonctionnelle. Regression complète 6 pages
+  × 2 viewports : 0 débordement, 0 erreur console. Si un découpage à 9
+  lignes ou un `clamp()` allant jusqu'à `9rem`/`10rem` réapparaissent
+  ici, c'est l'itération intermédiaire (jamais livrée), à ne pas
+  réintroduire sans qu'on le redemande.
 - **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
   (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
   carte postale inclinée sur photo floutée (refonte précédente, bullet
