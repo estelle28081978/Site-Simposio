@@ -84,7 +84,7 @@
     );
   }
 
-  /* ---------- Promise: each line auto-scaled to fill its available width ---------- */
+  /* ---------- Promise: one shared giant size, capped by the tightest line ---------- */
   var promiseQuote = document.getElementById("promiseQuote");
 
   if (promiseQuote) {
@@ -112,27 +112,23 @@
     function fitPromiseLines() {
       if (window.innerWidth <= 640 || !promiseLines.length) {
         // Below the same breakpoint that already resets margin-left to 0 and
-        // switches to a fixed mobile clamp() — filling full width line-by-line
-        // on a narrow phone would blow up short lines (e.g. "Iconique") far
-        // beyond what's legible, so this stays a desktop/tablet-only effect.
+        // switches to a fixed mobile clamp() — this stays a desktop/tablet-only
+        // effect, same as before.
         promiseLines.forEach(function (el) { el.style.fontSize = ""; });
         return;
       }
       var containerWidth = promiseQuote.getBoundingClientRect().width;
-      var sizes = promiseLines.map(function (el) {
+      // One shared size for every line (client's request), rather than each
+      // line filling its own width — so the size is capped by whichever line
+      // is tightest for its own margin, same "how much can THIS line's own
+      // available width support" math as before, just taking the minimum
+      // across all lines instead of a size per line.
+      var idealSizes = promiseLines.map(function (el) {
         el.style.fontSize = PROMISE_REF_SIZE + "px";
         var marginLeftPx = parseFloat(getComputedStyle(el).marginLeft) || 0;
-        var available;
-        if (el.classList.contains("promise-line-6")) {
-          // width:fit-content + margin-left:auto (right-aligned) rather than a
-          // numeric offset — if it's sized to fill 100% of the width there is
-          // no room left for the auto margin to push it right, so the "décalage"
-          // (its whole point) becomes invisible. Give it the same ~25% margin
-          // budget as line 2 so the right-alignment stays visually legible.
-          available = containerWidth * 0.75;
-        } else {
-          available = containerWidth - marginLeftPx;
-        }
+        // Line 6 is width:fit-content + margin-left:auto (right-aligned) rather
+        // than a numeric offset, so it has the full width to work with.
+        var available = el.classList.contains("promise-line-6") ? containerWidth : containerWidth - marginLeftPx;
         // 3% safety margin: text width doesn't scale perfectly linearly with
         // font-size (hinting/kerning), so sizing to exactly 100% of the
         // available width can tip a line 1px over and wrap it entirely.
@@ -141,21 +137,21 @@
         var ideal = natural > 0 ? (available / natural) * PROMISE_REF_SIZE : PROMISE_REF_SIZE;
         return Math.max(PROMISE_MIN_SIZE, ideal);
       });
+      var sharedSize = Math.min.apply(null, idealSizes);
 
-      // Giant per-line sizes must still fit one computer screen (the client's
-      // standing "un seul écran" requirement) — if the tallest possible stack
-      // would overflow, scale every line down by the same factor so the
-      // relative proportions (short word big, long line smaller) are kept.
+      // Still has to fit one computer screen (the client's standing "un seul
+      // écran" requirement) — if 6 lines at that shared size would overflow,
+      // scale it down further.
       var lineHeight = 0.85;
       var gap = 0.02;
-      var totalHeight = sizes.reduce(function (sum, s) { return sum + s * lineHeight; }, 0) + (sizes.length - 1) * sizes[0] * gap;
+      var totalHeight = promiseLines.length * sharedSize * lineHeight + (promiseLines.length - 1) * sharedSize * gap;
       var header = document.getElementById("siteHeader");
       var headerClearance = header ? header.getBoundingClientRect().height : 104;
       var budget = window.innerHeight - headerClearance - 40; // small bottom breathing margin
-      var scale = totalHeight > budget ? budget / totalHeight : 1;
+      if (totalHeight > budget) sharedSize *= budget / totalHeight;
 
-      promiseLines.forEach(function (el, i) {
-        el.style.fontSize = (sizes[i] * scale).toFixed(1) + "px";
+      promiseLines.forEach(function (el) {
+        el.style.fontSize = sharedSize.toFixed(1) + "px";
       });
     }
 

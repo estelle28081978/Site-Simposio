@@ -564,6 +564,50 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   erreur console ni débordement, animation d'apparition (`[data-reveal]`)
   toujours fonctionnelle. Regression complète 6 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Promesse — 7ᵉ itération, taille unique partagée + nouveau découpage
+  (2026-08-17)** (`fitPromiseLines()`, `univers.html`) : la cliente a
+  demandé de repasser à une taille de police **unique pour toutes les
+  lignes** (plutôt que chaque ligne remplissant sa propre largeur comme
+  dans la 6e itération), calée sur la taille qu'affichait alors le mot
+  "professionnel" seul sur sa ligne — tout en gardant l'effet de décalage
+  gauche/droite — et a fourni un nouveau découpage en 6 lignes : « Suspendre
+  le » / « quotidien professionnel » / « Pour transporter vos » /
+  « invités au cœur de » / « l'Italie, iconique » / « et intemporelle »
+  (mot pour mot identique à la citation, la virgule après "l'Italie" est
+  conservée bien que non retapée dans le message — cohérent avec le reste
+  du texte source).
+  **`fitPromiseLines()` change de logique** : au lieu de calculer une
+  taille idéale **par ligne** (6e itération, chaque ligne remplit sa
+  propre largeur, tailles très différentes d'une ligne à l'autre), la
+  fonction calcule maintenant la taille idéale de chaque ligne comme avant
+  (texte × marge propre à la ligne) puis prend le **minimum** de ces 6
+  valeurs et l'applique identiquement à toutes les lignes
+  (`Math.min.apply(null, idealSizes)`). C'est la traduction directe de "la
+  même taille que professionnel" : au lieu de viser une valeur en pixels
+  fixe (qui n'aurait plus eu de sens avec un texte différent, "professionnel"
+  n'étant plus seul sur sa ligne), la taille partagée reste dynamique/
+  responsive et se cale naturellement sur la ligne la plus contrainte —
+  ici "quotidien professionnel" (23 caractères, la plus longue), à qui la
+  marge `0%` a été donnée spécifiquement pour qu'elle ne soit pas
+  davantage pénalisée et tire la taille commune vers le bas plus que
+  nécessaire.
+  **Marges recalculées pour le nouveau texte** (`.promise-line-1` à `-5`) :
+  attribuées par longueur de ligne plutôt que recopiées de l'itération
+  précédente — la plus longue ligne (« quotidien professionnel ») reçoit
+  `0%`, les plus courtes (« Suspendre le », 12 caractères) peuvent se
+  permettre un décalage plus généreux (`20%`) sans devenir le goulot
+  d'étranglement. La ligne 6 (« et intemporelle ») garde le traitement
+  `width:fit-content; margin-left:auto` déjà établi (alignement à droite)
+  — avec une taille désormais partagée et non plus calculée pour elle
+  spécifiquement, elle n'a plus besoin du budget de largeur réduit à 75%
+  qu'elle recevait à la 6e itération pour rester visible ; ce cas
+  particulier a été retiré de `fitPromiseLines()`.
+  Vérifié par script Playwright : 1 seule ligne rendue par groupe et 0
+  débordement haut/bas aux 3 largeurs desktop testées, animation
+  d'apparition toujours fonctionnelle. Regression complète 6 pages ×
+  2 viewports : 0 débordement, 0 erreur console. Si un calcul de taille
+  par ligne (plutôt qu'une taille unique via `Math.min`) réapparaît ici,
+  c'est la 6e itération, à ne pas réintroduire sans qu'on le redemande.
 - **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
   (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
   carte postale inclinée sur photo floutée (refonte précédente, bullet

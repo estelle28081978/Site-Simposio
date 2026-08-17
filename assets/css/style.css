@@ -870,11 +870,11 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   line-height: 0.85;
 }
 .promise-line + .promise-line { margin-top: 0.02em; }
-.promise-line-1 { margin-left: 0; }
-.promise-line-2 { margin-left: 25%; }
-.promise-line-3 { margin-left: 5%; }
-.promise-line-4 { margin-left: 15%; }
-.promise-line-5 { margin-left: 0; }
+.promise-line-1 { margin-left: 20%; }
+.promise-line-2 { margin-left: 0; }
+.promise-line-3 { margin-left: 6%; }
+.promise-line-4 { margin-left: 10%; }
+.promise-line-5 { margin-left: 4%; }
 .promise-line-6 { width: fit-content; margin-left: auto; margin-right: 0; }
 @media (max-width: 640px) {
   .promise-line {
