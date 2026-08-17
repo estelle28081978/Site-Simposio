@@ -785,103 +785,95 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .story-name em { font-style: italic; color: var(--accent); }
 
 /* ==========================================================================
-   Promise — editorial diptych, pinned scroll-highlight statement
-   (2026-08-17, 2e refonte : la cliente n'aimait pas le plein-écran
-   photographique de la 1re refonte et a demandé quelque chose de plus
-   original, en citant Louis Vuitton comme référence — accès réseau à
-   louisvuitton.com bloqué dans cet environnement (même limitation déjà
-   rencontrée pour les banques d'images), donc inspiration reconstituée à
-   partir des codes connus de l'éditorial de luxe plutôt que d'un calage
-   pixel-exact : guillemet géant décoratif, mise en page asymétrique
-   image/texte plutôt que plein cadre, typographie serif ample, parallaxe
-   discrète — pas un simple changement de couleur. Structure : une colonne
-   image étroite (`.promise-visual`, portrait, ombre portée) à côté d'un
-   panneau texte (`.promise-content`) avec un guillemet « géant en fond de
-   plan, un eyebrow "Notre promesse" (nouveau, cohérent avec le reste du
-   site) puis la citation. Le mécanisme JS de coloration progressive des
-   mots (`updatePromise()`, main.js) reste le même calcul de progression
-   scroll, seule sa fonction a été étendue pour piloter EN PLUS une légère
-   parallaxe verticale de la photo (même variable `reveal`, donc la photo
-   dérive en cohérence avec l'éclairage des mots plutôt que sur son propre
-   timing indépendant). .promise-footnote ci-dessous reste du CSS legacy
-   inutilisé (cf. note de suppression dans CLAUDE.md), non concerné par
-   cette refonte. Si `.promise-photo` en plein cadre + `.promise-scrim`
-   réapparaissent ici, c'est la 1re refonte (scène cinématique plein
-   écran), à ne pas réintroduire sans qu'on le redemande. */
+   Promise — full-bleed photo, staggered "poster" typography
+   (2026-08-17, 3e refonte : ni la scène cinématique (1re refonte) ni le
+   diptyque éditorial façon Louis Vuitton (2e refonte) n'ont convaincu la
+   cliente — elle a fini par fournir sa propre maquette Canva : la citation
+   raccourcie, en très grande typographie, écrite en plusieurs lignes
+   décalées horizontalement les unes des autres avec des espacements
+   irréguliers entre elles (esprit "poster" éditorial), tenant sur un seul
+   écran d'ordinateur, sur la photo plein cadre (visible, pas cachée par un
+   voile trop sombre) — mais avec nos polices/couleurs, pas celles de sa
+   référence. Remplace entièrement le diptyque de la 2e refonte : si
+   `.promise-editorial`/`.promise-visual-frame`/`.promise-mark` réapparaissent
+   ici, ne pas les réintroduire sans qu'on le redemande.
+   **Texte raccourci** : la fin de la citation ("— entre la Riviera de
+   Portofino, les falaises d'Amalfi et la douceur des collines toscanes.")
+   est retirée à la demande explicite de la cliente ; ne reste que
+   "Suspendre le quotidien professionnel pour transporter vos invités au
+   cœur de l'Italie, iconique et intemporelle."
+   **Mécanisme de coloration mot par mot au scroll retiré** (`updatePromise()`
+   dans main.js, supprimé) : la cliente a demandé un effet d'apparition où
+   les 3 lignes apparaissent "toutes en même temps", pas un effet
+   progressif — remplacé par le système de reveal générique du site
+   (`[data-reveal]`, IntersectionObserver + fondu/translateY, déjà utilisé
+   partout ailleurs) posé directement sur `.promise-quote` : les 3 lignes,
+   étant un seul bloc, entrent ensemble en un seul mouvement. Si des
+   `<span class="word">` ou un id `promisePhoto` réapparaissent ici, c'est
+   une ancienne version (1re ou 2e refonte), à ne pas réintroduire sans
+   qu'on le redemande.
+   **Voile allégé** : `.promise-scrim` passe d'un dégradé sombre (jusqu'à
+   88% d'opacité en bas) à un voile beaucoup plus léger (28-50%) — la
+   lisibilité du texte sur la photo est assurée par un `text-shadow`
+   marqué plutôt que par un assombrissement fort de la photo, pour que
+   celle-ci reste "bien visible" comme demandé.
+   .promise-footnote plus bas reste du CSS legacy inutilisé (cf. note de
+   suppression dans CLAUDE.md), non concerné par cette refonte. */
 .promise {
   position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
   padding-block: var(--space-6);
   background: var(--navy-900);
   color: var(--fg-inverse);
-  overflow: hidden;
-}
-.promise-editorial {
-  display: grid;
-  gap: var(--space-5);
-  align-items: center;
-}
-@media (min-width: 900px) {
-  .promise-editorial {
-    grid-template-columns: 0.8fr 1.2fr;
-    gap: var(--space-6);
-  }
-}
-.promise-visual-frame {
-  position: relative;
-  overflow: hidden;
-  aspect-ratio: 3 / 4;
-  max-width: 26rem;
-  margin-inline: auto;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 40px 80px -28px rgba(8, 16, 20, 0.65);
 }
 .promise-photo {
   position: absolute;
-  top: -8%;
-  left: 0;
+  inset: 0;
   width: 100%;
-  height: 116%;
+  height: 100%;
   object-fit: cover;
-  will-change: transform;
+  transform: scale(1.08);
+  animation: promisePhotoDrift 22s ease-in-out infinite alternate;
 }
-.promise-content {
-  position: relative;
-  text-align: left;
+@keyframes promisePhotoDrift {
+  from { transform: scale(1.08) translate(0, 0); }
+  to { transform: scale(1.16) translate(-1.5%, -1%); }
 }
-@media (max-width: 899px) {
-  .promise-content { text-align: center; }
+.promise-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(16, 31, 39, 0.28) 0%, rgba(16, 31, 39, 0.38) 55%, rgba(16, 31, 39, 0.5) 100%);
 }
-.promise-mark {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(5.5rem, 9vw, 11rem);
-  line-height: 1;
-  color: rgba(193, 98, 45, 0.24);
-  margin-bottom: -2.6rem;
-  pointer-events: none;
-  user-select: none;
-}
-.promise-content .eyebrow { position: relative; display: block; margin-bottom: var(--space-2); z-index: 1; }
+.promise .container { position: relative; z-index: 1; }
+.promise-pin { min-height: 60vh; display: flex; align-items: center; }
 
 .promise-quote {
-  position: relative;
-  z-index: 1;
+  max-width: 58rem;
+  text-align: left;
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 2vw + 1.1rem, 3.1rem);
-  line-height: 1.32;
-  color: rgba(246, 241, 231, 0.4);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  color: var(--cream);
+  text-shadow: 0 10px 34px rgba(8, 16, 20, 0.65), 0 2px 10px rgba(8, 16, 20, 0.5);
 }
-.promise-quote .word {
-  color: inherit;
-  transition: color 60ms linear;
+.promise-line {
+  display: block;
+  font-size: clamp(1.9rem, 1.7vw + 1.4rem, 3.5rem);
+  line-height: 1.16;
 }
-.promise-quote .word.lit { color: var(--cream); }
-.promise-quote .word.accent.lit { color: var(--terracotta-300); }
-/* No-JS / reduced-motion fallback: show fully lit */
-.no-scrollfx .promise-quote .word,
-.promise-quote.static-lit .word { color: var(--cream) !important; }
-.no-scrollfx .promise-quote .word.accent,
-.promise-quote.static-lit .word.accent { color: var(--terracotta-300) !important; }
+.promise-line-b { margin-top: 0.65em; margin-left: clamp(0px, 6vw, 3.5rem); }
+.promise-line-c { margin-top: 0.9em; margin-left: clamp(0px, 3vw, 1.75rem); }
+.promise-quote .accent { color: var(--terracotta-300); }
+@media (max-width: 640px) {
+  .promise-line-b, .promise-line-c { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promise-photo { animation: none; }
+}
 
 .promise-footnote {
   margin-top: var(--space-5);

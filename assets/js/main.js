@@ -84,51 +84,6 @@
     );
   }
 
-  /* ---------- Promise: scroll-progress word highlight + photo parallax ---------- */
-  var promiseQuote = document.getElementById("promiseQuote");
-  var promisePhoto = document.getElementById("promisePhoto");
-
-  if (promiseQuote && !reducedMotion) {
-    var words = Array.prototype.slice.call(promiseQuote.querySelectorAll(".word"));
-    var pTicking = false;
-
-    function updatePromise() {
-      var rect = promiseQuote.getBoundingClientRect();
-      var vh = window.innerHeight;
-      var quoteCenter = rect.top + rect.height / 2;
-      // Reveal starts as the quote's center approaches from the lower part of the
-      // screen, and completes exactly when it reaches the vertical middle of the viewport.
-      var startY = vh * 0.85;
-      var endY = vh * 0.5;
-      var progress = (startY - quoteCenter) / (startY - endY);
-      var reveal = Math.min(1, Math.max(0, progress));
-      var litCount = Math.round(reveal * words.length);
-      words.forEach(function (w, i) {
-        w.classList.toggle("lit", i < litCount);
-      });
-      // Same `reveal` value drives the visual column's parallax, so the photo
-      // drifts in step with the words lighting up rather than on its own timer.
-      if (promisePhoto) {
-        promisePhoto.style.transform = "translateY(" + ((reveal - 0.5) * 40).toFixed(1) + "px)";
-      }
-      pTicking = false;
-    }
-
-    window.addEventListener(
-      "scroll",
-      function () {
-        if (!pTicking) {
-          window.requestAnimationFrame(updatePromise);
-          pTicking = true;
-        }
-      },
-      { passive: true }
-    );
-    updatePromise();
-  } else if (promiseQuote) {
-    promiseQuote.classList.add("static-lit");
-  }
-
   /* ---------- Univers: 5 senses — scroll-drawn path with waypoint cards ---------- */
   var sensesJourney = document.getElementById("sensesJourney");
 

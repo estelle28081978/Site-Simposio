@@ -265,6 +265,76 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   partiellement éclairée, entièrement éclairée) desktop et mobile, puis
   regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Promesse — 3ᵉ refonte, photo plein cadre + typographie "poster" décalée
+  (2026-08-17)** (`.promise`, `univers.html`) : ni la scène cinématique (1re
+  refonte) ni le diptyque façon Louis Vuitton (2e refonte, bullet
+  ci-dessus) n'ont convaincu la cliente. Elle a cette fois fourni sa propre
+  maquette Canva (texte en très grande typographie, plusieurs lignes
+  décalées horizontalement les unes par rapport aux autres avec des
+  espacements irréguliers entre elles) accompagnée d'une capture d'un site
+  de référence (wantedfornothing.com — mise en page "poster" à l'anglaise,
+  lignes énormes alternant les marges gauche/droite) comme repère
+  supplémentaire de style. Contrairement à la 2e refonte, cette fois
+  l'inspiration était directement fournie en image par la cliente (pas de
+  blocage réseau à contourner), donc calage direct sur sa maquette plutôt
+  que sur des codes reconstitués de mémoire. **Remplace entièrement** le
+  diptyque de la 2e refonte : si `.promise-editorial` /
+  `.promise-visual-frame` / `.promise-mark` réapparaissent ici, ne pas les
+  réintroduire sans qu'on le redemande.
+  **Citation raccourcie** (demande explicite) : ne reste que « Suspendre le
+  quotidien professionnel pour transporter vos invités au cœur de
+  l'Italie, iconique et intemporelle. » — la fin (« — entre la Riviera de
+  Portofino, les falaises d'Amalfi et la douceur des collines toscanes. »)
+  est retirée.
+  **Structure** : la photo plein cadre + Ken Burns (`.promise-photo`,
+  `@keyframes promisePhotoDrift`) redevient celle de la 1re refonte
+  (`amalfi-coast-sunset.jpg`, inchangée) mais **le voile est allégé** —
+  `.promise-scrim` passe d'un dégradé sombre (jusqu'à 88% d'opacité en bas)
+  à un voile beaucoup plus léger (28–50%), pour que la photo reste
+  explicitement "bien visible" comme demandé ; la lisibilité du texte est
+  assurée à la place par un `text-shadow` marqué (double ombre portée) sur
+  `.promise-quote`. La citation est découpée en 3 `<span class="promise-line">`
+  bloc (`display:block`), chacune avec son propre `margin-left` (0 / jusqu'à
+  `3.5rem` / jusqu'à `1.75rem`, en `clamp()` pour rester proportionnel à la
+  largeur d'écran) et son propre `margin-top` (0.65em / 0.9em) — c'est ce
+  décalage horizontal + ces espacements irréguliers ligne par ligne qui
+  reproduit l'effet "poster" de la maquette, pas un simple retour à la
+  ligne automatique. `text-transform:uppercase` en CSS uniquement (le HTML
+  garde la casse normale, accessibilité/lecteurs d'écran inchangés) pour
+  l'aspect impactant des références visuelles, tout en gardant la police de
+  marque (`--font-display`, Yeseva One — demande explicite de la cliente de
+  garder "nos polices", la maquette Canva servait uniquement de référence
+  de mise en page). La phrase "l'Italie, iconique et intemporelle" garde
+  son accent terracotta (`.accent`, classe générique déjà utilisée ailleurs
+  sur le site pour l'emphase, ex. hero) plutôt qu'un système dédié.
+  **Tient sur un seul écran d'ordinateur** (contrainte explicite) :
+  `.promise` garde `min-height:100vh; display:flex; align-items:center`
+  (hérité de la 1re refonte) et la taille de police
+  (`clamp(1.9rem,…,3.5rem)`) a été calibrée pour que le bloc de 3 lignes
+  tienne confortablement dans cette hauteur sans forcer la section à
+  dépasser 100vh — vérifié par script Playwright mesurant la hauteur réelle
+  de `#positionnement` à 1440×900 (ordinateur portable courant) et
+  1600×900 : hauteur de section strictement égale à la hauteur de
+  viewport dans les deux cas, aucun dépassement.
+  **Mécanisme de coloration mot par mot au scroll entièrement retiré** :
+  la cliente voulait que les lignes "apparaissent toutes en même temps"
+  avec un effet d'animation, pas un éclairage progressif — `updatePromise()`
+  et son écouteur de scroll dédié sont supprimés de `main.js` (plus aucun
+  `<span class="word">`, plus de `#promisePhoto` pour la parallaxe de la 2e
+  refonte non plus). Remplacé par le système de reveal générique déjà
+  utilisé partout ailleurs sur le site (`[data-reveal]`,
+  IntersectionObserver + fondu/`translateY(28px)→0`, seuil 0.15) posé
+  directement sur `.promise-quote` : les 3 lignes étant un seul bloc DOM,
+  elles entrent ensemble en un seul mouvement dès que la section est
+  visible à 15% — satisfait directement "tous en même temps" sans avoir à
+  synchroniser plusieurs éléments séparés. Vérifié par script Playwright :
+  opacité 0 avant scroll, `.is-visible` + opacité ~1 après. Si un
+  mécanisme de coloration progressive ou un `#promisePhoto` réapparaissent
+  ici, c'est une ancienne version (1re ou 2e refonte), à ne pas
+  réintroduire sans qu'on le redemande.
+  Vérifié par regression Playwright complète (6 pages × 2 viewports,
+  modification touchant `style.css`/`main.js` partagés) : 0 débordement,
+  0 erreur console.
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
