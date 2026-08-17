@@ -84,8 +84,9 @@
     );
   }
 
-  /* ---------- Promise: scroll-progress word highlight ---------- */
+  /* ---------- Promise: scroll-progress word highlight + photo parallax ---------- */
   var promiseQuote = document.getElementById("promiseQuote");
+  var promisePhoto = document.getElementById("promisePhoto");
 
   if (promiseQuote && !reducedMotion) {
     var words = Array.prototype.slice.call(promiseQuote.querySelectorAll(".word"));
@@ -105,6 +106,11 @@
       words.forEach(function (w, i) {
         w.classList.toggle("lit", i < litCount);
       });
+      // Same `reveal` value drives the visual column's parallax, so the photo
+      // drifts in step with the words lighting up rather than on its own timer.
+      if (promisePhoto) {
+        promisePhoto.style.transform = "translateY(" + ((reveal - 0.5) * 40).toFixed(1) + "px)";
+      }
       pTicking = false;
     }
 

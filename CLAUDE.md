@@ -208,6 +208,63 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   regression Playwright complète (6 pages × 2 viewports, la modification
   touchant `style.css` partagé) : 0 débordement, 0 erreur console, sur
   tout le site, pas seulement `univers.html`.
+- **Promesse — 2ᵉ refonte, diptyque éditorial façon presse (2026-08-17)**
+  (`.promise`, `univers.html`) : la cliente n'a pas aimé la scène
+  cinématique plein écran de la refonte précédente (bullet ci-dessus) et a
+  explicitement demandé "quelque chose de plus originale", en citant
+  Louis Vuitton comme référence. **Accès réseau à louisvuitton.com bloqué
+  dans cet environnement** (`EGRESS_BLOCKED`, même limitation déjà
+  rencontrée pour les banques d'images Pexels/Unsplash lors de la
+  recherche de photos pour les Valeurs) — impossible de calquer leur site
+  pixel pour pixel. Dit explicitement à la cliente et reconstitué à partir
+  des codes connus de l'éditorial de luxe (guillemet géant décoratif,
+  diptyque asymétrique image étroite/texte ample, typographie serif à
+  grande échelle, parallaxe discrète) plutôt que d'un relevé visuel direct.
+  **Remplace entièrement** le plein-cadre + `.promise-scrim` de la
+  refonte précédente : si `.promise-photo` en position `inset:0` plein
+  cadre avec `.promise-scrim` réapparaissent ici, c'est cette ancienne
+  version (scène cinématique), à ne pas réintroduire sans qu'on le
+  redemande.
+  **Structure** : `.promise-editorial` (grid deux colonnes à partir de
+  900px, `0.8fr 1.2fr`, empilé en dessous) — à gauche `.promise-visual`,
+  une photo portrait étroite (`.promise-visual-frame`,
+  `aspect-ratio:3/4`, `max-width:26rem`, coins arrondis, ombre portée
+  prononcée, toujours `amalfi-coast-sunset.jpg`, même photo que la refonte
+  précédente donc aucun nouveau crédit à ajouter) ; à droite
+  `.promise-content` avec, dans l'ordre, un guillemet ouvrant «
+  surdimensionné en décoration (`.promise-mark`, `clamp(5.5rem,…,11rem)`,
+  Yeseva One, terracotta à faible opacité, tiré vers le haut par une
+  `margin-bottom` négative pour chevaucher légèrement l'eyebrow qui suit —
+  esthétique "pull quote" de presse), un nouvel eyebrow "Notre promesse"
+  (cohérent avec le reste du site, qui a un eyebrow sur quasiment chaque
+  section — celle-ci n'en avait jamais eu), puis la citation. Alignement à
+  gauche sur desktop, centré sous 900px (où le guillemet et l'eyebrow se
+  centrent aussi, `text-align` étant hérité).
+  **Le mécanisme JS de coloration progressive des mots
+  (`updatePromise()`, `main.js`) garde exactement le même calcul de
+  progression** (`rect`/`quoteCenter`/`startY`/`endY`/`reveal` inchangés)
+  — seule la fonction a été étendue pour piloter EN PLUS une parallaxe
+  verticale légère de la photo (`promisePhoto.style.transform =
+  translateY((reveal-0.5)*40px)`), en réutilisant directement la même
+  variable `reveal` que le surlignage des mots plutôt que de calculer un
+  second timing indépendant — la photo dérive donc en cohérence avec
+  l'éclairage du texte (légèrement décalée vers le haut à l'entrée,
+  recentrée une fois la citation entièrement lue), pas sur sa propre
+  boucle d'animation. `.promise-photo` est dimensionnée à `height:116%`
+  avec `top:-8%` pour avoir de la marge de déplacement sans jamais laisser
+  de bord vide visible pendant la translation. **L'ancienne animation
+  Ken Burns en boucle (`@keyframes promisePhotoDrift`) est retirée** — la
+  photo ne bouge plus qu'en fonction du scroll réel, plus d'autoplay
+  indépendant ; par conséquent plus besoin non plus de règle
+  `prefers-reduced-motion` dédiée sur `.promise-photo` (comme pour le
+  reveal des mots dont il dépend, la parallaxe est simplement absente
+  quand `reducedMotion` est vrai, cf. le même bloc `if` dans
+  `main.js`) — cohérent avec la convention déjà établie ailleurs sur le
+  site (mapping direct 1:1 au scroll, pas une animation autoplay).
+  Vérifié par capture Playwright aux trois états (entrée non éclairée,
+  partiellement éclairée, entièrement éclairée) desktop et mobile, puis
+  regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
