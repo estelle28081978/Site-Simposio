@@ -1109,6 +1109,68 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   modification touchant `style.css`/`main.js` partagés) : 0 débordement,
   0 erreur console ; clic-flip et navigation clavier revérifiés
   fonctionnels après les changements de marges.
+- **Engagements — 3ᵉ itération : plus aucun chevauchement de carte, bug
+  Safari du flip corrigé (2026-08-17)** (`.engagement-card*`,
+  `layoutEngagementCards()` dans `main.js`) : la cliente a testé le rendu
+  réel de la 2ᵉ itération dans Safari (capture d'écran fournie) et signalé
+  deux problèmes distincts.
+  **1) Chevauchement de cartes non voulu** : la cascade de la 2ᵉ itération
+  calculait volontairement un chevauchement (marge négative, la carte N
+  mangeant une fraction croissante de la carte N-1) — c'était une lecture
+  littérale de la demande initiale ("commence la deuxième un peu plus haut
+  au niveau des 3/4 de la première"), mais une fois vu à l'écran la
+  cliente a explicitement demandé qu'aucune carte ne se chevauche jamais.
+  **`layoutEngagementCards()` inversé** : les mêmes fractions (0.75, 0.50,
+  0.25, plafonnées à 0.15) sont maintenant appliquées comme un **espace
+  positif** avant chaque carte (`margin-top = +prevHeight × fraction`) au
+  lieu d'un chevauchement négatif (`margin-top = -prevHeight × (1 -
+  fraction)`) — le rythme irrégulier/décroissant demandé par la cliente
+  est conservé (l'espace avant la carte 2 est le plus large, celui avant
+  la carte 4 le plus resserré) mais la marge ne descend plus jamais sous
+  zéro, donc deux cartes ne peuvent plus jamais se recouvrir verticalement,
+  quelle que soit la combinaison de positions horizontales. Vérifié par
+  script Playwright comparant les rectangles de chaque paire de cartes
+  (pas seulement les paires adjacentes) : aucun chevauchement vertical
+  détecté, à aucune des 6 combinaisons de paires. Si un `margin-top`
+  négatif réapparaît sur `.engagement-card` (calculé comme un
+  chevauchement mangeant la carte précédente), c'est la version de la 2ᵉ
+  itération, à ne pas réintroduire sans qu'on le redemande.
+  **2) Bug Safari du flip : le titre s'affichait à l'envers/en miroir au
+  verso** : capture d'écran de la cliente montrant, une fois une carte
+  retournée, le titre de la face avant ("03 Spécialiste Dolce Vita")
+  visible en double, mirroré/à l'envers, dépassant sous la carte
+  retournée. **Cause identifiée** : bug WebKit/Safari documenté et
+  reproductible — `backface-visibility: hidden` devient non fiable dans
+  Safari lorsqu'un ANCÊTRE du sous-arbre `perspective`/
+  `transform-style: preserve-3d` porte lui-même un `transform` distinct.
+  C'est exactement notre structure : `.engagement-card` (`<li>`, ancêtre)
+  reçoit un `transform: scale()` piloté par le scroll
+  (`updateEngagementCards()`), et son descendant
+  `.engagement-card-flip` > `.engagement-card-inner` porte le
+  `perspective`/`preserve-3d`/`rotateY` du flip — Safari peut alors
+  continuer à peindre la face censée être masquée (mirrorée, puisque
+  c'est la face "arrière" d'un contenu non pivoté). **Non reproductible
+  dans cet environnement de développement** (seul Chromium est disponible
+  ici, pas de moteur WebKit réel pour valider visuellement le correctif en
+  conditions Safari) — corrigé en appliquant le contournement standard
+  documenté pour ce bug : `transform: translateZ(0)` sur
+  `.engagement-card-flip` (force ce sous-arbre 3D sur son propre calque de
+  composition, isolé du `transform` de l'ancêtre) + `-webkit-transform-style:
+  preserve-3d` et `will-change: transform` ajoutés sur
+  `.engagement-card-inner` (renforcent l'isolation du calque). Chromium
+  n'a jamais reproduit ce bug (le flip était déjà visuellement propre avant
+  correctif dans nos tests Playwright), donc impossible de vérifier ici
+  que le correctif élimine bien le problème en conditions réelles — **à
+  revérifier explicitement dans Safari après mise en ligne**, et si le
+  problème persiste, envisager de déplacer le `scale()` scroll-lié du
+  `<li>` vers un wrapper interne dédié plutôt que de rester sur l'ancêtre
+  direct du conteneur `perspective` (changement plus lourd, non fait ici
+  pour rester minimal tant que le contournement standard n'a pas été
+  invalidé par un test réel).
+  Vérifié par script Playwright (Chromium) : 0 chevauchement vertical
+  entre toute paire de cartes, flip clic/clavier toujours fonctionnel,
+  `transform-style` et `will-change` bien appliqués. Regression complète
+  6 pages × 2 viewports : 0 débordement, 0 erreur console.
 - **Valeurs — carrousel "paroles" plein écran, deux colonnes avec photo en
   fondu (2026-08-13, 4ᵉ itération)** (`.values`, `.values-sticky`,
   `.values-inner`, `.values-text`, `.values-window`,

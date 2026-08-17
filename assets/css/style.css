@@ -1134,18 +1134,23 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   flex-direction: column;
   margin-top: var(--space-5);
 }
-/* Cascade en escalier (2026-08-17) : plus un simple `gap` régulier — chaque
-   carte chevauche la précédente d'une fraction croissante de sa hauteur
-   (carte 2 démarre aux 3/4 de la carte 1, carte 3 à la moitié de la carte
-   2, etc. — calculé en JS depuis les hauteurs réelles, cf.
-   `layoutEngagementCards()` dans main.js, car un `margin-top` en `%` se
-   résout par rapport à la LARGEUR du bloc conteneur, jamais par rapport à
-   la hauteur d'un frère : impossible à faire en CSS pur). Cette règle
-   `margin-top` de base sert de repli tant que le JS n'a pas encore mesuré
-   les cartes (chargement, no-JS) et devient la valeur active sous 700px, où
-   `layoutEngagementCards()` désactive volontairement la cascade (voir
-   media query plus bas) — chevaucher des cartes déjà recentrées les unes
-   sur les autres en colonne étroite serait illisible. */
+/* Cascade en escalier (2026-08-17, revu) : plus un simple `gap` régulier —
+   l'espace avant chaque carte rétrécit d'une fraction décroissante de la
+   hauteur de la carte précédente (avant la carte 2, ~75% de la hauteur de
+   la carte 1 ; avant la carte 3, ~50% de la hauteur de la carte 2 ; etc. —
+   calculé en JS depuis les hauteurs réelles, cf. `layoutEngagementCards()`
+   dans main.js, car un `margin-top` en `%` se résout par rapport à la
+   LARGEUR du bloc conteneur, jamais par rapport à la hauteur d'un frère :
+   impossible à faire en CSS pur). **Toujours un `margin-top` positif** —
+   une première version calculait ces mêmes fractions comme un
+   chevauchement mangeant la carte précédente (marge négative) ; la
+   cliente a explicitement demandé qu'aucune carte ne se chevauche jamais
+   visuellement, donc la marge reste toujours positive, juste irrégulière.
+   Cette règle `margin-top` de base sert de repli tant que le JS n'a pas
+   encore mesuré les cartes (chargement, no-JS) et devient la valeur
+   active sous 700px, où `layoutEngagementCards()` désactive volontairement
+   la cascade (voir media query plus bas) au profit d'un espacement
+   uniforme classique. */
 .engagement-card + .engagement-card { margin-top: var(--space-5); }
 /* Zigzag : chaque carte a sa propre position horizontale, jamais toutes
    alignées sur le même axe vertical — demande explicite de la cliente, qui
@@ -1176,6 +1181,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   cursor: pointer;
   perspective: 1800px;
   border-radius: var(--radius-lg);
+  /* Safari/WebKit bug fix: the scroll-driven scale() applied by JS to the
+     ancestor <li class="engagement-card"> (updateEngagementCards(),
+     main.js) can make Safari fail to fully cull the rotated-away face —
+     backface-visibility:hidden becomes unreliable once a 2D `transform` on
+     an ancestor sits above a `perspective`/`preserve-3d` 3D subtree,
+     letting the front face's (mirrored) text bleed through the flipped
+     back face. translateZ(0) forces this flip subtree onto its own
+     compositing layer, isolated from that ancestor transform — Chromium
+     never showed the bug, only Safari did, so verify on real Safari (not
+     just Playwright/Chromium) if this block is touched again. */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .engagement-card-flip:focus-visible { outline: 2px solid var(--terracotta-300); outline-offset: 4px; }
 .engagement-card-inner {
@@ -1184,6 +1201,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 100%;
   aspect-ratio: 5 / 6;
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  will-change: transform;
   transition: transform 0.75s var(--ease);
 }
 .engagement-card-flip[aria-expanded="true"] .engagement-card-inner { transform: rotateY(180deg); }

@@ -431,19 +431,26 @@
       });
     });
 
-    // Cascading overlap layout (2026-08-17): replaces the previous uniform
-    // `gap` between cards with an increasing overlap computed from real
-    // measured heights — a CSS percentage margin-top resolves against the
-    // containing block's WIDTH, never a sibling's height, so "start at X%
-    // down the previous card" can't be done in pure CSS. Card 2 starts
-    // around 3/4 down card 1, card 3 around half of card 2, continuing the
-    // same -25 percentage-point step for any further card (floored at 15%
-    // so cards never fully swallow one another). Uses offsetHeight (the
-    // true layout box, unaffected by the scroll-driven scale() transform
-    // applied below) rather than getBoundingClientRect(). Disabled under
-    // 700px: cards there recenter into a single column and a plain CSS gap
-    // (`.engagement-card + .engagement-card`, style.css) reads far better
-    // than a stacked overlap on a narrow screen.
+    // Cascading (shrinking-gap) layout (2026-08-17, revised): replaces the
+    // previous uniform `gap` between cards with an irregular, progressively
+    // tighter gap computed from real measured heights — a CSS percentage
+    // margin-top resolves against the containing block's WIDTH, never a
+    // sibling's height, so this can't be done in pure CSS. Gap before card 2
+    // is ~75% of card 1's height, before card 3 ~50% of card 2's height,
+    // continuing the same -25 percentage-point step for any further card
+    // (floored at 15% so the rhythm never flattens to nothing). An earlier
+    // version of this function computed these same fractions as an OVERLAP
+    // eaten out of the previous card (negative margin-top) instead of a
+    // shrinking gap — the client explicitly asked for cards that never
+    // visually collide, so it's been flipped to a always-positive margin;
+    // if a negative margin-top / literal card-to-card overlap reappears
+    // here, that's this earlier version, not to be reintroduced without
+    // being asked. Uses offsetHeight (the true layout box, unaffected by
+    // the scroll-driven scale() transform applied below) rather than
+    // getBoundingClientRect(). Disabled under 700px: cards there recenter
+    // into a single column and a plain CSS gap (`.engagement-card +
+    // .engagement-card`, style.css) reads far better than a staggered
+    // rhythm on a narrow screen.
     function layoutEngagementCards() {
       if (window.innerWidth <= 700) {
         engagementCards.forEach(function (card) {
@@ -457,9 +464,8 @@
           return;
         }
         var prevHeight = engagementCards[i - 1].offsetHeight;
-        var startFraction = Math.max(0.15, 0.75 - 0.25 * (i - 1));
-        var overlap = prevHeight * (1 - startFraction);
-        card.style.marginTop = -Math.round(overlap) + "px";
+        var gapFraction = Math.max(0.15, 0.75 - 0.25 * (i - 1));
+        card.style.marginTop = Math.round(prevHeight * gapFraction) + "px";
       });
     }
     layoutEngagementCards();
