@@ -1171,6 +1171,65 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   entre toute paire de cartes, flip clic/clavier toujours fonctionnel,
   `transform-style` et `will-change` bien appliqués. Regression complète
   6 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Engagements — 4ᵉ itération : retour au chevauchement littéral avec de
+  nouvelles fractions, correctif définitif du titre miroir au dos
+  (2026-08-17)** (`.engagement-card*`, `layoutEngagementCards()` dans
+  `main.js`) : après avoir vu le rendu réel de la 3ᵉ itération, la cliente
+  a redemandé explicitement de revenir au principe de chevauchement de la
+  2ᵉ itération, avec de nouvelles fractions précises — "commence au 3/4 de
+  la une, la trois à la moitié de la deux et 4 au 1/3 de la 3" — et de
+  supprimer entièrement le titre qui s'affichait à l'envers au dos des
+  cartes plutôt que de compter sur un contournement de rendu.
+  **Chevauchement réintroduit, nouvelles fractions** :
+  `engagementStartFractions = [0.75, 0.5, 1/3]` (au lieu de la formule
+  arithmétique `-25 points/carte` de la 2ᵉ itération) — carte 2 démarre à
+  75% de la hauteur de la carte 1 (chevauchement 25%), carte 3 à 50% de la
+  carte 2 (chevauchement 50%), carte 4 à 1/3 de la carte 3 (chevauchement
+  ~67%, le plus prononcé). `margin-top` redevient négatif
+  (`-(1 - startFraction) × offsetHeight(carte précédente)`). **Le vrai bug
+  de la 2ᵉ itération n'était pas le chevauchement en soi** — c'était deux
+  cartes NON adjacentes (2 et 4) qui atterrissaient sur le même côté
+  horizontal et se chevauchaient donc aussi visuellement — déjà corrigé à
+  la 2ᵉ itération en réordonnant les positions
+  (gauche/centre-droite/droite/centre-gauche, inchangé ici). Revérifié
+  avec les nouvelles fractions par script Playwright comparant les
+  rectangles (top/bottom/left/right) de chaque paire de cartes : aucune
+  paire NON adjacente ne partage à la fois un chevauchement vertical ET
+  horizontal — seules les paires adjacentes (voulues) se chevauchent
+  visuellement, jamais deux cartes qui ne se suivent pas dans la grille.
+  **Titre miroir au dos — correctif définitif** : le contournement de la
+  3ᵉ itération (`translateZ(0)` pour isoler le sous-arbre 3D du flip sur
+  son propre calque de composition) n'était qu'un contournement du bug
+  WebKit, pas une garantie — invérifiable sans moteur Safari réel dans cet
+  environnement. La cliente a redemandé explicitement de "enlever" ce
+  titre à l'envers plutôt que d'espérer qu'un contournement de rendu 3D
+  suffise. **Nouveau mécanisme, indépendant de `backface-visibility`** :
+  chaque `.engagement-card-face` reçoit désormais `transition: visibility
+  0s linear 0.375s` (0.375s = la moitié des 0.75s de la rotation de
+  `.engagement-card-inner`) et deux règles d'attribut,
+  `[aria-expanded="true"] .engagement-card-front { visibility: hidden }` /
+  `[aria-expanded="false"] .engagement-card-back { visibility: hidden }` —
+  `visibility` ne dépend d'aucun calcul de culling de face 3D (contrairement
+  à `backface-visibility`), donc ce mécanisme ne peut pas échouer de la
+  même façon dans un navigateur qui gère mal les transforms imbriqués.
+  Le délai de moitié de durée fait que chaque face reste visible/masquée
+  exactement aussi longtemps qu'elle le serait naturellement du point de vue
+  du spectateur, puis bascule pile au moment où elle est de profil
+  (donc de toute façon quasi invisible) — imperceptible visuellement, mais
+  cette fois garanti correct dans n'importe quel navigateur, pas seulement
+  contourné pour Safari. `backface-visibility:hidden` et le `translateZ(0)`
+  de la 3ᵉ itération sont conservés en défense en profondeur (aucun mal à
+  les garder) mais ne sont plus le mécanisme dont dépend la correction —
+  documenté comme tel en commentaire dans le CSS. Vérifié par script
+  Playwright lisant `getComputedStyle().visibility` sur les deux faces
+  avant/après clic : face avant `hidden` + face arrière `visible` une fois
+  retournée, inverse une fois refermée, dans les deux sens. **Toujours
+  invérifiable en conditions Safari réelles dans cet environnement**
+  (Chromium uniquement) — mais contrairement au correctif de la 3ᵉ
+  itération, celui-ci ne dépend d'aucun comportement spécifique à un
+  moteur de rendu, donc le risque résiduel est nettement plus faible.
+  Vérifié par regression Playwright complète (6 pages × 2 viewports) : 0
+  débordement, 0 erreur console.
 - **Valeurs — carrousel "paroles" plein écran, deux colonnes avec photo en
   fondu (2026-08-13, 4ᵉ itération)** (`.values`, `.values-sticky`,
   `.values-inner`, `.values-text`, `.values-window`,

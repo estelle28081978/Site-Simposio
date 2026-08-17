@@ -1134,21 +1134,24 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   flex-direction: column;
   margin-top: var(--space-5);
 }
-/* Cascade en escalier (2026-08-17, revu) : plus un simple `gap` régulier —
-   l'espace avant chaque carte rétrécit d'une fraction décroissante de la
-   hauteur de la carte précédente (avant la carte 2, ~75% de la hauteur de
-   la carte 1 ; avant la carte 3, ~50% de la hauteur de la carte 2 ; etc. —
-   calculé en JS depuis les hauteurs réelles, cf. `layoutEngagementCards()`
-   dans main.js, car un `margin-top` en `%` se résout par rapport à la
-   LARGEUR du bloc conteneur, jamais par rapport à la hauteur d'un frère :
-   impossible à faire en CSS pur). **Toujours un `margin-top` positif** —
-   une première version calculait ces mêmes fractions comme un
-   chevauchement mangeant la carte précédente (marge négative) ; la
-   cliente a explicitement demandé qu'aucune carte ne se chevauche jamais
-   visuellement, donc la marge reste toujours positive, juste irrégulière.
-   Cette règle `margin-top` de base sert de repli tant que le JS n'a pas
-   encore mesuré les cartes (chargement, no-JS) et devient la valeur
-   active sous 700px, où `layoutEngagementCards()` désactive volontairement
+/* Cascade en escalier (2026-08-17, 3e passe) : plus un simple `gap`
+   régulier — chaque carte chevauche la précédente d'une fraction propre à
+   chaque paire (carte 2 démarre aux 3/4 de la carte 1, carte 3 à la moitié
+   de la carte 2, carte 4 au tiers de la carte 3 — valeurs exactes données
+   par la cliente) — calculé en JS depuis les hauteurs réelles, cf.
+   `layoutEngagementCards()` dans main.js, car un `margin-top` en `%` se
+   résout par rapport à la LARGEUR du bloc conteneur, jamais par rapport à
+   la hauteur d'un frère : impossible à faire en CSS pur. Une version
+   intermédiaire (2e passe) avait remplacé ce chevauchement par un espace
+   toujours positif après qu'un bug visuel (bouton d'une carte inaccessible)
+   ait fait croire que le chevauchement lui-même était le problème — le vrai
+   coupable était deux cartes NON adjacentes (2 et 4) qui se retrouvaient du
+   même côté horizontal, corrigé par l'ordre gauche/centre-droite/droite/
+   centre-gauche plus bas (indépendant de cette règle), pas en évitant tout
+   chevauchement. Cette règle `margin-top` de base sert de repli tant que le
+   JS n'a pas encore mesuré les cartes (chargement, no-JS) et devient la
+   valeur active sous 700px, où `layoutEngagementCards()` désactive
+   volontairement
    la cascade (voir media query plus bas) au profit d'un espacement
    uniforme classique. */
 .engagement-card + .engagement-card { margin-top: var(--space-5); }
@@ -1181,16 +1184,14 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   cursor: pointer;
   perspective: 1800px;
   border-radius: var(--radius-lg);
-  /* Safari/WebKit bug fix: the scroll-driven scale() applied by JS to the
+  /* Safari/WebKit bug mitigation (kept as defense-in-depth, no longer the
+     primary fix — see the `visibility` toggle on .engagement-card-face
+     below, which is what actually guarantees the mirrored-text bug can't
+     happen in any browser): the scroll-driven scale() applied by JS to the
      ancestor <li class="engagement-card"> (updateEngagementCards(),
-     main.js) can make Safari fail to fully cull the rotated-away face —
-     backface-visibility:hidden becomes unreliable once a 2D `transform` on
-     an ancestor sits above a `perspective`/`preserve-3d` 3D subtree,
-     letting the front face's (mirrored) text bleed through the flipped
-     back face. translateZ(0) forces this flip subtree onto its own
-     compositing layer, isolated from that ancestor transform — Chromium
-     never showed the bug, only Safari did, so verify on real Safari (not
-     just Playwright/Chromium) if this block is touched again. */
+     main.js) can make Safari fail to fully cull the rotated-away face via
+     backface-visibility alone. translateZ(0) forces this flip subtree onto
+     its own compositing layer, isolated from that ancestor transform. */
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
@@ -1215,7 +1216,22 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 30px 60px -24px rgba(8, 16, 20, 0.65);
+  /* Belt-and-suspenders on top of backface-visibility (2026-08-17): Safari
+     can fail to hide the rotated-away face via backface-visibility alone
+     once an ancestor carries its own transform (our scroll-driven
+     scale(), cf. .engagement-card-flip comment above) — the client saw
+     the front face's title bleed through mirrored on the back. visibility
+     doesn't depend on 3D face-culling at all, so it can't have the same
+     failure mode. The 0s duration + delay half of the inner rotate's 0.75s
+     means each face stays visible/hidden exactly as long as it naturally
+     would be from the viewer's angle, then snaps at the moment it's
+     edge-on (invisible anyway) — imperceptible, but now correct in every
+     browser regardless of how well it implements backface-visibility. */
+  transition: visibility 0s linear 0.375s;
+  visibility: visible;
 }
+.engagement-card-flip[aria-expanded="true"] .engagement-card-front { visibility: hidden; }
+.engagement-card-flip[aria-expanded="false"] .engagement-card-back { visibility: hidden; }
 
 /* ---------- Front face ---------- */
 .engagement-card-front { background: var(--navy-900); }
