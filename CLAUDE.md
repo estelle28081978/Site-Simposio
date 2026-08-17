@@ -941,6 +941,44 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Ken Burns ci-dessus sans avoir besoin d'une règle spécifique. Si
   `.values-reel-dots`/`.values-reel-dot` réapparaissent dans un diff, c'est
   cette ancienne version à ne pas réintroduire sans qu'on le redemande.
+- **Valeurs — 16ᵉ itération (2026-08-17) : fil "liant" entre les valeurs,
+  défilement raccourci** : la cliente a validé la frise de la 15ᵉ itération
+  mais a précisé qu'il manquait encore l'effet de "lien continu" demandé
+  dès la 14ᵉ itération, en citant explicitement la frise de la page
+  Héritage de Louis Vuitton comme référence — quelque chose de présent sur
+  la photo A qui reste présent, de façon continue (pas juste "réapparaît"),
+  sur la photo B. Deux changements distincts.
+  **Fil filant (`.values-reel-thread`)** : un nouvel élément entre la
+  photo et la frise du bas — pas dessus la photo (une ligne plein cadre
+  aurait traversé des sujets très différents d'une photo à l'autre : un
+  verre en gros plan, un horizon, une lanterne... sans garantie de rester
+  élégante partout) — composé d'un trait pointillé fixe
+  (`.values-reel-thread-line`), d'un remplissage terracotta qui grandit en
+  continu avec le scroll réel (`.values-reel-thread-fill`, même `progress`
+  que la frise, mise à jour dans la même fonction `updateValuesReel()`) et
+  d'un point lumineux qui **se déplace** le long du trait
+  (`.values-reel-thread-marker`, `left: progress*100%`, `box-shadow` en
+  double halo pour un effet de lueur). **C'est la réponse directe à la
+  demande de la cliente** : ce n'est ni dans `.values-reel-track` (qui
+  glisse horizontalement sous les photos) ni recréé à chaque scène — c'est
+  un unique élément, enfant normal de `.values-reel-sticky` au même titre
+  que `.values-reel-footer`, donc jamais retiré/recréé ni déplacé pendant
+  tout le scroll : ce qu'on voit sur l'écran de la valeur A (le trait, son
+  remplissage, le point) est très exactement ce qu'on continue de voir,
+  simplement un peu plus avancé, sur l'écran de la valeur B — un vrai fil
+  continu, pas un élément qui disparaît et réapparaît. Reprend le
+  vocabulaire visuel déjà présent (pointillés du tampon passeport, lueur
+  terracotta de la frise) pour que le bandeau du bas se lise comme un seul
+  système plutôt que deux widgets indépendants.
+  **Défilement raccourci** : `.values-reel` passe de `height:500vh` à
+  `height:260vh` (~52% de la hauteur précédente, donc environ deux fois
+  moins de scroll nécessaire pour passer d'une valeur à la suivante) —
+  demande explicite de la cliente ("on est obligé de scroll beaucoup trop
+  longtemps"). Le zoom Ken Burns (durée fixe de 9s en temps réel, pas liée
+  à la distance de scroll) continue de tourner sans accroc à ce nouveau
+  rythme, vérifié par le même test de résistance que la 15ᵉ itération (40
+  allers-retours de scroll instantanés) : toujours aucune erreur, aucune
+  valeur de transform aberrante.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le

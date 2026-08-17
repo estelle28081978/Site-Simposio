@@ -479,6 +479,8 @@
   var valuesReelTimeline = document.getElementById("valuesReelTimeline");
   var valuesReelFill = document.getElementById("valuesReelFill");
   var valuesReelMarkers = document.querySelectorAll(".values-reel-marker");
+  var valuesReelThreadFill = document.getElementById("valuesReelThreadFill");
+  var valuesReelThreadMarker = document.getElementById("valuesReelThreadMarker");
   if (valuesSection && valuesReelTrack && valuesReelViewport && valuesReelScenes.length) {
     var vn = valuesReelScenes.length;
     // Pixel-based, not %: a `%` in translateX() resolves against the
@@ -519,6 +521,11 @@
       valuesReelTrack.style.transform = "translateX(-" + progress * (vn - 1) * valuesReelSceneWidth + "px)";
       setValuesReelIndex(activeIndex);
       if (valuesReelFill) valuesReelFill.style.width = progress * 100 + "%";
+      // Thread fill/marker track the exact same continuous progress as the
+      // timeline below — one shared value driving both, so they always
+      // read as the same journey rather than two independently-synced bars.
+      if (valuesReelThreadFill) valuesReelThreadFill.style.width = progress * 100 + "%";
+      if (valuesReelThreadMarker) valuesReelThreadMarker.style.left = progress * 100 + "%";
       if (valuesReelHint) valuesReelHint.classList.toggle("is-visible", progress < 0.03);
       vTicking = false;
     }

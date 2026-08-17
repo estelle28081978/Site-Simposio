@@ -1387,7 +1387,10 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    réintroduire sans qu'on le redemande. */
 .values-reel {
   position: relative;
-  height: 500vh;
+  /* Was 500vh (~80vh of scroll per value) — the client found that far too
+     long a scroll to get from one value to the next. Cut to roughly a
+     third of that per-transition distance. */
+  height: 260vh;
   background: var(--navy-900);
 }
 .values-reel-sticky {
@@ -1534,6 +1537,57 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 @media (min-width: 768px) {
   .values-reel-stamp { width: 3.8rem; height: 3.8rem; font-size: 0.95rem; }
+}
+
+/* Thread (2026-08-17) — the visual "liant" the client asked for between one
+   value and the next, referencing Louis Vuitton's heritage timeline: a thin
+   dashed route with a glowing marker that travels along it in real time
+   with scroll progress. It's positioned in normal flow as a sibling of
+   .values-reel-viewport (not inside .values-reel-track, which is what
+   slides horizontally under the photos) — so unlike the photos, it never
+   moves and never disappears: the same line, at the same spot on screen,
+   is what's "on" value A and still what's "on" value B a moment later,
+   only its lit portion and the marker's position keep advancing. Sits
+   right above the timeline it echoes (same terracotta glow, same dashed
+   language as the passport stamps) so the whole footer reads as one
+   system rather than two separate widgets. */
+.values-reel-thread {
+  position: relative;
+  flex: 0 0 auto;
+  height: 1.4rem;
+  margin-inline: var(--space-4);
+}
+@media (min-width: 768px) {
+  .values-reel-thread { margin-inline: var(--space-5); }
+}
+.values-reel-thread-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 0;
+  border-top: 1.5px dashed rgba(246, 241, 231, 0.22);
+  transform: translateY(-50%);
+}
+.values-reel-thread-fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0%;
+  height: 0;
+  border-top: 1.5px dashed var(--terracotta-300);
+  transform: translateY(-50%);
+}
+.values-reel-thread-marker {
+  position: absolute;
+  top: 50%;
+  left: 0%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--terracotta-300);
+  box-shadow: 0 0 0 5px rgba(224, 149, 106, 0.22), 0 0 12px rgba(224, 149, 106, 0.75);
+  transform: translate(-50%, -50%);
 }
 
 /* Footer: a 3-column grid (spacer / dots / hint) keeps the dots visually
