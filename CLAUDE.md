@@ -1230,6 +1230,53 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   moteur de rendu, donc le risque résiduel est nettement plus faible.
   Vérifié par regression Playwright complète (6 pages × 2 viewports) : 0
   débordement, 0 erreur console.
+- **Engagements — 5ᵉ itération : positions 3/4 inversées, garde-fou
+  générique contre le chevauchement à distance (2026-08-17)**
+  (`.engagement-card-pos-*` dans `engagements.html`,
+  `layoutEngagementCards()` dans `main.js`) : la cliente a demandé
+  d'échanger les côtés de la carte 3 (repassée à gauche,
+  `engagement-card-pos-center-left`, ex-`-right`) et de la carte 4
+  (repassée à droite, `engagement-card-pos-right`, ex-`-center-left`), en
+  gardant exactement les mêmes niveaux de cascade (aucune valeur dans
+  `engagementStartFractions` touchée). **Repéré avant publication, pas
+  supposé** : cet échange recréait très exactement le bug corrigé à la 2ᵉ
+  itération, mais sur une autre paire — les cartes 2 et 4 se retrouvaient
+  toutes les deux du côté droit, et avec les fractions actuelles
+  (3/4, 1/2, 1/3) elles partagent ~84px de hauteur en commun, donc la
+  carte 4 recouvrait le bouton flèche de la carte 2. Vérifié par script
+  Playwright (mesure de rectangles) puis confirmé par capture d'écran
+  avant de proposer un correctif — signalé explicitement à la cliente
+  plutôt que poussé tel quel, avec 3 options ; elle a choisi de décaler
+  légèrement la carte 4 vers le bas.
+  **Garde-fou générique ajouté à `layoutEngagementCards()`** (plutôt qu'un
+  décalage codé en dur pour ce cas précis) : après avoir positionné
+  chaque carte par rapport à la précédente (mécanisme inchangé), la
+  fonction compare aussi la carte courante à celle **deux positions plus
+  tôt** (`engagementCards[i - 2]`, mesuré via `getBoundingClientRect()`
+  une fois la marge de base appliquée) — si les deux se chevauchent à la
+  fois horizontalement ET verticalement, la carte courante est repoussée
+  vers le bas de juste assez pour dégager la carte plus ancienne (+16px de
+  marge de respiration), sans toucher au chevauchement voulu avec la
+  carte immédiatement précédente. **Pourquoi un garde-fou général plutôt
+  qu'un simple ajustement du cas 2↔4** : ce type de collision "à distance"
+  (deux cartes non adjacentes dans la cascade mais du même côté
+  horizontal) s'est déjà produit deux fois avec des combinaisons de
+  positions différentes (2ᵉ itération : 2↔4 avec l'ancien ordre ; 5ᵉ
+  itération : 2↔4 à nouveau mais avec un ordre différent) — un correctif
+  ponctuel aurait cassé à la prochaine réorganisation des positions ou au
+  prochain changement de fractions ; ce garde-fou se recalcule à chaque
+  layout et reste valable quels que soient l'ordre des positions ou les
+  valeurs de `engagementStartFractions`, y compris à des largeurs d'écran
+  autres que celle testée (revérifié à 1440px, 1600px et 1920px, 0
+  collision aux trois). Si un ajustement en dur (ex. un pixel fixe ajouté
+  seulement à la carte 4) réapparaît ici à la place de cette comparaison
+  générique, c'est un pas en arrière — à ne pas réintroduire.
+  Vérifié par script Playwright : `marginTop` de la carte 4 ajusté
+  dynamiquement (`-245px` au lieu de `-345px` à 1440px, l'écart
+  correspondant exactement au chevauchement mesuré + 16px), aucune
+  collision non-adjacente détectée à aucune des 3 largeurs testées.
+  Regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 - **Valeurs — carrousel "paroles" plein écran, deux colonnes avec photo en
   fondu (2026-08-13, 4ᵉ itération)** (`.values`, `.values-sticky`,
   `.values-inner`, `.values-text`, `.values-window`,

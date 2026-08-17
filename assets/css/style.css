@@ -1134,26 +1134,24 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   flex-direction: column;
   margin-top: var(--space-5);
 }
-/* Cascade en escalier (2026-08-17, 3e passe) : plus un simple `gap`
+/* Cascade en escalier (2026-08-17, 4e passe) : plus un simple `gap`
    régulier — chaque carte chevauche la précédente d'une fraction propre à
    chaque paire (carte 2 démarre aux 3/4 de la carte 1, carte 3 à la moitié
    de la carte 2, carte 4 au tiers de la carte 3 — valeurs exactes données
    par la cliente) — calculé en JS depuis les hauteurs réelles, cf.
    `layoutEngagementCards()` dans main.js, car un `margin-top` en `%` se
    résout par rapport à la LARGEUR du bloc conteneur, jamais par rapport à
-   la hauteur d'un frère : impossible à faire en CSS pur. Une version
-   intermédiaire (2e passe) avait remplacé ce chevauchement par un espace
-   toujours positif après qu'un bug visuel (bouton d'une carte inaccessible)
-   ait fait croire que le chevauchement lui-même était le problème — le vrai
-   coupable était deux cartes NON adjacentes (2 et 4) qui se retrouvaient du
-   même côté horizontal, corrigé par l'ordre gauche/centre-droite/droite/
-   centre-gauche plus bas (indépendant de cette règle), pas en évitant tout
-   chevauchement. Cette règle `margin-top` de base sert de repli tant que le
-   JS n'a pas encore mesuré les cartes (chargement, no-JS) et devient la
-   valeur active sous 700px, où `layoutEngagementCards()` désactive
-   volontairement
-   la cascade (voir media query plus bas) au profit d'un espacement
-   uniforme classique. */
+   la hauteur d'un frère : impossible à faire en CSS pur. **Une carte peut
+   aussi chevaucher celle DEUX positions plus tôt** (pas seulement
+   l'immédiatement précédente) si les deux penchent du même côté
+   horizontal — `layoutEngagementCards()` détecte ce cas précis (rectangles
+   mesurés) et pousse légèrement la carte concernée vers le bas pour
+   dégager la carte plus ancienne, sans toucher au chevauchement voulu avec
+   la carte juste avant elle. Cette règle `margin-top` de base sert de
+   repli tant que le JS n'a pas encore mesuré les cartes (chargement,
+   no-JS) et devient la valeur active sous 700px, où
+   `layoutEngagementCards()` désactive volontairement la cascade (voir
+   media query plus bas) au profit d'un espacement uniforme classique. */
 .engagement-card + .engagement-card { margin-top: var(--space-5); }
 /* Zigzag : chaque carte a sa propre position horizontale, jamais toutes
    alignées sur le même axe vertical — demande explicite de la cliente, qui

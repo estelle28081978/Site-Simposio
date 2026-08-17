@@ -438,21 +438,12 @@
     // rhythm than the arithmetic -25pt/step used earlier. A CSS percentage
     // margin-top resolves against the containing block's WIDTH, never a
     // sibling's height, so this can't be done in pure CSS — computed here
-    // from real measured heights instead. An intermediate version of this
-    // function (2nd pass) flipped this into an always-positive shrinking
-    // GAP instead of an overlap, after a visual bug made a card's button
-    // unreachable — that bug turned out to be caused by two NON-adjacent
-    // cards (2 and 4) landing on the same horizontal side, now fixed by the
-    // left/center-right/right/center-left position order below (independent
-    // of this function), not by avoiding overlap altogether. Re-verified by
-    // script that this position order keeps every overlapping pair
-    // horizontally clear of each other before reintroducing real overlap.
-    // Uses offsetHeight (the true layout box, unaffected by the
-    // scroll-driven scale() transform applied below) rather than
-    // getBoundingClientRect(). Disabled under 700px: cards there recenter
-    // into a single column and a plain CSS gap (`.engagement-card +
-    // .engagement-card`, style.css) reads far better than a stacked
-    // overlap on a narrow screen.
+    // from real measured heights instead. Uses offsetHeight (the true
+    // layout box, unaffected by the scroll-driven scale() transform applied
+    // below) rather than getBoundingClientRect(). Disabled under 700px:
+    // cards there recenter into a single column and a plain CSS gap
+    // (`.engagement-card + .engagement-card`, style.css) reads far better
+    // than a stacked overlap on a narrow screen.
     var engagementStartFractions = [0.75, 0.5, 1 / 3];
     function layoutEngagementCards() {
       if (window.innerWidth <= 700) {
@@ -470,6 +461,33 @@
         var startFraction = engagementStartFractions[i - 1] || 1 / 3;
         var overlap = prevHeight * (1 - startFraction);
         card.style.marginTop = -Math.round(overlap) + "px";
+
+        // Skip-pair guard (2026-08-17): the cascade above only reasons
+        // about the card immediately before it — it has no idea whether
+        // the card TWO positions back happens to lean the same
+        // horizontal direction (position classes are independent of this
+        // function). When that happens the pair can still collide even
+        // though neither one is "adjacent" in the cascade — e.g. with
+        // left/center-right/center-left/right, cards 2 and 4 both lean
+        // right and, with the fractions above, share ~84px of vertical
+        // space, which covered card 2's arrow button. Rather than forcing
+        // a specific horizontal ordering to dodge this (fragile — breaks
+        // again the moment positions change), nudge the margin down just
+        // enough to clear that earlier card whenever a real overlap is
+        // measured, keeping the requested overlap with the immediately
+        // preceding card intact and only touching this one when it's
+        // actually needed. 16px of breathing room on top of the exact
+        // clearance so the two never sit pixel-flush.
+        if (i >= 2) {
+          var skip = engagementCards[i - 2];
+          var skipRect = skip.getBoundingClientRect();
+          var cardRect = card.getBoundingClientRect();
+          var horizontallyClear = cardRect.right <= skipRect.left || cardRect.left >= skipRect.right;
+          if (!horizontallyClear && cardRect.top < skipRect.bottom) {
+            var extra = skipRect.bottom - cardRect.top + 16;
+            card.style.marginTop = Math.round(parseFloat(card.style.marginTop) + extra) + "px";
+          }
+        }
       });
     }
     layoutEngagementCards();
