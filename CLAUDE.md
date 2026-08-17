@@ -1010,6 +1010,105 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `prefers-reduced-motion:reduce` neutralise bien le scale/parallaxe
   (`transform:none` mesuré), 0 débordement horizontal. Regression complète
   6 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Engagements — 2ᵉ itération : fond dynamique, cartes plus grandes,
+  cascade en escalier, nouvelles photos (2026-08-17)** (`.engagements*`,
+  `.engagement-card*`, `layoutEngagementCards()` dans `main.js`) : cinq
+  demandes distinctes de la cliente sur la grille de flip-cards ci-dessus,
+  sans remettre en cause son mécanisme de flip/scale/parallaxe (inchangé).
+  **Fond dynamique** : le fond bicolore statique (`linear-gradient(200deg,
+  var(--navy)…)`) reste en base mais un calque animé est ajouté par-dessus
+  — `.engagements::before` porte désormais trois `radial-gradient`
+  (lueurs terracotta/rouge Venise/navy foncé) très floutées
+  (`blur(60px)`) sur un `inset:-25%` généreux pour n'avoir aucun bord net
+  visible, qui dérivent lentement en boucle (`@keyframes
+  engagementsBgDrift`, 26s, `translate`+`scale` légers) — même technique
+  que `.values-sticky::before` (12ᵉ itération des Valeurs, cf. plus haut),
+  adaptée ici à une section non-sticky. **Désactivé sous
+  `prefers-reduced-motion`** (`animation:none`), cohérent avec le choix
+  déjà pris pour le scale/parallaxe des cartes juste au-dessus (effet
+  purement décoratif, pas d'information portée). Le petit carré terracotta
+  décoratif du coin, qui occupait `::before`, est repoussé sur `::after`
+  pour libérer `::before` — si ce carré réapparaît sur `::before` avec le
+  fond en dégradés sur `::after`, c'est l'ordre inversé, sans impact
+  visuel mais à corriger pour rester cohérent avec le commentaire du code.
+  **Cartes plus grandes** : `.engagement-card` passe de `min(88vw, 24rem)`
+  à `min(90vw, 27rem)` (+12.5% en largeur plafond).
+  **Cascade en escalier, remplace l'espacement uniforme** : demande
+  explicite — "fait pas commencé les cartes les unes en dessous des lignes
+  avec le même espace à chaque fois... commence la deuxième un peu plus
+  haut au niveau des 3/4 de la première, la 3e au niveau de la moitié de
+  la 2e et ainsi de suite". Un simple `gap` CSS uniforme est retiré de
+  `.engagement-cards` ; **impossible à faire en CSS pur** (un `margin-top`
+  en `%` se résout par rapport à la LARGEUR du bloc conteneur, jamais par
+  rapport à la hauteur d'un frère) donc calculé en JS,
+  `layoutEngagementCards()` (`main.js`) : pour chaque carte à partir de la
+  2ᵉ, une fraction de démarrage `startFraction` décroît de 25 points de
+  pourcentage à chaque carte (0.75, 0.50, 0.25, plafonnée à un minimum de
+  0.15 si d'autres cartes s'ajoutaient un jour) et `margin-top = -(1 -
+  startFraction) × offsetHeight(carte précédente)` — utilise
+  `offsetHeight` (la vraie boîte de mise en page) plutôt que
+  `getBoundingClientRect().height`, qui inclurait l'effet du
+  `transform:scale()` déjà appliqué par `updateEngagementCards()` juste
+  au-dessus dans le fichier. Appelée au chargement et au resize (fonction
+  séparée, pas fusionnée avec `updateEngagementCards()` qui reste
+  rAF-throttlée sur `scroll`). **Désactivée sous 700px** : sur cette
+  largeur les cartes se recentrent déjà en une seule colonne
+  (`margin-inline:auto`), un chevauchement empilé y serait illisible —
+  `layoutEngagementCards()` vide alors `style.marginTop` sur toutes les
+  cartes et laisse la règle CSS de repli `.engagement-card +
+  .engagement-card { margin-top: var(--space-5) }` reprendre la main
+  (espacement uniforme classique). Vérifié par script Playwright
+  (marges mesurées à 1440px : -130px/-259px/-389px, soit très exactement
+  25%/50%/75% de la hauteur réelle des cartes ; à 390px : marges vidées,
+  espacement uniforme `var(--space-5)` actif).
+  **Piège rencontré et corrigé avant publication** : avec l'ordre de
+  zigzag initial (gauche/centre-droite/centre-gauche/droite), la carte 4
+  ("Ancrage alsacien") se retrouvait à chevaucher visuellement la carte 2
+  ("Positionnement premium") et à cacher son bouton flèche — pas un bug
+  de calcul, une conséquence géométrique : la cascade ne raisonne que par
+  rapport à la carte immédiatement précédente, mais le décalage cumulé
+  entre cartes NON adjacentes (ici carte 2 et carte 4) peut lui aussi
+  produire un chevauchement vertical (~25% de la hauteur d'une carte,
+  quel que soit l'assignation gauche/droite) — si ces deux cartes
+  partagent en plus la même moitié d'écran horizontalement, le
+  chevauchement devient visible et gênant. Repéré par capture d'écran à
+  mi-scroll (pas supposé). **Corrigé en réordonnant les positions plutôt
+  qu'en touchant aux fractions de cascade** : gauche / centre-droite /
+  droite / centre-gauche (au lieu de gauche/centre-droite/centre-gauche/
+  droite) — dans ce nouvel ordre, les deux cartes qui se chevauchent par
+  ricochet (carte 2 "centre-droite" et carte 4 "centre-gauche") occupent
+  des plages horizontales disjointes, donc le chevauchement reste
+  purement vertical et invisible à l'écran ; le chevauchement adjacent
+  voulu par la cliente (carte 2↔3, carte 3↔4, jusqu'à 75% pour la paire
+  la plus tardive) reste lui pleinement visible, c'est l'effet de
+  "pile de cartes" recherché. Si un futur redécoupage change l'ordre des
+  positions ou le nombre de cartes, revérifier par capture d'écran (pas
+  seulement par la formule) qu'aucune paire non adjacente ne finit sur la
+  même moitié d'écran.
+  **Nouvelles photos** (recherche en banque d'images de nouveau non
+  fonctionnelle dans cet environnement — `mcp__stock-images__search_images`
+  retourne toujours `0 providers`, revérifié cette session — repli sur le
+  pool `assets/img/` existant, cohérent avec la pratique déjà établie sur
+  ce projet) : deux des quatre photos changent pour mieux représenter
+  l'engagement précis de leur carte plutôt qu'un choix plus générique —
+  "Concept clé en main" (service intégré/clé en main) passe de
+  `evenement-stand-raye-guirlande.jpg` à `evenement-tablee-diner-bougies.jpg`
+  (tablée complète — bougies, fleurs, verrerie, art de la table — montre
+  littéralement décoration+ambiance+restauration+service réunis, plus
+  parlant qu'un stand seul pour ce texte) ; "Positionnement premium"
+  passe de `evenement-assiette-agrume-ceramique.jpg` à
+  `evenement-carte-degustation.jpg` (carte à déguster sur chevalet en
+  terrasse — évoque directement une offre gastronomique pensée/qualitative,
+  plus lisible pour "premium" qu'une simple assiette). "Spécialiste Dolce
+  Vita" (`evenement-vespa-gelato-brindapino.jpg`, vespa+gelato+toast — déjà
+  un match thématique fort, conservée) et "Ancrage alsacien"
+  (`alsace-vineyard.jpg`, seule photo du site montrant l'Alsace, aucune
+  alternative disponible) sont inchangées. `assets/img/CREDITS.md` mis à
+  jour pour les deux photos remplacées (colonne "Utilisée sur").
+  Vérifié par regression Playwright complète (6 pages × 2 viewports,
+  modification touchant `style.css`/`main.js` partagés) : 0 débordement,
+  0 erreur console ; clic-flip et navigation clavier revérifiés
+  fonctionnels après les changements de marges.
 - **Valeurs — carrousel "paroles" plein écran, deux colonnes avec photo en
   fondu (2026-08-13, 4ᵉ itération)** (`.values`, `.values-sticky`,
   `.values-inner`, `.values-text`, `.values-window`,

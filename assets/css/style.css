@@ -1132,12 +1132,26 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .engagement-cards {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
   margin-top: var(--space-5);
 }
+/* Cascade en escalier (2026-08-17) : plus un simple `gap` régulier — chaque
+   carte chevauche la précédente d'une fraction croissante de sa hauteur
+   (carte 2 démarre aux 3/4 de la carte 1, carte 3 à la moitié de la carte
+   2, etc. — calculé en JS depuis les hauteurs réelles, cf.
+   `layoutEngagementCards()` dans main.js, car un `margin-top` en `%` se
+   résout par rapport à la LARGEUR du bloc conteneur, jamais par rapport à
+   la hauteur d'un frère : impossible à faire en CSS pur). Cette règle
+   `margin-top` de base sert de repli tant que le JS n'a pas encore mesuré
+   les cartes (chargement, no-JS) et devient la valeur active sous 700px, où
+   `layoutEngagementCards()` désactive volontairement la cascade (voir
+   media query plus bas) — chevaucher des cartes déjà recentrées les unes
+   sur les autres en colonne étroite serait illisible. */
+.engagement-card + .engagement-card { margin-top: var(--space-5); }
 /* Zigzag : chaque carte a sa propre position horizontale, jamais toutes
-   alignées sur le même axe vertical — demande explicite de la cliente. */
-.engagement-card { width: min(88vw, 24rem); }
+   alignées sur le même axe vertical — demande explicite de la cliente, qui
+   a aussi demandé d'utiliser milieu-gauche/milieu-droite en plus de
+   gauche/centre/droite (pas seulement les trois positions d'origine). */
+.engagement-card { width: min(90vw, 27rem); }
 .engagement-card-pos-left { margin-inline: 0 auto; }
 .engagement-card-pos-center { margin-inline: auto; }
 .engagement-card-pos-right { margin-inline: auto 0; }
@@ -1597,10 +1611,41 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
   padding-block: var(--space-6);
 }
+/* Fond dynamique (2026-08-17) : trois lueurs radiales aux couleurs de
+   marque, très floutées et positionnées en dehors du cadre (inset généreux)
+   pour n'avoir aucun bord net visible, qui dérivent lentement en boucle —
+   même technique que `.values-sticky::before` (12ᵉ itération des Valeurs,
+   voir CLAUDE.md), adaptée ici à une simple section non-sticky. Remplace le
+   fond bicolore statique précédent. Le petit carré terracotta décoratif du
+   coin (ex-`.engagements::before`) est passé sur `::after` pour libérer
+   `::before` pour ce calque animé — les deux pseudo-éléments restent sous
+   `.container` (z-index:1). */
 .engagements::before {
   content: "";
   position: absolute;
+  inset: -25%;
   pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 25%, rgba(193, 98, 45, 0.35), transparent 55%),
+    radial-gradient(circle at 78% 65%, rgba(157, 54, 54, 0.3), transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(16, 31, 39, 0.9), transparent 60%);
+  filter: blur(60px);
+  animation: engagementsBgDrift 26s ease-in-out infinite alternate;
+}
+@keyframes engagementsBgDrift {
+  0% { transform: translate(-2%, -1%) scale(1); }
+  50% { transform: translate(3%, 2%) scale(1.08); }
+  100% { transform: translate(-1%, 3%) scale(1.02); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .engagements::before { animation: none; }
+}
+.engagements::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
   width: 9rem;
   height: 9rem;
   right: -2rem;

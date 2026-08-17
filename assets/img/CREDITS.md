@@ -20,7 +20,7 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
-| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) |
+| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) + Engagements (grille de flip-cards, "Concept clé en main") |
 | `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) |
 | `evenement-vespas-vintage.jpg` | Mosaïque Projets |
 | `evenement-fiat500-blanche.jpg` | Mosaïque Projets |
@@ -39,11 +39,11 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-chariot-gelato-blanc.jpg` | Mosaïque Projets |
 | `evenement-illustration-dolce-vita.jpg` | Mosaïque Projets |
 | `evenement-illustration-cincin.jpg` | Mosaïque Projets |
-| `evenement-stand-raye-guirlande.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Concept clé en main") |
+| `evenement-stand-raye-guirlande.jpg` | Mosaïque Projets |
 | `evenement-vespa-gelato-brindapino.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Spécialiste Dolce Vita") |
 | `evenement-triporteur-gelato.jpg` | Mosaïque Projets |
-| `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Positionnement premium") |
-| `evenement-carte-degustation.jpg` | Mosaïque Projets |
+| `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets |
+| `evenement-carte-degustation.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Positionnement premium") |
 
 ## Photos Wikimedia Commons (banque libre)
 

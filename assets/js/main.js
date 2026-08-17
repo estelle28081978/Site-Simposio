@@ -431,6 +431,40 @@
       });
     });
 
+    // Cascading overlap layout (2026-08-17): replaces the previous uniform
+    // `gap` between cards with an increasing overlap computed from real
+    // measured heights — a CSS percentage margin-top resolves against the
+    // containing block's WIDTH, never a sibling's height, so "start at X%
+    // down the previous card" can't be done in pure CSS. Card 2 starts
+    // around 3/4 down card 1, card 3 around half of card 2, continuing the
+    // same -25 percentage-point step for any further card (floored at 15%
+    // so cards never fully swallow one another). Uses offsetHeight (the
+    // true layout box, unaffected by the scroll-driven scale() transform
+    // applied below) rather than getBoundingClientRect(). Disabled under
+    // 700px: cards there recenter into a single column and a plain CSS gap
+    // (`.engagement-card + .engagement-card`, style.css) reads far better
+    // than a stacked overlap on a narrow screen.
+    function layoutEngagementCards() {
+      if (window.innerWidth <= 700) {
+        engagementCards.forEach(function (card) {
+          card.style.marginTop = "";
+        });
+        return;
+      }
+      engagementCards.forEach(function (card, i) {
+        if (i === 0) {
+          card.style.marginTop = "";
+          return;
+        }
+        var prevHeight = engagementCards[i - 1].offsetHeight;
+        var startFraction = Math.max(0.15, 0.75 - 0.25 * (i - 1));
+        var overlap = prevHeight * (1 - startFraction);
+        card.style.marginTop = -Math.round(overlap) + "px";
+      });
+    }
+    layoutEngagementCards();
+    window.addEventListener("resize", layoutEngagementCards);
+
     // Scroll-driven scale + parallax. Deliberately never touches
     // .engagement-card-inner (the flip element) — scale lives on the <li>,
     // the image/text parallax offsets live on two other inner elements, so
