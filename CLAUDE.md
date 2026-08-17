@@ -1003,6 +1003,109 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   sur toute la largeur/hauteur du bandeau, texte et icônes des 3 méthodes
   parfaitement lisibles, aucun débordement horizontal, aucune régression
   sur la mise en page à 3 colonnes.
+- **Titres forcés sur un nombre de lignes précis (2026-08-17)** : demande de
+  la cliente sur 4 titres à la fois — forcer un nombre de lignes exact
+  ("sans rien changer d'autre... ni la taille de la police") pour le hero
+  d'`index.html` (3 lignes), le titre "Quatre mondes, une même Dolce Vita"
+  d'`index.html` (2 lignes), le titre "Racontez-nous votre projet" de
+  `contact.html` (2 lignes) et retirer « — même en vrac » du titre "Dites-nous
+  où vous en êtes" de `contact.html` (qui devait aussi passer à 2 lignes).
+  **Méthode** : simple découpage du texte par `<br>` manuels à des points de
+  césure naturels (comme pour le titre d'`engagements.html` documenté
+  plus haut), MAIS chaque titre ici a un `clamp()` de police bien plus large
+  que celui d'`engagements.html`, donc un découpage manuel à 2-3 mots ne
+  suffit pas partout : un même groupe de mots peut tenir sur une ligne à
+  certaines largeurs d'écran et déborder à d'autres (la police grandit avec
+  le viewport, le conteneur non). **Validé par script Playwright** balayant
+  tout le jeu de découpages possibles (partitions du texte en N groupes
+  contigus) à plusieurs largeurs (360 à 1920px), mesurant le nombre de
+  lignes réel via la technique `Range.selectNodeContents()` +
+  `getClientRects()` (cf. technique documentée plus haut pour les Valeurs),
+  PAS `getBoundingClientRect().height` (invalide sur ces éléments) —
+  jamais estimé au jugé.
+  - **Hero `index.html`** (`.hero-content h1`, `<br>` entre "qui"/"a" et
+    entre "d'une"/"expérience" : "L'événement qui" / "a le goût d'une" /
+    "expérience") : tient sur 3 lignes de 390px à 1450px sans rien changer
+    d'autre. Au-delà (≥1470px), la police plafonne à `5.2rem` et
+    "L'événement qui" (~658px) dépasse le `max-width:40rem`(640px) par
+    défaut de `.hero-content` — **`.hero-content` (pas seulement le `h1`)
+    est élargi à `44rem` via `@media (min-width:1470px)`** : un enfant bloc
+    en largeur `auto` ne peut pas dépasser la largeur de son parent quel
+    que soit le `max-width` qu'on lui donne à LUI (seul le parent peut
+    grandir), d'où l'élargissement sur `.hero-content` et non sur le `h1`
+    seul — piège vérifié en pratique avant de choisir cette approche. Sans
+    effet sous 1470px (le parent est déjà plus étroit que 44rem via le
+    viewport, donc rien ne change), et sans effet visuel sur l'eyebrow/le
+    bouton CTA qui partagent ce conteneur (l'eyebrow tient déjà sur une
+    ligne, le bouton est aligné à gauche — l'espace en plus à droite est
+    juste inutilisé). En dessous de 390px (très petits téléphones), le
+    texte déborde à 4 lignes — limite physique du même type que celle déjà
+    documentée et acceptée pour le titre d'`engagements.html`.
+  - **Teaser `index.html`** (`.teaser .section-head h2`, `<br>` après la
+    virgule : "Quatre mondes," / "une même Dolce Vita") : tient sur 2
+    lignes de 768px à 1920px. Le `max-width:46rem`(736px) hérité de la
+    règle générique `.section-head` est trop étroit pour "une même Dolce
+    Vita" une fois la police du `h2` proche de son plafond (jusqu'à
+    `5.6rem`) — élargi à `58rem` via une règle scopée
+    `.teaser .section-head` (n'affecte aucun autre `.section-head` du
+    site). Sous 768px (mobile/petite tablette), la colonne est de toute
+    façon bornée par le viewport (pas par ce `max-width`), donc
+    l'élargissement est un no-op et le titre reste sur 3 lignes — même
+    limite physique qu'ailleurs, acceptée.
+  - **Contact `contact.html`** (`.page-header h1`, `<br>` après
+    "Racontez-nous" : "Racontez-nous" / "votre projet") : tient sur 2
+    lignes de 768px à 1920px. Ce titre utilise le `clamp()` de `h1`
+    générique du site, qui grimpe jusqu'à `8.8rem` (!) — à cette taille
+    "Racontez-nous" seul demande plus de 1000px, très au-delà du
+    `max-width:46rem` générique de `.page-header h1`. **Nouvelle classe
+    scopée `.title-2-lines-wide`** (`max-width:68rem`), appliquée
+    uniquement au `h1` de `contact.html` — n'affecte pas le `max-width`
+    générique `.page-header h1` (donc aucun effet sur les titres
+    d'univers/prestations/projets/engagements, qui gardent 46rem). En
+    dessous de 768px, même limite physique qu'ailleurs (le mot
+    "Racontez-nous" seul dépasse déjà la largeur de la colonne mobile),
+    dégrade à 3-4 lignes, acceptée.
+  - **Devis `contact.html`** (`.contact-devis-text h2`, `<br>` après
+    "Dites-nous" : "Dites-nous" / "où vous en êtes") + retrait de
+    « — même en vrac » du texte du titre (le paragraphe juste en dessous,
+    qui répète « même en vrac » dans une autre phrase, n'a pas été touché,
+    seul le titre était visé). **Cas différent des trois précédents** :
+    cette colonne de texte est une piste de grille CSS (`grid-template-
+    columns: 0.85fr 1.15fr`) à côté de la carte formulaire, pas un bloc
+    avec son propre `max-width` — l'élargir déborderait visuellement sur la
+    carte formulaire juste à côté (changerait « la mise en page », ce que
+    la cliente excluait explicitement). Or à partir de ~1024px cette
+    colonne mesure une largeur fixe de **445px seulement**, plus étroite
+    que le mot « Dites-nous » seul (~457px) à la taille de police plafond
+    du `h2` (jusqu'à `5.6rem`) — **limite physique non contournable sans
+    élargir la colonne de texte ni réduire la police**, les deux étant
+    explicitement exclus. Le titre tient sur 2 lignes de 360px à 768px
+    (mobile + tablette, où la mise en page passe en une seule colonne
+    pleine largeur avant 960px), mais affiche 3-4 lignes de 1024px à
+    1920px — accepté et documenté comme limite physique, du même type que
+    celle déjà actée pour le titre d'`engagements.html` et pour les trois
+    titres ci-dessus.
+  Aucun débordement horizontal introduit par ces changements (vérifié par
+  script sur les 6 pages × 2 viewports).
+- **Formulaire de contact compacté (2026-08-17)** (`.form-card` et son
+  contenu, `contact.html`/`style.css`) : demande explicite de la cliente
+  ("essaye que le formulaire tienne sur un écran d'ordi... réduis donc sa
+  taille actuelle"). Réduction de tous les espacements internes de la
+  carte formulaire (pas de la section qui la contient, ni du reste de la
+  page) : `.form-card` padding desktop `var(--space-5)`(4.5rem)→`2.25rem`,
+  `.form-group` margin-bottom `var(--space-4)`(2.75rem)→`var(--space-2)`
+  (1rem), `.form-group-label` margin-bottom `var(--space-3)`(1.75rem)→
+  `0.85rem`, `.form-row` margin-bottom/gap `var(--space-3)`→`var(--space-2)`,
+  `.field input/select/textarea` padding vertical `0.9em`→`0.6em`,
+  `.field textarea` min-height `120px`→`64px`, `.service-option` padding
+  vertical `0.75em`→`0.55em`, `.form-footer` margin-top `var(--space-3)`→
+  `var(--space-2)`. Résultat mesuré par Playwright : hauteur de
+  `.form-card` réduite de **1155px à 851px** à 1440×900 (un ordinateur
+  portable courant), soit sous la hauteur de viewport elle-même — le
+  formulaire tient donc quasiment entièrement à l'écran une fois scrollé
+  jusqu'à lui, sans scroll interne excessif. Vérifié visuellement
+  (captures desktop et mobile) : aucun champ ne paraît écrasé ou illisible
+  malgré la réduction, l'espacement reste confortable.
 - Formulaire de contact : validation + construction du `mailto:` dans
   `buildMailto()`/`validate()`. Les champs sont repérés par leur `id`/`name`
   (`fullName`, `company`, `email`, `phone`, `serviceType`, `guests`,

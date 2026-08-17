@@ -234,6 +234,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .section-head { max-width: 46rem; margin-bottom: var(--space-5); }
 .section-head.center { margin-inline: auto; text-align: center; }
 .section-head h2 { margin-top: var(--space-2); }
+/* Homepage teaser title only: forced onto exactly 2 lines ("Quatre mondes," /
+   "une même Dolce Vita", 1 manual <br> in the HTML) without changing
+   font-size. The generic 46rem/736px cap above is too narrow for "une même
+   Dolce Vita" once the h2 clamp nears its top end (up to 5.6rem) — widened
+   here, scoped to this one instance so no other .section-head on the site is
+   affected. Below the width where the container itself is narrower than
+   58rem this has no effect (a block can't exceed its own containing block),
+   so it's a no-op on tablet/mobile. */
+.teaser .section-head { max-width: 58rem; }
 
 /* ==========================================================================
    Buttons
@@ -495,6 +504,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .page-header h1.title-3-lines-same-size {
   max-width: none;
 }
+/* Contact title only: forced onto exactly 2 lines ("Racontez-nous" / "votre
+   projet", 1 manual <br> in the HTML) without changing font-size. This h1
+   uses the sitewide h1 clamp (up to 8.8rem) — at that size "Racontez-nous"
+   alone needs over 1000px, far past the generic 46rem/736px cap above, so
+   it's widened here. Scoped to this one title (not the shared
+   .page-header h1 rule) so univers/prestations/projets/engagements titles
+   are unaffected. */
+.page-header h1.title-2-lines-wide {
+  max-width: 68rem;
+}
 .page-header .lede { margin: var(--space-3) auto 0; }
 .page-header-full {
   min-height: 100vh;
@@ -684,6 +703,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .hero-content h1 br { content: ""; display: block; }
 .hero-content h1 .accent { color: var(--terracotta-300); }
 .hero-content-minimal h1 { margin-bottom: var(--space-4); }
+/* Title forced onto exactly 3 lines ("L'événement qui" / "a le goût d'une" /
+   "expérience", 2 manual <br> in the HTML) without changing font-size. Above
+   ~1470px the font-size clamp caps at 5.2rem and "L'événement qui" alone
+   (~658px) no longer fits the default 40rem/640px column, so .hero-content
+   itself (not just the h1) is widened past that breakpoint — nothing else in
+   it (eyebrow, CTA button) wraps differently at this size, so it's a
+   no-visible-effect change for them, only the h1 actually needs the room. */
+@media (min-width: 1470px) {
+  .hero-content { max-width: 44rem; }
+}
 
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); justify-content: flex-start; margin-bottom: var(--space-5); }
 
@@ -1818,14 +1847,14 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 
 /* Service picker — visual selectable cards instead of a plain <select>,
    native radios under the hood so it stays keyboard/screen-reader friendly. */
-.service-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+.service-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
 @media (min-width: 640px) { .service-picker { grid-template-columns: repeat(3, 1fr); } }
 .service-option {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  padding: 0.75em 0.9em;
+  padding: 0.55em 0.9em;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--white);
@@ -1891,12 +1920,14 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   color: var(--ink);
   border-radius: calc(var(--radius-lg) + 0.5rem);
   border: 1px solid var(--border);
-  padding: var(--space-4);
+  padding: var(--space-3);
   box-shadow: 0 30px 60px -34px rgba(28, 59, 74, 0.35);
 }
-@media (min-width: 600px) { .form-card { padding: var(--space-5); } }
+/* Compacted (2026-08-17) so the whole card fits closer to a single laptop
+   screen — was var(--space-4)/var(--space-5), ~1155px tall at 1440x900. */
+@media (min-width: 600px) { .form-card { padding: 2.25rem; } }
 
-.form-group { margin-bottom: var(--space-4); }
+.form-group { margin-bottom: var(--space-2); }
 .form-group-label {
   display: block;
   font-family: var(--font-subtitle);
@@ -1905,19 +1936,19 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: var(--space-3);
+  margin-bottom: 0.85rem;
 }
 
-.form-row { display: grid; gap: var(--space-3); margin-bottom: var(--space-3); }
+.form-row { display: grid; gap: var(--space-2); margin-bottom: var(--space-2); }
 @media (min-width: 560px) { .form-row.cols-2 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 560px) { .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
 
-.field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.45rem; }
+.field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.35rem; }
 .field .optional { text-transform: none; letter-spacing: 0; color: var(--fg-muted); font-size: 0.72rem; font-weight: 400; }
 
 .field input, .field select, .field textarea {
   width: 100%;
-  padding: 0.9em 1.15em;
+  padding: 0.6em 1.1em;
   border: 1.5px solid var(--border);
   border-radius: 999px;
   background: var(--white);
@@ -1932,13 +1963,13 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(193, 98, 45, 0.15);
 }
-.field textarea { resize: vertical; min-height: 120px; border-radius: var(--radius); }
+.field textarea { resize: vertical; min-height: 64px; border-radius: var(--radius); }
 
 .field-error { display: none; font-size: 0.78rem; color: var(--accent-hover); margin-top: 0.4rem; font-weight: 500; }
 .field.has-error input, .field.has-error select, .field.has-error textarea { border-color: var(--accent-hover); }
 .field.has-error .field-error { display: block; }
 
-.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-3); }
+.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
 .form-note { font-size: 0.78rem; color: var(--fg-muted); }
 
 .form-success {
