@@ -84,6 +84,96 @@
     );
   }
 
+  /* ---------- Promise: each line auto-scaled to fill its available width ---------- */
+  var promiseQuote = document.getElementById("promiseQuote");
+
+  if (promiseQuote) {
+    var promiseLines = Array.prototype.slice.call(promiseQuote.querySelectorAll(".promise-line"));
+    var PROMISE_REF_SIZE = 100; // px, arbitrary reference used only to measure natural text width
+    var PROMISE_MIN_SIZE = 32; // px, floor so a very short/narrow viewport never collapses illegibly
+
+    function measureTextWidth(el) {
+      // Must force a single unwrapped line before measuring: at the reference
+      // size the text can already wrap inside the line's normal (margin-
+      // narrowed) box, and a Range spanning multiple wrapped fragments reports
+      // only the widest fragment's width, not the true full-text width — that
+      // under-reading was making every "ideal" font-size below way too big.
+      var prevWS = el.style.whiteSpace, prevDisplay = el.style.display, prevWidth = el.style.width;
+      el.style.whiteSpace = "nowrap";
+      el.style.display = "inline-block";
+      el.style.width = "auto";
+      var width = el.getBoundingClientRect().width;
+      el.style.whiteSpace = prevWS;
+      el.style.display = prevDisplay;
+      el.style.width = prevWidth;
+      return width;
+    }
+
+    function fitPromiseLines() {
+      if (window.innerWidth <= 640 || !promiseLines.length) {
+        // Below the same breakpoint that already resets margin-left to 0 and
+        // switches to a fixed mobile clamp() — filling full width line-by-line
+        // on a narrow phone would blow up short lines (e.g. "Iconique") far
+        // beyond what's legible, so this stays a desktop/tablet-only effect.
+        promiseLines.forEach(function (el) { el.style.fontSize = ""; });
+        return;
+      }
+      var containerWidth = promiseQuote.getBoundingClientRect().width;
+      var sizes = promiseLines.map(function (el) {
+        el.style.fontSize = PROMISE_REF_SIZE + "px";
+        var marginLeftPx = parseFloat(getComputedStyle(el).marginLeft) || 0;
+        var available;
+        if (el.classList.contains("promise-line-6")) {
+          // width:fit-content + margin-left:auto (right-aligned) rather than a
+          // numeric offset — if it's sized to fill 100% of the width there is
+          // no room left for the auto margin to push it right, so the "décalage"
+          // (its whole point) becomes invisible. Give it the same ~25% margin
+          // budget as line 2 so the right-alignment stays visually legible.
+          available = containerWidth * 0.75;
+        } else {
+          available = containerWidth - marginLeftPx;
+        }
+        // 3% safety margin: text width doesn't scale perfectly linearly with
+        // font-size (hinting/kerning), so sizing to exactly 100% of the
+        // available width can tip a line 1px over and wrap it entirely.
+        available *= 0.97;
+        var natural = measureTextWidth(el);
+        var ideal = natural > 0 ? (available / natural) * PROMISE_REF_SIZE : PROMISE_REF_SIZE;
+        return Math.max(PROMISE_MIN_SIZE, ideal);
+      });
+
+      // Giant per-line sizes must still fit one computer screen (the client's
+      // standing "un seul écran" requirement) — if the tallest possible stack
+      // would overflow, scale every line down by the same factor so the
+      // relative proportions (short word big, long line smaller) are kept.
+      var lineHeight = 0.85;
+      var gap = 0.02;
+      var totalHeight = sizes.reduce(function (sum, s) { return sum + s * lineHeight; }, 0) + (sizes.length - 1) * sizes[0] * gap;
+      var header = document.getElementById("siteHeader");
+      var headerClearance = header ? header.getBoundingClientRect().height : 104;
+      var budget = window.innerHeight - headerClearance - 40; // small bottom breathing margin
+      var scale = totalHeight > budget ? budget / totalHeight : 1;
+
+      promiseLines.forEach(function (el, i) {
+        el.style.fontSize = (sizes[i] * scale).toFixed(1) + "px";
+      });
+    }
+
+    fitPromiseLines();
+    // Yeseva One is a self-hosted webfont: on first load, measurement can run
+    // before it's actually available, sizing lines off the fallback font's
+    // (narrower) metrics — the swap-in then makes the "fitted" text overflow
+    // its line. Re-fit once the real font is confirmed ready.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitPromiseLines);
+    }
+    var promiseResizeTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(promiseResizeTimer);
+      promiseResizeTimer = setTimeout(fitPromiseLines, 200);
+    });
+  }
+
   /* ---------- Univers: 5 senses — scroll-drawn path with waypoint cards ---------- */
   var sensesJourney = document.getElementById("sensesJourney");
 

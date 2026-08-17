@@ -476,6 +476,94 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   lignes ou un `clamp()` allant jusqu'à `9rem`/`10rem` réapparaissent
   ici, c'est l'itération intermédiaire (jamais livrée), à ne pas
   réintroduire sans qu'on le redemande.
+- **Promesse — 6ᵉ itération, remplissage dynamique par ligne en JS
+  (2026-08-17)** (`fitPromiseLines()`, `assets/js/main.js`) : la cliente a
+  redemandé d'agrandir encore, cette fois explicitement "à fond" et pour
+  que chaque ligne "occupe toute la largeur sauf le décalage demandé" —
+  un seul `clamp()` CSS partagé par toutes les lignes (comme les 5
+  itérations précédentes) ne peut pas satisfaire ça : un mot court comme
+  "Iconique" et une ligne de 4 mots comme "Pour transporter vos invités"
+  ont des largeurs naturelles très différentes à une même taille de
+  police, donc une taille commune est nécessairement un compromis qui ne
+  fait "remplir toute la largeur" pour aucune des deux. Remplace le
+  `font-size` fixe en `clamp()` par un calcul JS **par ligne** : chaque
+  `.promise-line` reçoit sa propre taille, calculée pour que son texte
+  remplisse tout juste sa largeur disponible (largeur du conteneur moins
+  son `margin-left`), donc "Iconique" devient énorme (remplit toute la
+  largeur à elle seule) tandis que la ligne à 4 mots reste plus modeste en
+  taille de police tout en remplissant, elle aussi, sa propre largeur — le
+  `clamp()` CSS reste en place comme **filet de sécurité no-JS/avant-JS**
+  (le JS écrase juste `style.fontSize` en ligne, cascade CSS normale).
+  **Ligne 6 traitée à part** : elle utilise `width:fit-content;
+  margin-left:auto` (alignement à droite) plutôt qu'un `margin-left`
+  numérique — si elle est dimensionnée pour remplir 100% de la largeur,
+  il ne reste plus d'espace pour que la marge automatique la pousse vers
+  la droite, et son "décalage" (tout l'intérêt de cette ligne) devient
+  invisible. Elle reçoit donc le même budget de largeur que la ligne 2
+  (75% de la largeur du conteneur, soit une marge conceptuelle de 25%)
+  pour que le décalage à droite reste lisible, cohérent avec la demande
+  "sauf le décalage demandé" — cette ligne-là n'est pas censée remplir
+  100%, son décalage EST la consigne à respecter.
+  **Trois bugs réels rencontrés et corrigés, aucun supposé sans script de
+  diagnostic dédié** :
+  1. *Course avec le chargement de la police* — au premier chargement de
+     page, `fitPromiseLines()` mesurait le texte avant que Yeseva One
+     (police self-hébergée) soit prête, avec la police de repli du
+     navigateur à la place — repéré via `document.fonts.status` valant
+     `"loading"` au moment de la mesure (script de diagnostic dédié, pas
+     supposé). Les tailles calculées ne correspondaient donc plus une
+     fois Yeseva One chargée. Corrigé en relançant `fitPromiseLines()`
+     dans `document.fonts.ready.then(...)`, en plus de l'appel initial et
+     du écouteur de resize.
+  2. *Bug de mesure de largeur bien plus sérieux, causant des retours à la
+     ligne systématiques* — `measureTextWidth()` utilisait
+     `Range.selectNodeContents(el)` + `getBoundingClientRect()` (la même
+     technique que celle déjà établie ailleurs sur le site pour compter
+     des lignes). Problème : à la taille de référence utilisée pour la
+     mesure, le texte peut déjà être replié sur plusieurs lignes DANS SA
+     BOÎTE NORMALE (rétrécie par son `margin-left`) — et pour un `Range`
+     qui couvre plusieurs fragments repliés, `getBoundingClientRect()`
+     renvoie l'enveloppe du fragment le plus large, pas la largeur réelle
+     du texte non replié. Résultat : la largeur "naturelle" mesurée était
+     systématiquement sous-estimée (parfois de plus de 30%), donnant des
+     tailles "idéales" bien trop grandes, qui repliaient le texte une fois
+     appliquées. Repéré en comparant cette mesure à une mesure de
+     contrôle forçant `white-space:nowrap` sur l'élément réel (pas un
+     clone hors contexte — un premier essai de diagnostic avec un clone
+     ajouté à `document.body` donnait lui aussi un résultat faux, la
+     police/les transformations CSS n'étant plus héritées du parent
+     `.promise-quote` hors de son arbre d'origine). Corrigé en forçant
+     temporairement `white-space:nowrap; display:inline-block;
+     width:auto` sur l'élément réel pendant la mesure (puis restauration
+     immédiate) — mesure fiable quel que soit l'état de repli avant coup.
+     Si `Range.selectNodeContents` réapparaît pour mesurer une largeur de
+     texte (par opposition à compter des lignes, où la technique reste
+     valide), revérifier ce piège en premier.
+  3. *Marge de sécurité anti-arrondi* : même après la correction du point
+     2, viser exactement 100% de la largeur disponible pouvait faire
+     replier le dernier mot d'une ligne d'un pixel (le texte ne s'étire
+     pas parfaitement linéairement avec la taille de police — crénage,
+     hinting). Une marge de sécurité de 3% (`available *= 0.97`) est
+     appliquée à toutes les lignes avant le calcul de la taille idéale.
+  **Toujours contraint à un seul écran** : la hauteur totale du bloc
+  (calculée à partir des tailles idéales par ligne) est comparée au
+  budget vertical disponible (hauteur de viewport moins la hauteur du
+  header, mesurée en direct via `getBoundingClientRect()` plutôt
+  qu'une constante en dur) ; si elle dépasse, un facteur d'échelle
+  unique est appliqué à toutes les lignes pour conserver leurs
+  proportions relatives (le mot court reste proportionnellement plus
+  grand que la ligne à 4 mots) tout en revenant sous la limite. **Effet
+  desktop/tablette uniquement** (`window.innerWidth > 640`) : sous ce
+  seuil, l'effet est désactivé (`style.fontSize` réinitialisé à vide,
+  laissant le `clamp()` CSS mobile `1.9rem`–`3rem` prendre le relais) —
+  remplir toute la largeur ligne par ligne sur un téléphone étroit
+  ferait exploser la taille des mots courts bien au-delà du lisible.
+  Vérifié par script Playwright : 1 seule ligne rendue par groupe et 0
+  débordement haut/bas aux 3 largeurs desktop (1440×900, 1600×900,
+  1920×1080), cycle de resize desktop→mobile→desktop revérifié sans
+  erreur console ni débordement, animation d'apparition (`[data-reveal]`)
+  toujours fonctionnelle. Regression complète 6 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 - **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
   (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
   carte postale inclinée sur photo floutée (refonte précédente, bullet
