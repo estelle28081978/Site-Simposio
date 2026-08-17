@@ -718,6 +718,70 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   nouvelle hauteur de section (pas de bande vide en bas), animation
   d'apparition toujours fonctionnelle. Regression complète 6 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Promesse — 10ᵉ itération, alternance gauche/milieu/droite + apparition
+  directionnelle par ligne (2026-08-17)** (`univers.html`,
+  `assets/css/style.css`) : deux demandes distinctes.
+  **Rythme des décalages recalibré** : la cliente trouvait l'alternance
+  "trop centrée parfois" — plusieurs lignes consécutives avaient des
+  `margin-left` proches (ex. 8%/8%/5% à la 8e itération), lisibles comme
+  "toutes vers le milieu" plutôt qu'une vraie alternance gauche/milieu/
+  droite. Les marges des 10 premières lignes (la dernière reste
+  `width:fit-content; margin-left:auto`, alignée à droite comme avant)
+  sont redistribuées en 3 zones nettement séparées — gauche (`0–5%`),
+  milieu (`12–18%`), droite (`25–38%`) — et enchaînées pour qu'aucune
+  paire consécutive ne tombe dans la même zone, sauf contrainte physique
+  incontournable : "le quotidien"(12 car.) et "professionnel"(13 car.,
+  le mot le plus long, cf. 9e itération) doivent toutes les deux rester
+  proches de `0%` pour ne pas redevenir le nouveau goulot d'étranglement
+  qui réduirait la taille de police globale — ce sont les deux seules
+  lignes consécutives à partager la même zone (gauche), un compromis
+  physique plutôt qu'un oubli. Toutes les marges ont été revérifiées une
+  à une pour rester sous le seuil de sécurité de leur propre longueur de
+  texte (formule : marge max ≈ `100×(13−nb_caractères)/13`, `13` étant la
+  longueur du mot le plus contraignant) avant de lancer le test complet,
+  plutôt que d'ajuster au jugé puis découvrir un retour à la ligne.
+  **Apparition par ligne avec glissement directionnel** : chaque
+  `.promise-line` glisse désormais depuis le côté vers lequel elle est
+  décalée — lignes "gauche" arrivent de la gauche (`translateX(-8vw)`→0),
+  lignes "droite" (et la dernière, toujours alignée à droite) arrivent de
+  la droite (`translateX(8vw)`→0). Pour les lignes "milieu", pas de
+  direction propre définie par leur position — la consigne cliente était
+  d'alterner par rapport à la ligne juste au-dessus : chaque ligne milieu
+  reçoit la direction opposée à celle de la ligne précédente (ex. ligne 6
+  "vos invités", milieu, suit la ligne 5 "transporter" partie de la
+  gauche → ligne 6 part de la droite). Décision figée dans le HTML via
+  une classe `.promise-line-from-left`/`.promise-line-from-right` par
+  ligne (pas recalculée dynamiquement — le texte et son découpage sont
+  fixes, contrairement à la taille de police qui reste responsive).
+  **`data-reveal` → `data-reveal-group`** sur `.promise-quote` : le
+  système générique `[data-reveal-group] > *` (déjà utilisé ailleurs sur
+  le site pour des groupes d'enfants à apparition échelonnée, ex.
+  `.contact-band-methods`) est réutilisé comme point d'accroche
+  IntersectionObserver (aucun changement JS requis, `main.js` observe
+  déjà `[data-reveal], [data-reveal-group]` indifféremment) mais son
+  `transform: translateY(20px)` par défaut est **surchargé** par des
+  règles plus spécifiques
+  (`.promise-quote[data-reveal-group] > .promise-line-from-left/-right`)
+  pour un `translateX` directionnel à la place — l'ancien mécanisme
+  `[data-reveal]` sur l'élément entier (fondu + `translateY` global,
+  utilisé par toutes les refontes précédentes de cette section) est
+  entièrement retiré. Délais échelonnés par ligne
+  (`:nth-child(1)`…`:nth-child(11)`, 60ms d'écart) pour un effet de
+  cascade, scopés à `.promise-quote[data-reveal-group]` donc sans impact
+  sur les autres `[data-reveal-group]` du site (qui gardent leurs propres
+  délais `:nth-child(1)`–`:nth-child(5)` définis plus bas dans le
+  fichier). Règle `prefers-reduced-motion` dédiée ajoutée (les lignes
+  s'affichent directement sans glissement). Si `data-reveal` (sans
+  `-group`) réapparaît sur `.promise-quote`, ou si les lignes utilisent
+  encore le `translateY` générique plutôt qu'un `translateX` directionnel
+  par ligne, c'est l'ancien mécanisme, à ne pas réintroduire sans qu'on
+  le redemande.
+  Vérifié par script Playwright : opacité 0 + `translateX` décalé dans le
+  bon sens par ligne avant apparition, opacité 1 + `translateX(0)` après
+  (mesuré via `getComputedStyle().transform`, pas seulement visuel), 1
+  seule ligne rendue par groupe et 0 débordement horizontal aux 3
+  largeurs desktop testées. Regression complète 6 pages × 2 viewports :
+  0 débordement, 0 erreur console.
 - **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
   (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
   carte postale inclinée sur photo floutée (refonte précédente, bullet

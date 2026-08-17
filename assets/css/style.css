@@ -876,16 +876,21 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   line-height: 0.85;
 }
 .promise-line + .promise-line { margin-top: 0.02em; }
-.promise-line-1 { margin-left: 15%; }
-.promise-line-2 { margin-left: 5%; }
-.promise-line-3 { margin-left: 0; }
-.promise-line-4 { margin-left: 30%; }
-.promise-line-5 { margin-left: 8%; }
-.promise-line-6 { margin-left: 8%; }
-.promise-line-7 { margin-left: 20%; }
-.promise-line-8 { margin-left: 5%; }
-.promise-line-9 { margin-left: 18%; }
-.promise-line-10 { margin-left: 35%; }
+/* Alternating left / middle / right rhythm, not a gradual drift — a few
+   lines ("professionnel" & co, the longest words) are pinned near the left
+   edge out of physical necessity (cf. CLAUDE.md), everything else cycles
+   through the three zones so no two consecutive lines read as "both kind
+   of centered." */
+.promise-line-1 { margin-left: 15%; } /* middle */
+.promise-line-2 { margin-left: 2%; } /* left */
+.promise-line-3 { margin-left: 0; } /* left (longest word, physical floor) */
+.promise-line-4 { margin-left: 32%; } /* right */
+.promise-line-5 { margin-left: 5%; } /* left */
+.promise-line-6 { margin-left: 12%; } /* middle */
+.promise-line-7 { margin-left: 25%; } /* right */
+.promise-line-8 { margin-left: 3%; } /* left */
+.promise-line-9 { margin-left: 18%; } /* middle */
+.promise-line-10 { margin-left: 38%; } /* right */
 /* Last line: fit-content + auto margin (right-aligned) rather than a numeric
    offset — kept generic (:last-child) rather than a fixed "promise-line-N"
    class so future re-splits of the quote into more/fewer lines don't need a
@@ -900,8 +905,36 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   .promise-line:not(:last-child) { margin-left: 0; }
   .promise-line:last-child { width: auto; margin-left: 0; }
 }
+
+/* Per-line entrance: slides in from whichever side the line is aligned
+   toward (left-aligned lines arrive from the left, right-aligned/last line
+   from the right) — the generic [data-reveal-group] > * rule only offers a
+   translateY, so it's overridden here with a directional translateX per
+   line instead. Middle-zone lines get whichever direction alternates
+   against the line immediately above (baked into the HTML class, not
+   computed live — the sequence is fixed content, not responsive). */
+.promise-quote[data-reveal-group] > .promise-line {
+  transform: translateX(0);
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+}
+.promise-quote[data-reveal-group] > .promise-line-from-left { transform: translateX(-8vw); }
+.promise-quote[data-reveal-group] > .promise-line-from-right { transform: translateX(8vw); }
+.promise-quote[data-reveal-group].is-visible > .promise-line { opacity: 1; transform: translateX(0); }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(1) { transition-delay: 0ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(2) { transition-delay: 60ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(3) { transition-delay: 120ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(4) { transition-delay: 180ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(5) { transition-delay: 240ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(6) { transition-delay: 300ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(7) { transition-delay: 360ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(8) { transition-delay: 420ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(9) { transition-delay: 480ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(10) { transition-delay: 540ms; }
+.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(11) { transition-delay: 600ms; }
+
 @media (prefers-reduced-motion: reduce) {
   .promise-photo { animation: none; }
+  .promise-quote[data-reveal-group] > .promise-line { opacity: 1; transform: translateX(0); }
 }
 
 .promise-footnote {
