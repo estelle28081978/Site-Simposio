@@ -1169,76 +1169,119 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Estelle" rule. The "EL" avatar reuses the same gradient-circle treatment
    as .contact-founder-avatar on the Contact page, for a recognizable mark
    wherever her signature appears on the site. ) */
-.founder { position: relative; overflow: hidden; padding-block: var(--space-6); background: var(--navy-900); }
-.founder-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: blur(4px) saturate(1.1);
-  transform: scale(1.06);
-}
-.founder-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, rgba(16, 31, 39, 0.82) 0%, rgba(16, 31, 39, 0.93) 100%);
-}
-.founder .container { position: relative; z-index: 1; }
-.founder-card {
-  max-width: 34rem;
+/* ==========================================================================
+   Founder — two-tone plaque (terracotta ID block + navy quote panel)
+   (2026-08-17, refonte complète : la cliente n'aimait "pas du tout" la
+   carte postale inclinée sur photo floutée (version précédente) — pas
+   simplement un réglage à ajuster, un changement de composition entier a
+   été demandé. Remplace la carte crème/bordure pointillée/photo de fond
+   par une plaque bicolore sans aucune photo : un bloc identité terracotta
+   (avatar + signature) accolé à un panneau citation navy, posée sur un
+   fond crème uni — aucun des deux tons de la plaque ne reprend le fond
+   flouté ni l'inclinaison de l'ancienne version. Si `.founder-card`/
+   `.founder-photo`/`.founder-scrim` réapparaissent ici, c'est l'ancienne
+   carte postale, à ne pas réintroduire sans qu'on le redemande.
+   **Toujours aucune photo fabriquée d'Estelle** (règle du site) : cette
+   version n'utilise même plus de photo d'ambiance du tout, le sujet est
+   entièrement porté par la couleur et la typographie.
+   **Structure** : `.founder-plate` (flex row à partir de 700px, empilé en
+   dessous) — `.founder-plate-id` (dégradé terracotta→rouge Venise, déjà
+   utilisé ailleurs sur le site pour ce même avatar) contient l'avatar "EL"
+   (cerclé, contour plutôt que médaillon plein comme avant) et la signature
+   (remontée ici depuis le panneau citation, elle vit désormais avec
+   l'identité plutôt qu'en bas du texte) ; `.founder-plate-quote` (navy-900)
+   contient l'eyebrow "La fondatrice", un guillemet » géant décoratif en
+   fond de plan (même motif que l'ancien guillemet de la 2e refonte de la
+   Promesse, aujourd'hui libre puisque la Promesse ne l'utilise plus — pas
+   de conflit de réutilisation) et la citation, inchangée mot pour mot.
+   `data-reveal` sur `.founder-plate` : la plaque entière apparaît en un
+   seul mouvement (fondu + translateY), cohérent avec le nouveau traitement
+   de la Promesse juste au-dessus dans la page. */
+.founder { padding-block: var(--space-6); background: var(--cream); }
+.founder-plate {
+  display: flex;
+  flex-direction: column;
+  max-width: 56rem;
   margin-inline: auto;
-  text-align: center;
-  background: var(--cream);
-  border: 1.5px dashed rgba(193, 98, 45, 0.45);
   border-radius: var(--radius-lg);
-  padding: var(--space-5) var(--space-4);
-  box-shadow: 0 30px 60px -20px rgba(8, 16, 20, 0.55);
-  transform: rotate(-1.1deg);
+  overflow: hidden;
+  box-shadow: 0 30px 60px -22px rgba(28, 59, 74, 0.35);
 }
-@media (min-width: 600px) {
-  .founder-card { padding: var(--space-5); }
+@media (min-width: 700px) {
+  .founder-plate { flex-direction: row; }
+}
+.founder-plate-id {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  background: linear-gradient(150deg, var(--terracotta) 0%, var(--rosso-venezia) 100%);
+}
+@media (min-width: 700px) {
+  .founder-plate-id { flex: 0 0 32%; }
 }
 .founder-avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.4rem;
-  height: 3.4rem;
-  margin-bottom: var(--space-3);
+  width: 4.6rem;
+  height: 4.6rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--terracotta) 0%, var(--rosso-venezia) 100%);
+  border: 1.5px solid rgba(246, 241, 231, 0.55);
   color: var(--cream);
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  transform: rotate(4deg);
+  font-size: 1.4rem;
 }
-.founder-card .eyebrow { display: block; margin-bottom: var(--space-2); }
+.founder-signature {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--font-subtitle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cream);
+}
+.founder-signature span {
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  color: rgba(246, 241, 231, 0.75);
+}
+.founder-plate-quote {
+  position: relative;
+  flex: 1;
+  padding: var(--space-5) var(--space-4);
+  background: var(--navy-900);
+  overflow: hidden;
+}
+@media (min-width: 700px) {
+  .founder-plate-quote { padding: var(--space-5); }
+}
+.founder-mark {
+  position: absolute;
+  top: -1.2rem;
+  right: 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 8vw, 8.5rem);
+  line-height: 1;
+  color: rgba(193, 98, 45, 0.22);
+  pointer-events: none;
+  user-select: none;
+}
+.founder-plate-quote .eyebrow { position: relative; display: block; margin-bottom: var(--space-2); }
 .founder-quote {
+  position: relative;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(1.3rem, 1.2vw + 1rem, 1.9rem);
   line-height: 1.42;
-  color: var(--navy);
-  margin-top: var(--space-2);
-}
-.founder-signature {
-  margin-top: var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  font-family: var(--font-subtitle);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
-}
-.founder-signature span {
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  text-transform: none;
+  color: var(--cream);
 }
 
 /* ==========================================================================

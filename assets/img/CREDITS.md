@@ -16,7 +16,7 @@ plus avant de marquer un fichier « non utilisé ».
 | Fichier | Utilisée sur |
 |---|---|
 | `evenement-parasols-jaunes-table.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") |
-| `evenement-vespa-fleurie-lemon.jpg` | Univers — fond de la carte postale "La fondatrice" |
+| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |

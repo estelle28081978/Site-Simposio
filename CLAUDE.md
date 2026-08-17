@@ -335,6 +335,51 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Vérifié par regression Playwright complète (6 pages × 2 viewports,
   modification touchant `style.css`/`main.js` partagés) : 0 débordement,
   0 erreur console.
+- **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
+  (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
+  carte postale inclinée sur photo floutée (refonte précédente, bullet
+  "Promesse + Fondatrice — refonte immersive" plus haut) — pas un réglage
+  à ajuster, un changement de composition entier demandé. **Remplace
+  entièrement** cette carte postale : plus de photo du tout (ni plein
+  cadre ni floutée en fond), plus d'inclinaison, plus de bordure
+  pointillée. Si `.founder-card` / `.founder-photo` / `.founder-scrim`
+  réapparaissent ici, c'est cette ancienne version, à ne pas réintroduire
+  sans qu'on le redemande. **Toujours aucune photo fabriquée d'Estelle**
+  (règle du site, cf. « Limites connues ») : cette version pousse le
+  principe plus loin que la précédente, qui utilisait au moins une photo
+  d'ambiance en fond — ici le sujet est entièrement porté par la couleur et
+  la typographie, aucune photo nulle part dans la section.
+  **Nouvelle composition** : `.founder-plate`, une plaque bicolore posée
+  sur un fond crème uni (`.founder` repasse de `--navy-900` à `--cream`,
+  section auparavant systématiquement sombre) — deux blocs accolés sans
+  arrondi entre eux (coins arrondis uniquement sur le contour extérieur de
+  la plaque), pas de carte flottante isolée. À gauche (`.founder-plate-id`,
+  ~32% en largeur à partir de 700px, empilé au-dessus en dessous) : fond
+  dégradé terracotta→rouge Venise (même dégradé que l'ancien avatar,
+  réutilisé à plus grande échelle), avatar "EL" en contour (cercle bordé,
+  plus grand qu'avant — 4.6rem contre 3.4rem — mais sans remplissage plein
+  ni rotation) et la signature (remontée depuis le panneau citation, elle
+  vit désormais avec l'identité plutôt qu'en bas du texte). À droite
+  (`.founder-plate-quote`, le reste de la largeur) : fond `--navy-900`,
+  eyebrow "La fondatrice", un guillemet » géant décoratif en fond de plan
+  (`.founder-mark` — même motif que le guillemet de la 2e refonte de la
+  Promesse ci-dessus, aujourd'hui disponible puisque la 3e refonte de la
+  Promesse ne l'utilise plus ; pas de conflit de réutilisation entre les
+  deux sections) et la citation, texte inchangé mot pour mot. `data-reveal`
+  sur `.founder-plate` (la plaque entière apparaît en un seul mouvement,
+  fondu + translateY) plutôt que sur des éléments séparés — cohérent avec
+  le traitement de la nouvelle Promesse juste au-dessus dans la page, sans
+  dupliquer sa mise en page (pas de photo, pas de grande typographie
+  décalée : composition volontairement différente pour les deux sections).
+  **Crédits photo retirés** : `evenement-vespa-fleurie-lemon.jpg` n'étant
+  plus utilisée nulle part sur le site depuis ce changement (vérifié par
+  recherche dans le HTML des 6 pages et dans `mosaicImagesBase`,
+  `main.js`), sa ligne dans `assets/img/CREDITS.md` repasse à "Non
+  utilisée actuellement, disponible dans `assets/img/`" ; `amalfi-coast-sunset.jpg`
+  reste utilisée par la Promesse juste au-dessus donc son crédit (Tracey
+  Hind) reste inchangé dans le footer d'`univers.html`. Vérifié par
+  regression Playwright complète (6 pages × 2 viewports) : 0 débordement,
+  0 erreur console.
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
