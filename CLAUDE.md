@@ -608,6 +608,56 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   2 viewports : 0 débordement, 0 erreur console. Si un calcul de taille
   par ligne (plutôt qu'une taille unique via `Math.min`) réapparaît ici,
   c'est la 6e itération, à ne pas réintroduire sans qu'on le redemande.
+- **Promesse — 8ᵉ itération, arbitrage largeur/hauteur pour maximiser la
+  taille (2026-08-13/17)** (`univers.html`, `assets/css/style.css`) : la
+  cliente a redemandé d'agrandir encore, explicitement en acceptant plus
+  de lignes si besoin ("en comptant ces écarts, agrandi au maximum
+  possible quitte à ce que ça fasse plus de ligne"). Passé de 6 à **8
+  lignes** (texte identique, juste redécoupé plus finement, mot pour mot
+  inchangé) : « Suspendre le » / « quotidien » / « professionnel » /
+  « Pour transporter » / « vos invités » / « au cœur de » / « l'Italie,
+  iconique » / « et intemporelle ».
+  **Ce n'est pas juste "plus de lignes = plus grand"** : `fitPromiseLines()`
+  prend le minimum des tailles idéales par ligne (7e itération), donc deux
+  forces s'opposent quand on ajoute des lignes — les lignes individuelles
+  raccourcissent (plus de marge pour chacune, la taille "idéale" par
+  largeur monte) MAIS le total à caser dans le budget vertical d'un seul
+  écran augmente aussi (la taille "idéale" par hauteur descend, cf. le
+  calcul `budget / totalHeight` déjà en place). Testé empiriquement avant
+  de choisir 8 (comparaison directe des tailles obtenues, pas au jugé) :
+  - 6 lignes (texte de la 7e itération, ligne la plus longue "quotidien
+    professionnel" à 23 caractères) : ~93–104px selon la largeur —
+    limité par la LARGEUR (la ligne à 0% de marge était le goulot).
+  - 9 lignes (quasiment un mot par ligne) : ~98–121px — bascule sur la
+    limite de HAUTEUR (8 lignes à cette taille tenaient déjà tout juste
+    le budget vertical), donc ajouter encore des lignes ne sert plus à
+    rien : on gagne en largeur disponible par ligne mais on perd plus en
+    budget vertical par ligne.
+  - **8 lignes (retenu) : ~111–137px** — meilleur compromis trouvé, marge
+    de largeur ET de hauteur toutes deux presque entièrement utilisées
+    (calcul vérifié : à 1440×900, hauteur totale du bloc ≈ budget
+    disponible à moins de 1px près).
+  Le point clé : au-delà d'un certain nombre de lignes, ajouter des
+  lignes devient contre-productif (la contrainte de hauteur devient plus
+  sévère que le gain de largeur) — 8 est le point où les deux contraintes
+  s'équilibrent à peu près pour ce texte précis. Si le texte de la
+  citation change à nouveau, refaire ce test comparatif (pas supposer
+  qu'un découpage plus fin est automatiquement plus grand).
+  **Marges recalculées pour les 8 lignes**, par longueur de texte comme
+  aux itérations précédentes (`0%` sur les deux lignes les plus longues —
+  "Pour transporter" et "l'Italie, iconique" — jusqu'à `28%` sur la plus
+  courte, "quotidien"). Le sélecteur CSS pour la dernière ligne
+  (`width:fit-content; margin-left:auto`) a été généralisé en
+  `.promise-line:last-child` (au lieu d'un nom de classe `promise-line-N`
+  en dur) — comme `fitPromiseLines()` détecte déjà la dernière ligne
+  dynamiquement (`i === promiseLines.length - 1`) plutôt que par nom de
+  classe, un futur redécoupage en plus ou moins de lignes n'a plus besoin
+  d'un aller-retour CSS + HTML + JS à chaque fois, seul le HTML (texte et
+  classes `promise-line-N` pour les marges) doit changer.
+  Vérifié par script Playwright : 1 seule ligne rendue par groupe et 0
+  débordement haut/bas aux 3 largeurs desktop (1440×900, 1600×900,
+  1920×1080), animation d'apparition toujours fonctionnelle. Regression
+  complète 6 pages × 2 viewports : 0 débordement, 0 erreur console.
 - **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
   (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
   carte postale inclinée sur photo floutée (refonte précédente, bullet

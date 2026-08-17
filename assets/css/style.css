@@ -871,18 +871,25 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .promise-line + .promise-line { margin-top: 0.02em; }
 .promise-line-1 { margin-left: 20%; }
-.promise-line-2 { margin-left: 0; }
-.promise-line-3 { margin-left: 6%; }
-.promise-line-4 { margin-left: 10%; }
-.promise-line-5 { margin-left: 4%; }
-.promise-line-6 { width: fit-content; margin-left: auto; margin-right: 0; }
+.promise-line-2 { margin-left: 28%; }
+.promise-line-3 { margin-left: 15%; }
+.promise-line-4 { margin-left: 0; }
+.promise-line-5 { margin-left: 8%; }
+.promise-line-6 { margin-left: 10%; }
+.promise-line-7 { margin-left: 0; }
+/* Last line: fit-content + auto margin (right-aligned) rather than a numeric
+   offset — kept generic (:last-child) rather than a fixed "promise-line-N"
+   class so future re-splits of the quote into more/fewer lines don't need a
+   matching CSS edit here too (main.js's fitPromiseLines() already detects
+   the last line the same dynamic way). */
+.promise-line:last-child { width: fit-content; margin-left: auto; margin-right: 0; }
 @media (max-width: 640px) {
   .promise-line {
     font-size: clamp(1.9rem, 9vw, 3rem);
     line-height: 1.05;
   }
-  .promise-line-2, .promise-line-3, .promise-line-4 { margin-left: 0; }
-  .promise-line-6 { width: auto; margin-left: 0; }
+  .promise-line:not(:last-child) { margin-left: 0; }
+  .promise-line:last-child { width: auto; margin-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .promise-photo { animation: none; }

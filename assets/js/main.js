@@ -123,12 +123,13 @@
       // is tightest for its own margin, same "how much can THIS line's own
       // available width support" math as before, just taking the minimum
       // across all lines instead of a size per line.
-      var idealSizes = promiseLines.map(function (el) {
+      var idealSizes = promiseLines.map(function (el, i) {
         el.style.fontSize = PROMISE_REF_SIZE + "px";
         var marginLeftPx = parseFloat(getComputedStyle(el).marginLeft) || 0;
-        // Line 6 is width:fit-content + margin-left:auto (right-aligned) rather
-        // than a numeric offset, so it has the full width to work with.
-        var available = el.classList.contains("promise-line-6") ? containerWidth : containerWidth - marginLeftPx;
+        // The last line is width:fit-content + margin-left:auto (right-aligned)
+        // rather than a numeric offset, so it has the full width to work with.
+        var isLast = i === promiseLines.length - 1;
+        var available = isLast ? containerWidth : containerWidth - marginLeftPx;
         // 3% safety margin: text width doesn't scale perfectly linearly with
         // font-size (hinting/kerning), so sizing to exactly 100% of the
         // available width can tip a line 1px over and wrap it entirely.
