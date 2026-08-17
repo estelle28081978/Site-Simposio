@@ -549,7 +549,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   height: 15rem;
   right: -5rem;
   top: -6rem;
-  border: 1.5px dashed rgba(var(--terracotta-rgb), 0.35);
+  border: 1.5px solid rgba(var(--terracotta-rgb), 0.35);
 }
 .page-header::after {
   width: 5rem;
@@ -1060,8 +1060,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: min(88vw, 25rem);
   padding: var(--space-4);
   border-radius: var(--radius-lg);
-  background: var(--navy-900);
-  border: 1px solid rgba(246, 241, 231, 0.18);
+  /* Fond blanc (2026-08-17, ex-navy-900) : le fond opaque reste
+     nécessaire pour la même raison qu'avant (le trait lumineux du chemin
+     passe derrière la carte, cf. commentaire opacity plus bas), seule la
+     teinte change. --cream (Blanc Calcaire) plutôt qu'un blanc pur, pour
+     rester dans la palette de marque. */
+  background: var(--cream);
+  border: 1px solid rgba(var(--navy-rgb), 0.12);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
   text-align: center;
   opacity: 0;
@@ -1069,7 +1074,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   /* opacity is NOT transitioned on purpose: this card sits over the glowing
      terracotta path, and a mid-fade translucent state (opacity between 0
      and 1) lets the glow bleed through even though the background color
-     itself is fully opaque navy-900 — CSS opacity composites the whole
+     itself is fully opaque — CSS opacity composites the whole
      element as one semi-transparent group, background included. Snapping
      opacity instantly avoids that "ghosted card" artifact (confirmed via
      screenshot mid-transition) while the transform keeps a soft
@@ -1079,10 +1084,10 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.5);
 }
 .senses-journey-card.is-visible { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-.senses-journey-card-icon { width: 30px; height: 30px; color: var(--terracotta-300); margin: 0 auto 0.7rem; }
-.senses-journey-card .num { font-family: var(--font-display); font-size: 0.85rem; color: var(--terracotta-300); }
-.senses-journey-card h3 { font-family: var(--font-body); font-weight: 700; font-size: clamp(1.35rem, 1.3vw + 1rem, 1.8rem); letter-spacing: 0; color: var(--cream); margin-block: 0.5rem 0.7rem; }
-.senses-journey-card p { font-size: 1.02rem; color: var(--fg-muted-inverse); }
+.senses-journey-card-icon { width: 30px; height: 30px; color: var(--terracotta); margin: 0 auto 0.7rem; }
+.senses-journey-card .num { font-family: var(--font-display); font-size: 0.85rem; color: var(--terracotta); }
+.senses-journey-card h3 { font-family: var(--font-body); font-weight: 700; font-size: clamp(1.35rem, 1.3vw + 1rem, 1.8rem); letter-spacing: 0; color: var(--navy); margin-block: 0.5rem 0.7rem; }
+.senses-journey-card p { font-size: 1.02rem; color: var(--fg-muted); }
 
 /* In normal flex flow on purpose (not position:absolute) — that was the bug:
    an absolutely-positioned footer pinned to the sticky container's bottom
@@ -1341,118 +1346,91 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    as .contact-founder-avatar on the Contact page, for a recognizable mark
    wherever her signature appears on the site. ) */
 /* ==========================================================================
-   Founder — two-tone plaque (terracotta ID block + navy quote panel)
-   (2026-08-17, refonte complète : la cliente n'aimait "pas du tout" la
-   carte postale inclinée sur photo floutée (version précédente) — pas
-   simplement un réglage à ajuster, un changement de composition entier a
-   été demandé. Remplace la carte crème/bordure pointillée/photo de fond
-   par une plaque bicolore sans aucune photo : un bloc identité terracotta
-   (avatar + signature) accolé à un panneau citation navy, posée sur un
-   fond crème uni — aucun des deux tons de la plaque ne reprend le fond
-   flouté ni l'inclinaison de l'ancienne version. Si `.founder-card`/
-   `.founder-photo`/`.founder-scrim` réapparaissent ici, c'est l'ancienne
-   carte postale, à ne pas réintroduire sans qu'on le redemande.
+   Founder — typographie centrée minimaliste, fond crème uni (2026-08-17,
+   remplace la plaque bicolore terracotta/navy ci-dessus) : demande
+   explicite de la cliente de "revenir à quelque chose de plus minimaliste
+   et premium visuellement" — pas un réglage de détail, un retrait de tout
+   l'appareil décoratif de la plaque (bloc identité en dégradé, panneau
+   navy séparé, guillemet géant en fond de plan). Si `.founder-plate`/
+   `.founder-plate-id`/`.founder-plate-quote`/`.founder-mark` réapparaissent
+   ici, c'est cette version bicolore précédente, à ne pas réintroduire sans
+   qu'on le redemande — et si `.founder-card`/`.founder-photo`/
+   `.founder-scrim` réapparaissent, c'est la carte postale sur photo floutée
+   d'avant celle-ci, encore plus ancienne.
    **Toujours aucune photo fabriquée d'Estelle** (règle du site) : cette
-   version n'utilise même plus de photo d'ambiance du tout, le sujet est
-   entièrement porté par la couleur et la typographie.
-   **Structure** : `.founder-plate` (flex row à partir de 700px, empilé en
-   dessous) — `.founder-plate-id` (dégradé terracotta→rouge Venise, déjà
-   utilisé ailleurs sur le site pour ce même avatar) contient l'avatar "EL"
-   (cerclé, contour plutôt que médaillon plein comme avant) et la signature
-   (remontée ici depuis le panneau citation, elle vit désormais avec
-   l'identité plutôt qu'en bas du texte) ; `.founder-plate-quote` (navy-900)
-   contient l'eyebrow "La fondatrice", un guillemet » géant décoratif en
-   fond de plan (même motif que l'ancien guillemet de la 2e refonte de la
-   Promesse, aujourd'hui libre puisque la Promesse ne l'utilise plus — pas
-   de conflit de réutilisation) et la citation, inchangée mot pour mot.
-   `data-reveal` sur `.founder-plate` : la plaque entière apparaît en un
-   seul mouvement (fondu + translateY), cohérent avec le nouveau traitement
-   de la Promesse juste au-dessus dans la page. */
+   version, la plus dépouillée des trois, ne porte le sujet que par la
+   typographie — pas de photo, pas de bloc de couleur, pas de guillemet
+   décoratif géant.
+   **Structure** : une seule colonne centrée (`.founder-minimal`,
+   `max-width:42rem`) sur le fond crème uni de `.founder` — eyebrow "La
+   fondatrice" (style générique du site, plus de variante `on-dark`
+   puisqu'il n'y a plus de panneau sombre), citation en Yeseva One
+   directement sur le crème (taille modérée, pas de guillemet décoratif
+   séparé — les guillemets `«`/`»` restent dans le texte comme une
+   citation classique), un simple trait fin horizontal (`.founder-rule`,
+   solid — cohérent avec le retrait des pointillés du site) en séparateur,
+   puis l'identité (`.founder-id-minimal`) : un petit médaillon "EL" au
+   contour fin (plus de remplissage dégradé) à côté du nom et du
+   rattachement à Eurheka Conseil. `data-reveal` sur `.founder-minimal` :
+   apparition en un seul mouvement (fondu + translateY), comme avant. */
 .founder { padding-block: var(--space-6); background: var(--cream); }
-.founder-plate {
-  display: flex;
-  flex-direction: column;
-  max-width: 56rem;
+.founder-minimal {
+  max-width: 42rem;
   margin-inline: auto;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 30px 60px -22px rgba(28, 59, 74, 0.35);
-}
-@media (min-width: 700px) {
-  .founder-plate { flex-direction: row; }
-}
-.founder-plate-id {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
   text-align: center;
-  padding: var(--space-5) var(--space-4);
-  background: linear-gradient(150deg, var(--terracotta) 0%, var(--rosso-venezia) 100%);
 }
-@media (min-width: 700px) {
-  .founder-plate-id { flex: 0 0 32%; }
+.founder-quote-minimal {
+  margin-top: var(--space-3);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 1.6vw + 1.1rem, 2.3rem);
+  line-height: 1.45;
+  color: var(--navy);
 }
-.founder-avatar {
+.founder-rule {
+  width: 2.75rem;
+  height: 1.5px;
+  margin-block: var(--space-4);
+  background: var(--terracotta);
+}
+.founder-id-minimal {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: left;
+}
+.founder-avatar-minimal {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 4.6rem;
-  height: 4.6rem;
+  width: 2.6rem;
+  height: 2.6rem;
   border-radius: 50%;
-  border: 1.5px solid rgba(246, 241, 231, 0.55);
-  color: var(--cream);
+  border: 1px solid rgba(var(--navy-rgb), 0.28);
+  color: var(--navy);
   font-family: var(--font-display);
-  font-size: 1.4rem;
-}
-.founder-signature {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-family: var(--font-subtitle);
   font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--cream);
 }
-.founder-signature span {
+.founder-signature-minimal {
+  font-family: var(--font-subtitle);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.founder-signature-minimal span {
+  display: block;
+  margin-top: 0.2rem;
   font-size: 0.74rem;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   text-transform: none;
-  color: rgba(246, 241, 231, 0.75);
-}
-.founder-plate-quote {
-  position: relative;
-  flex: 1;
-  padding: var(--space-5) var(--space-4);
-  background: var(--navy-900);
-  overflow: hidden;
-}
-@media (min-width: 700px) {
-  .founder-plate-quote { padding: var(--space-5); }
-}
-.founder-mark {
-  position: absolute;
-  top: -1.2rem;
-  right: 1rem;
-  font-family: var(--font-display);
-  font-size: clamp(5rem, 8vw, 8.5rem);
-  line-height: 1;
-  color: rgba(193, 98, 45, 0.22);
-  pointer-events: none;
-  user-select: none;
-}
-.founder-plate-quote .eyebrow { position: relative; display: block; margin-bottom: var(--space-2); }
-.founder-quote {
-  position: relative;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(1.3rem, 1.2vw + 1rem, 1.9rem);
-  line-height: 1.42;
-  color: var(--cream);
+  color: var(--fg-muted);
 }
 
 /* ==========================================================================
@@ -1863,13 +1841,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 /* Numbered stamp — a wax-seal/passport-stamp motif tying back to the
    "travel album" concept: each value gets its own stamp, slightly canted,
-   that "lands" with a small overshoot bounce as its scene activates. */
+   that "lands" with a small overshoot bounce as its scene activates.
+   Border was dashed (evoking a passport stamp outline) until the
+   sitewide dashed→solid pass (2026-08-17, see CLAUDE.md) — kept the
+   rest of the motif (circle, cant, bounce) unchanged. */
 .values-reel-stamp {
   flex: 0 0 auto;
   width: 3.2rem;
   height: 3.2rem;
   border-radius: 50%;
-  border: 1.5px dashed rgba(224, 149, 106, 0.75);
+  border: 1.5px solid rgba(224, 149, 106, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1909,16 +1890,17 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 
 /* Thread (2026-08-17) — the visual "liant" the client asked for between one
    value and the next, referencing Louis Vuitton's heritage timeline: a thin
-   dashed route with a glowing marker that travels along it in real time
+   route with a glowing marker that travels along it in real time
    with scroll progress. It's positioned in normal flow as a sibling of
    .values-reel-viewport (not inside .values-reel-track, which is what
    slides horizontally under the photos) — so unlike the photos, it never
    moves and never disappears: the same line, at the same spot on screen,
    is what's "on" value A and still what's "on" value B a moment later,
    only its lit portion and the marker's position keep advancing. Sits
-   right above the timeline it echoes (same terracotta glow, same dashed
-   language as the passport stamps) so the whole footer reads as one
-   system rather than two separate widgets. */
+   right above the timeline it echoes (same terracotta glow) so the whole
+   footer reads as one system rather than two separate widgets. Line was
+   dashed until the sitewide dashed→solid pass (2026-08-17, see
+   CLAUDE.md). */
 .values-reel-thread {
   position: relative;
   flex: 0 0 auto;
@@ -1934,7 +1916,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   right: 0;
   top: 50%;
   height: 0;
-  border-top: 1.5px dashed rgba(246, 241, 231, 0.22);
+  border-top: 1.5px solid rgba(246, 241, 231, 0.22);
   transform: translateY(-50%);
 }
 .values-reel-thread-fill {
@@ -1943,7 +1925,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   top: 50%;
   width: 0%;
   height: 0;
-  border-top: 1.5px dashed var(--terracotta-300);
+  border-top: 1.5px solid var(--terracotta-300);
   transform: translateY(-50%);
 }
 .values-reel-thread-marker {
@@ -2214,7 +2196,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   left: -9rem;
   top: -8rem;
   border-radius: 50%;
-  border: 1.5px dashed rgba(193, 98, 45, 0.18);
+  border: 1.5px solid rgba(193, 98, 45, 0.18);
 }
 
 .contact-devis-text .lede { margin-top: var(--space-2); }

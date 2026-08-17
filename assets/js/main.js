@@ -434,8 +434,9 @@
     // Cascading overlap layout (2026-08-17, 3rd pass — back to the literal
     // "start at X% down the previous card" spec, with a new, explicit set
     // of fractions from the client): card 2 starts at 3/4 down card 1,
-    // card 3 at 1/2 down card 2, card 4 at 1/3 down card 3 — a tighter
-    // rhythm than the arithmetic -25pt/step used earlier. A CSS percentage
+    // card 3 at 1/2 down card 2, card 4 at 2/3 down card 3 (updated in the
+    // 6th pass, was 1/3) — a tighter rhythm than the arithmetic -25pt/step
+    // used earlier. A CSS percentage
     // margin-top resolves against the containing block's WIDTH, never a
     // sibling's height, so this can't be done in pure CSS — computed here
     // from real measured heights instead. Uses offsetHeight (the true
@@ -444,7 +445,7 @@
     // cards there recenter into a single column and a plain CSS gap
     // (`.engagement-card + .engagement-card`, style.css) reads far better
     // than a stacked overlap on a narrow screen.
-    var engagementStartFractions = [0.75, 0.5, 1 / 3];
+    var engagementStartFractions = [0.75, 0.5, 2 / 3];
     function layoutEngagementCards() {
       if (window.innerWidth <= 700) {
         engagementCards.forEach(function (card) {

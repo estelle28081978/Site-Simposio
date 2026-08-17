@@ -827,6 +827,40 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Hind) reste inchangé dans le footer d'`univers.html`. Vérifié par
   regression Playwright complète (6 pages × 2 viewports) : 0 débordement,
   0 erreur console.
+- **Fondatrice — retour au minimalisme, typographie centrée sur fond
+  crème uni (2026-08-17)** (`.founder-minimal*`, `univers.html`) :
+  demande explicite de la cliente de "revenir à quelque chose de plus
+  minimaliste et premium visuellement" — retire tout l'appareil décoratif
+  de la plaque bicolore ci-dessus (bloc identité en dégradé
+  terracotta→rouge Venise, panneau navy séparé, guillemet `»` géant en
+  fond de plan). Si `.founder-plate` / `.founder-plate-id` /
+  `.founder-plate-quote` / `.founder-mark` réapparaissent ici, c'est cette
+  plaque bicolore précédente, à ne pas réintroduire sans qu'on le
+  redemande. **Toujours aucune photo fabriquée d'Estelle** (règle du
+  site) : cette version, la plus dépouillée des trois qu'a connues cette
+  section, ne porte le sujet que par la typographie — aucune photo,
+  aucun bloc de couleur.
+  **Nouvelle composition** : une seule colonne centrée
+  (`.founder-minimal`, `max-width:42rem`, `margin-inline:auto`) posée
+  directement sur le fond crème uni de `.founder` (inchangé depuis la
+  plaque bicolore) — eyebrow "La fondatrice" (style générique `.eyebrow`
+  du site, plus de variante `on-dark` puisqu'il n'y a plus de panneau
+  sombre), la citation directement en Yeseva One sur le crème (texte
+  inchangé mot pour mot, guillemets `«`/`»` restés dans le texte comme
+  une citation classique plutôt que décoratifs en fond de plan), puis un
+  simple trait fin horizontal (`.founder-rule`, `2.75rem` de large,
+  `1.5px solid var(--terracotta)` — solid et non pointillé, cohérent avec
+  le retrait sitewide des pointillés documenté plus bas) en séparateur,
+  puis l'identité (`.founder-id-minimal`, ligne avatar + nom) : le
+  médaillon "EL" perd son remplissage en dégradé pour un simple contour
+  fin (`border:1px solid rgba(var(--navy-rgb),0.28)`, texte `--navy`),
+  cohérent avec l'esprit dépouillé de toute la section. `data-reveal` sur
+  `.founder-minimal` : apparition en un seul mouvement (fondu +
+  translateY), comme sur la version précédente. Vérifié par capture
+  d'écran desktop et mobile (le bloc avatar+nom passe naturellement en
+  ligne unique sur les deux, aucun retour à la ligne du logo par rapport
+  au nom sur mobile) et regression Playwright complète (6 pages ×
+  2 viewports) : 0 débordement, 0 erreur console.
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`
@@ -941,6 +975,29 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   chaque frame indépendamment de la fenêtre de la carte), donc toujours
   cohérent avec eux. Vérifié : sauter directement en bas de la section
   affiche bien "5/5" avec les 5 points allumés, plus jamais désynchronisé.
+- **5 sens — cartes repassées en blanc (2026-08-17)**
+  (`.senses-journey-card*`, `style.css`) : demande explicite de la
+  cliente. Fond passé de `var(--navy-900)` à `var(--cream)` (Blanc
+  Calcaire, pas un blanc pur — reste dans la palette de marque), bordure
+  adaptée (`rgba(var(--navy-rgb), 0.12)` au lieu du liseré clair pensé
+  pour un fond sombre). Couleurs de police réajustées pour le contraste
+  sur fond clair : `h3` (nom du sens) passe de `var(--cream)` à
+  `var(--navy)`, le texte descriptif de `var(--fg-muted-inverse)` (gris
+  clair, pensé pour fond sombre) à `var(--fg-muted)` (son équivalent pour
+  fond clair, déjà utilisé ailleurs sur le site pour ce rôle, ex.
+  `.teaser-card p`), l'icône et le numéro de `var(--terracotta-300)`
+  (terracotta clair, pensé pour ressortir sur fond sombre) à
+  `var(--terracotta)` (terracotta plein, plus de contraste sur blanc).
+  **Le fond doit rester opaque** (règle déjà documentée juste au-dessus
+  pour la version navy — le trait lumineux du tracé SVG passe derrière la
+  carte à un moment du scroll, un fond même légèrement transparent
+  laisserait le glow transparaître) : cette contrainte s'applique
+  également au blanc, aucun changement de ce côté. Vérifié par script
+  Playwright (fond, couleurs de texte mesurées via `getComputedStyle`) et
+  capture d'écran : carte blanche bien lisible sur le fond sombre du
+  tracé, aucun changement au mécanisme d'apparition/opacité (toujours
+  instantané, pas de transition sur `opacity`, cf. bug documenté
+  ci-dessus).
 - **Engagements — grille de flip-cards en zigzag avec parallaxe/scale au
   scroll (2026-08-17)** (`.engagement-card*`, `engagements.html`,
   `updateEngagementCards()` dans `main.js`) : remplace entièrement
@@ -1277,6 +1334,23 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   collision non-adjacente détectée à aucune des 3 largeurs testées.
   Regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Engagements — 6ᵉ itération : carte 4 au 2/3 de la carte 3 (2026-08-17)**
+  (`engagementStartFractions`, `main.js`) : demande explicite de la
+  cliente ("fait commencer la carte 4 au 2/3 de la 3") — seule la
+  troisième valeur du tableau change, `1/3` → `2/3` (`[0.75, 0.5, 2/3]`),
+  cartes 2 et 3 inchangées. Avec un chevauchement plus modeste (carte 4
+  commence plus bas, donc chevauche moins la carte 3 : ~33% de sa hauteur
+  au lieu de ~67%), le garde-fou générique anti-chevauchement à distance
+  ajouté à la 5ᵉ itération (comparaison avec la carte deux positions plus
+  tôt) n'a plus besoin d'intervenir à 1440px — vérifié : `margin-top`
+  calculé vaut exactement `-173px` (= `(1-2/3) × 518px`, la formule brute
+  sans ajustement), alors qu'il valait `-245px` (formule brute `-345px`
+  + le correctif du garde-fou) à la 5ᵉ itération avec `1/3`. Le garde-fou
+  reste en place et continuera de s'activer automatiquement si une future
+  valeur de fraction ou un futur changement de positions recréait un
+  chevauchement à distance — rien à faire de plus pour ce cas précis.
+  Vérifié par regression Playwright complète (6 pages × 2 viewports) : 0
+  débordement, 0 erreur console.
 - **Valeurs — carrousel "paroles" plein écran, deux colonnes avec photo en
   fondu (2026-08-13, 4ᵉ itération)** (`.values`, `.values-sticky`,
   `.values-inner`, `.values-text`, `.values-window`,
@@ -2402,6 +2476,24 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
     intentionnels (voir « Limites connues » ci-dessous) — pas des bugs.
   Regression complète re-vérifiée après chaque correctif : 0 débordement,
   0 erreur console, sur les 6 pages × 2 viewports.
+- **Bordures pointillées retirées sitewide, remplacées par des traits
+  pleins (2026-08-17)** : demande explicite de la cliente ("enlève ce qui
+  est en pointillé pour remplacer par des lignes pleines"), appliquée à
+  toutes les occurrences de `border-style: dashed` trouvées dans
+  `style.css` (aucune n'utilisait `dotted`) — seule la valeur `dashed` →
+  `solid` change à chaque fois, couleurs/épaisseurs/opacités inchangées :
+  le cercle décoratif du coin de `.page-header::before`, le tampon
+  numéroté façon passeport `.values-reel-stamp` (page À propos, album des
+  Valeurs), le trait "liant" entre les valeurs
+  `.values-reel-thread-line`/`.values-reel-thread-fill` (même section), et
+  le cercle décoratif de `.contact-devis::before` (page Contact). Si
+  `dashed` réapparaît sur l'une de ces règles (ou une nouvelle), c'est un
+  retour à l'ancien style, à ne pas réintroduire sans qu'on le redemande —
+  la convention du site est désormais traits pleins uniquement pour ce
+  type d'élément décoratif. Vérifié par script Playwright parcourant tous
+  les éléments de chaque page et comptant les styles de bordure `dashed`
+  calculés (`getComputedStyle`) : 0 sur les 6 pages. Regression complète
+  6 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
