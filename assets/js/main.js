@@ -416,87 +416,76 @@
     updateJourney();
   }
 
-  /* ---------- Engagements: hover lines with a cursor-following description card ---------- */
-  var engagementLines = Array.prototype.slice.call(document.querySelectorAll(".engagement-line"));
-  var engagementCard = document.getElementById("engagementHoverCard");
+  /* ---------- Engagements: flip-cards with click-to-flip + scroll parallax/scale ---------- */
+  var engagementCards = Array.prototype.slice.call(document.querySelectorAll(".engagement-card"));
 
-  if (engagementLines.length && engagementCard) {
-    var engagementCardNum = engagementCard.querySelector(".num");
-    var engagementCardDesc = engagementCard.querySelector("p");
-    var noHover = window.matchMedia("(hover: none)").matches;
-    var engagementCardW = 0;
-    var engagementCardH = 0;
-    var engagementMoveTicking = false;
-    var engagementMouseX = 0;
-    var engagementMouseY = 0;
-
-    function positionEngagementCard(x, y) {
-      var px = Math.min(window.innerWidth - engagementCardW - 16, Math.max(16, x - engagementCardW / 2));
-      var py = Math.min(window.innerHeight - engagementCardH - 16, Math.max(16, y - engagementCardH - 28));
-      engagementCard.style.transform = "translate(" + px + "px, " + py + "px)";
-    }
-
-    function scheduleEngagementMove(x, y) {
-      engagementMouseX = x;
-      engagementMouseY = y;
-      if (!engagementMoveTicking) {
-        window.requestAnimationFrame(function () {
-          positionEngagementCard(engagementMouseX, engagementMouseY);
-          engagementMoveTicking = false;
-        });
-        engagementMoveTicking = true;
-      }
-    }
-
-    function fillEngagementCard(line) {
-      engagementCardNum.textContent = line.getAttribute("data-num");
-      engagementCardDesc.textContent = line.getAttribute("data-desc");
-      // Measured once per reveal (not on every mousemove) to avoid forced layout on each frame
-      engagementCardW = engagementCard.offsetWidth || 320;
-      engagementCardH = engagementCard.offsetHeight || 100;
-    }
-
-    function closeEngagementCard() {
-      engagementCard.classList.remove("is-visible", "is-centered");
-      engagementLines.forEach(function (l) { l.classList.remove("is-active"); });
-    }
-
-    engagementLines.forEach(function (line) {
-      if (!noHover) {
-        line.addEventListener("mouseenter", function (e) {
-          line.classList.add("is-active");
-          engagementCard.classList.add("is-visible");
-          fillEngagementCard(line);
-          positionEngagementCard(e.clientX, e.clientY);
-        });
-        line.addEventListener("mousemove", function (e) {
-          scheduleEngagementMove(e.clientX, e.clientY);
-        });
-        line.addEventListener("mouseleave", function () {
-          closeEngagementCard();
-        });
-      }
-
-      line.addEventListener("click", function () {
-        if (!noHover) return;
-        var wasActive = line.classList.contains("is-active");
-        closeEngagementCard();
-        if (!wasActive) {
-          fillEngagementCard(line);
-          line.classList.add("is-active");
-          engagementCard.classList.add("is-visible", "is-centered");
-        }
-      });
-
-      line.addEventListener("focus", function () {
-        fillEngagementCard(line);
-        line.classList.add("is-active");
-        engagementCard.classList.add("is-visible", "is-centered");
-      });
-      line.addEventListener("blur", function () {
-        closeEngagementCard();
+  if (engagementCards.length) {
+    // Click-to-flip: state lives on aria-expanded (both the CSS trigger and
+    // the accessible state), no separate class needed.
+    engagementCards.forEach(function (card) {
+      var btn = card.querySelector(".engagement-card-flip");
+      if (!btn) return;
+      btn.addEventListener("click", function () {
+        var expanded = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", String(!expanded));
       });
     });
+
+    // Scroll-driven scale + parallax. Deliberately never touches
+    // .engagement-card-inner (the flip element) — scale lives on the <li>,
+    // the image/text parallax offsets live on two other inner elements, so
+    // none of this ever fights the CSS rotateY() transition on click.
+    var engagementReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var engagementCardParts = engagementCards.map(function (card) {
+      return {
+        card: card,
+        img: card.querySelector(".engagement-card-front-img"),
+        content: card.querySelector(".engagement-card-front-content"),
+      };
+    });
+
+    function updateEngagementCards() {
+      var vh = window.innerHeight;
+      engagementCardParts.forEach(function (parts) {
+        var rect = parts.card.getBoundingClientRect();
+        if (rect.bottom < -200 || rect.top > vh + 200) return; // skip offscreen cards
+        var center = rect.top + rect.height / 2;
+        var delta = center - vh / 2; // negative above viewport center, positive below
+        var progress = Math.max(0, 1 - Math.abs(delta) / (vh * 0.7));
+        var scale = 0.94 + 0.06 * progress;
+        parts.card.style.transform = "scale(" + scale.toFixed(3) + ")";
+        if (parts.img) {
+          parts.img.style.transform = "translateY(" + (delta * -0.08).toFixed(1) + "px)";
+        }
+        if (parts.content) {
+          parts.content.style.transform = "translateY(" + (delta * -0.035).toFixed(1) + "px)";
+        }
+      });
+    }
+
+    if (engagementReducedMotion) {
+      // Still a scroll-linked 1:1 effect (not autoplay), so it would normally
+      // stay active under reduced motion per site convention — but here it's
+      // purely decorative scale/parallax with no informational role, so it's
+      // skipped outright for a calmer static grid instead.
+    } else {
+      var engagementTicking = false;
+      window.addEventListener(
+        "scroll",
+        function () {
+          if (!engagementTicking) {
+            window.requestAnimationFrame(function () {
+              updateEngagementCards();
+              engagementTicking = false;
+            });
+            engagementTicking = true;
+          }
+        },
+        { passive: true }
+      );
+      window.addEventListener("resize", updateEngagementCards);
+      updateEngagementCards();
+    }
   }
 
   /* ---------- Engagements: valeurs — album filmique horizontal (2026-08-17) ----------

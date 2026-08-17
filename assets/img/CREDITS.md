@@ -39,10 +39,10 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-chariot-gelato-blanc.jpg` | Mosaïque Projets |
 | `evenement-illustration-dolce-vita.jpg` | Mosaïque Projets |
 | `evenement-illustration-cincin.jpg` | Mosaïque Projets |
-| `evenement-stand-raye-guirlande.jpg` | Mosaïque Projets |
-| `evenement-vespa-gelato-brindapino.jpg` | Mosaïque Projets |
+| `evenement-stand-raye-guirlande.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Concept clé en main") |
+| `evenement-vespa-gelato-brindapino.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Spécialiste Dolce Vita") |
 | `evenement-triporteur-gelato.jpg` | Mosaïque Projets |
-| `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets |
+| `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Positionnement premium") |
 | `evenement-carte-degustation.jpg` | Mosaïque Projets |
 
 ## Photos Wikimedia Commons (banque libre)
@@ -71,7 +71,7 @@ concernés.
 | `terrace-dinner-assisi.jpg` | Prestations — La Tavola | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
 | `spritz-terrasse.jpg` | Engagements — carrousel Valeurs ("L'exigence comme point de départ") | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
 | `piazza-evening-menaggio.jpg` | Engagements — carrousel Valeurs ("L'Italie comme art de vivre, pas comme décor") | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
-| `alsace-vineyard.jpg` | Engagements — carrousel Valeurs ("La confiance avant la prestation") | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
+| `alsace-vineyard.jpg` | Engagements — carrousel Valeurs ("La confiance avant la prestation") + grille de flip-cards ("Ancrage alsacien") | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
 | `fiat-500-positano.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Positano Fiat 500 car rally.jpg](https://commons.wikimedia.org/wiki/File:Positano_Fiat_500_car_rally.jpg) | Arnoldius | CC BY-SA 3.0 |
 | `vespa-assisi.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Red Vespa scooter in front of Rocca Maggiore, Assisi.jpg](https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg) | Marco Ober | CC BY-SA 4.0 |
 | `tuscany-hills.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Hills of Tuscany at evening light.jpg](https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg) | Matthias Rhomberg | CC BY 2.0 |

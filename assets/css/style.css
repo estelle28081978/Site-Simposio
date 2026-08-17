@@ -1115,109 +1115,171 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Engagements — liste ligne par ligne, carte de description qui suit la
-   souris au survol (façon portfolio agence).
-   ========================================================================== */
-.engagement-lines { border-top: 1px solid rgba(246, 241, 231, 0.3); }
-.engagement-line {
-  position: relative;
+   Engagements — grille de flip-cards en zigzag, avec parallaxe/scale au
+   scroll (2026-08-17, remplace l'ancien système de lignes au survol +
+   carte suivant le curseur — voir CLAUDE.md pour l'historique). Chaque
+   carte : `.engagement-card-flip` (bouton, gère l'état plié/déplié via
+   `aria-expanded`) > `.engagement-card-inner` (fait le flip 3D en
+   `rotateY`) > deux faces `backface-visibility:hidden`. Le scale/parallaxe
+   au scroll est appliqué par JS sur des éléments DIFFÉRENTS du flip
+   (`<li>` pour le scale d'ensemble, `.engagement-card-front-img` et
+   `.engagement-card-front-content` pour les décalages différenciés) —
+   jamais sur `.engagement-card-inner` lui-même, pour ne jamais entrer en
+   conflit avec le `transform:rotateY()` du retournement (cf. main.js,
+   `updateEngagementCards()`). Si `.engagement-lines`/`.engagement-line`/
+   `.engagement-hover-card` réapparaissent dans un diff, c'est l'ancien
+   système, à ne pas réintroduire sans qu'on le redemande. */
+.engagement-cards {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+}
+/* Zigzag : chaque carte a sa propre position horizontale, jamais toutes
+   alignées sur le même axe vertical — demande explicite de la cliente. */
+.engagement-card { width: min(88vw, 24rem); }
+.engagement-card-pos-left { margin-inline: 0 auto; }
+.engagement-card-pos-center { margin-inline: auto; }
+.engagement-card-pos-right { margin-inline: auto 0; }
+.engagement-card-pos-center-left { margin-inline: 6% auto; }
+.engagement-card-pos-center-right { margin-inline: auto 6%; }
+@media (max-width: 700px) {
+  .engagement-card,
+  .engagement-card-pos-left,
+  .engagement-card-pos-center,
+  .engagement-card-pos-right,
+  .engagement-card-pos-center-left,
+  .engagement-card-pos-center-right {
+    width: min(92vw, 22rem);
+    margin-inline: auto;
+  }
+}
+
+.engagement-card-flip {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+  perspective: 1800px;
+  border-radius: var(--radius-lg);
+}
+.engagement-card-flip:focus-visible { outline: 2px solid var(--terracotta-300); outline-offset: 4px; }
+.engagement-card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 6;
+  transform-style: preserve-3d;
+  transition: transform 0.75s var(--ease);
+}
+.engagement-card-flip[aria-expanded="true"] .engagement-card-inner { transform: rotateY(180deg); }
+
+.engagement-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 30px 60px -24px rgba(8, 16, 20, 0.65);
+}
+
+/* ---------- Front face ---------- */
+.engagement-card-front { background: var(--navy-900); }
+.engagement-card-front-img-wrap { position: absolute; inset: 0; overflow: hidden; }
+.engagement-card-front-img {
+  position: absolute;
+  inset: -12% 0;
+  width: 100%;
+  height: 124%;
+  object-fit: cover;
+  will-change: transform;
+}
+.engagement-card-front-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(200deg, rgba(16, 31, 39, 0.25) 0%, rgba(16, 31, 39, 0.85) 100%);
+}
+.engagement-card-front-content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding: var(--space-4);
+  text-align: left;
+  will-change: transform;
+}
+.engagement-card-num {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--terracotta-300);
+}
+.engagement-card-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 2.2vw + 1rem, 2.1rem);
+  line-height: 1.15;
+  color: var(--cream);
+}
+.engagement-card-arrow {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding-block: var(--space-3);
-  border-bottom: 1px solid rgba(246, 241, 231, 0.3);
-  cursor: pointer;
-  transition: background var(--dur-fast) var(--ease);
+  width: 2.6rem;
+  height: 2.6rem;
+  margin-top: 0.4rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--cream);
+  transition: transform var(--dur-fast) var(--ease);
 }
-.engagement-line:hover, .engagement-line.is-active { background: rgba(193, 98, 45, 0.16); }
-.engagement-line-num {
-  display: none;
-  position: absolute;
-  left: var(--space-3);
+.engagement-card-arrow svg { width: 1.2rem; height: 1.2rem; }
+.engagement-card-flip:hover .engagement-card-arrow { transform: translateX(4px); }
+
+/* ---------- Back face ---------- */
+.engagement-card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  text-align: left;
+}
+.engagement-card-num-back { margin-bottom: 0.5rem; }
+.engagement-card-back-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.3rem, 1.6vw + 0.9rem, 1.7rem);
+  color: var(--cream);
+  margin-bottom: var(--space-2);
+}
+.engagement-card-back-text {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: rgba(246, 241, 231, 0.88);
+}
+.engagement-card-back-close {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
   font-family: var(--font-subtitle);
   font-size: 0.72rem;
   font-weight: 600;
-  color: var(--terracotta-300);
-  letter-spacing: 0.06em;
-}
-.engagement-line-text {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(1.3rem, 4vw + 0.6rem, 2.6rem);
-  color: var(--cream);
-  text-align: center;
-  transition: color var(--dur-fast) var(--ease), letter-spacing var(--dur-fast) var(--ease);
-}
-.engagement-line:hover .engagement-line-text, .engagement-line.is-active .engagement-line-text { color: var(--terracotta-300); }
-@media (min-width: 700px) { .engagement-line-num { display: block; } }
-
-.engagement-line-discover {
-  position: absolute;
-  right: var(--space-3);
-  bottom: var(--space-2);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-subtitle);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fg-muted-inverse);
-  transition: color var(--dur-fast) var(--ease);
-}
-.engagement-line-discover .plus {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 1.5em;
-  height: 1.5em;
-  border-radius: 50%;
-  border: 1px solid rgba(224, 149, 106, 0.4);
-  font-size: 1rem;
-  line-height: 1;
   color: var(--terracotta-300);
-  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
-.engagement-line:hover .engagement-line-discover,
-.engagement-line.is-active .engagement-line-discover { color: var(--terracotta-300); }
-.engagement-line:hover .engagement-line-discover .plus,
-.engagement-line.is-active .engagement-line-discover .plus { background: var(--accent); border-color: var(--accent); color: var(--cream); }
-@media (max-width: 699px) {
-  .engagement-line-discover { right: var(--space-2); bottom: var(--space-2); font-size: 0.62rem; gap: 0.35rem; }
-  .engagement-line-discover .plus { width: 1.3em; height: 1.3em; font-size: 0.9rem; }
-}
+.engagement-card-back-close svg { width: 1rem; height: 1rem; }
 
-/* Outer element: pure position, moved every frame with no transition so it
-   never lags behind the cursor (a transition here is what caused the
-   stutter/freeze). Reveal animation (opacity/scale) lives on the inner
-   element instead, decoupled from the position updates. */
-.engagement-hover-card {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  pointer-events: none;
-  will-change: transform;
-}
-.engagement-hover-card-inner {
-  width: min(80vw, 22rem);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  background: var(--terracotta);
-  color: var(--cream);
-  box-shadow: 0 30px 60px -20px rgba(16, 31, 39, 0.6);
-  opacity: 0;
-  transform: scale(0.92);
-  transition: opacity var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
-}
-.engagement-hover-card.is-visible .engagement-hover-card-inner { opacity: 1; transform: scale(1); }
-.engagement-hover-card .num { font-family: var(--font-display); font-size: 0.8rem; color: var(--navy-900); }
-.engagement-hover-card p { font-size: 0.95rem; color: rgba(255, 255, 255, 0.92); margin-top: 0.4rem; }
-.engagement-hover-card.is-centered { left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; }
-@media (hover: none) {
-  .engagement-line-text { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .engagement-card, .engagement-card-front-img, .engagement-card-front-content {
+    transform: none !important;
+  }
 }
 
 /* ==========================================================================

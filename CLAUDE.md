@@ -941,17 +941,75 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   chaque frame indépendamment de la fenêtre de la carte), donc toujours
   cohérent avec eux. Vérifié : sauter directement en bas de la section
   affiche bien "5/5" avec les 5 points allumés, plus jamais désynchronisé.
-- **Engagements — lignes au survol** (`#engagementHoverCard`,
-  `.engagement-line`) : liste de lignes ; au survol (ou tap sur mobile via
-  `matchMedia("(hover: none)")`), une carte de description suit le curseur
-  (`positionEngagementCard()`/`scheduleEngagementMove()`, throttlée par
-  `requestAnimationFrame`). Il n'y a plus de flip-card (`[data-flip]`
-  n'existe plus dans le code) — ne pas réintroduire ce pattern sans
-  qu'on le redemande explicitement. Chaque ligne affiche en permanence un
-  petit indicateur `.engagement-line-discover` (« + Découvrir ») en bas à
-  droite — affordance visible en plus de la carte au survol, demandée
-  explicitement ; le `+` se remplit en terracotta au survol/actif comme le
-  reste de la ligne.
+- **Engagements — grille de flip-cards en zigzag avec parallaxe/scale au
+  scroll (2026-08-17)** (`.engagement-card*`, `engagements.html`,
+  `updateEngagementCards()` dans `main.js`) : remplace entièrement
+  l'ancien système de lignes au survol (`#engagementHoverCard`,
+  `.engagement-line`, carte suivant le curseur) — demande explicite de la
+  cliente, avec cahier des charges précis façon "Awwwards" (flip-card
+  recto/verso + parallaxe/scale au scroll). **Note historique** : une
+  entrée précédente de ce fichier disait explicitement "il n'y a plus de
+  flip-card, ne pas réintroduire ce pattern sans qu'on le redemande" — la
+  réintroduction ici est ce redemande explicite, ce n'est pas un oubli de
+  cette règle.
+  **Structure de carte** : `.engagement-card-flip` (un vrai `<button>`,
+  accessible clavier nativement, état géré par `aria-expanded` — pas de
+  classe séparée) > `.engagement-card-inner` (fait le flip 3D via
+  `transform:rotateY(180deg)` sur `[aria-expanded="true"]`,
+  `transform-style:preserve-3d`) > deux faces `.engagement-card-face`
+  (`backface-visibility:hidden`) : `.engagement-card-front` (photo pleine
+  carte + dégradé + numéro/titre/flèche terracotta) et
+  `.engagement-card-back` (`rotateY(180deg)` au repos, fond navy, titre +
+  description + "Retour").
+  **Scale/parallaxe au scroll, jamais sur l'élément du flip** : le point
+  technique important — `updateEngagementCards()` (rAF-throttlé sur
+  `scroll`, comme tous les autres effets scroll-liés du site) applique un
+  `transform:scale()` continu sur le `<li class="engagement-card">`
+  (0.94 au repos → 1.0 au centre du viewport, formule
+  `1 - |delta|/(vh*0.7)` où `delta` = distance du centre de la carte au
+  centre du viewport) et un `translateY` de parallaxe sur
+  `.engagement-card-front-img` (`delta*-0.08`, l'image bouge en sens
+  inverse du scroll) et un second `translateY` plus faible sur
+  `.engagement-card-front-content` (`delta*-0.035`, décalage différencié
+  entre le bloc image et le bloc texte demandé explicitement). Ces trois
+  transforms vivent sur **trois éléments différents** de
+  `.engagement-card-inner` (qui, lui, ne reçoit que le `rotateY` piloté
+  par CSS) — un choix architectural délibéré pour que le scale/parallaxe
+  JS ne rentre jamais en conflit avec la transition CSS du retournement au
+  clic (les deux mécanismes touchent des propriétés `transform`
+  différentes sur des éléments différents, jamais le même élément).
+  `.engagement-card-front-img` est dimensionnée à `height:124%` avec
+  `inset:-12% 0` pour avoir de la marge de déplacement sans jamais laisser
+  de bord vide pendant la translation (même technique que la parallaxe de
+  la Promesse, page Univers).
+  **Disposition en zigzag** : chaque carte a sa propre classe de position
+  (`.engagement-card-pos-left/-center/-right/-center-left/-center-right`,
+  `margin-inline` différent par carte) plutôt que d'être alignées sur un
+  seul axe vertical — demande explicite de la cliente. Réinitialisé à
+  `margin-inline:auto` (toutes centrées) sous 700px, où l'espace ne
+  permet plus ce jeu de décalage.
+  **`prefers-reduced-motion`** : contrairement à la convention habituelle
+  du site (les effets scroll-liés 1:1 restent actifs sous cette
+  préférence, cf. parcours des 5 sens, parallaxe de la Promesse), le
+  scale/parallaxe des cartes est ici **entièrement désactivé** — décision
+  volontaire car cet effet est purement décoratif (contrairement au tracé
+  des 5 sens qui porte une information de progression), documentée en
+  commentaire dans `main.js` pour ne pas être "corrigée" par erreur vers
+  la convention habituelle plus tard.
+  **Photos** : 3 photos Simposio réelles jusque-là utilisées uniquement
+  dans la mosaïque Projets (`evenement-stand-raye-guirlande.jpg` pour
+  "Concept clé en main", `evenement-assiette-agrume-ceramique.jpg` pour
+  "Positionnement premium", `evenement-vespa-gelato-brindapino.jpg` pour
+  "Spécialiste Dolce Vita" — aucun nouveau crédit requis, `CREDITS.md` mis
+  à jour) + `alsace-vineyard.jpg` réutilisée pour "Ancrage alsacien" (déjà
+  utilisée plus bas sur cette même page dans le carrousel Valeurs, déjà
+  créditée dans le footer — seule photo du site montrant l'Alsace, aucune
+  alternative disponible).
+  Vérifié par script Playwright : clic (souris + clavier `Enter` sur le
+  `<button>` focus) bascule `aria-expanded` et déclenche le flip visuel,
+  `prefers-reduced-motion:reduce` neutralise bien le scale/parallaxe
+  (`transform:none` mesuré), 0 débordement horizontal. Regression complète
+  6 pages × 2 viewports : 0 débordement, 0 erreur console.
 - **Valeurs — carrousel "paroles" plein écran, deux colonnes avec photo en
   fondu (2026-08-13, 4ᵉ itération)** (`.values`, `.values-sticky`,
   `.values-inner`, `.values-text`, `.values-window`,
