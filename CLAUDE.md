@@ -138,6 +138,76 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   section `#positionnement` ne contient donc plus que `.promise-pin` (la
   citation). Si ces deux `<article>` réapparaissent dans un diff, ne pas
   les réintroduire sans qu'on le redemande.
+- **Promesse + Fondatrice — refonte immersive (2026-08-17)**
+  (`univers.html`, `#positionnement` et `.founder`) : la cliente a jugé
+  l'enchaînement de la page Univers trop redondant textuellement — bandeau
+  titre (texte) → citation "Suspendre le quotidien..." (texte) → 5 sens
+  (déjà très visuel, **explicitement à ne pas toucher**) → citation de la
+  fondatrice (texte) — pas assez "vivant", pas assez expérience client. Les
+  deux sections texte ont été re-habillées visuellement pour créer de la
+  variété (une grande scène cinématique plein écran vs. une petite note
+  intime type carte postale), **sans toucher au mécanisme JS ni au contenu
+  textuel d'aucune des deux** — seul l'habillage (fond photo, mise en
+  page) change. Le parcours des 5 sens (`#sensesJourney`) n'a reçu aucune
+  modification, conformément à la demande explicite de la cliente.
+  **Promesse → scène cinématique plein écran** (`.promise`) : la citation
+  ne repose plus sur un fond navy uni mais sur une photo plein cadre
+  (`.promise-photo`, `amalfi-coast-sunset.jpg` — déjà présente dans
+  `assets/img/` mais non utilisée ailleurs sur le site, cf. `CREDITS.md` ;
+  choisie parce que la citation mentionne littéralement "les falaises
+  d'Amalfi") avec un lent effet Ken Burns en boucle
+  (`@keyframes promisePhotoDrift`, 22s, `scale`+`translate` légers,
+  `alternate`, désactivé sous `prefers-reduced-motion`) et un dégradé
+  sombre (`.promise-scrim`) pour garder le texte lisible. La section passe
+  de `padding-block` fixe à `min-height:100vh` pour occuper tout l'écran
+  comme les autres bandeaux plein écran du site
+  (`.page-header-full`/`.senses-journey-sticky`). **Le mécanisme JS de
+  coloration progressive des mots (`updatePromise()`, `main.js`) n'a
+  strictement pas été modifié** — seule la palette de couleurs des mots a
+  changé pour rester lisible sur une photo plutôt que sur un fond uni
+  (crème/terracotta-300 au lieu des teintes précédentes), le calcul de
+  progression et les classes `.word`/`.lit`/`.accent` sont identiques au
+  pixel près. Structure DOM : `<img class="promise-photo">` +
+  `<div class="promise-scrim">` ajoutés en premier dans `.promise`, avant
+  `.container` — `.promise-pin`/`.promise-inner`/`.promise-quote` et tous
+  leurs `<span class="word">` sont inchangés.
+  **Fondatrice → carte postale tactile** (`.founder`) : remplace le simple
+  bloc de texte centré sur fond navy uni par une carte crème légèrement
+  inclinée (`.founder-card`, `transform:rotate(-1.1deg)`, bordure
+  pointillée terracotta, ombre portée prononcée — esthétique "note
+  manuscrite posée sur la table"), elle-même posée sur une photo
+  d'ambiance floutée en fond (`.founder-photo`,
+  `evenement-vespa-fleurie-lemon.jpg` — vraie photo Simposio, jusque-là
+  inutilisée sur le site ; utilisée floutée/petite donc sa résolution
+  source limitée déjà documentée plus haut n'est pas un problème ici) +
+  scrim sombre (`.founder-scrim`). **Règle "pas de photo fabriquée
+  d'Estelle" explicitement respectée** : la photo de fond est une ambiance
+  Vespa/citronnier (déjà utilisée comme telle ailleurs dans le projet),
+  jamais un portrait — aucune photo de la fondatrice n'existe à ce jour
+  (cf. « Limites connues »), donc aucune n'est utilisée ni suggérée ici.
+  Un médaillon `.founder-avatar` ("EL", dégradé terracotta→rouge Venise,
+  légèrement pivoté) est ajouté au-dessus de l'eyebrow "La fondatrice" —
+  reprend le même motif d'initiales déjà utilisé pour le formulaire de
+  contact (`.contact-founder-avatar`, `contact.html`), pour une cohérence
+  de repère visuel entre les deux pages plutôt que d'inventer un nouveau
+  système d'avatar. La signature passe d'une seule ligne à deux
+  (`.founder-signature`, nom en majuscules + sous-ligne "Fondatrice de
+  Simposio, une initiative Eurheka Conseil" en casse normale plus petite)
+  pour rappeler le rattachement à Eurheka Conseil directement dans la
+  section, comme le fait déjà le footer. Le conteneur passe de `<div
+  class="founder">` à `<section class="founder">` (sémantique, aucun
+  changement fonctionnel) et `.founder-inner` est renommé
+  `.founder-card` (nouvelle classe, l'ancienne `.founder-inner` n'est plus
+  utilisée nulle part).
+  **Crédits photo** : `amalfi-coast-sunset.jpg` (Tracey Hind, Wikimedia
+  Commons, CC BY-SA) ajoutée au bloc `.photo-credits` du footer
+  d'`univers.html`, à côté du crédit Andrew Parlette déjà présent
+  (aucun crédit supplémentaire requis pour `evenement-vespa-fleurie-lemon.jpg`,
+  photo Simposio réelle) — `assets/img/CREDITS.md` mis à jour en
+  conséquence pour les deux fichiers (colonne "Utilisée sur"). Vérifié par
+  regression Playwright complète (6 pages × 2 viewports, la modification
+  touchant `style.css` partagé) : 0 débordement, 0 erreur console, sur
+  tout le site, pas seulement `univers.html`.
 - **5 sens — parcours au scroll** (page Univers, `#sensesJourney`) : un
   chemin SVG se dessine progressivement pendant le scroll dans une section
   pinned/sticky (`.senses-journey`, `height: 1240vh` desktop / `1000vh`

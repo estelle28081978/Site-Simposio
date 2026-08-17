@@ -785,12 +785,45 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .story-name em { font-style: italic; color: var(--accent); }
 
 /* ==========================================================================
-   Promise — pinned scroll-highlight statement
-   ========================================================================== */
+   Promise — full-bleed cinematic scene, pinned scroll-highlight statement
+   (2026-08-17: was a plain text block on a bare cream background; the
+   client found the page's rhythm — text, then 5 senses, then more text —
+   too repetitive/flat. Re-skinned as a full-screen photographic "pause",
+   matching the immersive language used elsewhere on the site (hero,
+   prestations formulas, Values reel), while keeping the exact same
+   word-by-word scroll-highlight mechanic in main.js untouched — only the
+   colors changed, to read on a dark photo instead of a light background.
+   .promise-footnote below is legacy/unused CSS — see the removal note in
+   CLAUDE.md — left in place, not part of this redesign. ) */
 .promise {
-  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
   padding-block: var(--space-6);
+  background: var(--navy-900);
+  color: var(--fg-inverse);
 }
+.promise-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  animation: promisePhotoDrift 22s ease-in-out infinite alternate;
+}
+@keyframes promisePhotoDrift {
+  from { transform: scale(1.08) translate(0, 0); }
+  to { transform: scale(1.16) translate(-1.5%, -1%); }
+}
+.promise-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(16, 31, 39, 0.55) 0%, rgba(16, 31, 39, 0.72) 55%, rgba(16, 31, 39, 0.88) 100%);
+}
+.promise .container { position: relative; z-index: 1; }
 .promise-pin { min-height: 60vh; display: flex; align-items: center; }
 .promise-inner { max-width: 56rem; margin-inline: auto; text-align: center; }
 
@@ -798,19 +831,22 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-display);
   font-size: clamp(1.9rem, 2.4vw + 1.2rem, 3.4rem);
   line-height: 1.28;
-  color: var(--border);
+  color: rgba(246, 241, 231, 0.4);
 }
 .promise-quote .word {
   color: inherit;
   transition: color 60ms linear;
 }
-.promise-quote .word.lit { color: var(--navy); }
-.promise-quote .word.accent.lit { color: var(--accent); }
+.promise-quote .word.lit { color: var(--cream); }
+.promise-quote .word.accent.lit { color: var(--terracotta-300); }
 /* No-JS / reduced-motion fallback: show fully lit */
 .no-scrollfx .promise-quote .word,
-.promise-quote.static-lit .word { color: var(--navy) !important; }
+.promise-quote.static-lit .word { color: var(--cream) !important; }
 .no-scrollfx .promise-quote .word.accent,
-.promise-quote.static-lit .word.accent { color: var(--accent) !important; }
+.promise-quote.static-lit .word.accent { color: var(--terracotta-300) !important; }
+@media (prefers-reduced-motion: reduce) {
+  .promise-photo { animation: none; }
+}
 
 .promise-footnote {
   margin-top: var(--space-5);
@@ -1096,26 +1132,86 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Founder — text-only, no fabricated photo
-   ========================================================================== */
-.founder { background: var(--bg-dim); padding-block: var(--space-6); }
-.founder-inner { max-width: 42rem; margin-inline: auto; text-align: center; }
+   Founder — "postcard" note, no fabricated photo of Estelle herself
+   (2026-08-17 redesign: was a plain centered text block on a flat
+   background — the client found the page's rhythm of text/5 senses/more
+   text too repetitive. Restyled as a small tilted note card, like a
+   handwritten postcard tucked into a travel journal, sitting over an
+   ambient (blurred, unpeopled) real Simposio event photo — never a photo
+   implying it's her, keeping the site's existing "no fabricated photo of
+   Estelle" rule. The "EL" avatar reuses the same gradient-circle treatment
+   as .contact-founder-avatar on the Contact page, for a recognizable mark
+   wherever her signature appears on the site. ) */
+.founder { position: relative; overflow: hidden; padding-block: var(--space-6); background: var(--navy-900); }
+.founder-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(4px) saturate(1.1);
+  transform: scale(1.06);
+}
+.founder-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(16, 31, 39, 0.82) 0%, rgba(16, 31, 39, 0.93) 100%);
+}
+.founder .container { position: relative; z-index: 1; }
+.founder-card {
+  max-width: 34rem;
+  margin-inline: auto;
+  text-align: center;
+  background: var(--cream);
+  border: 1.5px dashed rgba(193, 98, 45, 0.45);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: 0 30px 60px -20px rgba(8, 16, 20, 0.55);
+  transform: rotate(-1.1deg);
+}
+@media (min-width: 600px) {
+  .founder-card { padding: var(--space-5); }
+}
+.founder-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  margin-bottom: var(--space-3);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--terracotta) 0%, var(--rosso-venezia) 100%);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  transform: rotate(4deg);
+}
+.founder-card .eyebrow { display: block; margin-bottom: var(--space-2); }
 .founder-quote {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.4rem, 1.4vw + 1rem, 2.1rem);
+  font-size: clamp(1.3rem, 1.2vw + 1rem, 1.9rem);
   line-height: 1.42;
   color: var(--navy);
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
 }
 .founder-signature {
   margin-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
   font-family: var(--font-subtitle);
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-muted);
+}
+.founder-signature span {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: none;
 }
 
 /* ==========================================================================

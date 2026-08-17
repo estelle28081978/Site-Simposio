@@ -16,7 +16,7 @@ plus avant de marquer un fichier « non utilisé ».
 | Fichier | Utilisée sur |
 |---|---|
 | `evenement-parasols-jaunes-table.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") |
-| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) |
+| `evenement-vespa-fleurie-lemon.jpg` | Univers — fond de la carte postale "La fondatrice" |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
@@ -58,9 +58,13 @@ bloc footer (`index.html`, `univers.html`, `prestations.html`,
 Schmidt Heidelberg, Nicolas Torquet) sont crédités dans un bloc
 `.photo-credits` dédié ajouté au footer de cette page (`engagements.html`
 n'affichait aucun crédit avant, n'ayant jusque-là aucune photo Wikimedia).
-Les fichiers restants ci-dessous sont inutilisés (voir détail dans
-« Important » plus bas) ; s'ils sont un jour réutilisés, remettre leur lien
-de crédit dans les footers concernés.
+Depuis le 2026-08-17, `amalfi-coast-sunset.jpg` est utilisée en fond
+plein écran de la section Promesse (`univers.html`) — son auteur (Tracey
+Hind) a été ajouté au bloc `.photo-credits` déjà présent sur cette page
+(à côté du crédit Andrew Parlette existant). Les fichiers restants
+ci-dessous sont inutilisés (voir détail dans « Important » plus bas) ; s'ils
+sont un jour réutilisés, remettre leur lien de crédit dans les footers
+concernés.
 
 | Fichier | Utilisée sur | Source | Auteur | Licence |
 |---|---|---|---|---|
@@ -72,7 +76,7 @@ de crédit dans les footers concernés.
 | `vespa-assisi.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Red Vespa scooter in front of Rocca Maggiore, Assisi.jpg](https://commons.wikimedia.org/wiki/File:Red_Vespa_scooter_in_front_of_Rocca_Maggiore,_Assisi.jpg) | Marco Ober | CC BY-SA 4.0 |
 | `tuscany-hills.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Hills of Tuscany at evening light.jpg](https://commons.wikimedia.org/wiki/File:Hills_of_Tuscany_at_evening_light.jpg) | Matthias Rhomberg | CC BY 2.0 |
 | `lemon-tree-italy.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Lemon tree Italy.JPG](https://commons.wikimedia.org/wiki/File:Lemon_tree_Italy.JPG) | donarreiskoffer | CC BY-SA 3.0 |
-| `amalfi-coast-sunset.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
+| `amalfi-coast-sunset.jpg` | Univers — fond plein écran de la section Promesse | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 
 Les licences CC BY et CC BY-SA autorisent l'usage commercial, mais exigent de
 créditer l'auteur *tant que la photo est utilisée sur le site* ; CC BY-SA
