@@ -475,8 +475,10 @@
   var valuesReelTrack = document.getElementById("valuesReelTrack");
   var valuesReelViewport = document.querySelector(".values-reel-viewport");
   var valuesReelScenes = document.querySelectorAll(".values-reel-scene");
-  var valuesReelDots = document.querySelectorAll(".values-reel-dot");
   var valuesReelHint = document.getElementById("valuesReelHint");
+  var valuesReelTimeline = document.getElementById("valuesReelTimeline");
+  var valuesReelFill = document.getElementById("valuesReelFill");
+  var valuesReelMarkers = document.querySelectorAll(".values-reel-marker");
   if (valuesSection && valuesReelTrack && valuesReelViewport && valuesReelScenes.length) {
     var vn = valuesReelScenes.length;
     // Pixel-based, not %: a `%` in translateX() resolves against the
@@ -495,9 +497,17 @@
       valuesReelScenes.forEach(function (scene, i) {
         scene.classList.toggle("is-active", i === activeIndex);
       });
-      valuesReelDots.forEach(function (dot, i) {
-        dot.classList.toggle("is-active", i === activeIndex);
+      valuesReelMarkers.forEach(function (marker, i) {
+        marker.classList.toggle("is-active", i === activeIndex);
+        marker.classList.toggle("is-reached", i <= activeIndex);
       });
+    }
+
+    function scrollToProgress(p, smooth) {
+      var rect = valuesSection.getBoundingClientRect();
+      var total = rect.height - window.innerHeight;
+      var targetY = window.scrollY + rect.top + p * total;
+      window.scrollTo({ top: targetY, behavior: smooth && !reducedMotion ? "smooth" : "auto" });
     }
 
     function updateValuesReel() {
@@ -508,6 +518,7 @@
       var activeIndex = Math.min(vn - 1, Math.round(progress * (vn - 1)));
       valuesReelTrack.style.transform = "translateX(-" + progress * (vn - 1) * valuesReelSceneWidth + "px)";
       setValuesReelIndex(activeIndex);
+      if (valuesReelFill) valuesReelFill.style.width = progress * 100 + "%";
       if (valuesReelHint) valuesReelHint.classList.toggle("is-visible", progress < 0.03);
       vTicking = false;
     }
@@ -529,17 +540,43 @@
     );
     updateValuesReel();
 
-    // Dots double as a jump-to-value control: scroll straight to the point
-    // in the pinned wrapper where that scene becomes active.
-    valuesReelDots.forEach(function (dot, i) {
-      dot.addEventListener("click", function () {
-        var rect = valuesSection.getBoundingClientRect();
-        var total = rect.height - window.innerHeight;
-        var targetProgress = i / (vn - 1);
-        var targetY = window.scrollY + rect.top + targetProgress * total;
-        window.scrollTo({ top: targetY, behavior: reducedMotion ? "auto" : "smooth" });
+    // Markers double as a jump-to-value control: a discrete, smooth-scrolled
+    // hop straight to the point in the pinned wrapper where that scene
+    // becomes active.
+    valuesReelMarkers.forEach(function (marker, i) {
+      marker.addEventListener("click", function () {
+        scrollToProgress(i / (vn - 1), true);
       });
     });
+
+    // Dragging anywhere else along the timeline ("tourner" through the
+    // values) scrubs continuously: the fill/photo track the pointer 1:1,
+    // unsmoothed, so there's no lag chasing a fast drag. setPointerCapture
+    // keeps move events coming even if the pointer strays outside the
+    // (fairly small) timeline bar mid-drag.
+    if (valuesReelTimeline) {
+      var timelineDragging = false;
+      function timelineProgressFromEvent(e) {
+        var rect = valuesReelTimeline.getBoundingClientRect();
+        return Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      }
+      valuesReelTimeline.addEventListener("pointerdown", function (e) {
+        if (e.target.closest(".values-reel-marker")) return;
+        timelineDragging = true;
+        valuesReelTimeline.setPointerCapture(e.pointerId);
+        scrollToProgress(timelineProgressFromEvent(e), false);
+      });
+      valuesReelTimeline.addEventListener("pointermove", function (e) {
+        if (!timelineDragging) return;
+        scrollToProgress(timelineProgressFromEvent(e), false);
+      });
+      valuesReelTimeline.addEventListener("pointerup", function () {
+        timelineDragging = false;
+      });
+      valuesReelTimeline.addEventListener("pointercancel", function () {
+        timelineDragging = false;
+      });
+    }
   }
 
   /* ---------- Projets: seamless draggable mosaic ---------- */

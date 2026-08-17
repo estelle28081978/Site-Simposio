@@ -864,6 +864,83 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
      tampon se retrouve alors TOUJOURS directement au-dessus du titre, quel
      que soit son nombre de lignes, sans calcul à maintenir. Vérifié sur
      les 6 valeurs, y compris la plus longue.
+- **Valeurs — 15ᵉ itération (2026-08-17) : fluidité corrigée, points
+  remplacés par une frise chronologique** : deux demandes de la cliente sur
+  l'album filmique de la 14ᵉ itération ("fluidifie cette partie... il y a
+  2-3 bugs ou freeze" + "pense-la un peu comme une frise... sur laquelle on
+  peut se déplacer en tournant les valeurs... que ça soit passé comme une
+  seule et unique image... un liant" entre une valeur et la suivante).
+  **Cause du "freeze" trouvée et corrigée** : `.values-reel-photo` mélangeait
+  une `transition: transform` (sur la règle de base) ET une `animation:
+  valuesReelKenBurns ... forwards` (sur `.is-active`), toutes deux ciblant
+  `transform`. Scroller en avant-arrière autour d'une limite de scène — un
+  geste tout à fait normal au trackpad, pas un cas limite — fait
+  basculer `.is-active` on/off rapidement ; à chaque bascule soit
+  l'animation redémarrait de zéro, soit la transition tentait de "dérouler"
+  vers un état que l'animation était encore en train d'animer, les deux se
+  disputant la propriété en même temps — perçu comme des saccades/blocages
+  ponctuels pendant le scroll. **Corrigé en remplaçant le mécanisme par une
+  seule `transition`** (plus de `@keyframes`/`animation`) : la règle de
+  base porte `transform:scale(1.12); transition:transform 0.6s` et
+  `.is-active` porte `transform:scale(1); transition:transform 9s linear`
+  — en entrant dans une scène, la transition qui s'applique est celle de la
+  règle `.is-active` (9s, zoom lent) ; en sortant, c'est celle de la règle
+  de base (0.6s, retour plus rapide) qui prend le relais. Une seule
+  transition ne peut pas se battre avec elle-même, quel que soit le rythme
+  du scroll. Vérifié par un test de stress Playwright (40 allers-retours de
+  scroll instantanés autour d'une limite de scène, ~9ms/mise à jour) :
+  aucune erreur, aucune valeur de `transform` aberrante (NaN, bloquée hors
+  plage), toujours une valeur `matrix(...)` cohérente. `will-change:
+  transform` ajouté sur `.values-reel-photo` pour garder l'opération sur le
+  compositeur GPU tout du long.
+  **Points remplacés par une frise (`.values-reel-timeline`)** : les 6
+  `.values-reel-dot` (simples puces sans lien visuel entre elles) sont
+  remplacés par 6 `.values-reel-marker` (cercles numérotés 1-6) reliés par
+  un trait (`.values-reel-timeline-track`) avec un remplissage
+  (`.values-reel-timeline-fill`) qui grandit **en continu avec le scroll
+  réel** (`progress×100%` à chaque frame dans `updateValuesReel()`), pas
+  seulement par à-coups à chaque changement de valeur active — c'est ce qui
+  lui donne un rendu de "fil continu" plutôt que 6 puces indépendantes qui
+  s'allument une par une. **C'est directement la réponse à la demande de
+  "liant" entre une valeur et la suivante** : la frise vit dans
+  `.values-reel-footer`, un enfant flex normal de `.values-reel-sticky` et
+  PAS un enfant de `.values-reel-track` (qui, lui, glisse horizontalement
+  sous les photos) — elle ne bouge donc jamais pendant que les photos
+  défilent derrière/au-dessus d'elle, elle est le seul élément qui reste
+  identique à l'écran de la valeur A et à l'écran de la valeur B, avec son
+  remplissage qui continue simplement de grandir entre les deux. Chaque
+  marqueur passe par 3 états : `.is-reached` (déjà dépassé, contour
+  terracotta) via `i <= activeIndex` — même logique directe basée sur
+  `progress`/`activeIndex` que la correction du compteur des 5 sens
+  documentée plus haut, pour ne jamais se désynchroniser sur un scroll
+  rapide — et `.is-active` (valeur courante, rempli, agrandi via un
+  `transform:scale(1.3)` avec une courbe `cubic-bezier` à rebond, l'effet
+  d'apparition demandé "à chaque fois qu'on arrive à la valeur suivante").
+  **Deux façons de "tourner les valeurs"** (`main.js`) :
+  1. Cliquer/taper directement un marqueur → saut net et fluide
+     (`window.scrollTo(..., behavior:"smooth")`) vers cette valeur
+     précisément, comme les anciens points.
+  2. Cliquer-glisser n'importe où ailleurs sur la frise → défilement continu
+     façon molette/cadran : `pointerdown`/`pointermove`/`pointerup` sur
+     `.values-reel-timeline`, position du curseur convertie en fraction de
+     progression, `window.scrollTo(..., behavior:"auto")` (jamais "smooth"
+     pendant un glissement, sinon le défilement accuserait un temps de
+     retard sur le doigt/curseur). `setPointerCapture` au `pointerdown`
+     pour que le glissement continue de fonctionner même si le curseur
+     sort brièvement de la frise (barre fine, facile à dévier en
+     glissant vite). `touch-action:none` sur la frise pour que le geste
+     tactile lui soit entièrement dédié plutôt que de déclencher un scroll
+     de page natif conflictuel.
+  Comme pour le tracé SVG des 5 sens, tout ceci reste un mapping direct
+  1:1 avec la position de scroll (pas une animation autoplay), donc actif
+  aussi sous `prefers-reduced-motion` ; la règle
+  `@media(prefers-reduced-motion:reduce)` dédiée à cette section a pu être
+  simplifiée (elle ne coupe plus que le rebond de la flèche "Faites
+  défiler") car la règle globale du site (`transition-duration:0.01ms
+  !important` sur tous les éléments) neutralise déjà la transition du zoom
+  Ken Burns ci-dessus sans avoir besoin d'une règle spécifique. Si
+  `.values-reel-dots`/`.values-reel-dot` réapparaissent dans un diff, c'est
+  cette ancienne version à ne pas réintroduire sans qu'on le redemande.
 - **Page "Engagements" renommée "À propos" (2026-08-13)** : demande
   explicite de la cliente suite à l'ajout de la section Valeurs, qui donne à
   cette page un vrai profil "à propos" (engagements + valeurs + équipe). Le
