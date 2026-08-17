@@ -138,18 +138,15 @@
         var ideal = natural > 0 ? (available / natural) * PROMISE_REF_SIZE : PROMISE_REF_SIZE;
         return Math.max(PROMISE_MIN_SIZE, ideal);
       });
+      // The client asked to keep pushing this bigger (explicitly ~1.75x a
+      // previous size) even if it no longer fits one screen — so there's no
+      // height-based cap here anymore: the shared size is simply the largest
+      // that still lets every line (including "professionnel", the single
+      // longest word in the quote — the real physical ceiling, since a lone
+      // word can't wrap) fit on its own row without overflowing sideways.
+      // .promise is min-height:100vh (not a hard height + overflow:hidden)
+      // so the section grows taller/scrollable to fit instead of clipping.
       var sharedSize = Math.min.apply(null, idealSizes);
-
-      // Still has to fit one computer screen (the client's standing "un seul
-      // écran" requirement) — if 6 lines at that shared size would overflow,
-      // scale it down further.
-      var lineHeight = 0.85;
-      var gap = 0.02;
-      var totalHeight = promiseLines.length * sharedSize * lineHeight + (promiseLines.length - 1) * sharedSize * gap;
-      var header = document.getElementById("siteHeader");
-      var headerClearance = header ? header.getBoundingClientRect().height : 104;
-      var budget = window.innerHeight - headerClearance - 40; // small bottom breathing margin
-      if (totalHeight > budget) sharedSize *= budget / totalHeight;
 
       promiseLines.forEach(function (el) {
         el.style.fontSize = sharedSize.toFixed(1) + "px";

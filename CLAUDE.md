@@ -658,6 +658,66 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   débordement haut/bas aux 3 largeurs desktop (1440×900, 1600×900,
   1920×1080), animation d'apparition toujours fonctionnelle. Regression
   complète 6 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Promesse — 9ᵉ itération, ×1,75 explicite → contrainte "un seul écran"
+  abandonnée, plafond physique du mot le plus long (2026-08-17)**
+  (`.promise`, `fitPromiseLines()`, `univers.html`) : la cliente a demandé
+  un facteur précis — "fait fois 1,75 sur la taille actuelle" — en gardant
+  les écarts de chaque côté. **Ce chiffre exact n'est physiquement pas
+  atteignable sans que ça déborde horizontalement** : "professionnel" (13
+  caractères, le mot le plus long de toute la citation) ne peut, à lui
+  seul, jamais dépasser ~169px de haut sur un écran de 1440px de large
+  sans sortir du cadre — largement en dessous de 110,8px×1,75=194px visé.
+  Ce plafond est **indépendant du découpage en lignes** : contrairement aux
+  itérations précédentes (où repenser les groupes de mots permettait de
+  gagner en taille), un mot seul ne peut pas être coupé au milieu — c'est
+  une limite physique dure, pas un réglage de marge. Dit explicitement à
+  la cliente plutôt que silencieusement plafonné à une valeur plus
+  modeste.
+  **Abandon de la contrainte "un seul écran" (implicite dans la demande)** :
+  ×1,75 sur une taille qui utilisait déjà 100% du budget vertical
+  disponible (8e itération, hauteur totale du bloc = budget exact) ne peut
+  se caser dans la même hauteur. Plutôt que de continuer à découper en
+  lignes plus courtes pour gratter de la hauteur (stratégie des itérations
+  6-8, qui devenait ici contre-productive une fois la largeur du mot
+  "professionnel" atteinte comme plafond), la contrainte elle-même a été
+  relâchée : `.promise` passe de `height:100vh; overflow:hidden` à
+  `min-height:100vh` (sans `overflow:hidden`) — la section grandit
+  maintenant pour loger tout le texte (page + longue, un peu de scroll en
+  plus) plutôt que de rogner quoi que ce soit. Si `height:100vh;
+  overflow:hidden` réapparaît sur `.promise`, c'est un retour à l'ancienne
+  contrainte, à ne pas réintroduire sans qu'on le redemande — sauf si la
+  cliente redemande explicitement de revenir à une version qui tient sur
+  un seul écran (auquel cas revoir aussi la taille de police en
+  conséquence, les deux allant de pair).
+  **`fitPromiseLines()` simplifié** : le calcul en deux temps (taille
+  idéale par largeur, plafonnée ensuite par un budget de hauteur d'écran)
+  est retiré — `sharedSize` est maintenant directement
+  `Math.min.apply(null, idealSizes)`, la plus grande taille qui fait
+  encore tenir CHAQUE ligne sur une seule ligne rendue, sans plus aucun
+  ajustement après coup. Si un facteur `sharedSize *= 1.75` ou un calcul
+  de budget vertical (`totalHeight`/`budget`) réapparaissent dans cette
+  fonction, c'est une version intermédiaire de cette itération (un
+  multiplicateur fixe appliqué par-dessus l'ancien plafond de hauteur,
+  qui provoquait justement les retours à la ligne à corriger) — à ne pas
+  réintroduire sans qu'on le redemande.
+  **Découpage repoussé à 11 lignes** (texte inchangé mot pour mot) :
+  « Suspendre » / « le quotidien » / « professionnel » / « Pour » /
+  « transporter » / « vos invités » / « au cœur » / « de l'Italie, » /
+  « iconique » / « et » / « intemporelle » — nécessaire pour isoler
+  "professionnel" seul sur sa ligne à `margin-left:0` (le mot qui fixe le
+  plafond), les autres lignes gardant des marges variées pour le
+  décalage gauche/droite. Résultat mesuré : **~159px à 1440×900, ~177px à
+  1600×900/1920×1080** — contre ~111–137px à la 8e itération (un gain
+  réel de 43 à 60% selon la largeur), l'écart avec le ×1,75 visé
+  (194–239px) étant exactement le manque à gagner dû au plafond physique
+  de "professionnel" documenté ci-dessus.
+  Vérifié par script Playwright : 1 seule ligne rendue par groupe et 0
+  débordement horizontal aux 3 largeurs desktop testées (la hauteur, elle,
+  dépasse maintenant volontairement un écran — pas un bug), capture
+  pleine page confirmant que la photo de fond couvre bien toute la
+  nouvelle hauteur de section (pas de bande vide en bas), animation
+  d'apparition toujours fonctionnelle. Regression complète 6 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 - **Fondatrice — refonte complète en plaque bicolore (2026-08-17)**
   (`.founder`, `univers.html`) : la cliente n'aimait "pas du tout" la
   carte postale inclinée sur photo floutée (refonte précédente, bullet
