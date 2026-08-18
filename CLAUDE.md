@@ -3414,6 +3414,106 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   7 fractions de progression de scroll × desktop/mobile) et capture d'écran
   aux mêmes fractions. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console, 0 lien/asset cassé.
+- **Fondatrice — refonte complète en "mini vidéo" cinématique avec de
+  vraies photos, remplace tout le travail sur le détourage (2026-08-18,
+  même journée)** (`.founder-story*`, `updateFounderStory()` dans
+  `main.js`, `engagements.html`) : la cliente a rejeté l'ensemble des
+  itérations précédentes sur le détourage/traitement graphique du stand
+  Vespa ("ça ne me plaît pas du tout") et a demandé autre chose en
+  substance : *"une sorte de mini vidéo dans laquelle on a l'impression de
+  passer dans un évènement tourné autour de la Dolce Vita et qu'on plonge
+  jusqu'à soit une carte soit un menu soit une assiette dans laquelle on
+  retrouvera la citation, mais tout ça de manière à ce que ce soit comme
+  dans la vie réelle."* **Remplace entièrement** la section précédente
+  (détourage/duotone du stand Vespa + carte de menu matérialisée,
+  `.founder-dive*`/`.founder-scene-*`/`.founder-menu-card*`,
+  `founder-vespa-cutout.webp` — fichier supprimé du dépôt, `git rm`) : si
+  l'une de ces classes ou ce fichier réapparaissent dans un diff, c'est
+  cette ancienne version, à ne pas réintroduire sans qu'on le redemande
+  (historique complet des ~10 itérations précédentes de cette section —
+  plaque bicolore, carte postale sur photo floutée, typographie
+  minimaliste, assiette CSS/SVG, détourage GrabCut couleur puis duotone —
+  conservé plus haut dans ce fichier pour référence).
+  **"Comme dans la vie réelle" = de vraies photos, pas de détourage/
+  synthèse** : le site est statique sans backend et aucun outil de
+  génération/composition vidéo ou d'image photoréaliste n'est disponible
+  dans cet environnement — une "mini vidéo" au sens propre (fichier .mp4)
+  n'était donc pas réalisable en gardant l'exigence de réalisme. Traduit
+  en une séquence cinématique **pilotée par le scroll** (même famille de
+  mécanisme que `.senses-journey`/`.values-reel`, déjà établie sur le
+  site) construite à partir de **4 vraies photos Simposio non retouchées**,
+  déjà utilisées ailleurs sur le site (aucun nouveau crédit,
+  `assets/img/CREDITS.md` mis à jour) : `evenement-parasols-jaunes-
+  table.jpg` (plan large — arrivée sous les parasols, tables encore vides)
+  → `evenement-tablee-diner-bougies.jpg` (plan moyen — à table, bougies et
+  bouquets) → `evenement-rangee-spritz.jpg` (détail — rangée de spritz,
+  moment aperitivo) → `evenement-assiette-agrume-ceramique.jpg` (très gros
+  plan — l'assiette). Une vraie progression narrative "on entre dans
+  l'évènement puis on s'en approche", pas une suite de photos
+  interchangeables — répond directement à "on a l'impression de passer
+  dans un évènement... et qu'on plonge".
+  **La citation n'est jamais présentée comme "imprimée" sur l'assiette** :
+  contrairement à toutes les tentatives précédentes (carte matérialisée,
+  citation "au fond d'une assiette" en CSS/SVG...), elle apparaît ici en
+  fondu par-dessus la scène finale, comme une citation de sortie éditoriale
+  (technique classique de films/reportages d'évènementiel : un pull-quote
+  qui apparaît sur un plan légèrement assombri) — délibérément honnête sur
+  la nature de l'image (une vraie photo, pas un objet qui existerait
+  réellement dans la scène) plutôt que de simuler un compositing
+  photoréaliste hors de portée des outils disponibles ici.
+  **Structure, plein écran** (contrairement à l'ancienne version qui
+  restait dans un cadre étroit `.founder-scene-frame`) : `.founder-story`
+  (wrapper, `height:420vh`) > `.founder-story-sticky`
+  (`position:sticky; height:100vh`, occupe tout le viewport) contenant les
+  4 `.founder-story-scene` (empilées en `position:absolute`, crossfade
+  d'opacité + léger zoom avant continu par scène), deux bandes
+  `.founder-story-letterbox` (haut/bas, fixes, effet "format cinéma" —
+  renforce l'impression de "mini vidéo" sans nécessiter de vrai fichier
+  vidéo), un `.founder-story-scrim` (dégradé sombre, ne s'intensifie qu'en
+  toute fin de parcours pour ne pas assombrir les 3 premières scènes) et
+  `.founder-story-quote` (citation + signature, fondu en toute fin).
+  4 petits points (`.founder-story-dots`) indiquent la scène active.
+  **`updateFounderStory()` (`main.js`)** : 4 segments de progression
+  (`[0, 0.24, 0.48, 0.7, 1]`, le dernier plus large pour laisser le temps
+  au voile puis à la citation d'apparaître sans précipitation) déterminent
+  la scène active (`.is-active`, crossfade géré par la `transition` CSS sur
+  `opacity`) et un zoom avant local par scène (`scale` de 1 à 1.12 sur la
+  fenêtre de progression propre à chaque scène). **Point de vigilance
+  respecté dès la conception** (déjà rencontré et corrigé une fois sur
+  `.values-reel-photo`, cf. plus haut dans ce fichier) : le zoom des
+  scènes est appliqué en `style.transform` recalculé à chaque frame de
+  scroll, **jamais** via une `transition`/`animation` CSS sur `transform`
+  — seule `opacity` porte une `transition` CSS (une seule propriété, pas
+  de risque de collision transition/animation). Voile et citation basculent
+  aussi par simple ajout/retrait de classe (`.is-visible`) au-delà de
+  seuils de progression (0.66 et 0.8).
+  **Bug réel trouvé et corrigé avant publication, pas supposé** : un
+  premier jet plaçait l'eyebrow "La fondatrice" À L'INTÉRIEUR de la bande
+  `.founder-story-letterbox-top` (fine, 7vh ≈ 63px) — repéré par capture
+  d'écran, le texte s'entrechoquait visuellement avec le header fixe du
+  site (`z-index:100`, ~91px de haut, donc plus haut que la bande fine) :
+  les deux occupaient la même zone en haut d'écran sans être clairement
+  séparés. Corrigé en sortant l'eyebrow de la bande (qui reste une pure
+  bande de couleur, sans contenu) et en le positionnant indépendamment
+  avec la même marge de dégagement que `.page-header` utilise déjà pour le
+  header fixe (`top:calc(6.5rem + 0.4rem)`).
+  **`prefers-reduced-motion`** : comme le tracé des 5 sens et le fil des
+  Valeurs, le crossfade et le zoom restent un mapping 1:1 avec le scroll
+  (pas une animation autoplay) donc actifs même sous cette préférence —
+  seules les `transition` (fondu, zoom des points) sont neutralisées pour
+  un affichage instantané plutôt qu'un fondu forcé qui contredirait la
+  préférence.
+  **`founder-vespa-cutout.webp` supprimé du dépôt** (`git rm`, pas laissé
+  comme fichier orphelin) : c'était un fichier dérivé (détourage/duotone),
+  sans usage possible ailleurs contrairement à une vraie photo client —
+  voir `assets/img/CREDITS.md` pour le détail. `fitFounderCard()` et
+  toute la logique de mesure de police associée à l'ancienne carte de menu
+  sont également retirées de `main.js` (plus de carte à dimensionner).
+  Vérifié par script Playwright (10 fractions de progression × desktop/
+  mobile : scène active, visibilité du voile/de la citation cohérentes
+  avec les seuils, 0 erreur console, 0 débordement horizontal) et capture
+  d'écran à chaque fraction sur les deux formats. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 

@@ -15,13 +15,13 @@ plus avant de marquer un fichier « non utilisé ».
 
 | Fichier | Utilisée sur |
 |---|---|
-| `evenement-parasols-jaunes-table.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") |
-| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée directement (voir `founder-vespa-cutout.webp` plus bas, détourage dérivé de ce fichier) |
+| `evenement-parasols-jaunes-table.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") + section Fondatrice ("mini vidéo" scroll, scène 1/4 — plan large) |
+| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée actuellement, disponible dans `assets/img/` |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
-| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) + Engagements (grille de flip-cards, "Concept clé en main" ; fond flouté de la section Fondatrice) |
-| `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) + Accueil (carte formule L'Aperitivo) |
+| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) + Engagements (grille de flip-cards, "Concept clé en main" ; section Fondatrice, "mini vidéo" scroll, scène 2/4 — plan moyen) |
+| `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) + Accueil (carte formule L'Aperitivo) + Engagements (section Fondatrice, "mini vidéo" scroll, scène 3/4 — détail aperitivo) |
 | `evenement-vespas-vintage.jpg` | Mosaïque Projets |
 | `evenement-fiat500-blanche.jpg` | Mosaïque Projets |
 | `evenement-fiat-jolly-jaune.jpg` | Mosaïque Projets |
@@ -42,7 +42,7 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-stand-raye-guirlande.jpg` | Mosaïque Projets |
 | `evenement-vespa-gelato-brindapino.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Spécialiste Dolce Vita") |
 | `evenement-triporteur-gelato.jpg` | Mosaïque Projets |
-| `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets |
+| `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets + Engagements (section Fondatrice, "mini vidéo" scroll, scène 4/4 — l'assiette, citation en fondu par-dessus) |
 | `evenement-carte-degustation.jpg` | Mosaïque Projets + Engagements (grille de flip-cards, "Positionnement premium") |
 
 ## Photos Wikimedia Commons (banque libre)
@@ -154,50 +154,24 @@ La photo `terrace-dinner-assisi.jpg` montre de vraies personnes attablées
 uniquement à illustrer une ambiance de déjeuner d'affaires en terrasse (La
 Tavola). Le site précise "photo d'illustration" sous cette image.
 
-**`founder-vespa-cutout.webp` (2026-08-18, section Fondatrice, plongée au
-scroll)** : détourage de `evenement-vespa-fleurie-lemon.jpg` — fond
-entièrement transparent, ne garde que le parasol, le meuble en céramique,
-les fleurs/paniers et la Vespa. Pas une nouvelle photo ni une illustration
-dessinée : un algorithme de segmentation classique (OpenCV GrabCut,
-zones de premier-plan/arrière-plan placées à la main, plusieurs passes de
-raffinement), aucun pixel inventé ou effacé, seulement classé
-premier-plan/arrière-plan puis découpé. Deux modèles de segmentation par
-réseau de neurones (`rembg`, u2net puis isnet-general-use) ont été essayés
-avant GrabCut et écartés : les deux faisaient disparaître la Vespa
-(confondue avec l'arrière-plan à cause de sa couleur crème claire).
-**Limite assumée** : un petit fragment de mur reste visible derrière un
-massif de verdure, sur la droite de la composition — zone où le buisson
-recouvre partiellement une fenêtre en arrière-plan, rendant la séparation
-pixel par pixel particulièrement difficile ; sacrifié plutôt que risqué
-d'abîmer le reste du détourage en insistant. Les sachets de pâtes visibles
-sur le comptoir dans la photo source ne sont pas retouchés — ils restent
-dans le détourage mais sont recouverts par une carte de menu en CSS/SVG
-positionnée exactement à leur emplacement, qui se matérialise au scroll
-(voir `.founder-menu-card` dans `style.css` et `updateFounderDive()` dans
-`main.js`). Export en WebP (plutôt que PNG) pour la taille de fichier :
-~470 Ko contre ~3,6 Mo en PNG pour un rendu visuellement identique.
-
-**Traitement duotone (2026-08-18, même journée)** : la cliente a rejeté
-cette version couleur ("je veux une modélisation de l'image, pas l'image
-elle-même") — remplacée par un traitement bicolore (luminance du détourage
-interpolée entre le Bleu Méditerranéen foncé et le Blanc Calcaire, alpha
-d'origine conservé pixel pour pixel) qui fait lire l'ensemble comme une
-gravure/illustration éditoriale plutôt qu'une photo filtrée. Dimensions
-inchangées (1362×1369), donc aucun recalcul nécessaire des pourcentages de
-position de la carte ni du `transform-origin` du zoom. Une tentative de
-recadrer le détourage pour ne garder "que le stand" (retirer un panier en
-osier secondaire à droite de la composition, demande de la cliente) a été
-essayée puis abandonnée : le panier et la Vespa se chevauchent en pixels
-sur cette zone (aucune séparation propre par simple découpe rectangulaire
-sans trancher dans la carrosserie de la Vespa elle-même, vérifié par script
-Python) — un premier essai de recadrage a produit un bord net visible en
-plein milieu du scooter. Le fichier livré garde donc l'ensemble complet du
-stand (parasol, meuble, Vespa et panier), qui reste cohérent comme un seul
-élément de décor. Voir aussi dans `style.css` (règle `.founder-scene-cutout`)
-la documentation d'un bug de rendu Chromium réel trouvé le même jour : un
-`filter:drop-shadow()` posé sur cette image, combiné au `transform:scale()`
-du zoom au scroll sur son parent, produisait un artefact rectangulaire
-(un léger assombrissement, visible même sur des zones 100% transparentes de
-l'image) — confirmé par comparaison de pixels avant/après désactivation du
-filtre, non résolu ni par un rayon de flou plus petit ni par l'isolement du
-calque (`translateZ(0)`) ; le filtre a été retiré plutôt que contourné.
+**`founder-vespa-cutout.webp` — abandonné et retiré du dépôt (2026-08-18)** :
+ce fichier (détourage GrabCut de `evenement-vespa-fleurie-lemon.jpg`, puis
+traitement duotone) a servi à plusieurs itérations de la section Fondatrice
+(plongée dans le stand Vespa + carte de menu matérialisée). La cliente a
+rejeté l'ensemble de cette approche ("ça ne me plaît pas du tout") et a
+demandé à la place une "mini vidéo" à travers un évènement réel, "comme
+dans la vie réelle" — un détourage/traitement graphique d'une seule photo
+ne pouvait plus répondre à cette demande. La section a été entièrement
+reconstruite autour d'un enchaînement de 4 photos Simposio réelles et non
+retouchées (voir plus haut dans ce fichier, colonne "Utilisée sur" pour
+`evenement-parasols-jaunes-table.jpg`, `evenement-tablee-diner-bougies.jpg`,
+`evenement-rangee-spritz.jpg` et `evenement-assiette-agrume-ceramique.jpg`)
+— aucune n'est un nouveau fichier, toutes étaient déjà utilisées ailleurs
+sur le site. `founder-vespa-cutout.webp` n'a plus aucun usage nulle part
+sur le site et a été supprimé du dépôt (`git rm`) plutôt que laissé comme
+fichier orphelin, contrairement à une vraie photo client dont la
+réutilisation future reste toujours possible. Historique complet des
+itérations précédentes (carte postale sur photo floutée, plaque bicolore,
+typographie minimaliste, assiette CSS/SVG, détourage GrabCut couleur puis
+duotone) conservé dans `CLAUDE.md` pour référence, à ne réintroduire sans
+qu'on le redemande.

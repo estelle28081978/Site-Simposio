@@ -934,100 +934,91 @@
   }
 
   // ==========================================================================
-  // Fondatrice — plongée au scroll dans le stand Vespa (engagements.html)
+  // Fondatrice — "mini vidéo" cinématique au scroll à travers un évènement
+  // Simposio réel, jusqu'à l'assiette et la citation (engagements.html).
+  // Voir le commentaire CSS au-dessus de .founder-story pour le contexte
+  // complet (pourquoi de vraies photos plutôt qu'un détourage/traitement
+  // graphique).
   // ==========================================================================
-  var founderDive = document.getElementById("founderDive");
-  var founderZoom = document.getElementById("founderZoom");
-  if (founderDive && founderZoom) {
-    var founderCaption = document.getElementById("founderCaption");
-    var founderTicking = false;
-    var founderCard = document.getElementById("founderMenuCard");
-    var founderQuote = document.querySelector(".founder-menu-card-quote");
+  var founderStory = document.getElementById("founderStory");
+  var founderScenesEl = document.querySelector(".founder-story-scenes");
+  if (founderStory && founderScenesEl) {
+    var founderScenes = Array.prototype.slice.call(founderScenesEl.querySelectorAll(".founder-story-scene"));
+    var founderDots = Array.prototype.slice.call(document.querySelectorAll(".founder-story-dot"));
+    var founderScrim = document.getElementById("founderStoryScrim");
+    var founderStoryQuote = document.getElementById("founderStoryQuote");
+    var founderStoryTicking = false;
 
-    // La carte est dimensionnée en % pour recouvrir exactement l'emplacement
-    // des sachets de pâtes sur la photo (voir CSS) — sa taille en pixels
-    // varie donc beaucoup selon la largeur d'écran (~307px en grand écran,
-    // ~62px sur mobile étroit), un rapport qu'aucune unité CSS fiable
-    // (clamp/vw, ni même cqw — support pas assez constant, essayé et
-    // écarté) ne suit correctement. Même principe que fitPromiseLines() :
-    // mesurer l'espace réellement disponible et réduire la police jusqu'à
-    // ce que le texte tienne.
-    function fitFounderCard() {
-      if (!founderCard || !founderQuote) return;
-      var cs = getComputedStyle(founderCard);
-      var availableH =
-        founderCard.clientHeight -
-        parseFloat(cs.paddingTop) -
-        parseFloat(cs.paddingBottom);
-      var fontSize = Math.max(founderCard.clientWidth * 0.16, 4);
-      var minSize = 3;
-      founderQuote.style.fontSize = fontSize + "px";
-      var guard = 0;
-      while (founderQuote.scrollHeight > availableH && fontSize > minSize && guard < 60) {
-        fontSize -= 0.4;
-        founderQuote.style.fontSize = fontSize + "px";
-        guard += 1;
-      }
-      // Légère marge de sécurité anti-arrondi (même précaution que pour les
-      // lignes de la Promesse : viser pile 100% de l'espace disponible peut
-      // faire replier le dernier mot d'un pixel).
-      founderQuote.style.fontSize = fontSize * 0.96 + "px";
-    }
+    // Bornes de progression des 4 scènes : la dernière (l'assiette) reçoit
+    // une fenêtre plus large (0.70→1) que les trois premières pour laisser
+    // le temps au voile de s'intensifier puis à la citation d'apparaître
+    // sans se précipiter, plutôt que 4 segments strictement égaux.
+    var founderSegments = [0, 0.24, 0.48, 0.7, 1];
 
-    fitFounderCard();
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(fitFounderCard);
-    }
-    var founderResizeTimer = null;
-    window.addEventListener("resize", function () {
-      clearTimeout(founderResizeTimer);
-      founderResizeTimer = setTimeout(fitFounderCard, 200);
-    });
-
-    function updateFounderDive() {
-      var rect = founderDive.getBoundingClientRect();
+    function updateFounderStory() {
+      var rect = founderStory.getBoundingClientRect();
       var total = rect.height - window.innerHeight;
       var scrolled = -rect.top;
       var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
 
       // Mapping 1:1 avec le scroll (comme le tracé des 5 sens/le fil des
-      // Valeurs) — jamais désactivé sous prefers-reduced-motion, cf. la
-      // même convention déjà établie ailleurs sur le site.
-      var scale = 1 + progress * 2.4;
-      founderZoom.style.transform = "scale(" + scale.toFixed(3) + ")";
-
-      // Matérialisation de la carte : invisible avant progress≈0.12, puis
-      // apparaît (fondu + mise au point + léger dépôt vertical) jusqu'à
-      // progress≈0.42, pleinement "posée" ensuite pour le reste du zoom —
-      // voir le commentaire CSS sur .founder-menu-card pour le détail de
-      // la demande ("on ne voit pas la carte, et peu à peu elle s'affiche").
-      if (founderCard) {
-        var cardT = progress <= 0.12 ? 0 : progress >= 0.42 ? 1 : (progress - 0.12) / 0.3;
-        founderCard.style.opacity = String(cardT);
-        founderCard.style.filter = "blur(" + ((1 - cardT) * 6).toFixed(2) + "px)";
-        var cardLift = (1 - cardT) * 10;
-        founderCard.style.transform = "rotate(-1.1deg) translateY(" + cardLift.toFixed(2) + "px)";
+      // Valeurs) — jamais désactivé sous prefers-reduced-motion.
+      var activeIndex = founderSegments.length - 2;
+      for (var i = 0; i < founderSegments.length - 1; i++) {
+        if (progress >= founderSegments[i] && progress < founderSegments[i + 1]) {
+          activeIndex = i;
+          break;
+        }
       }
 
-      if (founderCaption) {
-        var capOpacity = progress > 0.72 ? Math.min(1, (progress - 0.72) / 0.22) : 0;
-        founderCaption.style.opacity = String(capOpacity);
+      founderScenes.forEach(function (scene, i) {
+        var isActive = i === activeIndex;
+        if (isActive) {
+          scene.classList.add("is-active");
+        } else {
+          scene.classList.remove("is-active");
+        }
+        // Léger zoom avant continu pendant que la scène est active (façon
+        // Ken Burns), calculé directement en style inline sans transition/
+        // animation CSS sur transform — voir le commentaire CSS pour la
+        // raison (éviter le bug de collision transition/animation déjà
+        // rencontré et corrigé sur .values-reel-photo).
+        var segStart = founderSegments[i];
+        var segEnd = founderSegments[i + 1];
+        var localT = segEnd > segStart ? (progress - segStart) / (segEnd - segStart) : 0;
+        localT = Math.min(1, Math.max(0, localT));
+        var scale = 1 + localT * 0.12;
+        scene.style.transform = "scale(" + scale.toFixed(3) + ")";
+      });
+
+      founderDots.forEach(function (dot, i) {
+        dot.classList.toggle("is-active", i === activeIndex);
+      });
+
+      // Le voile ne s'intensifie qu'en toute fin de parcours (scène de
+      // l'assiette) pour garder les 3 premières scènes pleinement lisibles
+      // sans assombrissement prématuré.
+      if (founderScrim) {
+        founderScrim.classList.toggle("is-visible", progress > 0.66);
+      }
+      if (founderStoryQuote) {
+        founderStoryQuote.classList.toggle("is-visible", progress > 0.8);
       }
 
-      founderTicking = false;
+      founderStoryTicking = false;
     }
 
     window.addEventListener(
       "scroll",
       function () {
-        if (!founderTicking) {
-          window.requestAnimationFrame(updateFounderDive);
-          founderTicking = true;
+        if (!founderStoryTicking) {
+          window.requestAnimationFrame(updateFounderStory);
+          founderStoryTicking = true;
         }
       },
       { passive: true }
     );
 
-    updateFounderDive();
+    updateFounderStory();
   }
 })();

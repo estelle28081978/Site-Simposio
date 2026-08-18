@@ -1393,226 +1393,161 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Founder — plongée au scroll dans un détourage 2D du stand Vespa, carte
-   de menu qui se matérialise sur le comptoir (2026-08-18, cahier des
-   charges très précis de la cliente, en plusieurs itérations). Historique
-   des versions précédentes (aucune à réintroduire sans qu'on le
-   redemande, détail complet dans CLAUDE.md) : citation "inscrite au fond
-   d'une assiette" (`.founder-plate`/`.founder-quote-plate`), typographie
-   centrée minimaliste (`.founder-minimal`/`.founder-quote-minimal`), et
-   — étape intermédiaire de CETTE itération — une simple photo recadrée +
-   vignettée avec la carte posée dessus (`.founder-scene-photo`,
-   `evenement-vespa-fleurie-lemon-scene.jpg`, retirée du site : la cliente
-   a explicitement demandé "oublie la photo... une modélisation 2D... fidèle
-   à la disposition des éléments").
-   **Détourage, pas illustration dessinée** : aucun outil de génération
-   d'image dans cet environnement (impossible de dessiner une illustration
-   vectorielle "à la main" d'un niveau photoréaliste) — la fidélité
-   demandée est obtenue en détourant la vraie photo (OpenCV, algorithme
-   GrabCut classique — segmentation par couleur/texture, pas de l'IA
-   générative, aucun pixel inventé) plutôt qu'en la redessinant. Deux
-   modèles de segmentation par réseau de neurones (`rembg`, u2net puis
-   isnet-general-use) ont été essayés en premier et écartés : les deux
-   faisaient disparaître la Vespa (confondue avec l'arrière-plan à cause
-   de sa couleur crème claire) — GrabCut, moins "intelligent" mais piloté
-   par des zones de premier-plan/arrière-plan placées à la main, s'est
-   révélé plus fiable sur cette photo précise. Résultat exporté en
-   `assets/img/founder-vespa-cutout.webp` (fond entièrement transparent,
-   recadré à la boîte englobante du détourage — voir `assets/img/CREDITS.md`
-   pour la méthode complète et ses limites assumées, notamment un
-   fragment résiduel de mur derrière un des massifs, sacrifié plutôt que
-   risqué d'abîmer le reste du détourage en insistant).
-   **Structure, en pin façon `.senses-journey`/`.values-reel`** :
-   `.founder-dive` (wrapper haut, `height:280vh`, fournit la distance de
-   scroll) > `.founder-dive-sticky` (`position:sticky; height:100vh`,
-   colonne centrée) contenant l'eyebrow "La fondatrice" (fixe, ne zoome
-   pas), `.founder-scene-frame` (le cadre visible, `overflow:hidden`, SANS
-   fond/ombre/coins arrondis propres — la découpe repose directement sur
-   le bleu Méditerranéen de la section, pour se lire comme un objet 2D
-   posé sur un aplat plutôt que comme une photo encadrée ; `aspect-ratio`
-   calé pile sur les dimensions du fichier détouré — 1362:1369 — pour
-   qu'`object-fit:contain` n'introduise aucun décalage entre les
-   pourcentages de position de la carte et les pixels réels) et
-   `.founder-scene-caption` (signature, apparaît en fondu en fin de
-   parcours). À l'intérieur du cadre, `.founder-scene-zoom` (100% du
-   cadre) enveloppe À LA FOIS le détourage (`.founder-scene-cutout`, avec
-   un `filter:drop-shadow()` qui suit sa silhouette plutôt qu'un
-   `box-shadow` rectangulaire) et `.founder-menu-card` : les deux sont
-   donc scalés ensemble comme un seul bloc rigide par `updateFounderDive()`
-   (`main.js`), garantissant que la carte reste verrouillée au même
-   endroit visuel du comptoir à chaque étape du zoom sans calcul de
-   parallaxe séparé. */
-.founder-dive { position: relative; height: 280vh; background: var(--navy-900); }
-.founder-dive-sticky {
+   Founder — "mini vidéo" cinématique au scroll à travers un évènement
+   Simposio réel (2026-08-18). Remplace entièrement la plongée dans le
+   détourage/carte du stand Vespa (bullets précédents, historique complet
+   dans CLAUDE.md) : la cliente a rejeté toutes les versions basées sur un
+   détourage/traitement graphique d'une seule photo ("ça ne me plaît pas
+   du tout") et a demandé une impression de "passer dans un évènement...
+   et qu'on plonge jusqu'à une carte, un menu ou une assiette... comme
+   dans la vie réelle". Si `.founder-dive`/`.founder-scene-frame`/
+   `.founder-menu-card`/`founder-vespa-cutout.webp` réapparaissent ici,
+   c'est cette ancienne version (détourage + carte matérialisée), à ne
+   pas réintroduire sans qu'on le redemande.
+   **"Comme dans la vie réelle" = vraies photos, pas de détourage/duotone/
+   illustration** : 4 photos Simposio réelles et non retouchées
+   (`evenement-parasols-jaunes-table.jpg` → `evenement-tablee-diner-
+   bougies.jpg` → `evenement-rangee-spritz.jpg` →
+   `evenement-assiette-agrume-ceramique.jpg`, déjà utilisées ailleurs sur
+   le site, aucun nouveau crédit requis) s'enchaînent en fondu au scroll,
+   plan large (arrivée sous les parasols, tables encore vides) → plan
+   moyen (à table, bougies et bouquets) → détail (rangée de spritz,
+   moment aperitivo) → très gros plan (l'assiette) — une vraie
+   progression "on entre dans l'évènement puis on s'en approche", pas une
+   suite de photos interchangeables. La citation n'est jamais présentée
+   comme "imprimée" sur l'assiette (aucun outil de compositing
+   photoréaliste disponible dans cet environnement pour faire ça sans que
+   ça sonne faux) — elle apparaît en fondu par-dessus la scène finale,
+   technique éditoriale classique (citation de sortie sur un plan flouté),
+   qui reste honnête sur ce qu'est l'image plutôt que de simuler un
+   objet qui n'existe pas.
+   **Structure, en pin plein écran** (comme `.senses-journey`/
+   `.values-reel`, mais SANS le cadre étroit `.founder-scene-frame` de
+   l'ancienne version — ici la scène occupe tout le viewport pour un effet
+   immersif "on y est", pas une photo encadrée) : `.founder-story`
+   (wrapper, `height:420vh`, fournit la distance de scroll) >
+   `.founder-story-sticky` (`position:sticky; height:100vh`, plein écran)
+   contenant les 4 `.founder-story-scene` (empilées en `position:absolute`,
+   crossfade d'opacité + lent zoom avant piloté en JS par
+   `updateFounderStory()`, `main.js` — jamais de `transition`/`animation`
+   CSS sur leur `transform`, uniquement une valeur `style.transform`
+   recalculée à chaque frame de scroll, pour éviter le bug de collision
+   transition/animation déjà rencontré et corrigé sur `.values-reel-photo`,
+   cf. historique Valeurs plus haut dans ce fichier), deux bandes
+   `.founder-story-letterbox` (haut/bas, fixes, effet "format cinéma" qui
+   renforce l'impression de "mini vidéo" sans nécessiter un vrai fichier
+   vidéo), un `.founder-story-scrim` (dégradé sombre, opacité pilotée en
+   JS, qui ne s'intensifie qu'en toute fin de parcours pour garder la
+   lisibilité de la citation sans assombrir les 3 premières scènes) et
+   `.founder-story-quote` (citation + signature, fondu en toute fin). */
+.founder-story { position: relative; height: 420vh; background: var(--navy-900); }
+.founder-story-sticky {
   position: sticky;
   top: 0;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
+  width: 100%;
   overflow: hidden;
 }
-.founder-dive-eyebrow { color: var(--terracotta-300); }
-/* Le cadre reste overflow:hidden pour contenir le zoom (le contenu déborde
-   largement de sa boîte une fois agrandi ×3,4), mais n'a plus ni fond ni
-   ombre ni coins arrondis propres à lui — la découpe (fond transparent)
-   repose directement sur le bleu Méditerranéen de `.founder-dive`, pour
-   se lire comme un objet 2D posé sur un aplat de couleur plutôt que comme
-   une photo encadrée. `aspect-ratio` calé pile sur les dimensions réelles
-   du fichier recadré (1362×1369) pour qu'`object-fit:contain` n'ajoute
-   aucune marge/lettrboxing qui décalerait les pourcentages de position de
-   la carte ci-dessous. */
-.founder-scene-frame {
-  position: relative;
-  width: min(80vw, 34rem);
-  aspect-ratio: 1362 / 1369;
-  overflow: hidden;
-  flex-shrink: 1;
-}
-.founder-scene-zoom {
+.founder-story-letterbox {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  /* transform-origin décalé du centre géométrique de la carte (32.5%,
-     45.8%) vers 25.1% en x : à l'échelle maximale (×3.4), une mise à
-     l'échelle centrée pile sur la carte poussait son bord gauche hors du
-     cadre (le "S" de "Simposio" et "l'" d'"envie" rognés, mesuré par
-     script Playwright/capture d'écran) car 32.5% n'est pas au centre du
-     cadre — le décalage vers 25.1% (calculé pour équilibrer les marges
-     gauche/droite à ×3.4, cf. calcul dans l'historique du projet) recentre
-     la carte agrandie dans le cadre sans changer sa position réelle sur
-     le comptoir aux échelles faibles/intermédiaires (l'effet ne devient
-     sensible qu'à mesure que l'échelle s'éloigne de 1). */
-  transform-origin: 25.1% 45.8%;
-  will-change: transform;
+  left: 0;
+  right: 0;
+  height: 7vh;
+  min-height: 44px;
+  background: var(--navy-900);
+  z-index: 3;
+  pointer-events: none;
 }
-/* Pas de `filter:drop-shadow()` ici : un essai avait été fait pour suivre
-   la silhouette découpée (plutôt qu'un `box-shadow` rectangulaire), mais
-   Chromium produit un artefact de rendu réel avec cette combinaison
-   précise — un rectangle légèrement plus sombre que le fond navy,
-   visible en plein milieu de zones pourtant 100% transparentes de
-   l'image, uniquement quand le filtre est combiné à l'ancêtre
-   `.founder-scene-zoom` qui porte le `transform:scale()` du zoom au
-   scroll. Repéré par script Playwright (comparaison de pixels avant/
-   après désactivation du filtre, pas supposé) : ni réduire le rayon de
-   flou (`50px→18px`) ni isoler l'image sur son propre calque
-   (`transform:translateZ(0)`) n'a supprimé l'artefact — bug de
-   rastérisation du filtre sur calque transformé, pas un problème de
-   réglage. Le rendu reste net et lisible sans cette ombre (le détourage
-   duotone se suffit à lui-même comme objet posé sur le fond navy) ; si
-   `filter:drop-shadow` réapparaît ici, revérifier ce bug avant de le
-   garder. */
-.founder-scene-cutout {
+.founder-story-letterbox-top { top: 0; }
+.founder-story-letterbox-bottom { bottom: 0; }
+/* Décorrélé de la barre `.founder-story-letterbox-top` (qui reste fine,
+   effet "cadre cinéma") : positionné indépendamment avec la même marge de
+   dégagement que `.page-header` utilise déjà pour le header fixe du site
+   (`z-index:100`, ~91px de haut) — un essai précédent mettait l'eyebrow À
+   L'INTÉRIEUR de la barre fine (7vh, ~63px), plus courte que le header, ce
+   qui le faisait s'entrechoquer visuellement avec le logo/menu (capture
+   d'écran à l'appui, pas supposé). */
+.founder-story-eyebrow {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  top: calc(6.5rem + 0.4rem);
+  left: var(--space-4);
+  z-index: 3;
+  color: var(--terracotta-300);
 }
 
-/* La carte de menu : positionnée pour recouvrir exactement l'emplacement
-   des sachets de pâtes sur le comptoir en céramique (mesuré par script
-   Python sur le détourage recadré : bbox à 21.4–43.5% en largeur,
-   37.8–53.8% en hauteur — la carte déborde légèrement de cette bbox pour
-   une marge de sécurité). `rotate(-2.5deg)` : léger angle pour suivre la
-   perspective du comptoir, comme les petites étiquettes déjà présentes
-   sur les sachets.
-   **Matérialisation, pas simple apparition** (demande explicite de la
-   cliente — "on ne voit pas la carte, et peu à peu elle s'affiche... comme
-   si c'était directement intégré à la photo") : la carte démarre
-   invisible (`opacity:0` en base CSS, filet de sécurité si le JS
-   n'a pas encore tourné) et `updateFounderDive()` (`main.js`) pilote en
-   JS, en phase avec le même `progress` de scroll que le zoom, trois
-   propriétés à la fois — `opacity` (0→1), `filter:blur()` (6px→0, effet de
-   mise au point progressive) et une légère translation verticale
-   (`translateY(10px)→0`, comme si la carte se posait sur le comptoir) —
-   plutôt qu'un simple fondu, pour un effet de matérialisation plus
-   crédible. Voir `main.js` pour les bornes de progression exactes. */
-/* Deux pièges de dimensionnement rencontrés et corrigés ici, tous deux
-   repérés par mesure Playwright (pas supposés) :
-   1. `padding` en `%` se résout par rapport à la largeur du conteneur
-      ENGLOBANT (`.founder-scene-zoom`, ~544px), pas de la carte
-      elle-même (~136px) — `9% 10%` donnait donc ~49-54px de chaque côté
-      sur une carte de 136px de large, ne laissant quasiment plus de
-      largeur pour le texte (~25px), qui débordait alors massivement en
-      hauteur hors de la carte (texte visible sous la carte, sur le motif
-      en céramique). Corrigé en `padding` fixe, petit, en px.
-   2. Un `font-size` en `clamp()`/`vw` (ou même en unités de conteneur
-      `cqw`, essayées ensuite) ne suit pas fidèlement la taille RÉELLE de
-      la carte, qui est elle-même un pourcentage d'un cadre dont la
-      largeur plafonne de façon non linéaire (`min(80vw, 34rem)`) — la
-      carte passe d'environ 307px de large en grand écran à ~62px sur
-      mobile étroit, un rapport que ni `vw` ni `cqw` ne suivaient
-      correctement dans les tests (le second, `cqw`, se résolvait même à
-      des tailles quasi nulles dans cet environnement — support de
-      Container Queries pas assez fiable ici pour en dépendre seul, sans
-      compter les navigateurs réels des visiteurs). Corrigé en calculant
-      la taille de police en JS (`fitFounderCard()`, `main.js`) — même
-      principe que `fitPromiseLines()` déjà établi ailleurs sur le site :
-      mesurer l'espace réellement disponible et réduire la police jusqu'à
-      ce que le texte tienne, au chargement et au resize. */
-.founder-menu-card {
+.founder-story-scenes { position: absolute; inset: 0; z-index: 0; }
+/* Pas de `transition`/`animation` CSS sur `transform` ici — voir le
+   commentaire au-dessus de `.founder-story`. `opacity`, elle, garde une
+   transition CSS classique (une seule propriété, pas de risque de
+   collision) pour un fondu enchaîné doux entre deux scènes. */
+.founder-story-scene {
   position: absolute;
-  left: 20.4%;
-  top: 36.8%;
-  width: 24%;
-  height: 18%;
-  background: linear-gradient(165deg, #fffdf7 0%, var(--cream) 100%);
-  border-radius: 9px;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.6) inset,
-    0 14px 32px rgba(9, 18, 23, 0.34),
-    0 2px 6px rgba(9, 18, 23, 0.2);
-  transform: rotate(-1.1deg) translateY(10px);
-  opacity: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 9px;
-}
-.founder-menu-card-ornament {
-  position: relative;
-  width: 34%;
-  height: 1px;
-  background: var(--terracotta);
-  opacity: 0.75;
-  flex-shrink: 0;
-}
-.founder-menu-card-ornament::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--terracotta);
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-.founder-menu-card-quote {
-  position: relative;
-  z-index: 1;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.1s var(--ease);
+  will-change: opacity, transform;
+}
+.founder-story-scene.is-active { opacity: 1; }
+
+.founder-story-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(16, 31, 39, 0.15) 0%, rgba(16, 31, 39, 0.25) 55%, rgba(16, 31, 39, 0.82) 100%);
+  opacity: 0;
+  transition: opacity 1s var(--ease);
+  pointer-events: none;
+}
+.founder-story-scrim.is-visible { opacity: 1; }
+
+.founder-story-dots {
+  position: absolute;
+  left: 50%;
+  bottom: calc(7vh + 1.4rem);
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 0.5rem;
+}
+.founder-story-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: rgba(246, 241, 231, 0.35);
+  transition: background var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+}
+.founder-story-dot.is-active { background: var(--terracotta-300); transform: scale(1.35); }
+
+.founder-story-quote {
+  position: absolute;
+  left: 50%;
+  bottom: 14vh;
+  transform: translate(-50%, 16px);
+  z-index: 2;
+  width: min(90vw, 42rem);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 1s var(--ease), transform 1s var(--ease);
+  pointer-events: none;
+}
+.founder-story-quote.is-visible { opacity: 1; transform: translate(-50%, 0); }
+.founder-story-quote-text {
   font-family: var(--font-display);
   font-style: italic;
-  line-height: 1.24;
-  text-align: center;
-  color: var(--rosso-ombria);
+  line-height: 1.32;
+  font-size: clamp(1.15rem, 1.6vw + 0.85rem, 1.8rem);
+  color: var(--cream);
+  text-shadow: 0 2px 18px rgba(9, 18, 23, 0.55);
+  margin-bottom: 1.1rem;
 }
-
-.founder-scene-caption {
-  position: relative;
-  display: flex;
+.founder-story-signature {
+  display: inline-flex;
   align-items: center;
   gap: 0.9rem;
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease);
+  text-align: left;
 }
 .founder-avatar-minimal {
   flex: 0 0 auto;
@@ -1645,11 +1580,20 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   text-transform: none;
   color: var(--fg-muted-inverse);
 }
+@media (max-width: 700px) {
+  .founder-story-quote { bottom: 12vh; }
+  .founder-story-signature { flex-direction: column; text-align: center; gap: 0.5rem; }
+  .founder-signature-minimal { text-align: center; }
+}
 @media (prefers-reduced-motion: reduce) {
-  /* Le zoom reste un mapping 1:1 avec le scroll (comme le tracé des 5 sens
-     et le fil des Valeurs) — pas une animation autoplay, donc actif même
-     sous cette préférence ; seul le fondu de la signature est coupé. */
-  .founder-scene-caption { transition: none; }
+  /* Le crossfade et le zoom restent un mapping 1:1 avec le scroll (comme
+     le tracé des 5 sens et le fil des Valeurs) — pas une animation
+     autoplay, donc actifs même sous cette préférence ; seules les
+     transitions de fondu (opacity) sont neutralisées pour un affichage
+     instantané plutôt qu'un fondu forcé qui contredirait la préférence. */
+  .founder-story-scene, .founder-story-scrim, .founder-story-quote, .founder-story-dot {
+    transition: none !important;
+  }
 }
 
 /* ==========================================================================
