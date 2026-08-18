@@ -20,11 +20,13 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
 - **Site statique multi-pages**, HTML/CSS/JS vanilla — aucun framework, aucun
   build step. Chaque page est un fichier `.html` autonome avec balisage
   dupliqué (header, menu mobile, footer) plutôt qu'un système de templates.
-- **6 pages** : `index.html` (accueil), `univers.html`, `prestations.html`,
-  `projets.html` (mosaïque galerie), `engagements.html` (+ équipe),
-  `contact.html`. La page `realisations.html` (immersion 3D des
-  stands-véhicules, Three.js) a été retirée à la demande de la cliente —
-  voir « État d'avancement » ci-dessous.
+- **5 pages** : `index.html` (accueil), `prestations.html`,
+  `projets.html` (mosaïque galerie), `engagements.html` (À propos + équipe
+  + le mot de la fondatrice), `contact.html`. Deux pages ont été retirées à
+  la demande de la cliente — voir « État d'avancement » ci-dessous :
+  `realisations.html` (immersion 3D des stands-véhicules, Three.js) et,
+  plus récemment, `univers.html` (2026-08-18, son contenu redistribué sur
+  les pages restantes plutôt que supprimé — voir le même bloc).
 - **CSS** : un seul fichier `assets/css/style.css`, design
   tokens en variables `:root` (couleurs, espacements, rayons, durées). Pas de
   préprocesseur.
@@ -2568,6 +2570,86 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
     débordement, 0 erreur console.
   Regression Playwright complète (6 pages × 2 viewports) revérifiée après
   l'ensemble de ces cinq changements : 0 débordement, 0 erreur console.
+- **Engagements — cartes sur une seule ligne (2026-08-18)**
+  (`.engagement-card*`, `engagements.html`) : demande explicite de la
+  cliente ("met les cartes les unes à côté des autres sur la même ligne") —
+  remplace entièrement la grille en zigzag/cascade des 6 itérations
+  précédentes (positions `.engagement-card-pos-*`, fonction
+  `layoutEngagementCards()`). Les deux sont retirées ; si elles
+  réapparaissent dans un diff, c'est cette ancienne mise en page, à ne pas
+  réintroduire sans qu'on le redemande (voir plus haut pour l'historique
+  complet des 6 itérations de cascade, gardé pour référence).
+  **`.engagement-cards` passe en `display:flex; flex-direction:row;
+  flex-wrap:wrap`**, les 4 `<li>` en `flex:1 1 15rem; min-width:15rem;
+  max-width:16.5rem` — un vrai `min-width` (pas `min-width:0`) est ce qui
+  rend cette mise en page responsive sans breakpoint manuel : le
+  navigateur passe à la ligne suivante dès qu'il ne peut plus caser 4
+  cartes d'au moins 15rem, plutôt que de continuer à les rétrécir
+  indéfiniment. Sous 700px, comportement inchangé (colonne unique,
+  `width:min(92vw,22rem)`).
+  **Deux bugs réels trouvés et corrigés avant publication, aucun supposé** :
+  1. *Titre qui déborde/se fait couper* — `.engagement-card-title` et
+     `.engagement-card-back-title` utilisaient un `clamp()` avec un
+     coefficient `vw` calé sur l'ancienne carte (~27rem, quasi la largeur
+     du viewport) ; une fois 4 cartes par ligne (~15–16.5rem chacune, soit
+     environ un quart du viewport), ce coefficient continuait de calculer
+     une taille pensée pour une carte 4× plus large, et le mot
+     "Positionnement" (le plus long de tous les titres, 14 caractères)
+     débordait hors de la carte — invisible à l'œil car
+     `.engagement-card-face` a `overflow:hidden`, donc silencieusement
+     coupé plutôt qu'affiché en dépassement. Repéré par script Playwright
+     comparant `scrollWidth`/`clientWidth` du titre (pas par simple
+     inspection visuelle, qui ne montre qu'un texte tronqué sans indiquer
+     la cause). Corrigé en réduisant les `clamp()` (coefficient `vw`
+     nettement plus faible) et en ajoutant `overflow-wrap:break-word` en
+     filet de sécurité si un futur titre/traduction est encore plus long.
+  2. *Contenu du dos de la carte coupé verticalement* — plus sérieux :
+     avec `min-width:0` (avant le correctif ci-dessus), les cartes
+     pouvaient rétrécir jusqu'à ~135–165px à des largeurs d'écran
+     intermédiaires (tablette/petit ordinateur portable, ex. 768px) —
+     `.engagement-card-inner` gardant `aspect-ratio:5/6`, une carte plus
+     étroite est aussi plus basse, et le numéro+titre+description+"Retour"
+     du dos ne tenaient plus dans cette hauteur réduite : jusqu'à 261px de
+     contenu coupé par l'`overflow:hidden` de `.engagement-card-face`,
+     mesuré via `scrollHeight - clientHeight` à plusieurs largeurs. Ce
+     n'est pas ce qui a été corrigé en réduisant la police (le titre avant
+     ne débordait déjà plus) — c'est le `min-width` réel décrit ci-dessus
+     qui règle ce problème en empêchant les cartes de rétrécir sous une
+     hauteur viable, forçant un retour à la ligne à la place. Vérifié par
+     script Playwright à 6 largeurs (701 à 1920px) : 0 débordement de
+     titre, 0 contenu de dos coupé, 4 cartes bien sur une seule ligne aux
+     largeurs desktop courantes (1440, 1920), passage à une grille 2×2
+     lisible aux largeurs plus étroites plutôt que de casser.
+  Le mécanisme de flip/scale/parallaxe au scroll (`updateEngagementCards()`,
+  `main.js`) est entièrement inchangé — seule la disposition des cartes
+  change. Regression complète 6 pages × 2 viewports : 0 débordement,
+  0 erreur console.
+- **Promesse réutilisée sur l'accueil, échelle réduite via `data-scale`
+  (2026-08-18)** (`fitPromiseLines()`, `main.js`, section `.promise` sur
+  `index.html`) : dans le cadre du déplacement du contenu d'`univers.html`
+  (voir « État d'avancement » plus bas pour la vue d'ensemble), la cliente
+  a demandé d'appliquer exactement le même traitement typographique
+  "poster" (même photo `amalfi-coast-sunset.jpg`, mêmes 11 lignes/mêmes
+  classes `.promise-line-N`/`.promise-line-from-left/-right`) à la section
+  "Notre promesse" de la page d'accueil, mais avec une taille de police
+  0,75× celle calculée normalement. **Nouveau mécanisme `data-scale`** :
+  `fitPromiseLines()` lit désormais `promiseQuote.dataset.scale`
+  (`parseFloat(...) || 1`, donc `1` par défaut si l'attribut est absent) et
+  multiplie `sharedSize` par cette valeur juste après le calcul habituel
+  (taille idéale par ligne puis minimum partagé) — l'échelle s'applique
+  donc TOUJOURS relativement à la largeur réelle du conteneur de cette
+  instance précise, jamais une valeur en pixels recopiée depuis l'autre
+  page. `index.html` porte `data-scale="0.75"` sur `#promiseQuote` ; si
+  cet attribut est retiré ou si une valeur en dur remplace ce calcul
+  relatif, c'est une régression par rapport à ce mécanisme. Comme un seul
+  `#promiseQuote` existe par page au chargement (chaque page HTML est
+  indépendante), aucun risque de conflit entre les deux instances du site.
+  Vérifié par script Playwright : `font-size` calculé cohérent entre les 11
+  lignes (taille partagée, mécanisme `Math.min` inchangé), rendu visuel
+  conforme sur desktop et mobile (le `clamp()` CSS de repli sous 640px
+  reste inchangé et n'est pas concerné par `data-scale`, qui ne s'applique
+  qu'à la branche JS desktop/tablette). Regression complète 6 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
@@ -2592,6 +2674,46 @@ lui était propre ont été supprimés (Three.js self-hébergé dans
 `assets/js/event-scene.js`, modèles `assets/models/*.glb`, CSS `.event-*` /
 `.configurator-*` / `.spinner`). Tous les liens de nav/footer vers cette page
 ont été retirés des 6 pages restantes.
+
+🗑️ **Page Univers retirée, contenu redistribué (2026-08-18)** :
+contrairement à Réalisations ci-dessus, `univers.html` n'a pas été
+supprimée avec son contenu — la cliente a explicitement demandé de
+déplacer chaque section vers une autre page avant de supprimer le fichier,
+dans cet ordre précis (voir aussi les 3 bullets dédiés plus haut pour le
+détail technique de chaque déplacement) :
+1. **Promesse** (`.promise`, la citation "Suspendre le quotidien..." en
+   typographie poster décalée sur `amalfi-coast-sunset.jpg`) — le même
+   traitement est réappliqué sur `index.html` à la section "Notre
+   promesse" (ex-`.manifesto`, un simple blockquote sur fond uni), avec un
+   nouveau mécanisme `data-scale` sur `#promiseQuote` pour piloter une
+   taille réduite (`0.75` ici) sans dupliquer `fitPromiseLines()`
+   (`main.js`) — voir bullet dédié. **`.manifesto`/`.manifesto-eyebrow`/
+   `.manifesto-cta` sont supprimées de `style.css`** (plus aucun usage) ;
+   si elles réapparaissent dans un diff, c'est l'ancien bloc, à ne pas
+   réintroduire sans qu'on le redemande.
+2. **5 sens** (`#sensesJourney`, le chemin SVG scroll-dessiné) — déplacé
+   tel quel sur `index.html`, juste après la nouvelle section Promesse.
+   Aucun changement de markup/JS : le mécanisme (`main.js`) est déjà
+   indifférent à la page qui l'héberge, il cherche l'élément par id.
+3. **Le mot de la fondatrice** (`.founder-minimal`, citation minimaliste
+   sur fond crème) — déplacé sur `engagements.html` (À propos), en tout
+   dernier dans `<main>` (après la section Valeurs), pour préserver
+   l'alternance de fonds crème/navy déjà en place sur cette page (crème →
+   navy → crème-dim → navy → **crème**) — l'insérer ailleurs (ex. juste
+   après le bandeau titre, crème lui aussi) aurait cassé cette alternance.
+   Aucun changement de contenu ni de style, copié tel quel.
+Une fois ces trois déplacements faits et vérifiés (regression complète),
+`univers.html` a été supprimée, ainsi que tous les liens y menant : l'entrée
+"L'Univers" du menu mobile et du footer sur les 5 pages restantes, et le
+CTA du hero d'`index.html` ("Entrer dans l'univers"), repointé de
+`href="univers.html"` vers `href="#sensesJourney"` (ancre vers la nouvelle
+section sur la même page — le texte du lien n'a pas été changé, il reste
+cohérent avec cette nouvelle destination). Vérifié par script Playwright
+listant tous les `href` internes des 5 pages restantes × 2 viewports :
+aucun ne pointe vers `univers.html`, aucune requête 404, 0 débordement,
+0 erreur console. Si `univers.html` ou un lien `href="univers.html"`
+réapparaît dans un diff, c'est cette ancienne page, à ne pas réintroduire
+sans qu'on le redemande.
 
 ## Limites connues / à traiter avec la cliente
 

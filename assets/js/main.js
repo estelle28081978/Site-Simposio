@@ -147,6 +147,15 @@
       // .promise is min-height:100vh (not a hard height + overflow:hidden)
       // so the section grows taller/scrollable to fit instead of clipping.
       var sharedSize = Math.min.apply(null, idealSizes);
+      // Optional per-instance scale (2026-08-18): the home page reuses this
+      // exact same "poster" treatment/photo for its own "Notre promesse"
+      // section but at 3/4 the size, via data-scale="0.75" on #promiseQuote
+      // — applied last, after the fit-to-width math above, so the scaled
+      // instance is still sized relative to ITS OWN container width (not a
+      // fixed px value copied from the other page). Defaults to 1 (no
+      // change) when the attribute is absent.
+      var scale = parseFloat(promiseQuote.dataset.scale) || 1;
+      sharedSize *= scale;
 
       promiseLines.forEach(function (el) {
         el.style.fontSize = sharedSize.toFixed(1) + "px";
@@ -430,69 +439,6 @@
         btn.setAttribute("aria-expanded", String(!expanded));
       });
     });
-
-    // Cascading overlap layout (2026-08-17, 3rd pass — back to the literal
-    // "start at X% down the previous card" spec, with a new, explicit set
-    // of fractions from the client): card 2 starts at 3/4 down card 1,
-    // card 3 at 1/2 down card 2, card 4 at 2/3 down card 3 (updated in the
-    // 6th pass, was 1/3) — a tighter rhythm than the arithmetic -25pt/step
-    // used earlier. A CSS percentage
-    // margin-top resolves against the containing block's WIDTH, never a
-    // sibling's height, so this can't be done in pure CSS — computed here
-    // from real measured heights instead. Uses offsetHeight (the true
-    // layout box, unaffected by the scroll-driven scale() transform applied
-    // below) rather than getBoundingClientRect(). Disabled under 700px:
-    // cards there recenter into a single column and a plain CSS gap
-    // (`.engagement-card + .engagement-card`, style.css) reads far better
-    // than a stacked overlap on a narrow screen.
-    var engagementStartFractions = [0.75, 0.5, 2 / 3];
-    function layoutEngagementCards() {
-      if (window.innerWidth <= 700) {
-        engagementCards.forEach(function (card) {
-          card.style.marginTop = "";
-        });
-        return;
-      }
-      engagementCards.forEach(function (card, i) {
-        if (i === 0) {
-          card.style.marginTop = "";
-          return;
-        }
-        var prevHeight = engagementCards[i - 1].offsetHeight;
-        var startFraction = engagementStartFractions[i - 1] || 1 / 3;
-        var overlap = prevHeight * (1 - startFraction);
-        card.style.marginTop = -Math.round(overlap) + "px";
-
-        // Skip-pair guard (2026-08-17): the cascade above only reasons
-        // about the card immediately before it — it has no idea whether
-        // the card TWO positions back happens to lean the same
-        // horizontal direction (position classes are independent of this
-        // function). When that happens the pair can still collide even
-        // though neither one is "adjacent" in the cascade — e.g. with
-        // left/center-right/center-left/right, cards 2 and 4 both lean
-        // right and, with the fractions above, share ~84px of vertical
-        // space, which covered card 2's arrow button. Rather than forcing
-        // a specific horizontal ordering to dodge this (fragile — breaks
-        // again the moment positions change), nudge the margin down just
-        // enough to clear that earlier card whenever a real overlap is
-        // measured, keeping the requested overlap with the immediately
-        // preceding card intact and only touching this one when it's
-        // actually needed. 16px of breathing room on top of the exact
-        // clearance so the two never sit pixel-flush.
-        if (i >= 2) {
-          var skip = engagementCards[i - 2];
-          var skipRect = skip.getBoundingClientRect();
-          var cardRect = card.getBoundingClientRect();
-          var horizontallyClear = cardRect.right <= skipRect.left || cardRect.left >= skipRect.right;
-          if (!horizontallyClear && cardRect.top < skipRect.bottom) {
-            var extra = skipRect.bottom - cardRect.top + 16;
-            card.style.marginTop = Math.round(parseFloat(card.style.marginTop) + extra) + "px";
-          }
-        }
-      });
-    }
-    layoutEngagementCards();
-    window.addEventListener("resize", layoutEngagementCards);
 
     // Scroll-driven scale + parallax. Deliberately never touches
     // .engagement-card-inner (the flip element) — scale lives on the <li>,

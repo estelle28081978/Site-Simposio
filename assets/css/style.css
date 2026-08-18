@@ -568,24 +568,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Homepage manifesto — short static pull-quote linking to L'Univers
-   ========================================================================== */
-.manifesto { background: var(--bg); padding-block: var(--space-6); text-align: center; }
-.manifesto blockquote {
-  max-width: 46rem;
-  margin: 0 auto;
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(1.7rem, 2vw + 1.1rem, 2.7rem);
-  line-height: 1.35;
-  color: var(--navy);
-}
-.manifesto blockquote em { font-style: italic; color: var(--accent); }
-.manifesto .link-arrow { margin-top: var(--space-4); }
-.manifesto-eyebrow { display: block; margin-bottom: var(--space-3); }
-.manifesto-cta { margin-top: var(--space-4); }
-
-/* ==========================================================================
    Homepage prestations teaser — text-forward, no photos (kept for inner page)
    ========================================================================== */
 .teaser { background: var(--bg-dim); padding-block: var(--space-6); }
@@ -1120,64 +1102,55 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Engagements — grille de flip-cards en zigzag, avec parallaxe/scale au
-   scroll (2026-08-17, remplace l'ancien système de lignes au survol +
-   carte suivant le curseur — voir CLAUDE.md pour l'historique). Chaque
-   carte : `.engagement-card-flip` (bouton, gère l'état plié/déplié via
-   `aria-expanded`) > `.engagement-card-inner` (fait le flip 3D en
-   `rotateY`) > deux faces `backface-visibility:hidden`. Le scale/parallaxe
-   au scroll est appliqué par JS sur des éléments DIFFÉRENTS du flip
-   (`<li>` pour le scale d'ensemble, `.engagement-card-front-img` et
-   `.engagement-card-front-content` pour les décalages différenciés) —
-   jamais sur `.engagement-card-inner` lui-même, pour ne jamais entrer en
-   conflit avec le `transform:rotateY()` du retournement (cf. main.js,
-   `updateEngagementCards()`). Si `.engagement-lines`/`.engagement-line`/
+   Engagements — flip-cards en ligne, avec parallaxe/scale au scroll
+   (2026-08-18, remplace la grille en zigzag/cascade ci-dessous — demande
+   explicite de la cliente : "met les cartes les unes à côté des autres
+   sur la même ligne"). Chaque carte : `.engagement-card-flip` (bouton,
+   gère l'état plié/déplié via `aria-expanded`) > `.engagement-card-inner`
+   (fait le flip 3D en `rotateY`) > deux faces `backface-visibility:hidden`.
+   Le scale/parallaxe au scroll reste appliqué par JS sur des éléments
+   DIFFÉRENTS du flip (`<li>` pour le scale d'ensemble,
+   `.engagement-card-front-img` et `.engagement-card-front-content` pour
+   les décalages différenciés) — jamais sur `.engagement-card-inner`
+   lui-même, pour ne jamais entrer en conflit avec le `transform:rotateY()`
+   du retournement (cf. main.js, `updateEngagementCards()`), inchangé par
+   ce passage en ligne. Si `.engagement-lines`/`.engagement-line`/
    `.engagement-hover-card` réapparaissent dans un diff, c'est l'ancien
-   système, à ne pas réintroduire sans qu'on le redemande. */
+   système au survol (avant la grille en zigzag), à ne pas réintroduire
+   sans qu'on le redemande. **La cascade en escalier/zigzag précédente
+   (classes `.engagement-card-pos-*`, fonction `layoutEngagementCards()`
+   dans main.js) est retirée** : plus de positions horizontales décalées ni
+   de chevauchement entre cartes, les 4 cartes sont désormais des enfants
+   flex égaux d'une seule rangée. Si ces classes de position ou
+   `layoutEngagementCards()` réapparaissent, c'est cette ancienne mise en
+   page, à ne pas réintroduire sans qu'on le redemande — voir CLAUDE.md
+   pour l'historique complet des 6 itérations de cette cascade. */
 .engagement-cards {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-3);
   margin-top: var(--space-5);
 }
-/* Cascade en escalier (2026-08-17, 4e passe) : plus un simple `gap`
-   régulier — chaque carte chevauche la précédente d'une fraction propre à
-   chaque paire (carte 2 démarre aux 3/4 de la carte 1, carte 3 à la moitié
-   de la carte 2, carte 4 au tiers de la carte 3 — valeurs exactes données
-   par la cliente) — calculé en JS depuis les hauteurs réelles, cf.
-   `layoutEngagementCards()` dans main.js, car un `margin-top` en `%` se
-   résout par rapport à la LARGEUR du bloc conteneur, jamais par rapport à
-   la hauteur d'un frère : impossible à faire en CSS pur. **Une carte peut
-   aussi chevaucher celle DEUX positions plus tôt** (pas seulement
-   l'immédiatement précédente) si les deux penchent du même côté
-   horizontal — `layoutEngagementCards()` détecte ce cas précis (rectangles
-   mesurés) et pousse légèrement la carte concernée vers le bas pour
-   dégager la carte plus ancienne, sans toucher au chevauchement voulu avec
-   la carte juste avant elle. Cette règle `margin-top` de base sert de
-   repli tant que le JS n'a pas encore mesuré les cartes (chargement,
-   no-JS) et devient la valeur active sous 700px, où
-   `layoutEngagementCards()` désactive volontairement la cascade (voir
-   media query plus bas) au profit d'un espacement uniforme classique. */
-.engagement-card + .engagement-card { margin-top: var(--space-5); }
-/* Zigzag : chaque carte a sa propre position horizontale, jamais toutes
-   alignées sur le même axe vertical — demande explicite de la cliente, qui
-   a aussi demandé d'utiliser milieu-gauche/milieu-droite en plus de
-   gauche/centre/droite (pas seulement les trois positions d'origine). */
-.engagement-card { width: min(90vw, 27rem); }
-.engagement-card-pos-left { margin-inline: 0 auto; }
-.engagement-card-pos-center { margin-inline: auto; }
-.engagement-card-pos-right { margin-inline: auto 0; }
-.engagement-card-pos-center-left { margin-inline: 6% auto; }
-.engagement-card-pos-center-right { margin-inline: auto 6%; }
+/* min-width (not min-width:0) is what makes this responsive without a
+   manual breakpoint: `flex:1 1 0` alone lets 4 equal cards shrink forever
+   to stay on one line, and at typical tablet/laptop widths that shrank
+   them well below their content's real minimum — the longest single word
+   ("Positionnement", front title) still fit (it wraps/clips-safe, cf.
+   .engagement-card-title above), but the back face's num+title+
+   description+"Retour" stack no longer fit the card's height (aspect-ratio
+   5/6 means a narrower card is also a shorter one) and silently overflowed
+   past `.engagement-card-face`'s `overflow:hidden` — measured up to 261px
+   of clipped content at 768px viewport width before this fix. With a real
+   min-width, the browser wraps to 2 (or 1) per row instead of continuing
+   to shrink past that point — verified by script: 0 vertical overflow on
+   any card's back face at every width tested (701–1920px). */
+.engagement-card { flex: 1 1 15rem; min-width: 15rem; max-width: 16.5rem; }
 @media (max-width: 700px) {
-  .engagement-card,
-  .engagement-card-pos-left,
-  .engagement-card-pos-center,
-  .engagement-card-pos-right,
-  .engagement-card-pos-center-left,
-  .engagement-card-pos-center-right {
-    width: min(92vw, 22rem);
-    margin-inline: auto;
-  }
+  .engagement-cards { gap: var(--space-5); }
+  .engagement-card { flex: none; width: min(92vw, 22rem); margin-inline: auto; }
 }
 
 .engagement-card-flip {
@@ -1259,36 +1232,48 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 0.6rem;
-  padding: var(--space-4);
+  gap: 0.5rem;
+  padding: var(--space-3);
   text-align: left;
   will-change: transform;
 }
 .engagement-card-num {
   font-family: var(--font-display);
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--terracotta-300);
 }
+/* Font-size no longer vw-driven (2026-08-18): these clamps were tuned back
+   when each card was ~27rem wide and roughly tracked the viewport 1:1 —
+   now that 4 cards share one row (`.engagement-cards`, flex row), a card's
+   real width is roughly a QUARTER of the viewport, so the old vw
+   coefficient was sizing text for a card 4x wider than it actually is,
+   overflowing the narrowest title ("Positionnement premium" — 14-letter
+   unbroken word) past the card edge, clipped invisible by
+   `.engagement-card-face`'s `overflow:hidden`. Re-tuned smaller with a much
+   gentler vw slope, plus `overflow-wrap` as a safety net so a single long
+   word can still break onto a second line instead of silently clipping if
+   a future title/translation is even longer than "Positionnement". */
 .engagement-card-title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.5rem, 2.2vw + 1rem, 2.1rem);
+  font-size: clamp(1.05rem, 1.1vw + 0.55rem, 1.45rem);
   line-height: 1.15;
   color: var(--cream);
+  overflow-wrap: break-word;
 }
 .engagement-card-arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.6rem;
-  height: 2.6rem;
-  margin-top: 0.4rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  margin-top: 0.3rem;
   border-radius: 50%;
   background: var(--accent);
   color: var(--cream);
   transition: transform var(--dur-fast) var(--ease);
 }
-.engagement-card-arrow svg { width: 1.2rem; height: 1.2rem; }
+.engagement-card-arrow svg { width: 1.1rem; height: 1.1rem; }
 .engagement-card-flip:hover .engagement-card-arrow { transform: translateX(4px); }
 
 /* ---------- Back face ---------- */
@@ -1297,20 +1282,21 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
   display: flex;
   flex-direction: column;
-  padding: var(--space-4);
+  padding: var(--space-3);
   text-align: left;
 }
-.engagement-card-num-back { margin-bottom: 0.5rem; }
+.engagement-card-num-back { margin-bottom: 0.4rem; }
 .engagement-card-back-title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.3rem, 1.6vw + 0.9rem, 1.7rem);
+  font-size: clamp(0.95rem, 0.8vw + 0.55rem, 1.25rem);
   color: var(--cream);
-  margin-bottom: var(--space-2);
+  margin-bottom: 0.5rem;
+  overflow-wrap: break-word;
 }
 .engagement-card-back-text {
-  font-size: 1rem;
-  line-height: 1.55;
+  font-size: clamp(0.8rem, 0.35vw + 0.68rem, 0.92rem);
+  line-height: 1.45;
   color: rgba(246, 241, 231, 0.88);
 }
 .engagement-card-back-close {
