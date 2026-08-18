@@ -2494,6 +2494,62 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   les éléments de chaque page et comptant les styles de bordure `dashed`
   calculés (`getComputedStyle`) : 0 sur les 6 pages. Regression complète
   6 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Cinq retouches ponctuelles (2026-08-18)**, demandées ensemble par la
+  cliente sur des pages différentes.
+  - **Hero `index.html` plein écran** : `.hero` passe de `min-height: 94svh`
+    à `100svh` — auparavant un fin liseré du `.stats-band` terracotta qui
+    suit restait visible en bas d'écran au chargement ; désormais le
+    carrousel photo occupe tout l'écran et le bandeau chiffres n'apparaît
+    qu'au scroll, comme demandé.
+  - **`.stats-band-grid` centré** : chaque chiffre clé (`dt`/`dd`) est
+    maintenant centré dans sa colonne (`text-align:center` sur
+    `.stats-band-grid > div`, `margin-inline:auto` sur `dd` pour que son
+    `max-width` reste centré) plutôt que collé à gauche contre le séparateur.
+  - **Boutons "haut de page"/"bas de page" sur la mosaïque Projets**
+    (`.page-scroll-nav`, `projets.html`) : deux boutons ronds fixes, alignés
+    à droite, verticalement centrés à l'écran, chacun avec juste la pointe
+    d'un chevron (pas de flèche complète) — `scrollTopBtn`/`scrollBottomBtn`
+    dans `main.js` font un `window.scrollTo` (haut de page / bas de la page
+    entière, pas seulement de la mosaïque), en `smooth` sauf
+    `prefers-reduced-motion`.
+  - **Carré terracotta retiré du fond des cartes Engagements**
+    (`.engagements::after`, `engagements.html`) : la cliente le trouvait trop
+    présent dans le fond des flip-cards ; supprimé entièrement (le calque de
+    lueurs animées `.engagements::before` reste inchangé). Si ce carré
+    réapparaît dans un diff, ne pas le réintroduire sans qu'on le redemande.
+  - **Formulaire de contact compacté une seconde fois** (`.form-card` et son
+    contenu, `contact.html`) : après un premier compactage le 2026-08-17
+    (voir plus haut, 1155px→851px à 1440×900), toujours trop haut sur l'écran
+    réel de la cliente — réduit encore (padding carte 2.25rem→1.75rem,
+    marges/gaps des groupes et lignes 1rem→0.7rem, padding vertical des
+    champs 0.6em→0.45em, hauteur mini des textarea 64px→48px, padding des
+    `.service-option` 0.55em→0.4em) : **851px→773px** à 1440×900, vérifié
+    par script Playwright + capture d'écran — le formulaire complet (jusqu'au
+    bouton "Envoyer ma demande" et la note en dessous) tient désormais dans
+    un viewport de 900px de haut.
+  - **Effet d'apparition des formules Prestations défloqué (gèle corrigé)**
+    (`.formula-slide-left`/`.formula-slide-right`, `style.css` +
+    `decoding="async"` sur les 4 `.world-media-photo`, `prestations.html`) :
+    la cliente signalait un freeze/saccade au scroll sur cette page. Cause
+    probable identifiée : `filter: blur(7px→0)` était dans la `transition`
+    de l'article `.world` (quasi plein écran, contient une grande photo
+    encore `loading="lazy"` à ce moment précis du scroll) — animer un filtre
+    de flou force un re-rasterize de tout ce sous-arbre à chaque frame,
+    et ça coïncidait avec le décodage de l'image qui vient tout juste
+    d'entrer dans le viewport. Corrigé en sortant `filter` de la liste
+    `transition` (le flou passe donc instantanément de 7px à 0 au lieu de
+    s'animer sur 0.55s — l'effet "point net progressif" reste visible mais
+    ne coûte plus une rastérisation par frame), en ajoutant
+    `will-change: transform, opacity` (retiré une fois `.is-visible`, pour
+    ne pas garder le calque promu indéfiniment) et `decoding="async"` sur
+    les 4 photos pour que leur décodage ne bloque pas le thread principal
+    pile au moment du reveal. Si `filter` réapparaît dans cette liste
+    `transition`, revérifier ce risque de gel avant de le garder. Vérifié
+    par script Playwright (classe/`filter` calculé après transition,
+    `blur(0px)` atteint) et regression complète 6 pages × 2 viewports : 0
+    débordement, 0 erreur console.
+  Regression Playwright complète (6 pages × 2 viewports) revérifiée après
+  l'ensemble de ces cinq changements : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 

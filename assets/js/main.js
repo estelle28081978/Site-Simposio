@@ -855,6 +855,20 @@
     });
   }
 
+  /* ---------- Projets: jump-to-top / jump-to-bottom buttons ---------- */
+  var scrollTopBtn = document.getElementById("scrollTopBtn");
+  var scrollBottomBtn = document.getElementById("scrollBottomBtn");
+  if (scrollTopBtn) {
+    scrollTopBtn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+    });
+  }
+  if (scrollBottomBtn) {
+    scrollBottomBtn.addEventListener("click", function () {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: reducedMotion ? "auto" : "smooth" });
+    });
+  }
+
   /* ---------- Hero stat count-up ---------- */
   var countEl = document.querySelector("[data-count]");
   if (countEl && "IntersectionObserver" in window) {

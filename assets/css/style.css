@@ -650,7 +650,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    ========================================================================== */
 .hero {
   position: relative;
-  min-height: 94svh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -734,10 +734,10 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-4);
 }
-.stats-band-grid > div { padding-left: var(--space-3); border-left: 1.5px solid rgba(255, 255, 255, 0.3); }
+.stats-band-grid > div { padding-left: var(--space-3); border-left: 1.5px solid rgba(255, 255, 255, 0.3); text-align: center; }
 .stats-band-grid > div:first-child { padding-left: 0; border-left: none; }
 .stats-band-grid dt { font-family: var(--font-display); font-size: clamp(2rem, 2vw + 1.2rem, 3rem); color: var(--white); }
-.stats-band-grid dd { font-size: 0.8rem; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.82); margin-top: 0.6rem; max-width: 20rem; }
+.stats-band-grid dd { font-size: 0.8rem; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.82); margin-top: 0.6rem; max-width: 20rem; margin-inline: auto; }
 @media (max-width: 700px) {
   .stats-band-grid { grid-template-columns: 1fr; gap: var(--space-3); }
   .stats-band-grid > div { padding-left: var(--space-3); border-left: 2px solid rgba(255, 255, 255, 0.3); }
@@ -1613,6 +1613,41 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mosaic-hint svg { width: 16px; height: 16px; }
 .mosaic-hint.is-hidden { opacity: 0; }
 
+/* Fixed right-aligned pair of buttons ("just the tip of an arrow", no
+   shaft) to jump straight to the top or bottom of the page, regardless of
+   current scroll position — not confined to the mosaic viewport itself. */
+.page-scroll-nav {
+  position: fixed;
+  right: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  z-index: 50;
+}
+.page-scroll-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(16, 31, 39, 0.65);
+  backdrop-filter: blur(6px);
+  color: var(--cream);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.page-scroll-nav-btn svg { width: 18px; height: 18px; }
+.page-scroll-nav-btn:hover { background: var(--terracotta); transform: translateY(-2px); }
+@media (max-width: 700px) {
+  .page-scroll-nav { right: var(--space-2); }
+  .page-scroll-nav-btn { width: 2.3rem; height: 2.3rem; }
+  .page-scroll-nav-btn svg { width: 15px; height: 15px; }
+}
+
 /* ==========================================================================
    Engagements & Talents
    ========================================================================== */
@@ -1628,9 +1663,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    même technique que `.values-sticky::before` (12ᵉ itération des Valeurs,
    voir CLAUDE.md), adaptée ici à une simple section non-sticky. Remplace le
    fond bicolore statique précédent. Le petit carré terracotta décoratif du
-   coin (ex-`.engagements::before`) est passé sur `::after` pour libérer
-   `::before` pour ce calque animé — les deux pseudo-éléments restent sous
-   `.container` (z-index:1). */
+   coin (`.engagements::after`) a été retiré à la demande de la cliente
+   (2026-08-18, jugé trop présent dans le fond des flip-cards) — ce
+   pseudo-élément reste sous `.container` (z-index:1). */
 .engagements::before {
   content: "";
   position: absolute;
@@ -1651,20 +1686,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 @media (prefers-reduced-motion: reduce) {
   .engagements::before { animation: none; }
-}
-.engagements::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-  width: 9rem;
-  height: 9rem;
-  right: -2rem;
-  bottom: -2rem;
-  border-radius: var(--radius);
-  background: var(--terracotta);
-  transform: rotate(12deg);
-  opacity: 0.9;
 }
 .engagements .container { position: relative; z-index: 1; }
 .engagements .lede { color: rgba(255, 255, 255, 0.88); }
@@ -2335,14 +2356,14 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 
 /* Service picker — visual selectable cards instead of a plain <select>,
    native radios under the hood so it stays keyboard/screen-reader friendly. */
-.service-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+.service-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
 @media (min-width: 640px) { .service-picker { grid-template-columns: repeat(3, 1fr); } }
 .service-option {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.55em 0.9em;
+  gap: 0.1rem;
+  padding: 0.4em 0.9em;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--white);
@@ -2412,10 +2433,12 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   box-shadow: 0 30px 60px -34px rgba(28, 59, 74, 0.35);
 }
 /* Compacted (2026-08-17) so the whole card fits closer to a single laptop
-   screen — was var(--space-4)/var(--space-5), ~1155px tall at 1440x900. */
-@media (min-width: 600px) { .form-card { padding: 2.25rem; } }
+   screen — was var(--space-4)/var(--space-5), ~1155px tall at 1440x900.
+   Compacted further (2026-08-18, still didn't fit on the client's actual
+   screen) — padding/margins/gaps below all reduced a second time. */
+@media (min-width: 600px) { .form-card { padding: 1.75rem; } }
 
-.form-group { margin-bottom: var(--space-2); }
+.form-group { margin-bottom: 0.7rem; }
 .form-group-label {
   display: block;
   font-family: var(--font-subtitle);
@@ -2424,10 +2447,10 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 0.85rem;
+  margin-bottom: 0.6rem;
 }
 
-.form-row { display: grid; gap: var(--space-2); margin-bottom: var(--space-2); }
+.form-row { display: grid; gap: 0.7rem; margin-bottom: 0.7rem; }
 @media (min-width: 560px) { .form-row.cols-2 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 560px) { .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
 
@@ -2436,7 +2459,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 
 .field input, .field select, .field textarea {
   width: 100%;
-  padding: 0.6em 1.1em;
+  padding: 0.45em 1.1em;
   border: 1.5px solid var(--border);
   border-radius: 999px;
   background: var(--white);
@@ -2451,13 +2474,13 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(193, 98, 45, 0.15);
 }
-.field textarea { resize: vertical; min-height: 64px; border-radius: var(--radius); }
+.field textarea { resize: vertical; min-height: 48px; border-radius: var(--radius); }
 
 .field-error { display: none; font-size: 0.78rem; color: var(--accent-hover); margin-top: 0.4rem; font-weight: 500; }
 .field.has-error input, .field.has-error select, .field.has-error textarea { border-color: var(--accent-hover); }
 .field.has-error .field-error { display: block; }
 
-.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
+.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: 0.7rem; }
 .form-note { font-size: 0.78rem; color: var(--fg-muted); }
 
 .form-success {
@@ -2520,18 +2543,31 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    of two. Applied to the .world article itself so the photo (absolutely
    positioned inside it) rides along as one rigid piece. Distance is large and
    the duration is scaled up to match, so the sweep reads as more dramatic
-   without feeling rushed; a soft focus-pull (blur-to-sharp) adds a touch of
-   polish but clears quickly on its own timer so the photo reads sharp well
-   before the (slower) slide has finished settling into place. */
+   without feeling rushed.
+   Freeze/stutter fix (2026-08-18): `filter: blur()` used to be in the
+   `transition` list too (a short 0.55s focus-pull, blur-to-sharp), animated
+   on the whole `.world` article — nearly a full viewport, containing a
+   large lazy-loaded full-bleed photo. Animating a blur filter forces the
+   browser to re-rasterize that entire subtree every frame, and this was
+   firing at the exact moment the section's photo was first decoding
+   (`loading="lazy"`) — the two together were the freeze the client
+   reported while scrolling through the formulas. `filter` is no longer in
+   the `transition` list, so blur still starts at 7px and ends at 0 (same
+   "focus pull" look) but snaps instantly instead of animating frame by
+   frame — only `opacity`/`transform` (cheap, compositor-only) animate now.
+   `will-change` hints the browser to promote the layer ahead of time so
+   the transform/opacity sweep itself doesn't cause a paint hit either;
+   removed again once revealed so the promoted layer isn't kept forever. */
 [data-reveal].formula-slide-left, [data-reveal].formula-slide-right {
   opacity: 0;
   filter: blur(7px);
-  transition: opacity 1.3s var(--ease), transform 1.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.55s var(--ease);
+  will-change: transform, opacity;
+  transition: opacity 1.3s var(--ease), transform 1.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 [data-reveal].formula-slide-left { transform: translateX(max(-26vw, -480px)) scale(0.96); }
 [data-reveal].formula-slide-right { transform: translateX(min(26vw, 480px)) scale(0.96); }
 [data-reveal].formula-slide-left.is-visible,
-[data-reveal].formula-slide-right.is-visible { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+[data-reveal].formula-slide-right.is-visible { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); will-change: auto; }
 @media (prefers-reduced-motion: reduce) {
   [data-reveal].formula-slide-left, [data-reveal].formula-slide-right { opacity: 1; transform: none; filter: none; }
 }
