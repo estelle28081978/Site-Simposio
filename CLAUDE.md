@@ -2907,6 +2907,66 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   768px après correctif : 123px×4, contre 112.6/112.6/141.5/125.4px avant)
   et capture d'écran à 390/768/1440px. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Motif "coin tranché" retiré, méthodologie retravaillée en version
+  premium/arrondie + animations (2026-08-18)** : deux demandes explicites
+  de la cliente sur le rendu livré juste au-dessus. D'une part retirer le
+  motif de coin tranché partout où il avait été posé — elle dessinera
+  elle-même le motif récurrent de la marque, ce chantier n'est donc plus
+  au programme ici. D'autre part retravailler "Notre méthodologie" pour un
+  rendu plus premium, avec des animations et des formes moins carrées/plus
+  arrondies.
+  **Badge "100% B2B" (`.stats-band-grid`)** : la règle
+  `.stats-band-grid > div.is-b2b dt` (fond navy, `clip-path` biseauté)
+  est supprimée — ce `dt` hérite de nouveau des règles génériques
+  partagées avec les 3 autres chiffres (même `--font-display`, même
+  couleur blanche), identique en tout point à "4"/"5 sens"/"Alsace". La
+  classe `.is-b2b` reste sur le `<div>` dans `index.html` (accroche
+  neutre, aucun effet CSS actuel) au cas où un traitement différencié
+  serait redemandé plus tard. Si une règle de fond/`clip-path` réapparaît
+  sur `.is-b2b dt`, c'est cette ancienne version, à ne pas réintroduire
+  sans qu'on le redemande.
+  **"Notre méthodologie" (`.method-step*`)** : le `clip-path` biseauté du
+  panneau est remplacé par des coins très arrondis (`border-radius:
+  var(--radius-lg)`, 36px) et un dégradé subtil (`linear-gradient(155deg,
+  var(--navy-900), var(--navy))`) au lieu d'un aplat — plus premium qu'un
+  bloc de couleur uni. Le badge numéroté, auparavant un losange
+  (`rotate(45deg)` + contre-rotation du texte pour rester lisible), devient
+  un simple cercle (`border-radius:50%`) — cohérent avec la demande de
+  formes moins carrées, et markup simplifié au passage (plus besoin du
+  `<span>` interne contre-tourné). **Animations ajoutées** :
+  1. Survol/focus (`:hover`, `:focus-within` pour l'accessibilité clavier) :
+     le panneau se soulève (`translateY(-8px)`) avec une ombre qui
+     s'accentue (`box-shadow` plus large/plus sombre), et le badge
+     numéroté grossit légèrement en pivotant (`scale(1.12) rotate(-8deg)`)
+     — un détail ludique qui n'était pas possible avec l'ancien losange
+     (rotation déjà utilisée pour la forme elle-même, pas disponible comme
+     effet de survol).
+  2. Entrée en cascade retravaillée : plutôt que le reveal générique
+     `[data-reveal-group] > *` du site (fondu + `translateY(20px)` simple,
+     80ms d'écart entre enfants — toujours utilisé ailleurs, ex.
+     `.contact-band-methods`), un override ciblé
+     `.method-steps-list[data-reveal-group] > .method-step` combine fondu +
+     montée plus prononcée + léger zoom (`translateY(36px) scale(0.96)` →
+     `translateY(0) scale(1)`), avec un écart plus long entre les 3 cartes
+     (140ms au lieu de 80ms) pour un effet plus posé/premium sur une
+     section qui n'en contient que 3. Même schéma que l'override déjà en
+     place sur `.promise-quote[data-reveal-group]` plus haut dans ce
+     fichier (règle spécifique plutôt que modification de la règle
+     générique partagée par tout le site) ; règle
+     `prefers-reduced-motion: reduce` dédiée ajoutée en conséquence,
+     cohérente avec la même convention.
+  Si `clip-path: polygon(...)` réapparaît sur `.method-step-panel`, si le
+  badge redevient un losange `rotate(45deg)` avec un `<span>` interne
+  contre-tourné, ou si `.method-steps-list[data-reveal-group] >
+  .method-step` disparaît (reveal retombé sur le générique simple), c'est
+  un retour à une version précédente, à ne pas réintroduire sans qu'on le
+  redemande.
+  Vérifié par script Playwright (0 débordement à 390/768/1024/1440/1600/
+  1920px, badge B2B confirmé identique aux 3 autres chiffres — même
+  `background: transparent`, plus de `clip-path`) et capture d'écran
+  (état normal + état survolé sur la 1ʳᵉ carte, confirmant le soulèvement
+  et l'ombre accentuée). Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
