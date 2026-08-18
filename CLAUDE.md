@@ -2780,6 +2780,133 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   toutes les lignes revenues à `translateX(0)` une fois révélées.
   Regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Nouveau motif de marque : le "coin tranché" (2026-08-18)** — en réponse
+  à une demande explicite de la cliente ("crée un motif graphique récurrent
+  propre à la marque qui est original, impactant et qui fait premium"),
+  après un échange où elle a précisé vouloir un retour purement sur la
+  forme (mise en page, motifs visuels), pas sur le texte (pas encore
+  travaillé). Un geste géométrique simple — un panneau dont le bord droit
+  est tranché en diagonale (`clip-path: polygon(0 0, calc(100% - Xrem) 0,
+  100% 100%, 0 100%)`), évoquant un ticket/une note tranchée plutôt qu'un
+  rectangle plat — choisi pour être réutilisable à plusieurs échelles sans
+  dépendre d'un nouveau logo (la cliente n'a pas encore dessiné le sien).
+  **Deux premiers usages, sur `index.html`** (voir les deux bullets
+  suivants pour le détail de chaque section) :
+  1. À grande échelle : les 3 panneaux de la section "Notre méthodologie"
+     (`.method-step-panel`).
+  2. À petite échelle : le badge "100% B2B" du bandeau chiffres clés
+     (`.stats-band-grid > div.is-b2b dt`).
+  **Vocation volontairement extensible, pas rétroactive** : ce motif n'a
+  PAS été appliqué rétroactivement aux marqueurs numérotés existants
+  ailleurs sur le site (points du parcours des 5 sens, tampons du
+  carrousel Valeurs, numéros des flip-cards Engagements) — un retrofit
+  large aurait été un changement de forme non demandé sur des sections
+  déjà validées par la cliente à plusieurs itérations. Documenté ici comme
+  le nouveau vocabulaire de référence pour toute future extension
+  (marqueurs numérotés, séparateurs de section, badges) si la cliente
+  souhaite le généraliser. Si un futur logo est dessiné, ce biais
+  diagonal est un candidat naturel à y faire écho (mentionné à la cliente
+  en discussion, non implémenté).
+- **"Composons ensemble" fusionné avec une nouvelle section "Notre
+  méthodologie" (2026-08-18)** (`.method-cta*`, `index.html`) : demande
+  explicite de la cliente, avec une capture d'écran d'un autre site
+  (mise en page à étudier, pas leur identité de marque) comme référence —
+  grand titre empilé à gauche sur fond clair + panneaux numérotés à bord
+  tranché empilés à droite. **Remplace entièrement** l'ancien bandeau CTA
+  (`.contact`/`.contact-grid`/`.contact-intro`/`.contact-info`, colonne
+  unique centrée sur fond terracotta plein cadre, lui-même un remplacement
+  d'un dégradé rouge encore antérieur) — ces classes et leur CSS ont été
+  supprimés (y compris `.contact::after` du sélecteur partagé de texture
+  de grain, qui ne s'applique plus qu'à `.hero`/`.senses-journey-sticky`).
+  Si `.contact`/`.contact-grid`/`.contact-intro` réapparaissent dans un
+  diff, c'est cette ancienne version, à ne pas réintroduire sans qu'on le
+  redemande.
+  **Fond repassé en crème** (`.method-cta`, `var(--bg)`) au lieu du
+  terracotta plein cadre précédent — inspiré de la référence de la
+  cliente, et corrige au passage une remarque déjà notée plus haut dans ce
+  fichier ("deux sections sombres redeviennent adjacentes en fin de
+  page") : l'ordre devient 5 sens (sombre) → ce bandeau (crème) → footer
+  (sombre), une vraie alternance plutôt que deux sections sombres
+  consécutives.
+  **Deux colonnes** (`.method-cta-grid`, `0.85fr 1.15fr` à partir de
+  960px, empilé en dessous) : à gauche `.method-cta-intro`, le contenu CTA
+  inchangé au mot près (eyebrow "Composons ensemble" / h2 / lede / boutons
+  devis+projets) mais recoloré pour un fond clair — l'eyebrow et le lede
+  perdent leurs classes `on-dark` (devenues inutiles), et le bouton
+  secondaire passe de `.btn-outline` (pensé pour un fond sombre : bordure/
+  fond quasi transparents en blanc, invisibles sur crème) à une nouvelle
+  classe `.btn-outline-dark` (texte/bordure navy, transparent, s'inverse
+  au survol) ajoutée dans le bloc `.btn-ghost` du fichier. À droite
+  `.method-steps` : eyebrow "Notre méthodologie" + 3 `<li class="method-
+  step">` en cascade légèrement décalée horizontalement (`margin-left`
+  croissant puis décroissant sur les cartes 2 et 3, pas de chevauchement
+  vertical — volontairement plus simple que les 6 itérations de cascade
+  des cartes Engagements documentées plus haut, qui n'ont plus de raison
+  d'être reproduites ici) et un texte de clôture
+  (`.method-steps-note`, séparé par un trait plein — pas pointillé,
+  cohérent avec le retrait sitewide des pointillés du 2026-08-17).
+  **Contenu des 3 étapes, à valider avec la cliente comme le reste du
+  texte du site** (pas repris d'un cahier des charges existant, rédigé
+  pour cette nouvelle section) : 01 Écouter (cadrage besoins/budget), 02
+  Concevoir (proposition détaillée), 03 Orchestrer (pilotage jour J).
+  **Bug réel trouvé et corrigé avant publication** : le badge numéroté en
+  losange (`.method-step-num`) était d'abord un enfant positionné en
+  absolute À L'INTÉRIEUR du panneau à coin tranché — `clip-path` découpe
+  tout ce qui est peint dans l'élément, y compris un descendant qui déborde
+  de sa boîte, donc la moitié du losange qui dépasse au-dessus du bord
+  supérieur était rognée (repéré par capture d'écran : triangle tronqué au
+  lieu d'un losange complet, pas visible en relisant le CSS seul). Corrigé
+  en séparant le panneau clippé (nouvelle classe `.method-step-panel`,
+  enfant de `.method-step`) du badge numéroté (resté enfant direct de
+  `.method-step`, qui lui n'a pas de `clip-path`) — le badge peut
+  déborder librement au-dessus du panneau sans être rogné.
+  **Second bug trouvé et corrigé** : sur mobile (empilement à une colonne),
+  le `margin-bottom` hérité de la règle générique `.hero-actions` (pensée
+  pour un hero où un autre élément suit dans le même bloc) s'ajoutait au
+  `gap` de la grille `.method-cta-grid` (7rem), créant un vide d'environ
+  184px entre les boutons et "Notre méthodologie" (repéré par capture
+  d'écran, invisible sur desktop où les 2 colonnes sont côte-à-côte donc ce
+  margin-bottom n'a pas d'effet visible) — corrigé en mettant ce
+  margin-bottom à 0 pour `.method-cta-intro .hero-actions` et en réduisant
+  le `gap` de la grille à `var(--space-5)` sous 700px.
+  Vérifié par script Playwright (position/largeur de chaque panneau,
+  0 débordement horizontal à 390/768/1024/1440/1600/1920px, reveal
+  `[data-reveal-group]` déclenché par un vrai scroll — pas seulement forcé
+  en JS — et opacité confirmée à 1 après) et capture d'écran desktop +
+  mobile. Regression complète 5 pages × 2 viewports : 0 débordement,
+  0 erreur console, 0 lien interne cassé.
+- **Bandeau chiffres clés — repère "100% B2B" (2026-08-18)**
+  (`.stats-band-grid`, `index.html`) : en réponse à la question de la
+  cliente sur l'opportunité d'un endroit dédié précisant le positionnement
+  100% B2B/corporate du site — ajout d'un 4ᵉ élément à la grille (passée
+  de `repeat(3, 1fr)` à `repeat(4, 1fr)`), plutôt qu'une section dédiée
+  qui aurait cassé le rythme narratif Dolce Vita du reste de la page.
+  **Traité différemment des 3 autres chiffres** : "100% B2B" est une
+  affirmation de positionnement, pas un comptage (contrairement à "4"
+  formules, "5 sens", "Alsace") — plutôt que de lui donner le même
+  traitement typographique géant (`--font-display`, jusqu'à 3rem), son
+  `dt` devient une petite plaque à coin tranché (voir bullet précédent
+  pour la 1ʳᵉ apparition de ce motif, à plus grande échelle) : fond navy,
+  texte terracotta clair, `clip-path` biseauté — un vrai badge plutôt
+  qu'un chiffre parmi d'autres, via la classe `.is-b2b` sur le `<div>`
+  correspondant. dd : "Aucun évènement grand public : uniquement des
+  projets d'entreprise et d'institutions".
+  **Bug de largeur de colonnes trouvé et corrigé** : avec `repeat(4, 1fr)`
+  seul, les 4 colonnes ne se répartissaient pas à égalité entre ~701 et
+  900px de large — une piste `1fr` reste bornée par le max-content de son
+  contenu tant qu'aucun `min-width` n'est fixé, donc la colonne "Alsace"
+  (texte le plus long) élargissait sa piste au détriment du badge B2B, qui
+  repliait "100% B2B" sur 2 lignes plus tôt que nécessaire (repéré par
+  capture d'écran à 768px, pas visible aux largeurs desktop plus larges où
+  il y a assez de place pour toutes les colonnes). Corrigé en ajoutant
+  `min-width: 0` à `.stats-band-grid > div` (règle déjà partagée par les 4
+  colonnes) — chaque piste respecte désormais le partage 1fr/1fr/1fr/1fr et
+  laisse le texte se replier librement à l'intérieur plutôt que de forcer
+  la grille à s'élargir.
+  Vérifié par script Playwright (largeurs de colonnes mesurées égales à
+  768px après correctif : 123px×4, contre 112.6/112.6/141.5/125.4px avant)
+  et capture d'écran à 390/768/1440px. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
