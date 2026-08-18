@@ -1393,59 +1393,52 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Founder — "mini vidéo" cinématique au scroll à travers un évènement
-   Simposio réel (2026-08-18). Remplace entièrement la plongée dans le
-   détourage/carte du stand Vespa (bullets précédents, historique complet
-   dans CLAUDE.md) : la cliente a rejeté toutes les versions basées sur un
-   détourage/traitement graphique d'une seule photo ("ça ne me plaît pas
-   du tout") et a demandé une impression de "passer dans un évènement...
-   et qu'on plonge jusqu'à une carte, un menu ou une assiette... comme
-   dans la vie réelle". Si `.founder-dive`/`.founder-scene-frame`/
-   `.founder-menu-card`/`founder-vespa-cutout.webp` réapparaissent ici,
-   c'est cette ancienne version (détourage + carte matérialisée), à ne
-   pas réintroduire sans qu'on le redemande.
-   **"Comme dans la vie réelle" = vraies photos, pas de détourage/duotone/
-   illustration** : 4 photos Simposio réelles et non retouchées
-   (`evenement-parasols-jaunes-table.jpg` → `evenement-tablee-diner-
-   bougies.jpg` → `evenement-rangee-spritz.jpg` →
-   `evenement-assiette-agrume-ceramique.jpg`, déjà utilisées ailleurs sur
-   le site, aucun nouveau crédit requis) s'enchaînent en fondu au scroll,
-   plan large (arrivée sous les parasols, tables encore vides) → plan
-   moyen (à table, bougies et bouquets) → détail (rangée de spritz,
-   moment aperitivo) → très gros plan (l'assiette) — une vraie
-   progression "on entre dans l'évènement puis on s'en approche", pas une
-   suite de photos interchangeables. La citation n'est jamais présentée
-   comme "imprimée" sur l'assiette (aucun outil de compositing
-   photoréaliste disponible dans cet environnement pour faire ça sans que
-   ça sonne faux) — elle apparaît en fondu par-dessus la scène finale,
-   technique éditoriale classique (citation de sortie sur un plan flouté),
-   qui reste honnête sur ce qu'est l'image plutôt que de simuler un
-   objet qui n'existe pas.
-   **Structure, en pin plein écran** (comme `.senses-journey`/
-   `.values-reel`, mais SANS le cadre étroit `.founder-scene-frame` de
-   l'ancienne version — ici la scène occupe tout le viewport pour un effet
-   immersif "on y est", pas une photo encadrée) : `.founder-story`
-   (wrapper, `height:420vh`, fournit la distance de scroll) >
-   `.founder-story-sticky` (`position:sticky; height:100vh`, plein écran)
-   contenant les 4 `.founder-story-scene` (empilées en `position:absolute`,
-   crossfade d'opacité + lent zoom avant piloté en JS par
-   `updateFounderStory()`, `main.js` — jamais de `transition`/`animation`
-   CSS sur leur `transform`, uniquement une valeur `style.transform`
-   recalculée à chaque frame de scroll, pour éviter le bug de collision
-   transition/animation déjà rencontré et corrigé sur `.values-reel-photo`,
-   cf. historique Valeurs plus haut dans ce fichier), deux bandes
-   `.founder-story-letterbox` (haut/bas, fixes, effet "format cinéma" qui
-   renforce l'impression de "mini vidéo" sans nécessiter un vrai fichier
-   vidéo), un `.founder-story-scrim` (dégradé sombre, opacité pilotée en
-   JS, qui ne s'intensifie qu'en toute fin de parcours pour garder la
-   lisibilité de la citation sans assombrir les 3 premières scènes) et
-   `.founder-story-quote` (citation + signature, fondu en toute fin). */
-.founder-story { position: relative; height: 420vh; background: var(--navy-900); }
-.founder-story-sticky {
-  position: sticky;
-  top: 0;
+   Founder — vraie mini vidéo cinématique, citation intégrée à la carte du
+   menu à l'intérieur même de la vidéo (2026-08-18). Remplace entièrement
+   la séquence scroll-pilotée de 4 photos qui crossfadaient
+   (`.founder-story-scenes`/`.founder-story-scene`/`updateFounderStory()`,
+   bullet précédent) : la cliente a fourni en référence un clip vidéo
+   cinématographique (plongée continue d'une scène de cocktail jusqu'à une
+   carte de menu posée sur un comptoir) et a demandé "une vidéo comme ça...
+   mais sur la carte du menu intègre la citation comme s'il était déjà
+   dans la vidéo". Si `.founder-story-scenes`/`.founder-story-scene`/
+   `.founder-story-scrim`/`.founder-story-dots`/`.founder-story-quote`
+   réapparaissent ici, c'est cette ancienne version (crossfade de photos),
+   à ne pas réintroduire sans qu'on le redemande.
+   **Provenance et limites de la vidéo, documentées en détail dans
+   `assets/video/README.md`** : le clip de base est une vidéo générée par
+   IA (PixVerse.ai, fournie par la cliente) — ni scène ni personnes
+   réelles, contrairement à toutes les photos utilisées ailleurs sur le
+   site. La citation a été composée à l'intérieur même des pixels de la
+   vidéo (warp de perspective image par image sur la carte visible à
+   l'écran, suivant son mouvement de caméra), pas en surimpression HTML —
+   c'est la réponse directe à "comme s'il était déjà dans la vidéo". Le
+   filigrane "PixVerse.ai" n'a pas pu être retiré (aucun outil
+   d'inpainting disponible dans cet environnement) : à faire remplacer par
+   une cliente disposant d'un export sans filigrane avant mise en ligne
+   définitive, voir « Limites connues » dans `CLAUDE.md`.
+   **Structure, plein écran mais SANS mécanisme de scroll-pin cette fois**
+   (contrairement à `.senses-journey`/`.values-reel`/l'ancienne version de
+   cette section) : `.founder-story` est un simple bloc `height:100vh` en
+   flux normal — une vraie vidéo avec sa propre temporalité ne se prête
+   pas au scroll-scrubbing des autres sections (durée fixe, lecture en
+   temps réel), donc plutôt que de forcer un pin+scroll-scrub fragile
+   (source de bugs répétée ailleurs sur ce site), la vidéo se lance
+   simplement une fois quand la section entre dans le viewport
+   (`IntersectionObserver`, `main.js`), comme n'importe quelle vidéo
+   intégrée sur le web — plus simple, plus robuste. Toujours les bandes
+   `.founder-story-letterbox` (haut/bas, effet "cadre cinéma") et
+   l'eyebrow "La fondatrice" positionné sous le header fixe (même
+   correctif de collision que la version précédente, conservé). La
+   signature "Estelle Lorusso, fondatrice" est désormais intégrée à la
+   vidéo elle-même (sur la carte) — plus besoin de bloc de signature HTML
+   séparé (`.founder-avatar-minimal`/`.founder-signature-minimal`,
+   retirés). */
+.founder-story {
+  position: relative;
   height: 100vh;
-  width: 100%;
+  min-height: 32rem;
+  background: var(--navy-900);
   overflow: hidden;
 }
 .founder-story-letterbox {
@@ -1460,13 +1453,10 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .founder-story-letterbox-top { top: 0; }
 .founder-story-letterbox-bottom { bottom: 0; }
-/* Décorrélé de la barre `.founder-story-letterbox-top` (qui reste fine,
-   effet "cadre cinéma") : positionné indépendamment avec la même marge de
-   dégagement que `.page-header` utilise déjà pour le header fixe du site
-   (`z-index:100`, ~91px de haut) — un essai précédent mettait l'eyebrow À
-   L'INTÉRIEUR de la barre fine (7vh, ~63px), plus courte que le header, ce
-   qui le faisait s'entrechoquer visuellement avec le logo/menu (capture
-   d'écran à l'appui, pas supposé). */
+/* Même marge de dégagement que `.page-header` pour le header fixe du site
+   (`z-index:100`, ~91px de haut) — voir l'historique de cette section
+   dans CLAUDE.md pour le bug de collision déjà rencontré et corrigé une
+   fois lorsque ce libellé vivait à l'intérieur de la bande fine. */
 .founder-story-eyebrow {
   position: absolute;
   top: calc(6.5rem + 0.4rem);
@@ -1474,126 +1464,14 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   z-index: 3;
   color: var(--terracotta-300);
 }
-
-.founder-story-scenes { position: absolute; inset: 0; z-index: 0; }
-/* Pas de `transition`/`animation` CSS sur `transform` ici — voir le
-   commentaire au-dessus de `.founder-story`. `opacity`, elle, garde une
-   transition CSS classique (une seule propriété, pas de risque de
-   collision) pour un fondu enchaîné doux entre deux scènes. */
-.founder-story-scene {
+.founder-story-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.1s var(--ease);
-  will-change: opacity, transform;
-}
-.founder-story-scene.is-active { opacity: 1; }
-
-.founder-story-scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(16, 31, 39, 0.15) 0%, rgba(16, 31, 39, 0.25) 55%, rgba(16, 31, 39, 0.82) 100%);
-  opacity: 0;
-  transition: opacity 1s var(--ease);
-  pointer-events: none;
-}
-.founder-story-scrim.is-visible { opacity: 1; }
-
-.founder-story-dots {
-  position: absolute;
-  left: 50%;
-  bottom: calc(7vh + 1.4rem);
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex;
-  gap: 0.5rem;
-}
-.founder-story-dot {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 50%;
-  background: rgba(246, 241, 231, 0.35);
-  transition: background var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
-}
-.founder-story-dot.is-active { background: var(--terracotta-300); transform: scale(1.35); }
-
-.founder-story-quote {
-  position: absolute;
-  left: 50%;
-  bottom: 14vh;
-  transform: translate(-50%, 16px);
-  z-index: 2;
-  width: min(90vw, 42rem);
-  text-align: center;
-  opacity: 0;
-  transition: opacity 1s var(--ease), transform 1s var(--ease);
-  pointer-events: none;
-}
-.founder-story-quote.is-visible { opacity: 1; transform: translate(-50%, 0); }
-.founder-story-quote-text {
-  font-family: var(--font-display);
-  font-style: italic;
-  line-height: 1.32;
-  font-size: clamp(1.15rem, 1.6vw + 0.85rem, 1.8rem);
-  color: var(--cream);
-  text-shadow: 0 2px 18px rgba(9, 18, 23, 0.55);
-  margin-bottom: 1.1rem;
-}
-.founder-story-signature {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.9rem;
-  text-align: left;
-}
-.founder-avatar-minimal {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.6rem;
-  height: 2.6rem;
-  border-radius: 50%;
-  border: 1px solid rgba(246, 241, 231, 0.4);
-  color: var(--cream);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-}
-.founder-signature-minimal {
-  font-family: var(--font-subtitle);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--cream);
-  text-align: left;
-}
-.founder-signature-minimal span {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  color: var(--fg-muted-inverse);
-}
-@media (max-width: 700px) {
-  .founder-story-quote { bottom: 12vh; }
-  .founder-story-signature { flex-direction: column; text-align: center; gap: 0.5rem; }
-  .founder-signature-minimal { text-align: center; }
-}
-@media (prefers-reduced-motion: reduce) {
-  /* Le crossfade et le zoom restent un mapping 1:1 avec le scroll (comme
-     le tracé des 5 sens et le fil des Valeurs) — pas une animation
-     autoplay, donc actifs même sous cette préférence ; seules les
-     transitions de fondu (opacity) sont neutralisées pour un affichage
-     instantané plutôt qu'un fondu forcé qui contredirait la préférence. */
-  .founder-story-scene, .founder-story-scrim, .founder-story-quote, .founder-story-dot {
-    transition: none !important;
-  }
+  z-index: 0;
+  background: var(--navy-900);
 }
 
 /* ==========================================================================

@@ -3514,6 +3514,73 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   avec les seuils, 0 erreur console, 0 débordement horizontal) et capture
   d'écran à chaque fraction sur les deux formats. Regression complète
   5 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Fondatrice — remplacée par une vraie mini vidéo, citation composée dans
+  les pixels de la carte (2026-08-18, même journée)**
+  (`assets/video/founder-story.mp4`/`.webm`, `.founder-story*`,
+  `engagements.html`) : la cliente a rejeté la séquence de 4 photos qui se
+  crossfadaient ("ça ne me plaît pas du tout") et a fourni en référence un
+  clip vidéo — demande : *"met une vidéo comme ça pour la citation mais sur
+  la carte du menu intègre la citation comme s'il était déjà dans la
+  vidéo"*. **Remplace entièrement** le mécanisme scroll-pin de 4 scènes
+  (`.founder-story-scenes`/`.founder-story-scene`/`.founder-story-scrim`/
+  `.founder-story-dots`/`.founder-story-quote`, `updateFounderStory()`
+  dans `main.js`, bullet précédent) — si l'une de ces classes ou fonctions
+  réapparaît ici, c'est cette ancienne version, à ne pas réintroduire sans
+  qu'on le redemande.
+  **La vidéo de référence est générée par IA (PixVerse.ai), pas un
+  évènement réel** — détail complet, méthode de compositing et limites
+  assumées (filigrane non retirable) documentés dans
+  `assets/video/README.md`, résumé ici : la citation est composée
+  directement dans les pixels de la vidéo (pas une surimpression HTML) via
+  un suivi de perspective image par image (121 frames, OpenCV) sur la
+  petite carte visible sur le comptoir dans le clip — une texture "carte"
+  propre (fond crème, ornement, citation en Yeseva One, signature) est
+  plaquée sur chaque frame en suivant exactement le mouvement de caméra du
+  clip source, avec une matérialisation progressive (fondu, frames 90→104)
+  plutôt qu'une apparition brutale. C'est la réponse directe à "comme s'il
+  était déjà dans la vidéo".
+  **Piège de warp rencontré et corrigé** : un premier rendu affichait des
+  artefacts fantômes (copies floues du filigrane PixVerse à plusieurs
+  endroits de l'image) — cause : `cv2.warpPerspective` avec
+  `borderMode=cv2.BORDER_TRANSPARENT` laisse les pixels hors de la zone
+  mappée à leur valeur mémoire NON INITIALISÉE plutôt que de les mettre à
+  zéro (le nom du mode prête à confusion). Corrigé avec
+  `borderMode=cv2.BORDER_CONSTANT, borderValue=(0,0,0,0)`.
+  **Structure, sans scroll-pin cette fois** : contrairement à toutes les
+  sections scroll-pilotées du site (`.senses-journey`, `.values-reel`,
+  l'ancienne version de cette section), `.founder-story` est un simple
+  bloc `height:100vh` en flux normal — une vidéo a sa propre temporalité
+  fixe en temps réel, qui ne se prête pas au scroll-scrubbing (source de
+  bugs déjà rencontrée plusieurs fois ailleurs sur ce site) ; la vidéo se
+  lance simplement une fois via `IntersectionObserver` quand la section
+  entre dans le viewport (`main.js`), comme n'importe quelle vidéo intégrée
+  standard. Bandes `.founder-story-letterbox` (cadre cinéma) et eyebrow "La
+  fondatrice" conservés à l'identique de la version précédente (même
+  correctif de collision avec le header fixe). Muette par défaut
+  (`muted`), deux formats servis (`<source>` WebM/VP9 en premier, plus
+  léger, puis MP4/H.264 pour la compatibilité la plus large notamment
+  Safari) — encodés via un binaire ffmpeg statique (paquet Python
+  `imageio-ffmpeg`, aucun ffmpeg système dans cet environnement).
+  **Piège de vérification rencontré pendant cette tâche, sans rapport avec
+  le site lui-même** : le Chromium de cet environnement de développement
+  n'a AUCUN décodeur vidéo fonctionnel sur une page `data:text/html,...`
+  (H.264 et VP9 tous deux en échec, y compris sur un clip VP9 minimal
+  généré à la volée pour tester) — d'abord pris pour un bug du fichier
+  vidéo produit. Revérifié sur le vrai `engagements.html` servi en
+  `http://localhost` (pas une page `data:`) : lecture automatique
+  fonctionnelle dès l'entrée dans le viewport, `readyState:4`,
+  progression réelle de `currentTime`, `ended:true` en fin de lecture,
+  capture d'écran confirmant la carte + citation intégrée bien visibles et
+  figées sur la dernière frame. Le problème de lecture était donc
+  spécifique aux pages `data:` de ce sandbox de test, pas au site.
+  **Limites connues, à traiter avec la cliente avant mise en ligne
+  définitive** (ajoutées à la section « Limites connues » plus bas) : le
+  filigrane "PixVerse.ai" reste visible (aucun outil de retouche
+  vidéo/inpainting disponible ici pour l'effacer proprement) et la scène
+  est entièrement fabriquée par IA (aucune personne, lieu ni évènement
+  réel) — à la différence de toutes les autres photos du site.
+  Vérifié par regression Playwright complète (5 pages × 2 viewports) : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
@@ -3581,6 +3648,15 @@ sans qu'on le redemande.
 
 ## Limites connues / à traiter avec la cliente
 
+- **Vidéo de la section Fondatrice** (`assets/video/founder-story.mp4`/
+  `.webm`, `engagements.html`) : (1) filigrane "PixVerse.ai" visible en
+  haut à droite sur toute la durée — à faire retirer via un export sans
+  filigrane (compte PixVerse de la cliente) ou un prestataire de retouche
+  vidéo avant mise en ligne définitive, aucun outil d'inpainting
+  disponible dans cet environnement pour l'effacer proprement ; (2) la
+  scène est entièrement générée par IA (personnes, lieu, évènement
+  fictifs), à la différence de toutes les autres photos du site qui sont
+  100% réelles — voir `assets/video/README.md` pour le détail complet.
 - **Police Canter** non disponible → substituée par Oswald (cf. ci-dessus).
 - **Mosaïque Projets & page Talents (Engagements)** : conçues pour
   correspondre à l'esprit du site double2.fr, mais sans accès réseau à

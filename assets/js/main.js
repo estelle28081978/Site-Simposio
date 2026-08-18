@@ -934,91 +934,26 @@
   }
 
   // ==========================================================================
-  // Fondatrice — "mini vidéo" cinématique au scroll à travers un évènement
-  // Simposio réel, jusqu'à l'assiette et la citation (engagements.html).
-  // Voir le commentaire CSS au-dessus de .founder-story pour le contexte
-  // complet (pourquoi de vraies photos plutôt qu'un détourage/traitement
-  // graphique).
+  // Fondatrice — vraie mini vidéo cinématique, se lance une fois quand la
+  // section entre dans le viewport (engagements.html). La citation est
+  // intégrée directement dans les pixels de la vidéo (voir le commentaire
+  // CSS au-dessus de .founder-story) — aucun texte piloté par le scroll
+  // ici, juste un déclenchement de lecture classique.
   // ==========================================================================
-  var founderStory = document.getElementById("founderStory");
-  var founderScenesEl = document.querySelector(".founder-story-scenes");
-  if (founderStory && founderScenesEl) {
-    var founderScenes = Array.prototype.slice.call(founderScenesEl.querySelectorAll(".founder-story-scene"));
-    var founderDots = Array.prototype.slice.call(document.querySelectorAll(".founder-story-dot"));
-    var founderScrim = document.getElementById("founderStoryScrim");
-    var founderStoryQuote = document.getElementById("founderStoryQuote");
-    var founderStoryTicking = false;
-
-    // Bornes de progression des 4 scènes : la dernière (l'assiette) reçoit
-    // une fenêtre plus large (0.70→1) que les trois premières pour laisser
-    // le temps au voile de s'intensifier puis à la citation d'apparaître
-    // sans se précipiter, plutôt que 4 segments strictement égaux.
-    var founderSegments = [0, 0.24, 0.48, 0.7, 1];
-
-    function updateFounderStory() {
-      var rect = founderStory.getBoundingClientRect();
-      var total = rect.height - window.innerHeight;
-      var scrolled = -rect.top;
-      var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
-
-      // Mapping 1:1 avec le scroll (comme le tracé des 5 sens/le fil des
-      // Valeurs) — jamais désactivé sous prefers-reduced-motion.
-      var activeIndex = founderSegments.length - 2;
-      for (var i = 0; i < founderSegments.length - 1; i++) {
-        if (progress >= founderSegments[i] && progress < founderSegments[i + 1]) {
-          activeIndex = i;
-          break;
-        }
-      }
-
-      founderScenes.forEach(function (scene, i) {
-        var isActive = i === activeIndex;
-        if (isActive) {
-          scene.classList.add("is-active");
-        } else {
-          scene.classList.remove("is-active");
-        }
-        // Léger zoom avant continu pendant que la scène est active (façon
-        // Ken Burns), calculé directement en style inline sans transition/
-        // animation CSS sur transform — voir le commentaire CSS pour la
-        // raison (éviter le bug de collision transition/animation déjà
-        // rencontré et corrigé sur .values-reel-photo).
-        var segStart = founderSegments[i];
-        var segEnd = founderSegments[i + 1];
-        var localT = segEnd > segStart ? (progress - segStart) / (segEnd - segStart) : 0;
-        localT = Math.min(1, Math.max(0, localT));
-        var scale = 1 + localT * 0.12;
-        scene.style.transform = "scale(" + scale.toFixed(3) + ")";
-      });
-
-      founderDots.forEach(function (dot, i) {
-        dot.classList.toggle("is-active", i === activeIndex);
-      });
-
-      // Le voile ne s'intensifie qu'en toute fin de parcours (scène de
-      // l'assiette) pour garder les 3 premières scènes pleinement lisibles
-      // sans assombrissement prématuré.
-      if (founderScrim) {
-        founderScrim.classList.toggle("is-visible", progress > 0.66);
-      }
-      if (founderStoryQuote) {
-        founderStoryQuote.classList.toggle("is-visible", progress > 0.8);
-      }
-
-      founderStoryTicking = false;
-    }
-
-    window.addEventListener(
-      "scroll",
-      function () {
-        if (!founderStoryTicking) {
-          window.requestAnimationFrame(updateFounderStory);
-          founderStoryTicking = true;
-        }
+  var founderStoryVideo = document.getElementById("founderStoryVideo");
+  if (founderStoryVideo && "IntersectionObserver" in window) {
+    var founderVideoObserver = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            founderStoryVideo.currentTime = 0;
+            founderStoryVideo.play().catch(function () {});
+            founderVideoObserver.unobserve(founderStoryVideo);
+          }
+        });
       },
-      { passive: true }
+      { threshold: 0.4 }
     );
-
-    updateFounderStory();
+    founderVideoObserver.observe(founderStoryVideo);
   }
 })();
