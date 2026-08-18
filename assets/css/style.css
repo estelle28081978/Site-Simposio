@@ -2432,9 +2432,16 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   padding-block: var(--space-6);
   overflow: hidden;
   color: var(--fg-inverse);
+  /* Fond rouge (rosso-ombria) remplacé par un terracotta assombri
+     (2026-08-18, demande explicite de la cliente sur le bandeau CTA
+     "Composons ensemble" de la page d'accueil) — même dégradé à deux
+     tons, seules les couleurs de base changent (terracotta foncé →
+     quasi-noir chaud, au lieu de rosso-ombria → quasi-noir rouge). Le
+     glow radial en haut à droite était déjà en terracotta plein
+     (`rgba(193,98,45,…)`), inchangé. */
   background:
     radial-gradient(65% 65% at 90% 10%, rgba(193, 98, 45, 0.38), transparent 60%),
-    linear-gradient(200deg, rgba(74, 28, 28, 0.92) 0%, rgba(42, 18, 14, 0.96) 85%),
+    linear-gradient(200deg, rgba(106, 54, 25, 0.92) 0%, rgba(52, 26, 12, 0.96) 85%),
     url("../img/alsace-vineyard.jpg");
   background-size: cover;
   background-position: center 40%;
@@ -2443,7 +2450,16 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 .contact-grid { display: grid; gap: var(--space-5); position: relative; z-index: 1; }
 @media (min-width: 960px) { .contact-grid { grid-template-columns: 0.85fr 1.15fr; } }
 
-.contact-intro .lede { margin-block: var(--space-2) var(--space-4); }
+/* Couleurs de police adaptées au nouveau fond terracotta (2026-08-18) :
+   l'eyebrow générique `.eyebrow.on-dark` (terracotta-300, sitewide) se
+   fondait avec ce fond désormais de la même famille de teinte — passée en
+   crème ici pour garder du contraste. Le lede passe du gris-bleu neutre
+   `--fg-muted-inverse` (pensé pour un fond navy) à un crème translucide,
+   plus chaud et cohérent avec le fond — même teinte que
+   `.teaser-card p`/`.engagement-card-back-text`, déjà établie ailleurs sur
+   le site pour du texte secondaire sur fond photo/dégradé chaud. */
+.contact-intro .eyebrow { color: var(--cream); }
+.contact-intro .lede { margin-block: var(--space-2) var(--space-4); color: rgba(246, 241, 231, 0.85); }
 .contact-info { margin-top: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
 .contact-info a, .contact-info span { display: flex; align-items: center; gap: 0.7rem; font-size: 1rem; color: var(--cream); }
 .contact-info svg { width: 18px; height: 18px; color: var(--terracotta-300); flex-shrink: 0; }

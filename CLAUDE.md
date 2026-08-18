@@ -2722,6 +2722,44 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   script Playwright (ordre des sections lu directement dans le DOM) et
   regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Promesse (accueil) — encore agrandie, ×1,25 (2026-08-18)**
+  (`data-scale`, `index.html`) : demande explicite de la cliente sur la
+  version accueil de cette citation ("agrandi le texte... de 1,25 fois").
+  `data-scale` sur `#promiseQuote` passe de `0.75` à `0.9375`
+  (= `0.75 × 1.25`) — seule cette valeur change, aucun autre paramètre du
+  mécanisme `fitPromiseLines()` n'est touché. Vérifié par script
+  Playwright : taille de police calculée passe de 72,7px à 90,9px à
+  1440px de large (ratio exact 1,25), toujours 1 seule ligne rendue par
+  groupe, 0 débordement horizontal.
+- **CTA "Composons ensemble" (accueil) — rouge remplacé par terracotta
+  (2026-08-18)** (`.contact`, `index.html`) : demande explicite de la
+  cliente sur le bandeau CTA de fin de page d'accueil ("remplace le rouge
+  par terracotta et adapte les couleurs des polices"). Le fond en
+  dégradé à deux tons (`rosso-ombria` → quasi-noir rouge) passe à un
+  terracotta assombri équivalent (`rgba(106,54,25,…)` →
+  `rgba(52,26,12,…)`, même structure de dégradé, mêmes opacités) — calculé
+  en assombrissant `--terracotta` (`#c1622d`) dans les mêmes proportions
+  que `--rosso-ombria` l'était par rapport à `--rosso-venezia`, plutôt
+  qu'une teinte choisie au jugé. Le glow radial en haut à droite était
+  déjà en terracotta plein (`rgba(193,98,45,…)`), inchangé.
+  **Couleurs de police adaptées** (la partie de la demande qui ne se
+  limite pas au fond) : l'eyebrow "Composons ensemble" utilisait la
+  règle générique sitewide `.eyebrow.on-dark` (`--terracotta-300`) — sur
+  un fond désormais terracotta, même famille de teinte, le contraste
+  devenait trop faible (texte et fond se fondaient) ; surchargé
+  localement en `.contact-intro .eyebrow { color: var(--cream) }` (scopé
+  à cette section, aucun autre `.eyebrow.on-dark` du site n'est
+  affecté). Le lede passe du gris-bleu neutre `--fg-muted-inverse`
+  (pensé pour un fond navy, plus utilisé nulle part dans cette section
+  précise) à `rgba(246,241,231,0.85)` — même teinte crème translucide
+  déjà utilisée pour du texte secondaire sur fond photo/dégradé chaud
+  ailleurs sur le site (`.teaser-card p`, `.engagement-card-back-text`),
+  réutilisée ici pour cohérence plutôt qu'une nouvelle valeur inventée.
+  Les boutons (`.btn-primary`/`.btn-outline`, `.contact-info` non
+  utilisée sur cette page) étaient déjà en terracotta/neutre, aucun
+  changement nécessaire de ce côté. Vérifié par capture d'écran et
+  regression Playwright complète (6 pages × 2 viewports) : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
