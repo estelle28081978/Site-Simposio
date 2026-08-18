@@ -1393,67 +1393,109 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Founder — "postcard" note, no fabricated photo of Estelle herself
-   (2026-08-17 redesign: was a plain centered text block on a flat
-   background — the client found the page's rhythm of text/5 senses/more
-   text too repetitive. Restyled as a small tilted note card, like a
-   handwritten postcard tucked into a travel journal, sitting over an
-   ambient (blurred, unpeopled) real Simposio event photo — never a photo
-   implying it's her, keeping the site's existing "no fabricated photo of
-   Estelle" rule. The "EL" avatar reuses the same gradient-circle treatment
-   as .contact-founder-avatar on the Contact page, for a recognizable mark
-   wherever her signature appears on the site. ) */
-/* ==========================================================================
-   Founder — typographie centrée minimaliste, fond crème uni (2026-08-17,
-   remplace la plaque bicolore terracotta/navy ci-dessus) : demande
-   explicite de la cliente de "revenir à quelque chose de plus minimaliste
-   et premium visuellement" — pas un réglage de détail, un retrait de tout
-   l'appareil décoratif de la plaque (bloc identité en dégradé, panneau
-   navy séparé, guillemet géant en fond de plan). Si `.founder-plate`/
-   `.founder-plate-id`/`.founder-plate-quote`/`.founder-mark` réapparaissent
-   ici, c'est cette version bicolore précédente, à ne pas réintroduire sans
-   qu'on le redemande — et si `.founder-card`/`.founder-photo`/
-   `.founder-scrim` réapparaissent, c'est la carte postale sur photo floutée
-   d'avant celle-ci, encore plus ancienne.
-   **Toujours aucune photo fabriquée d'Estelle** (règle du site) : cette
-   version, la plus dépouillée des trois, ne porte le sujet que par la
-   typographie — pas de photo, pas de bloc de couleur, pas de guillemet
-   décoratif géant.
-   **Structure** : une seule colonne centrée (`.founder-minimal`,
-   `max-width:42rem`) sur le fond crème uni de `.founder` — eyebrow "La
-   fondatrice" (style générique du site, plus de variante `on-dark`
-   puisqu'il n'y a plus de panneau sombre), citation en Yeseva One
-   directement sur le crème (taille modérée, pas de guillemet décoratif
-   séparé — les guillemets `«`/`»` restent dans le texte comme une
-   citation classique), un simple trait fin horizontal (`.founder-rule`,
-   solid — cohérent avec le retrait des pointillés du site) en séparateur,
-   puis l'identité (`.founder-id-minimal`) : un petit médaillon "EL" au
-   contour fin (plus de remplissage dégradé) à côté du nom et du
-   rattachement à Eurheka Conseil. `data-reveal` sur `.founder-minimal` :
-   apparition en un seul mouvement (fondu + translateY), comme avant. */
-.founder { padding-block: var(--space-6); background: var(--cream); }
-.founder-minimal {
-  max-width: 42rem;
+   Founder — la citation "inscrite au fond d'une assiette", posée sur un
+   décor de table Dolce Vita (2026-08-18, remplace la typographie centrée
+   minimaliste sur fond crème uni ci-dessous — demande explicite de la
+   cliente, à retravailler ensemble). Si `.founder-minimal`/
+   `.founder-quote-minimal`/`.founder-rule`/`.founder-id-minimal` réapparaissent
+   directement enfants de `.container` (sans `.founder-scene`/`.founder-plate`),
+   c'est cette version minimaliste précédente, à ne pas réintroduire sans
+   qu'on le redemande. Versions encore antérieures : `.founder-plate-id`/
+   `.founder-plate-quote`/`.founder-mark` (plaque bicolore) et
+   `.founder-card`/`.founder-photo`/`.founder-scrim` (carte postale sur
+   photo floutée) — voir l'historique déjà documenté dans CLAUDE.md.
+   **Toujours aucune photo fabriquée d'Estelle** (règle du site) : la photo
+   de fond est une ambiance de table dressée réelle Simposio (déjà utilisée
+   ailleurs sur cette page dans les flip-cards Engagements, ici traitée très
+   différemment — floutée/assombrie en fond plutôt que nette au premier
+   plan), jamais un portrait.
+   **Structure** : `.founder-scene-photo` (photo plein cadre,
+   `evenement-tablee-diner-bougies.jpg`, floutée + assombrie) +
+   `.founder-scene-scrim` (dégradé terracotta→rouge Venise sombre, pour la
+   couleur "Dolce Vita" chaude demandée en plus de la simple lisibilité) en
+   fond de section ; par-dessus, `.founder-scene` (colonne centrée) avec
+   `.founder-plate` — un cercle crème avec un rebord décoratif façon
+   céramique italienne (3 anneaux SVG concentriques : trait plein
+   terracotta, trait pointillé rouge Venise, trait fin terracotta) — la
+   citation vit DANS ce cercle, en italique, couleur rouge Terre d'Ombrie
+   (évoque une peinture/glaçure sur céramique plutôt qu'une simple couleur
+   de texte). En dessous, `.founder-card` : une petite carte type
+   marque-place, légèrement inclinée, portant l'eyebrow "La fondatrice" +
+   le médaillon "EL" + la signature (classes `.founder-avatar-minimal`/
+   `.founder-signature-minimal` réutilisées telles quelles). `data-reveal`
+   sur `.founder-scene` : apparition en un seul mouvement, comme les
+   versions précédentes. */
+.founder { position: relative; overflow: hidden; padding-block: var(--space-6); background: var(--rosso-ombria); }
+.founder-scene-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  filter: blur(7px) saturate(1.2) brightness(0.75);
+}
+.founder-scene-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(200deg, rgba(157, 54, 54, 0.55) 0%, rgba(74, 28, 28, 0.82) 60%, rgba(16, 31, 39, 0.85) 100%);
+}
+.founder .container { position: relative; z-index: 1; }
+.founder-scene { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+
+.founder-plate {
+  position: relative;
+  width: min(78vw, 25rem);
+  aspect-ratio: 1;
   margin-inline: auto;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #fffdf8, var(--cream) 72%);
+  box-shadow: 0 30px 60px rgba(16, 31, 39, 0.4), 0 -2px 0 rgba(16, 31, 39, 0.06) inset;
+}
+.founder-plate-rim { position: absolute; inset: 0; width: 100%; height: 100%; }
+.founder-plate-rim-outer { fill: none; stroke: var(--terracotta); stroke-width: 1.1; }
+.founder-plate-rim-dashes { fill: none; stroke: var(--rosso-venezia); stroke-width: 0.9; stroke-dasharray: 1.1 3.2; stroke-linecap: round; }
+.founder-plate-rim-inner { fill: none; stroke: var(--terracotta); stroke-width: 0.55; opacity: 0.55; }
+/* position:absolute + inset:20% (plutôt qu'un padding sur .founder-plate en
+   display:flex, essai précédent) : un pourcentage de padding se résout par
+   rapport à la largeur du CONTENEUR PARENT (.founder-scene, ~1200px+), pas
+   par rapport à l'élément lui-même — sur un cercle de ~470px, ça donnait un
+   padding de plusieurs centaines de pixels de chaque côté, écrasant la
+   largeur de contenu disponible à 0 (bug réel : `quoteWidth` calculé à 0px,
+   tout le texte repartait mot par mot sur une hauteur énorme, qui à son
+   tour étirait le cercle en ovale). `inset` en pourcentage sur un élément
+   absolument positionné se résout, lui, par rapport à son bloc englobant —
+   ici `.founder-plate` (position:relative) — donc 20% signifie bien 20% du
+   diamètre du cercle, quelle que soit la largeur de la page. Étant hors
+   flux, ce paragraphe ne peut plus non plus influencer la hauteur du cercle
+   parent (aspect-ratio reste fiable sans avoir besoin de min-height:0). */
+.founder-quote-plate {
+  position: absolute;
+  inset: 20%;
+  z-index: 1;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(0.82rem, 0.55vw + 0.68rem, 1.02rem);
+  line-height: 1.5;
+  text-align: center;
+  color: var(--rosso-ombria);
+}
+
+.founder-card {
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  gap: 0.7rem;
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  padding: 1.1rem 1.8rem;
+  box-shadow: 0 16px 34px rgba(16, 31, 39, 0.28);
+  transform: rotate(-1.6deg);
 }
-.founder-quote-minimal {
-  margin-top: var(--space-3);
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(1.5rem, 1.6vw + 1.1rem, 2.3rem);
-  line-height: 1.45;
-  color: var(--navy);
-}
-.founder-rule {
-  width: 2.75rem;
-  height: 1.5px;
-  margin-block: var(--space-4);
-  background: var(--terracotta);
-}
+.founder-card .eyebrow { color: var(--accent); }
 .founder-id-minimal {
   display: flex;
   align-items: center;
@@ -1489,6 +1531,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   letter-spacing: 0.02em;
   text-transform: none;
   color: var(--fg-muted);
+}
+@media (max-width: 480px) {
+  .founder-plate { padding: 24%; }
 }
 
 /* ==========================================================================
@@ -1722,41 +1767,17 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Engagements & Talents
    ========================================================================== */
+/* Fond bleu Méditerranéen uni (2026-08-18, demande explicite de la
+   cliente) — remplace le fond dynamique à lueurs radiales animées de
+   l'itération précédente (dégradé navy + trois `radial-gradient` floutés
+   en dérive continue). Si `.engagements::before`/`@keyframes
+   engagementsBgDrift` réapparaissent ici, c'est cette ancienne version, à
+   ne pas réintroduire sans qu'on le redemande. */
 .engagements {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
+  background: var(--navy);
   padding-block: var(--space-6);
-}
-/* Fond dynamique (2026-08-17) : trois lueurs radiales aux couleurs de
-   marque, très floutées et positionnées en dehors du cadre (inset généreux)
-   pour n'avoir aucun bord net visible, qui dérivent lentement en boucle —
-   même technique que `.values-sticky::before` (12ᵉ itération des Valeurs,
-   voir CLAUDE.md), adaptée ici à une simple section non-sticky. Remplace le
-   fond bicolore statique précédent. Le petit carré terracotta décoratif du
-   coin (`.engagements::after`) a été retiré à la demande de la cliente
-   (2026-08-18, jugé trop présent dans le fond des flip-cards) — ce
-   pseudo-élément reste sous `.container` (z-index:1). */
-.engagements::before {
-  content: "";
-  position: absolute;
-  inset: -25%;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(circle at 20% 25%, rgba(193, 98, 45, 0.35), transparent 55%),
-    radial-gradient(circle at 78% 65%, rgba(157, 54, 54, 0.3), transparent 50%),
-    radial-gradient(circle at 50% 100%, rgba(16, 31, 39, 0.9), transparent 60%);
-  filter: blur(60px);
-  animation: engagementsBgDrift 26s ease-in-out infinite alternate;
-}
-@keyframes engagementsBgDrift {
-  0% { transform: translate(-2%, -1%) scale(1); }
-  50% { transform: translate(3%, 2%) scale(1.08); }
-  100% { transform: translate(-1%, 3%) scale(1.02); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .engagements::before { animation: none; }
 }
 .engagements .container { position: relative; z-index: 1; }
 .engagements .lede { color: rgba(255, 255, 255, 0.88); }

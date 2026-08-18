@@ -3004,6 +3004,98 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   mi-chemin de la borne 2→3, bornes 3/4/5 encore non atteintes visibles en
   attente). Regression complète 5 pages × 2 viewports : 0 débordement,
   0 erreur console.
+- **Engagements — fond bleu Méditerranéen uni (2026-08-18)**
+  (`.engagements`, `engagements.html`) : demande explicite de la cliente
+  sur la section des flip-cards (celle littéralement nommée "engagements",
+  à ne pas confondre avec la section fondatrice ci-dessous). Remplace le
+  fond dynamique de l'itération précédente (dégradé navy de base +
+  `.engagements::before`, trois `radial-gradient` très floutés en dérive
+  continue façon lueurs, `@keyframes engagementsBgDrift`) par un simple
+  `background: var(--navy)` uni — le pseudo-élément animé et ses
+  keyframes sont supprimés. Si `.engagements::before`/
+  `@keyframes engagementsBgDrift` réapparaissent ici, c'est cette ancienne
+  version, à ne pas réintroduire sans qu'on le redemande. Vérifié par
+  capture d'écran : fond bleu Méditerranéen (`--navy`) plat, les 4
+  flip-cards restent parfaitement lisibles dessus.
+- **Fondatrice — citation "inscrite au fond d'une assiette", décor de
+  table Dolce Vita (2026-08-18)** (`.founder*`, `engagements.html`) :
+  demande explicite de la cliente, en co-construction ("travaillons ça
+  ensemble") — remplace la typographie centrée minimaliste sur fond crème
+  uni (itération précédente, elle-même un remplacement de deux versions
+  encore antérieures — plaque bicolore, carte postale sur photo floutée —
+  déjà documentées plus haut dans ce fichier). Si `.founder-minimal`/
+  `.founder-quote-minimal`/`.founder-rule` réapparaissent directement
+  enfants de `.container` (sans `.founder-scene`/`.founder-plate`), c'est
+  cette version minimaliste précédente, à ne pas réintroduire sans qu'on
+  le redemande.
+  **Décor de table** : `.founder-scene-photo` — `evenement-tablee-diner-bougies.jpg`,
+  déjà utilisée plus haut sur cette même page dans la grille de flip-cards
+  Engagements, réutilisée ici avec un traitement très différent (floutée
+  `blur(7px)` + assombrie + `scale(1.08)` pour ne jamais laisser de bord
+  net visible en fond plein cadre, au lieu d'une photo nette au premier
+  plan) — aucun nouveau crédit requis (photo Simposio réelle). Par-dessus,
+  `.founder-scene-scrim` : un dégradé terracotta → rouge Venise → navy
+  foncé, pour la couleur chaude "Dolce Vita" demandée en plus de la simple
+  lisibilité du texte (un scrim neutre gris/noir n'aurait apporté que la
+  lisibilité, pas la couleur). **Toujours aucune photo fabriquée
+  d'Estelle** (règle du site) : la photo de fond est une ambiance de table
+  dressée réelle, jamais un portrait.
+  **L'assiette** (`.founder-plate`) : un cercle crème
+  (`radial-gradient(circle at 38% 32%, #fffdf8, var(--cream) 72%)`, effet
+  de lumière rasante) avec un rebord décoratif façon céramique italienne —
+  3 cercles SVG concentriques (`.founder-plate-rim-outer` plein terracotta,
+  `.founder-plate-rim-dashes` pointillé rouge Venise, `.founder-plate-rim-inner`
+  fin terracotta à 55% d'opacité) — plutôt qu'une photo de vraie assiette
+  (l'option écartée : une assiette photographiée avec son propre décor
+  aurait entré en conflit visuel avec le texte posé dessus ; un cercle
+  CSS/SVG garde un contrôle total sur la lisibilité tout en restant
+  entièrement dans la palette de marque). La citation vit dans ce cercle
+  (`.founder-quote-plate`), en italique (`--font-display`), couleur
+  `--rosso-ombria` — évoque une peinture/glaçure sur céramique plutôt
+  qu'une simple couleur de texte.
+  **Bug réel rencontré et corrigé, en deux temps, aucun supposé sans
+  mesure** : la 1ʳᵉ version centrait la citation via `.founder-plate` en
+  `display:flex; padding:20%` — deux problèmes en cascade, repérés par
+  script Playwright comparant largeur/hauteur mesurées du cercle et du
+  texte (pas par relecture du CSS seule) :
+  1. Un pourcentage de `padding` se résout par rapport à la largeur du
+     conteneur PARENT (`.founder-scene`, ~1200px+), pas de l'élément
+     lui-même — sur un cercle de ~470px, `padding:20%` valait donc
+     plusieurs centaines de pixels de chaque côté, écrasant la largeur de
+     contenu disponible à 0 (`quoteWidth` mesuré à 0px).
+  2. Ce texte à largeur nulle repartait mot par mot sur une hauteur
+     énorme (`quoteHeight` mesuré à plus de 700px), qui à son tour étirait
+     le cercle parent en ovale ~2× plus haut que large (un flex item sans
+     hauteur explicite prend par défaut le contenu comme hauteur minimale,
+     au-delà de ce qu'imposerait `aspect-ratio`).
+  **Corrigé en repositionnant la citation en `position:absolute; inset:20%`**
+  (plutôt qu'un padding sur un parent flex) : un pourcentage d'`inset` sur
+  un élément absolument positionné se résout par rapport à son bloc
+  englobant (`.founder-plate`, `position:relative`) — donc 20% signifie
+  bien 20% du diamètre du cercle lui-même, quelle que soit la largeur de
+  la page. Étant hors flux, ce texte ne peut plus non plus influencer la
+  hauteur de son parent, donc `aspect-ratio:1` reste fiable sans avoir
+  besoin d'un `min-height:0` de secours. Revérifié : cercle parfaitement
+  carré (398.55×398.55px à 1440px de large) à toutes les largeurs
+  testées, texte entièrement contenu dans le disque (comparaison des 4
+  coins du texte à la distance du centre vs. le rayon du cercle).
+  **La carte-nom** (`.founder-card`) : sous l'assiette, une petite carte
+  crème légèrement inclinée (`rotate(-1.6deg)`), façon marque-place posé
+  sur la table — reprend telles quelles les classes déjà établies
+  `.founder-avatar-minimal`/`.founder-signature-minimal` de la version
+  précédente (médaillon "EL" à contour fin + nom/rattachement Eurheka
+  Conseil), avec l'eyebrow "La fondatrice" déplacé de son emplacement
+  précédent (au-dessus de la citation) vers cette carte — l'assiette porte
+  désormais uniquement la citation, la carte porte l'identité, comme deux
+  éléments distincts d'une même mise en table plutôt qu'un bloc de texte
+  unique.
+  Vérifié par script Playwright (0 débordement à 390/768/1024/1440/1920px,
+  texte de citation entièrement contenu dans le cercle aux 5 largeurs) et
+  capture d'écran desktop + mobile. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console. **Explicitement une base
+  de travail à affiner ensemble** (couverts/accessoires de table
+  supplémentaires, ajustement des couleurs/tailles...) plutôt qu'une
+  version considérée figée.
 
 ## État d'avancement
 

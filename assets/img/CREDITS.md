@@ -20,7 +20,7 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
-| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) + Engagements (grille de flip-cards, "Concept clé en main") |
+| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) + Engagements (grille de flip-cards, "Concept clé en main" ; fond flouté de la section Fondatrice) |
 | `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) + Accueil (carte formule L'Aperitivo) |
 | `evenement-vespas-vintage.jpg` | Mosaïque Projets |
 | `evenement-fiat500-blanche.jpg` | Mosaïque Projets |
