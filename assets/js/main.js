@@ -1006,7 +1006,7 @@
         founderCard.style.opacity = String(cardT);
         founderCard.style.filter = "blur(" + ((1 - cardT) * 6).toFixed(2) + "px)";
         var cardLift = (1 - cardT) * 10;
-        founderCard.style.transform = "rotate(-2.5deg) translateY(" + cardLift.toFixed(2) + "px)";
+        founderCard.style.transform = "rotate(-1.1deg) translateY(" + cardLift.toFixed(2) + "px)";
       }
 
       if (founderCaption) {

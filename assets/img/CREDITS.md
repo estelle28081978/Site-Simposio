@@ -176,3 +176,28 @@ positionnée exactement à leur emplacement, qui se matérialise au scroll
 (voir `.founder-menu-card` dans `style.css` et `updateFounderDive()` dans
 `main.js`). Export en WebP (plutôt que PNG) pour la taille de fichier :
 ~470 Ko contre ~3,6 Mo en PNG pour un rendu visuellement identique.
+
+**Traitement duotone (2026-08-18, même journée)** : la cliente a rejeté
+cette version couleur ("je veux une modélisation de l'image, pas l'image
+elle-même") — remplacée par un traitement bicolore (luminance du détourage
+interpolée entre le Bleu Méditerranéen foncé et le Blanc Calcaire, alpha
+d'origine conservé pixel pour pixel) qui fait lire l'ensemble comme une
+gravure/illustration éditoriale plutôt qu'une photo filtrée. Dimensions
+inchangées (1362×1369), donc aucun recalcul nécessaire des pourcentages de
+position de la carte ni du `transform-origin` du zoom. Une tentative de
+recadrer le détourage pour ne garder "que le stand" (retirer un panier en
+osier secondaire à droite de la composition, demande de la cliente) a été
+essayée puis abandonnée : le panier et la Vespa se chevauchent en pixels
+sur cette zone (aucune séparation propre par simple découpe rectangulaire
+sans trancher dans la carrosserie de la Vespa elle-même, vérifié par script
+Python) — un premier essai de recadrage a produit un bord net visible en
+plein milieu du scooter. Le fichier livré garde donc l'ensemble complet du
+stand (parasol, meuble, Vespa et panier), qui reste cohérent comme un seul
+élément de décor. Voir aussi dans `style.css` (règle `.founder-scene-cutout`)
+la documentation d'un bug de rendu Chromium réel trouvé le même jour : un
+`filter:drop-shadow()` posé sur cette image, combiné au `transform:scale()`
+du zoom au scroll sur son parent, produisait un artefact rectangulaire
+(un léger assombrissement, visible même sur des zones 100% transparentes de
+l'image) — confirmé par comparaison de pixels avant/après désactivation du
+filtre, non résolu ni par un rayon de flou plus petit ni par l'isolement du
+calque (`translateZ(0)`) ; le filtre a été retiré plutôt que contourné.

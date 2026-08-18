@@ -1489,17 +1489,28 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   transform-origin: 25.1% 45.8%;
   will-change: transform;
 }
-/* drop-shadow (pas box-shadow) : suit la silhouette découpée du détourage
-   plutôt que de projeter l'ombre d'un rectangle photo — c'est ce qui fait
-   lire l'ensemble comme un objet 2D détouré posé sur la page, pas une
-   photo dans un cadre. */
+/* Pas de `filter:drop-shadow()` ici : un essai avait été fait pour suivre
+   la silhouette découpée (plutôt qu'un `box-shadow` rectangulaire), mais
+   Chromium produit un artefact de rendu réel avec cette combinaison
+   précise — un rectangle légèrement plus sombre que le fond navy,
+   visible en plein milieu de zones pourtant 100% transparentes de
+   l'image, uniquement quand le filtre est combiné à l'ancêtre
+   `.founder-scene-zoom` qui porte le `transform:scale()` du zoom au
+   scroll. Repéré par script Playwright (comparaison de pixels avant/
+   après désactivation du filtre, pas supposé) : ni réduire le rayon de
+   flou (`50px→18px`) ni isoler l'image sur son propre calque
+   (`transform:translateZ(0)`) n'a supprimé l'artefact — bug de
+   rastérisation du filtre sur calque transformé, pas un problème de
+   réglage. Le rendu reste net et lisible sans cette ombre (le détourage
+   duotone se suffit à lui-même comme objet posé sur le fond navy) ; si
+   `filter:drop-shadow` réapparaît ici, revérifier ce bug avant de le
+   garder. */
 .founder-scene-cutout {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.5));
 }
 
 /* La carte de menu : positionnée pour recouvrir exactement l'emplacement
@@ -1549,43 +1560,47 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   top: 36.8%;
   width: 24%;
   height: 18%;
-  background: linear-gradient(155deg, #fffaf0 0%, var(--cream) 65%);
-  border: 1px solid rgba(var(--navy-rgb), 0.16);
-  border-radius: 3px;
-  box-shadow: 0 10px 26px rgba(16, 31, 39, 0.4);
-  transform: rotate(-2.5deg) translateY(10px);
+  background: linear-gradient(165deg, #fffdf7 0%, var(--cream) 100%);
+  border-radius: 9px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 14px 32px rgba(9, 18, 23, 0.34),
+    0 2px 6px rgba(9, 18, 23, 0.2);
+  transform: rotate(-1.1deg) translateY(10px);
   opacity: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5px 7px;
+  gap: 6px;
+  padding: 8px 9px;
 }
-.founder-menu-card::before {
+.founder-menu-card-ornament {
+  position: relative;
+  width: 34%;
+  height: 1px;
+  background: var(--terracotta);
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+.founder-menu-card-ornament::before {
   content: "";
   position: absolute;
-  inset: 11%;
-  border: 0.5px solid var(--rosso-venezia);
-  opacity: 0.55;
-  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
-.founder-menu-card-corner {
-  position: absolute;
-  width: 15%;
-  height: 22%;
-  border: 1.4px solid var(--terracotta);
-  pointer-events: none;
-}
-.founder-menu-card-corner-tl { top: 7%; left: 7%; border-right: none; border-bottom: none; }
-.founder-menu-card-corner-tr { top: 7%; right: 7%; border-left: none; border-bottom: none; }
-.founder-menu-card-corner-bl { bottom: 7%; left: 7%; border-right: none; border-top: none; }
-.founder-menu-card-corner-br { bottom: 7%; right: 7%; border-left: none; border-top: none; }
 .founder-menu-card-quote {
   position: relative;
   z-index: 1;
   width: 100%;
   font-family: var(--font-display);
   font-style: italic;
-  line-height: 1.22;
+  line-height: 1.24;
   text-align: center;
   color: var(--rosso-ombria);
 }

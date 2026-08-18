@@ -3324,6 +3324,96 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   régression sur le reste du détourage. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console, 0 lien/asset cassé
   (l'ancien fichier photo a été supprimé du dépôt).
+- **Fondatrice — traitement duotone ("modélisation, pas l'image"), carte
+  redessinée, bug de rendu du drop-shadow corrigé (2026-08-18, même
+  journée)** (`founder-vespa-cutout.webp`, `.founder-menu-card*`,
+  `.founder-scene-cutout`, `engagements.html`/`style.css`/`main.js`) : la
+  cliente a rejeté le détourage couleur du bullet précédent ("Je t'ai dit
+  que je veux une modélisation de l'image, pas l'image elle-même et que tu
+  découpes uniquement le stand. Par ailleurs la carte est vraiment moche
+  retravaille tout ça pour que ça fasse élégant.") — deux corrections
+  distinctes.
+  **"Modélisation, pas l'image elle-même"** : une tentative d'illustration
+  vectorielle dessinée à la main (Vespa en SVG simplifié) a été essayée en
+  premier et écartée après rendu — beaucoup trop grossière/amateur pour le
+  niveau de finition attendu sur ce site (aucun outil de génération d'image
+  disponible dans cet environnement pour produire une illustration
+  crédible, cf. limitation déjà documentée). Remplacé par un traitement
+  **duotone** du détourage réel (toujours issu de GrabCut, cf. bullet
+  précédent, aucun pixel modifié) : luminance de chaque pixel interpolée
+  entre le Bleu Méditerranéen foncé (`--navy-900`) et le Blanc Calcaire
+  (`--cream`), canal alpha d'origine conservé à l'identique (script Pillow/
+  numpy, non commité — dérivé comme les autres traitements photo du
+  projet). Le résultat se lit comme une gravure/illustration éditoriale
+  plutôt qu'une photo filtrée — validé visuellement avant application (une
+  version composée sur fond navy a été inspectée) puis confirmé une fois
+  en place sur la page réelle. Dimensions inchangées (1362×1369) donc
+  aucun recalcul des pourcentages de position de la carte ni du
+  `transform-origin` du zoom n'a été nécessaire.
+  **"Découpe uniquement le stand" — tenté puis explicitement abandonné** :
+  un essai de recadrage pour exclure un panier en osier secondaire visible
+  à droite de la composition a été fait, mesuré par script Python (analyse
+  colonne par colonne de l'opacité) — mais le panier et la carrosserie
+  arrière de la Vespa se chevauchent en pixels sur toute cette zone (aucune
+  colonne totalement transparente entre les deux), rendant impossible une
+  découpe rectangulaire propre. Un premier essai de recadrage a produit un
+  bord net tranchant en plein milieu du scooter, repéré par capture d'écran
+  avant d'être appliqué au site — abandonné. Le fichier livré garde donc
+  l'assemblage complet du stand (parasol, meuble en céramique, Vespa et
+  panier), qui reste cohérent comme un seul élément de décor. Si un
+  recadrage partiel de `founder-vespa-cutout.webp` réapparaît ici, vérifier
+  d'abord par un script d'opacité colonne par colonne qu'aucune découpe
+  franche du Vespa n'est réintroduite.
+  **Carte "vraiment moche" — retravaillée** (`.founder-menu-card`,
+  `style.css`) : les 4 coins décoratifs en L (`.founder-menu-card-corner-*`)
+  et le double liséré pointillé-devenu-plein intérieur
+  (`.founder-menu-card::before`) — jugés trop chargés, effet "enseigne de
+  motel" — sont entièrement retirés (HTML et CSS) et remplacés par un seul
+  petit ornement minimal (`.founder-menu-card-ornament` : un fin trait
+  terracotta horizontal avec un losange centré) posé au-dessus de la
+  citation. La carte elle-même est adoucie : `border-radius` de `3px` à
+  `9px`, la bordure fine `rgba(navy,0.16)` est retirée (le `box-shadow`
+  seul suffit à détacher la carte du fond), l'ombre portée est éclaircie/
+  diffusée (`0 14px 32px` + un liseré clair `inset` en haut plutôt qu'un
+  simple `0 10px 26px` plat), la rotation réduite de `-2.5deg` à `-1.1deg`
+  pour une pose plus posée. La disposition interne passe de
+  `justify-content:center` (ligne unique) à `flex-direction:column;
+  gap:6px` pour empiler l'ornement au-dessus du texte. **Piège de padding
+  en `%` réintroduit puis corrigé sur-le-champ** : le premier jet utilisait
+  `padding:9% 10%` sur `.founder-menu-card` — comme déjà documenté et
+  corrigé une fois pour cette même carte (bullet précédent), un pourcentage
+  de padding se résout par rapport à la largeur du conteneur ENGLOBANT
+  (`.founder-scene-zoom`, ~544px), pas de la carte elle-même (~131px) ;
+  repéré avant publication (pas seulement corrigé après coup) et remplacé
+  par un padding fixe (`8px 9px`). La rotation codée en dur dans
+  `updateFounderDive()` (`main.js`, appliquée à chaque frame de scroll par-
+  dessus la base CSS) a été mise à jour en conséquence (`-2.5deg` →
+  `-1.1deg`), sans quoi le JS aurait écrasé la nouvelle rotation CSS à
+  chaque tick de scroll.
+  **Bug de rendu Chromium réel trouvé et corrigé, sans lien avec les deux
+  demandes ci-dessus** : lors de la vérification par capture d'écran, un
+  rectangle légèrement plus sombre que le fond navy restait visible en
+  haut à droite du cadre, y compris dans des zones à 100% transparentes du
+  détourage — confirmé par échantillonnage de pixels (le rectangle
+  disparaissait entièrement quand `filter` était désactivé en JS dans la
+  console). Cause : `filter:drop-shadow()` sur `.founder-scene-cutout`,
+  combiné au `transform:scale()` du zoom au scroll porté par son parent
+  `.founder-scene-zoom` — un vrai bug de rastérisation de filtre sur calque
+  transformé, pas un réglage à ajuster. Deux contournements standards
+  testés et écartés (aucun n'a fait disparaître le rectangle) : réduire le
+  rayon de flou (`50px→18px`) et isoler l'image sur son propre calque de
+  composition (`transform:translateZ(0)` + `will-change`). Le filtre a été
+  retiré plutôt que contourné — le détourage duotone se suffit à lui-même
+  sans ombre portée photographique, cohérent avec l'esprit "modélisation
+  graphique" plutôt que photo. Si `filter:drop-shadow` réapparaît sur
+  `.founder-scene-cutout`, revérifier ce bug (comparaison de pixels
+  avant/après désactivation) avant de le garder.
+  Vérifié par script Playwright (0 erreur console, 0 débordement horizontal,
+  carte : opacité/rotation/`border-radius` mesurés conformes, texte de
+  citation contenu dans la carte — `scrollHeight` ≤ hauteur disponible — à
+  7 fractions de progression de scroll × desktop/mobile) et capture d'écran
+  aux mêmes fractions. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console, 0 lien/asset cassé.
 
 ## État d'avancement
 
