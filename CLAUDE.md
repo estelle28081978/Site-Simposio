@@ -2967,6 +2967,43 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (état normal + état survolé sur la 1ʳᵉ carte, confirmant le soulèvement
   et l'ombre accentuée). Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **5 sens — tracé de fond (guide complet) masqué, ne reste que le trait
+  animé au scroll (2026-08-18)** (`.senses-journey-path-bg`, `style.css`) :
+  demande explicite de la cliente ("fait apparaitre le trait petit à petit
+  au scroll, pas qu'il soit déjà tracé en entier... change rien à part la
+  manière dont il apparait"). **Le mécanisme d'apparition progressive
+  existait déjà** — `journeyPath.style.strokeDashoffset` (`main.js`,
+  `updateJourney()`) est piloté par la progression de scroll depuis la
+  toute première version de cette section (`journeyPathLength * (1 -
+  progress)`, vérifié par script Playwright : passe de la longueur totale
+  à ~0 entre `progress=0` et `progress=1`, parfaitement linéaire). Ce
+  n'était donc pas ce trait animé (`#sensesJourneyPath`,
+  `.senses-journey-path`) que la cliente voyait "déjà tracé en entier" au
+  chargement, mais **le second `<path>`, `.senses-journey-path-bg`** — un
+  calque de guidage à faible opacité (16%) partageant exactement le même
+  attribut `d`, affiché en fond, toujours visible en entier dès l'arrivée
+  sur la section (jamais animé, contrairement au trait terracotta
+  au-dessus). C'est ce guide statique qui donnait l'impression que le
+  chemin entier était déjà dessiné avant même de scroller.
+  **Corrigé en passant son `opacity` à 0** (une seule ligne ajoutée à la
+  règle CSS existante) — l'élément et son `d` (toujours mis à jour par
+  `applyJourneyLayout()` dans `main.js`, au redimensionnement
+  desktop/mobile) restent inchangés dans le HTML/JS, volontairement : la
+  demande était explicitement de ne rien changer d'autre que l'apparence.
+  Les bornes (`.senses-journey-dot-group`, cercles numérotés 1-5) ne sont
+  pas concernées — ce sont des éléments séparés, positionnés
+  indépendamment du tracé animé, donc le chemin continue de les traverser
+  exactement comme avant, seul son mode d'apparition change. Si l'opacité
+  de `.senses-journey-path-bg` remonte au-dessus de 0, le chemin complet
+  redevient visible dès l'arrivée sur la section — à ne pas réintroduire
+  sans qu'on le redemande.
+  Vérifié par script Playwright : `strokeDashoffset` mesuré à 7 fractions
+  de progression (0 → 1), confirmant un tracé strictement progressif ;
+  capture d'écran à `progress≈0.02` (juste un petit segment près de la
+  borne 1, rien d'autre visible) et `progress≈0.45` (trait dessiné jusqu'à
+  mi-chemin de la borne 2→3, bornes 3/4/5 encore non atteintes visibles en
+  attente). Regression complète 5 pages × 2 viewports : 0 débordement,
+  0 erreur console.
 
 ## État d'avancement
 

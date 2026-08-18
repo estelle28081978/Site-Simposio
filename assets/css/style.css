@@ -1067,7 +1067,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   min-height: 0;
 }
 .senses-journey-svg { width: 100%; height: 100%; overflow: visible; }
-.senses-journey-path-bg { fill: none; stroke: rgba(246, 241, 231, 0.16); stroke-width: 7; stroke-linecap: round; }
+/* Le tracé clair (.senses-journey-path-bg) affichait le chemin complet dès
+   l'arrivée sur la section, en fond derrière le tracé animé — la cliente a
+   demandé que le trait n'apparaisse QUE progressivement au scroll, sans
+   qu'on devine le tracé complet à l'avance (2026-08-18). L'élément et son
+   `d` (mis à jour par applyJourneyLayout() dans main.js, inchangé) restent
+   en place pour ne pas toucher au reste du mécanisme — seule son opacité
+   passe à 0, donc plus rien n'est visible tant que .senses-journey-path
+   (l'animation liée au scroll, strokeDashoffset déjà piloté par la
+   progression) n'a pas commencé à le dessiner. Si l'opacité remonte au-dessus
+   de 0 ici, le chemin redevient visible en entier dès l'arrivée sur la
+   section — à ne pas réintroduire sans qu'on le redemande. */
+.senses-journey-path-bg { fill: none; stroke: rgba(246, 241, 231, 0.16); stroke-width: 7; stroke-linecap: round; opacity: 0; }
 .senses-journey-path {
   fill: none;
   stroke: var(--terracotta-300);
