@@ -16,8 +16,7 @@ plus avant de marquer un fichier « non utilisé ».
 | Fichier | Utilisée sur |
 |---|---|
 | `evenement-parasols-jaunes-table.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") |
-| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée directement (voir `evenement-vespa-fleurie-lemon-scene.jpg` ci-dessous, dérivée de ce fichier) |
-| `evenement-vespa-fleurie-lemon-scene.jpg` | Engagements — section Fondatrice, plongée au scroll (fond) |
+| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée directement (voir `founder-vespa-cutout.webp` plus bas, détourage dérivé de ce fichier) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
@@ -155,18 +154,25 @@ La photo `terrace-dinner-assisi.jpg` montre de vraies personnes attablées
 uniquement à illustrer une ambiance de déjeuner d'affaires en terrasse (La
 Tavola). Le site précise "photo d'illustration" sous cette image.
 
-**`evenement-vespa-fleurie-lemon-scene.jpg` (2026-08-18)** : dérivée de
-`evenement-vespa-fleurie-lemon.jpg` par un script Python/Pillow (recadrage
-+ vignettage radial doux), pas une nouvelle photo. Contexte : la cliente a
-demandé de retirer les sachets de pâtes visibles sur le comptoir en
-céramique et de détourer la scène (mur/escalier/sol) pour la section
-Fondatrice — aucun outil de retouche générative/inpainting n'étant
-disponible dans l'environnement de développement, un détourage/effacement
-propre n'était pas faisable. Compromis retenu (voir CLAUDE.md pour le
-détail complet) : le fichier source est recadré (le tiers de mur vide
-au-dessus du parasol est retiré) et légèrement vignetté (assombrissement
-radial doux vers les bords, aucun contenu ajouté/inventé) pour atténuer le
-mur/escalier restants sans les effacer ; les sachets de pâtes, eux, ne sont
-pas retouchés — ils restent sur la photo mais sont recouverts par une carte
-de menu en CSS/SVG positionnée exactement à leur emplacement (voir
-`.founder-menu-card` dans `style.css`).
+**`founder-vespa-cutout.webp` (2026-08-18, section Fondatrice, plongée au
+scroll)** : détourage de `evenement-vespa-fleurie-lemon.jpg` — fond
+entièrement transparent, ne garde que le parasol, le meuble en céramique,
+les fleurs/paniers et la Vespa. Pas une nouvelle photo ni une illustration
+dessinée : un algorithme de segmentation classique (OpenCV GrabCut,
+zones de premier-plan/arrière-plan placées à la main, plusieurs passes de
+raffinement), aucun pixel inventé ou effacé, seulement classé
+premier-plan/arrière-plan puis découpé. Deux modèles de segmentation par
+réseau de neurones (`rembg`, u2net puis isnet-general-use) ont été essayés
+avant GrabCut et écartés : les deux faisaient disparaître la Vespa
+(confondue avec l'arrière-plan à cause de sa couleur crème claire).
+**Limite assumée** : un petit fragment de mur reste visible derrière un
+massif de verdure, sur la droite de la composition — zone où le buisson
+recouvre partiellement une fenêtre en arrière-plan, rendant la séparation
+pixel par pixel particulièrement difficile ; sacrifié plutôt que risqué
+d'abîmer le reste du détourage en insistant. Les sachets de pâtes visibles
+sur le comptoir dans la photo source ne sont pas retouchés — ils restent
+dans le détourage mais sont recouverts par une carte de menu en CSS/SVG
+positionnée exactement à leur emplacement, qui se matérialise au scroll
+(voir `.founder-menu-card` dans `style.css` et `updateFounderDive()` dans
+`main.js`). Export en WebP (plutôt que PNG) pour la taille de fichier :
+~470 Ko contre ~3,6 Mo en PNG pour un rendu visuellement identique.

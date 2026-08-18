@@ -3222,6 +3222,108 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   texte, 0 fragment de sachet visible) à 320/390/768/1024/1440/1600/
   1920px. Regression complète 5 pages × 2 viewports : 0 débordement,
   0 erreur console.
+- **Fondatrice — remplace la photo par un vrai détourage 2D transparent,
+  carte qui se matérialise (2026-08-18)** (`.founder-dive*`,
+  `.founder-menu-card*`, `founder-vespa-cutout.webp`, `engagements.html`) :
+  la cliente a explicitement rejeté l'itération précédente (photo
+  recadrée/vignettée avec carte posée dessus) — "oublie la photo... une
+  modélisation 2D ultra réaliste... fidèle à ce qui s'y trouve et la
+  disposition des éléments... intègre-le comme s'il était en 2D", puis,
+  sur la carte : qu'elle soit invisible avant le zoom et se matérialise
+  progressivement sur le comptoir plutôt que d'être déjà là. Si
+  `.founder-scene-photo`/`evenement-vespa-fleurie-lemon-scene.jpg`
+  réapparaissent, c'est cette ancienne version photo, à ne pas
+  réintroduire sans qu'on le redemande (fichier supprimé du dépôt).
+  **Détourage plutôt qu'illustration dessinée** : la cliente demandait une
+  "modélisation 2D", mais aucun outil de génération d'image n'est
+  disponible dans cet environnement — dessiner à la main une illustration
+  vectorielle d'un niveau photoréaliste (céramique peinte à motifs citron,
+  parasol à franges, chrome de la Vespa...) n'est pas faisable, et un essai
+  aurait rendu un résultat visiblement amateur. Compromis assumé et
+  explicité à la cliente : détourer la vraie photo (segmentation, pas de
+  pixel inventé) pour obtenir un objet 2D à fond transparent, fidèle par
+  construction puisque ce sont les pixels réels de la photo.
+  **Trois méthodes de segmentation essayées, deux écartées** :
+  1. `rembg`/u2net (réseau de neurones généraliste, salient-object) :
+     traite la Vespa comme arrière-plan et la fait quasiment disparaître
+     (probablement à cause de sa couleur crème claire, proche des tons
+     "incertain" appris par le modèle) — écarté après inspection visuelle
+     du résultat.
+  2. `rembg`/isnet-general-use, avec `alpha_matting` : pire — la Vespa
+     devient un fantôme translucide, le matting confondant ses zones
+     blanches avec de l'arrière-plan incertain — écarté aussi.
+  3. **OpenCV GrabCut (retenu)** : algorithme de segmentation classique
+     par graph-cut sur les couleurs/textures — moins "intelligent" que les
+     modèles ci-dessus, mais piloté directement par des rectangles de
+     premier-plan/arrière-plan placés à la main (`cv2.GC_FGD`/`GC_BGD`),
+     ce qui le rend prévisible et corrigible point par point,
+     contrairement à une boîte noire neuronale. A gardé la Vespa intacte
+     dès le premier essai. Affiné sur plusieurs passes (script Python
+     autonome, jamais commité — un dérivé du fichier source, comme les
+     autres traitements d'image de ce projet) : un premier essai avec un
+     seul rectangle englobant a laissé passer le mur/la fenêtre en
+     arrière-plan (à l'intérieur du rectangle, non distingués du
+     premier-plan) ; passage à `GC_INIT_WITH_MASK` avec des graines
+     précises placées après inspection d'une grille de coordonnées
+     superposée à la photo (pas au jugé) a corrigé la plupart des fuites,
+     mais chaque graine mal placée créait un nouveau dégât ailleurs (un
+     trou dans le parasol, un panier détaché de ses étiquettes) — corrigé
+     itérativement, capture d'écran à l'appui à chaque passe, jamais un
+     changement appliqué à l'aveugle.
+  **Limite assumée, non résolue** : un fragment de mur/fenêtre reste
+  visible derrière un massif de verdure sur la droite de la composition —
+  le buisson recouvre partiellement une fenêtre en arrière-plan, rendant
+  la séparation pixel par pixel particulièrement difficile à cet endroit
+  précis (essai d'un seuillage colorimétrique local pour l'isoler
+  spécifiquement : a empiré le résultat plutôt que de l'améliorer, annulé).
+  Décision : sacrifier proprement le buisson concerné (rectangle marqué
+  arrière-plan) plutôt que de continuer à risquer d'abîmer le reste d'un
+  détourage par ailleurs propre — la cliente a validé ce compromis avant
+  que le travail de construction de l'animation ne commence (capture
+  envoyée, question posée explicitement).
+  **Export** : `founder-vespa-cutout.webp` (recadré à la boîte englobante
+  du détourage, fond RGBA transparent) — WebP plutôt que PNG pour la
+  taille de fichier (~470 Ko contre ~3,6 Mo en PNG, rendu visuellement
+  identique) ; aucun fallback `<picture>` nécessaire, WebP a un support
+  navigateur universel aujourd'hui.
+  **Présentation "objet 2D posé sur un aplat"** : `.founder-scene-frame`
+  perd son fond/ombre/coins arrondis de card photo — la découpe repose
+  directement sur le bleu Méditerranéen (`--navy-900`) de `.founder-dive`,
+  sans bordure ni cadre visible. `.founder-scene-cutout` utilise
+  `filter:drop-shadow()` (pas `box-shadow`) : l'ombre épouse la silhouette
+  détourée (parasol, Vespa...) plutôt que de projeter l'ombre d'un
+  rectangle photo — c'est ce qui fait lire l'ensemble comme un sticker/une
+  découpe posée sur la page plutôt qu'une photo encadrée.
+  **Matérialisation de la carte** (`updateFounderDive()`, `main.js`) :
+  la carte démarre invisible (`opacity:0` en CSS, filet de sécurité) et le
+  scroll pilote *trois* propriétés en phase avec le même `progress` que le
+  zoom — `opacity` (0→1 entre `progress` 0.12 et 0.42), `filter:blur()`
+  (6px→0, effet de mise au point progressive) et une translation verticale
+  (`translateY(10px)→0`, comme si la carte se "posait" sur le comptoir) —
+  plutôt qu'un simple fondu, pour une matérialisation plus crédible.
+  Pleinement visible et nette entre `progress` 0.42 et la fin, laissant le
+  temps du zoom restant pour la lire confortablement.
+  **Bug de cadrage trouvé et corrigé à l'échelle maximale** : le
+  `transform-origin` de `.founder-scene-zoom`, d'abord calé pile sur le
+  centre géométrique de la carte (32.5%, 45.8%), poussait le bord gauche
+  de la carte hors du cadre visible à l'échelle maximale (×3,4) — repéré
+  par capture d'écran (le "S" de "Simposio" et le "l'" d'"envie" rognés
+  au ras du bord), pas supposé. Cause : 32,5% n'est pas le centre du
+  cadre (50%), donc une mise à l'échelle centrée sur ce point déporte
+  mécaniquement le contenu agrandi vers la gauche. Corrigé en décalant le
+  `transform-origin` en x à 25,1% (calculé pour équilibrer les marges
+  gauche/droite à l'échelle ×3,4 exactement) — recentre la carte agrandie
+  dans le cadre en fin de parcours sans changer sa position réelle sur le
+  comptoir aux échelles faibles/intermédiaires (l'écart ne devient
+  perceptible qu'à mesure que l'échelle s'éloigne de 1).
+  Vérifié par script Playwright + capture d'écran à plusieurs fractions de
+  progression (0, 0.1, 0.25, 0.42, 0.6, 1) sur desktop et mobile : carte
+  invisible avant 0.12, matérialisation confirmée par mesure directe
+  d'`opacity`/`filter`/`transform`, citation entièrement lisible et
+  contenue dans le cadre à l'échelle maximale (plus de rognage), aucune
+  régression sur le reste du détourage. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console, 0 lien/asset cassé
+  (l'ancien fichier photo a été supprimé du dépôt).
 
 ## État d'avancement
 

@@ -941,7 +941,7 @@
   if (founderDive && founderZoom) {
     var founderCaption = document.getElementById("founderCaption");
     var founderTicking = false;
-    var founderCard = document.querySelector(".founder-menu-card");
+    var founderCard = document.getElementById("founderMenuCard");
     var founderQuote = document.querySelector(".founder-menu-card-quote");
 
     // La carte est dimensionnée en % pour recouvrir exactement l'emplacement
@@ -995,6 +995,19 @@
       // même convention déjà établie ailleurs sur le site.
       var scale = 1 + progress * 2.4;
       founderZoom.style.transform = "scale(" + scale.toFixed(3) + ")";
+
+      // Matérialisation de la carte : invisible avant progress≈0.12, puis
+      // apparaît (fondu + mise au point + léger dépôt vertical) jusqu'à
+      // progress≈0.42, pleinement "posée" ensuite pour le reste du zoom —
+      // voir le commentaire CSS sur .founder-menu-card pour le détail de
+      // la demande ("on ne voit pas la carte, et peu à peu elle s'affiche").
+      if (founderCard) {
+        var cardT = progress <= 0.12 ? 0 : progress >= 0.42 ? 1 : (progress - 0.12) / 0.3;
+        founderCard.style.opacity = String(cardT);
+        founderCard.style.filter = "blur(" + ((1 - cardT) * 6).toFixed(2) + "px)";
+        var cardLift = (1 - cardT) * 10;
+        founderCard.style.transform = "rotate(-2.5deg) translateY(" + cardLift.toFixed(2) + "px)";
+      }
 
       if (founderCaption) {
         var capOpacity = progress > 0.72 ? Math.min(1, (progress - 0.72) / 0.22) : 0;

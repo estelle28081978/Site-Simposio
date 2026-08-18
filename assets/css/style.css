@@ -1393,47 +1393,55 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Founder — plongée au scroll dans le stand Vespa, carte de menu posée sur
-   le comptoir (2026-08-18, remplace la citation "inscrite au fond d'une
-   assiette" ci-dessous — demande explicite de la cliente, avec un cahier
-   des charges précis). Si `.founder-scene`/`.founder-plate`/
-   `.founder-quote-plate` réapparaissent, c'est cette version assiette
-   précédente ; si `.founder-minimal`/`.founder-quote-minimal`/`.founder-rule`
-   réapparaissent directement enfants de `.container`, c'est la version
-   minimaliste encore antérieure — historique complet dans CLAUDE.md, aucune
-   à réintroduire sans qu'on le redemande.
-   **Contrainte outillage assumée** : pas d'outil de retouche photo
-   générative dans cet environnement (pas d'inpainting) — impossible
-   d'effacer proprement les paquets de pâtes visibles sur la photo source
-   (`evenement-vespa-fleurie-lemon.jpg`, stand Vespa fleuri) ni de détourer
-   la scène pour isoler le stand du mur/escalier/sol. Plutôt qu'un rendu
-   bricolé, la carte de menu est une carte CSS/SVG posée PAR-DESSUS
-   l'emplacement des pâtes (qui restent sous la carte, invisibles à
-   l'écran, pas effacées) — voir `.founder-menu-card` ci-dessous. Le
-   mur/escalier/sol ne sont pas détourés mais atténués via un recadrage +
-   un vignettage doux, appliqués une fois pour toutes sur un dérivé de la
-   photo (`evenement-vespa-fleurie-lemon-scene.jpg`, généré par script
-   Pillow — crop + assombrissement radial progressif, aucun contenu
-   inventé/effacé, donc dans les clous de ce qui est raisonnablement
-   faisable ici) — voir `assets/img/CREDITS.md`.
+   Founder — plongée au scroll dans un détourage 2D du stand Vespa, carte
+   de menu qui se matérialise sur le comptoir (2026-08-18, cahier des
+   charges très précis de la cliente, en plusieurs itérations). Historique
+   des versions précédentes (aucune à réintroduire sans qu'on le
+   redemande, détail complet dans CLAUDE.md) : citation "inscrite au fond
+   d'une assiette" (`.founder-plate`/`.founder-quote-plate`), typographie
+   centrée minimaliste (`.founder-minimal`/`.founder-quote-minimal`), et
+   — étape intermédiaire de CETTE itération — une simple photo recadrée +
+   vignettée avec la carte posée dessus (`.founder-scene-photo`,
+   `evenement-vespa-fleurie-lemon-scene.jpg`, retirée du site : la cliente
+   a explicitement demandé "oublie la photo... une modélisation 2D... fidèle
+   à la disposition des éléments").
+   **Détourage, pas illustration dessinée** : aucun outil de génération
+   d'image dans cet environnement (impossible de dessiner une illustration
+   vectorielle "à la main" d'un niveau photoréaliste) — la fidélité
+   demandée est obtenue en détourant la vraie photo (OpenCV, algorithme
+   GrabCut classique — segmentation par couleur/texture, pas de l'IA
+   générative, aucun pixel inventé) plutôt qu'en la redessinant. Deux
+   modèles de segmentation par réseau de neurones (`rembg`, u2net puis
+   isnet-general-use) ont été essayés en premier et écartés : les deux
+   faisaient disparaître la Vespa (confondue avec l'arrière-plan à cause
+   de sa couleur crème claire) — GrabCut, moins "intelligent" mais piloté
+   par des zones de premier-plan/arrière-plan placées à la main, s'est
+   révélé plus fiable sur cette photo précise. Résultat exporté en
+   `assets/img/founder-vespa-cutout.webp` (fond entièrement transparent,
+   recadré à la boîte englobante du détourage — voir `assets/img/CREDITS.md`
+   pour la méthode complète et ses limites assumées, notamment un
+   fragment résiduel de mur derrière un des massifs, sacrifié plutôt que
+   risqué d'abîmer le reste du détourage en insistant).
    **Structure, en pin façon `.senses-journey`/`.values-reel`** :
    `.founder-dive` (wrapper haut, `height:280vh`, fournit la distance de
    scroll) > `.founder-dive-sticky` (`position:sticky; height:100vh`,
    colonne centrée) contenant l'eyebrow "La fondatrice" (fixe, ne zoome
-   pas), `.founder-scene-frame` (le cadre visible, `overflow:hidden`,
-   dimensionné en `aspect-ratio` identique à la photo source recadrée —
-   1500:1595 — pour que les pourcentages de position de la carte
-   correspondent exactement aux pixels réels de la photo, sans dérive liée
-   à un `object-fit:cover` sur un cadre à ratio différent) et
+   pas), `.founder-scene-frame` (le cadre visible, `overflow:hidden`, SANS
+   fond/ombre/coins arrondis propres — la découpe repose directement sur
+   le bleu Méditerranéen de la section, pour se lire comme un objet 2D
+   posé sur un aplat plutôt que comme une photo encadrée ; `aspect-ratio`
+   calé pile sur les dimensions du fichier détouré — 1362:1369 — pour
+   qu'`object-fit:contain` n'introduise aucun décalage entre les
+   pourcentages de position de la carte et les pixels réels) et
    `.founder-scene-caption` (signature, apparaît en fondu en fin de
    parcours). À l'intérieur du cadre, `.founder-scene-zoom` (100% du
-   cadre, `transform-origin` calé sur la position réelle de la carte dans
-   la photo — 38.7% / 52.7% — mesurée par script Python sur l'image
-   recadrée) enveloppe À LA FOIS la photo et `.founder-menu-card` : les
-   deux sont donc scalées ensemble comme un seul bloc rigide par
-   `updateFounderDive()` (`main.js`), garantissant que la carte reste
-   verrouillée au même endroit visuel de la photo à chaque étape du zoom
-   sans calcul de parallaxe séparé. */
+   cadre) enveloppe À LA FOIS le détourage (`.founder-scene-cutout`, avec
+   un `filter:drop-shadow()` qui suit sa silhouette plutôt qu'un
+   `box-shadow` rectangulaire) et `.founder-menu-card` : les deux sont
+   donc scalés ensemble comme un seul bloc rigide par `updateFounderDive()`
+   (`main.js`), garantissant que la carte reste verrouillée au même
+   endroit visuel du comptoir à chaque étape du zoom sans calcul de
+   parallaxe séparé. */
 .founder-dive { position: relative; height: 280vh; background: var(--navy-900); }
 .founder-dive-sticky {
   position: sticky;
@@ -1447,13 +1455,20 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   overflow: hidden;
 }
 .founder-dive-eyebrow { color: var(--terracotta-300); }
+/* Le cadre reste overflow:hidden pour contenir le zoom (le contenu déborde
+   largement de sa boîte une fois agrandi ×3,4), mais n'a plus ni fond ni
+   ombre ni coins arrondis propres à lui — la découpe (fond transparent)
+   repose directement sur le bleu Méditerranéen de `.founder-dive`, pour
+   se lire comme un objet 2D posé sur un aplat de couleur plutôt que comme
+   une photo encadrée. `aspect-ratio` calé pile sur les dimensions réelles
+   du fichier recadré (1362×1369) pour qu'`object-fit:contain` n'ajoute
+   aucune marge/lettrboxing qui décalerait les pourcentages de position de
+   la carte ci-dessous. */
 .founder-scene-frame {
   position: relative;
   width: min(80vw, 34rem);
-  aspect-ratio: 1500 / 1595;
+  aspect-ratio: 1362 / 1369;
   overflow: hidden;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 40px 80px rgba(16, 31, 39, 0.5);
   flex-shrink: 1;
 }
 .founder-scene-zoom {
@@ -1461,20 +1476,50 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   inset: 0;
   width: 100%;
   height: 100%;
-  transform-origin: 38.7% 52.7%;
+  /* transform-origin décalé du centre géométrique de la carte (32.5%,
+     45.8%) vers 25.1% en x : à l'échelle maximale (×3.4), une mise à
+     l'échelle centrée pile sur la carte poussait son bord gauche hors du
+     cadre (le "S" de "Simposio" et "l'" d'"envie" rognés, mesuré par
+     script Playwright/capture d'écran) car 32.5% n'est pas au centre du
+     cadre — le décalage vers 25.1% (calculé pour équilibrer les marges
+     gauche/droite à ×3.4, cf. calcul dans l'historique du projet) recentre
+     la carte agrandie dans le cadre sans changer sa position réelle sur
+     le comptoir aux échelles faibles/intermédiaires (l'effet ne devient
+     sensible qu'à mesure que l'échelle s'éloigne de 1). */
+  transform-origin: 25.1% 45.8%;
   will-change: transform;
 }
-.founder-scene-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* drop-shadow (pas box-shadow) : suit la silhouette découpée du détourage
+   plutôt que de projeter l'ombre d'un rectangle photo — c'est ce qui fait
+   lire l'ensemble comme un objet 2D détouré posé sur la page, pas une
+   photo dans un cadre. */
+.founder-scene-cutout {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.5));
+}
 
-/* La carte de menu : dimensionnée et positionnée pour recouvrir
-   exactement l'emplacement des sachets de pâtes sur le comptoir en
-   céramique (mesuré par script Python : bbox à 28.7%–48.7% en largeur,
-   45.8%–59.6% en hauteur sur la photo recadrée — la carte déborde
-   légèrement de cette bbox pour une marge de sécurité, aucun sachet ne
-   doit dépasser sur les bords). `rotate(-2.5deg)` : léger angle pour
-   suivre la perspective du comptoir (qui recule légèrement vers la
-   droite sur la photo), comme les petites étiquettes déjà présentes sur
-   les sachets. */
+/* La carte de menu : positionnée pour recouvrir exactement l'emplacement
+   des sachets de pâtes sur le comptoir en céramique (mesuré par script
+   Python sur le détourage recadré : bbox à 21.4–43.5% en largeur,
+   37.8–53.8% en hauteur — la carte déborde légèrement de cette bbox pour
+   une marge de sécurité). `rotate(-2.5deg)` : léger angle pour suivre la
+   perspective du comptoir, comme les petites étiquettes déjà présentes
+   sur les sachets.
+   **Matérialisation, pas simple apparition** (demande explicite de la
+   cliente — "on ne voit pas la carte, et peu à peu elle s'affiche... comme
+   si c'était directement intégré à la photo") : la carte démarre
+   invisible (`opacity:0` en base CSS, filet de sécurité si le JS
+   n'a pas encore tourné) et `updateFounderDive()` (`main.js`) pilote en
+   JS, en phase avec le même `progress` de scroll que le zoom, trois
+   propriétés à la fois — `opacity` (0→1), `filter:blur()` (6px→0, effet de
+   mise au point progressive) et une légère translation verticale
+   (`translateY(10px)→0`, comme si la carte se posait sur le comptoir) —
+   plutôt qu'un simple fondu, pour un effet de matérialisation plus
+   crédible. Voir `main.js` pour les bornes de progression exactes. */
 /* Deux pièges de dimensionnement rencontrés et corrigés ici, tous deux
    repérés par mesure Playwright (pas supposés) :
    1. `padding` en `%` se résout par rapport à la largeur du conteneur
@@ -1500,15 +1545,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
       ce que le texte tienne, au chargement et au resize. */
 .founder-menu-card {
   position: absolute;
-  left: 26%;
-  top: 43%;
-  width: 25%;
-  height: 19%;
+  left: 20.4%;
+  top: 36.8%;
+  width: 24%;
+  height: 18%;
   background: linear-gradient(155deg, #fffaf0 0%, var(--cream) 65%);
   border: 1px solid rgba(var(--navy-rgb), 0.16);
   border-radius: 3px;
   box-shadow: 0 10px 26px rgba(16, 31, 39, 0.4);
-  transform: rotate(-2.5deg);
+  transform: rotate(-2.5deg) translateY(10px);
+  opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
