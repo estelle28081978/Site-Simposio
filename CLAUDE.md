@@ -2506,12 +2506,30 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
     `.stats-band-grid > div`, `margin-inline:auto` sur `dd` pour que son
     `max-width` reste centré) plutôt que collé à gauche contre le séparateur.
   - **Boutons "haut de page"/"bas de page" sur la mosaïque Projets**
-    (`.page-scroll-nav`, `projets.html`) : deux boutons ronds fixes, alignés
-    à droite, verticalement centrés à l'écran, chacun avec juste la pointe
-    d'un chevron (pas de flèche complète) — `scrollTopBtn`/`scrollBottomBtn`
-    dans `main.js` font un `window.scrollTo` (haut de page / bas de la page
-    entière, pas seulement de la mosaïque), en `smooth` sauf
-    `prefers-reduced-motion`.
+    (`.page-scroll-nav`, `projets.html`) : deux boutons ronds, alignés à
+    droite, verticalement centrés sur la hauteur de la mosaïque, chacun avec
+    juste la pointe d'un chevron (pas de flèche complète) —
+    `scrollTopBtn`/`scrollBottomBtn` dans `main.js` font un
+    `window.scrollTo` (haut de page / bas de la page entière, pas seulement
+    de la mosaïque), en `smooth` sauf `prefers-reduced-motion`.
+    **Itération immédiate (même jour)** : la première version utilisait
+    `position: fixed`, donc les boutons suivaient l'utilisateur sur toute la
+    page (header, footer...) — la cliente a explicitement demandé qu'ils
+    n'apparaissent qu'au niveau de la mosaïque. `.page-scroll-nav` est passé
+    en `position: absolute`, **sibling** de `.mosaic-viewport` (pas un
+    descendant) à l'intérieur de `.mosaic-section` (qui a reçu
+    `position: relative` pour servir d'ancrage) : sa hauteur épouse
+    naturellement celle de `.mosaic-viewport` puisque c'est le seul contenu
+    de la section, donc les boutons restent visuellement au même endroit
+    qu'avant, mais scrollent avec la page au lieu d'y rester fixes.
+    **Volontairement pas à l'intérieur de `#mosaicViewport`** : un essai
+    intermédiaire les plaçait en enfants de `#mosaicViewport` (plus simple
+    à styliser), mais `#mosaicViewport` capture le pointeur au
+    `pointerdown` (`setPointerCapture`, pour le glisser-déposer de la
+    mosaïque) — un clic réel (souris down/up simulée, pas juste
+    `element.click()` scripté) sur un bouton enfant interrompait parfois le
+    `window.scrollTo` en cours de route. Non reproduit une fois les boutons
+    sortis comme frères de `.mosaic-viewport` plutôt que comme enfants.
   - **Carré terracotta retiré du fond des cartes Engagements**
     (`.engagements::after`, `engagements.html`) : la cliente le trouvait trop
     présent dans le fond des flip-cards ; supprimé entièrement (le calque de

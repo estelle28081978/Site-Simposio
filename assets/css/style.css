@@ -1518,7 +1518,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Projets — Double2-inspired seamless mosaic: a grid of square tiles, no
    gaps, larger than the viewport, that the visitor drags/pans freely.
    ========================================================================== */
-.mosaic-section { background: var(--navy-900); padding-block: 0; }
+.mosaic-section { position: relative; background: var(--navy-900); padding-block: 0; }
 
 .mosaic-viewport {
   position: relative;
@@ -1613,18 +1613,31 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mosaic-hint svg { width: 16px; height: 16px; }
 .mosaic-hint.is-hidden { opacity: 0; }
 
-/* Fixed right-aligned pair of buttons ("just the tip of an arrow", no
-   shaft) to jump straight to the top or bottom of the page, regardless of
-   current scroll position — not confined to the mosaic viewport itself. */
+/* Right-aligned pair of buttons ("just the tip of an arrow", no shaft) to
+   jump straight to the top or bottom of the page. Absolutely positioned as
+   a sibling of `.mosaic-viewport` inside `.mosaic-section` (not
+   `position: fixed`) so they only appear over the mosaic itself, not while
+   scrolling the rest of the page — the client explicitly asked for this
+   after an earlier version used `fixed` and the buttons followed the user
+   everywhere on the page.
+   Deliberately NOT a descendant of `#mosaicViewport` itself: that element
+   captures the pointer on `pointerdown` (`setPointerCapture`, for the
+   drag-to-pan mosaic) and a real mouse click landing inside it — even on
+   a child button — was found to reliably cut the button's own
+   `window.scrollTo({behavior:"smooth"})` short partway through (verified
+   with a real synthesized mouse down/up, not just a scripted `.click()`,
+   which didn't reproduce it). Keeping the buttons as a sibling, positioned
+   to sit visually in the same place, avoids the pointer-capture interaction
+   entirely rather than trying to patch around it. */
 .page-scroll-nav {
-  position: fixed;
+  position: absolute;
   right: var(--space-3);
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  z-index: 50;
+  z-index: 5;
 }
 .page-scroll-nav-btn {
   display: flex;
