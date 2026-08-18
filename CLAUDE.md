@@ -2650,6 +2650,35 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   reste inchangé et n'est pas concerné par `data-scale`, qui ne s'applique
   qu'à la branche JS desktop/tablette). Regression complète 6 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Promesse (accueil) — regroupée en 8 lignes (2026-08-18)**
+  (`.promise-quote`, `index.html`, `.promise-line-N` dans `style.css`) :
+  demande explicite de la cliente ("met plus de mot par ligne pour faire
+  en sorte que ça tienne sur 8 lignes") sur la version accueil de cette
+  citation (cf. bullet précédent — cette section n'existe plus que sur
+  `index.html` depuis la suppression d'`univers.html`). Texte inchangé mot
+  pour mot, seul le découpage en lignes change : de 11 lignes
+  (« Suspendre » / « le quotidien » / « professionnel » / « Pour » /
+  « transporter » / « vos invités » / « au cœur » / « de l'Italie, » /
+  « iconique » / « et » / « intemporelle ») à 8 (« Suspendre le
+  quotidien » / « professionnel » / « Pour transporter » / « vos invités »
+  / « au cœur » / « de l'Italie, » / « iconique » / « et intemporelle »).
+  « professionnel » reste seule sur sa ligne à `margin-left:0` (mot le
+  plus long de la citation, plafond physique déjà documenté pour la
+  version originale de cette section) ; les marges des 6 autres lignes
+  numérotées ont été recalculées pour la nouvelle répartition
+  gauche/milieu/droite (la 8ᵉ ligne, dernière, reste gérée génériquement
+  par le sélecteur `:last-child` — aucune classe `.promise-line-8`
+  nécessaire, cf. commentaire déjà en place à ce sujet). Comme
+  `fitPromiseLines()` (`main.js`) calcule déjà la taille dynamiquement à
+  partir du texte réel de chaque ligne, regrouper des mots en lignes plus
+  longues n'a demandé aucun changement JS — seule la taille partagée
+  résultante devient un peu plus petite (les lignes combinées étant plus
+  larges à caser). Vérifié par script Playwright (technique
+  `Range.selectNodeContents()`/`getClientRects()`, déjà établie ailleurs
+  sur le site pour ce type de mesure) à 1024, 1440, 1600 et 1920px : 1
+  seule ligne rendue par groupe, 0 débordement horizontal. Si un
+  découpage à 11 lignes réapparaît ici, c'est l'ancienne version, à ne pas
+  réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 

@@ -863,16 +863,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    edge out of physical necessity (cf. CLAUDE.md), everything else cycles
    through the three zones so no two consecutive lines read as "both kind
    of centered." */
-.promise-line-1 { margin-left: 15%; } /* middle */
-.promise-line-2 { margin-left: 2%; } /* left */
-.promise-line-3 { margin-left: 0; } /* left (longest word, physical floor) */
+.promise-line-1 { margin-left: 2%; } /* left */
+.promise-line-2 { margin-left: 0; } /* left (longest word, physical floor) */
+.promise-line-3 { margin-left: 20%; } /* middle */
 .promise-line-4 { margin-left: 32%; } /* right */
-.promise-line-5 { margin-left: 5%; } /* left */
-.promise-line-6 { margin-left: 12%; } /* middle */
-.promise-line-7 { margin-left: 25%; } /* right */
-.promise-line-8 { margin-left: 3%; } /* left */
-.promise-line-9 { margin-left: 18%; } /* middle */
-.promise-line-10 { margin-left: 38%; } /* right */
+.promise-line-5 { margin-left: 4%; } /* left */
+.promise-line-6 { margin-left: 15%; } /* middle */
+.promise-line-7 { margin-left: 28%; } /* right */
 /* Last line: fit-content + auto margin (right-aligned) rather than a numeric
    offset — kept generic (:last-child) rather than a fixed "promise-line-N"
    class so future re-splits of the quote into more/fewer lines don't need a
