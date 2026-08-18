@@ -2760,6 +2760,26 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   changement nécessaire de ce côté. Vérifié par capture d'écran et
   regression Playwright complète (6 pages × 2 viewports) : 0
   débordement, 0 erreur console.
+- **Promesse (accueil) — alternance gauche/droite corrigée (2026-08-18)**
+  (`.promise-line-from-left`/`-from-right`, `index.html`) : demande
+  explicite de la cliente ("alterne entre un glissement venant de gauche
+  puis de droite"). Le découpage à 8 lignes (bullet précédent, hérité du
+  découpage à 11 lignes d'origine) avait conservé les classes de
+  direction telles quelles lors du regroupement de mots, ce qui cassait
+  l'alternance stricte (gauche/gauche/droite/droite/gauche/droite/droite/
+  droite au lieu d'alterner à chaque ligne). Corrigé en réassignant les 8
+  classes en pure alternance : gauche/droite/gauche/droite/gauche/droite/
+  gauche/droite (`.promise-line-2`, `-3` et `-7` changent de sens ; `-1`,
+  `-4`, `-5`, `-6` et la dernière ligne restaient déjà cohérentes avec
+  cette alternance). Aucun changement CSS/JS — uniquement les classes
+  `promise-line-from-left`/`-from-right` sur les `<span>` dans le HTML,
+  le mécanisme de `fitPromiseLines()`/reveal (`main.js`) est inchangé.
+  Vérifié par script Playwright : direction de chaque ligne lue
+  directement dans les classes, décalage `translateX` mesuré avant
+  révélation (signe alterné, `-115.2px`/`+115.2px` à 1440px de large) et
+  toutes les lignes revenues à `translateX(0)` une fois révélées.
+  Regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 
