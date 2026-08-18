@@ -21,7 +21,7 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
 | `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) + Engagements (grille de flip-cards, "Concept clé en main") |
-| `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) |
+| `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) + Accueil (carte formule L'Aperitivo) |
 | `evenement-vespas-vintage.jpg` | Mosaïque Projets |
 | `evenement-fiat500-blanche.jpg` | Mosaïque Projets |
 | `evenement-fiat-jolly-jaune.jpg` | Mosaïque Projets |
@@ -71,7 +71,7 @@ concernés.
 
 | Fichier | Utilisée sur | Source | Auteur | Licence |
 |---|---|---|---|---|
-| `terrace-dinner-assisi.jpg` | Prestations — La Tavola | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
+| `terrace-dinner-assisi.jpg` | Prestations — La Tavola + Accueil (carte formule La Tavola) | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
 | `spritz-terrasse.jpg` | Engagements — carrousel Valeurs ("L'exigence comme point de départ") | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
 | `piazza-evening-menaggio.jpg` | Engagements — carrousel Valeurs ("L'Italie comme art de vivre, pas comme décor") | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
 | `alsace-vineyard.jpg` | Engagements — carrousel Valeurs ("La confiance avant la prestation") + grille de flip-cards ("Ancrage alsacien") | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
@@ -97,8 +97,8 @@ de fichier, pour ne pas les confondre avec les vraies photos de la cliente.
 
 | Fichier | Utilisée sur | Source | Auteur |
 |---|---|---|---|
-| `positano-ceramiche-decor.jpg` | Prestations — La Cartolina (fond) | [Pexels photo 12986066](https://www.pexels.com/photo/12986066/) | Paco de Bydzia |
-| `vespa-fleuriste-rue.jpg` | Prestations — L'Esperienza (fond) | [Pexels photo 7539898](https://www.pexels.com/photo/7539898/) | ROMAN ODINTSOV |
+| `positano-ceramiche-decor.jpg` | Prestations — La Cartolina (fond) + Accueil (carte formule La Cartolina) | [Pexels photo 12986066](https://www.pexels.com/photo/12986066/) | Paco de Bydzia |
+| `vespa-fleuriste-rue.jpg` | Prestations — L'Esperienza (fond) + Accueil (carte formule L'Esperienza) | [Pexels photo 7539898](https://www.pexels.com/photo/7539898/) | ROMAN ODINTSOV |
 | `terrasse-lanternes-soir.jpg` | Engagements — carrousel Valeurs ("Le détail qui change tout") | [Pexels photo 18331431](https://www.pexels.com/photo/18331431/) | Chris F |
 | `spritz-duo-sicile.jpg` | Engagements — carrousel Valeurs ("Un interlocuteur, jamais un standard") | [Pexels photo 36786940](https://www.pexels.com/photo/36786940/) | Ilma Elsberga |
 

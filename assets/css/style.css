@@ -573,18 +573,50 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .teaser { background: var(--bg-dim); padding-block: var(--space-6); }
 .teaser-grid { display: grid; gap: 1px; background: var(--border); margin-top: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 @media (min-width: 780px) { .teaser-grid { grid-template-columns: repeat(2, 1fr); } }
+/* Fond photo (2026-08-18) : chaque carte formule affiche désormais la même
+   photo que sa section correspondante sur prestations.html (positano
+   ceramiche pour La Cartolina, vespa fleuriste pour L'Esperienza, rangée
+   de spritz pour L'Aperitivo, dîner terrasse Assise pour La Tavola —
+   aucune nouvelle photo, aucun nouveau crédit), avec un voile sombre pour
+   garder le texte lisible — demande explicite de la cliente ("avec un
+   effet un peu sombre pour bien faire ressortir le texte"). Structure
+   `<img>` + `.teaser-card-scrim` + `.teaser-card-content` en position
+   absolue/relative, même schéma que `.engagement-card-front*`
+   (engagements.html) déjà utilisé ailleurs sur le site pour ce type de
+   carte photo+texte, réutilisé ici plutôt que d'inventer un nouveau
+   pattern. */
 .teaser-card {
-  background: var(--bg-dim);
+  position: relative;
+  overflow: hidden;
+  transition: background var(--dur-fast) var(--ease);
+}
+.teaser-card-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease);
+}
+.teaser-card:hover .teaser-card-photo { transform: scale(1.05); }
+.teaser-card-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(200deg, rgba(16, 31, 39, 0.4) 0%, rgba(16, 31, 39, 0.86) 100%);
+}
+.teaser-card-content {
+  position: relative;
+  z-index: 1;
+  min-height: 16rem;
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
   gap: 0.5rem;
-  transition: background var(--dur-fast) var(--ease);
 }
-.teaser-card:hover { background: var(--white); }
-.teaser-card .num { font-family: var(--font-subtitle); font-size: 0.78rem; font-weight: 600; color: var(--accent); }
-.teaser-card h3 { color: var(--navy); font-size: clamp(1.5rem, 1.4vw + 1rem, 2rem); }
-.teaser-card p { color: var(--fg-muted); font-size: 0.98rem; max-width: 26rem; }
+.teaser-card .num { font-family: var(--font-subtitle); font-size: 0.78rem; font-weight: 600; color: var(--terracotta-300); }
+.teaser-card h3 { color: var(--cream); font-size: clamp(1.5rem, 1.4vw + 1rem, 2rem); }
+.teaser-card p { color: rgba(246, 241, 231, 0.85); font-size: 0.98rem; max-width: 26rem; }
 .teaser-card .link-arrow { margin-top: 0.4rem; }
 
 .link-arrow {

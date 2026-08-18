@@ -2679,6 +2679,49 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   seule ligne rendue par groupe, 0 débordement horizontal. Si un
   découpage à 11 lignes réapparaît ici, c'est l'ancienne version, à ne pas
   réintroduire sans qu'on le redemande.
+- **Accueil — cartes formules avec photo de fond + réordonnancement
+  (2026-08-18)** (`.teaser-card*`, `index.html`) : deux demandes de la
+  cliente sur la section "Quatre mondes, une même Dolce Vita".
+  **Photos de fond, voile sombre pour la lisibilité** : chaque carte
+  affiche désormais la même photo que sa section correspondante sur
+  `prestations.html` — `positano-ceramiche-decor.jpg` (La Cartolina),
+  `vespa-fleuriste-rue.jpg` (L'Esperienza), `evenement-rangee-spritz.jpg`
+  (L'Aperitivo), `terrace-dinner-assisi.jpg` (La Tavola) — aucune nouvelle
+  photo, `assets/img/CREDITS.md` mis à jour (colonne "Utilisée sur") pour
+  les 4 fichiers. Structure `<img class="teaser-card-photo">` +
+  `.teaser-card-scrim` (dégradé sombre `rgba(16,31,39,0.4→0.86)`) +
+  `.teaser-card-content` (texte), même schéma en couches que
+  `.engagement-card-front*` (engagements.html) déjà utilisé ailleurs sur
+  le site pour ce type de carte photo+texte — réutilisé plutôt
+  qu'inventé. Couleurs de texte inversées pour le contraste sur fond
+  sombre (`h3` en `--cream`, `p` en blanc cassé, `.num` en
+  `--terracotta-300`) et `.link-arrow` reçoit la classe `on-dark` déjà
+  existante ailleurs sur le site (hero, page-header sombres) plutôt qu'un
+  nouveau style dédié. `terrace-dinner-assisi.jpg` (Wikimedia, CC BY,
+  Andrew Parlette) était déjà créditée dans le footer d'`index.html`
+  (utilisée par le hero) — aucun crédit supplémentaire à ajouter ;
+  `positano-ceramiche-decor.jpg`/`vespa-fleuriste-rue.jpg` (Pexels,
+  aucune attribution requise) et `evenement-rangee-spritz.jpg` (photo
+  Simposio réelle) ne changent rien non plus côté footer.
+  **Parcours des 5 sens déplacé après cette section** : la cliente a
+  demandé de placer `#sensesJourney` en dessous de la section formules
+  plutôt qu'au-dessus (ordre hérité du déplacement depuis `univers.html`,
+  cf. bullet dédié plus haut) — nouvel ordre sur `index.html` : hero →
+  chiffres clés → Notre promesse → **formules** → **5 sens** → CTA.
+  Aucun changement de contenu/mécanisme sur le parcours des 5 sens
+  lui-même, un simple déplacement de bloc dans le HTML (le JS cherche
+  l'élément par id, indifférent à sa position dans la page). **Deux
+  sections sombres redeviennent adjacentes en fin de page** (5 sens →
+  CTA, toutes deux à fond sombre) — déjà le cas dans l'ordre précédent
+  entre Promesse et 5 sens (deux sections sombres juste après l'autre y
+  coexistaient déjà avant ce changement, sans que la cliente ne le
+  signale comme un problème), donc accepté ici aussi sans repenser
+  l'alternance de fond de toute la page pour ce seul réordonnancement ;
+  les deux sections restent visuellement distinctes (dégradé uni pour les
+  5 sens vs photo + dégradé pour le CTA), pas de "bloc" plat. Vérifié par
+  script Playwright (ordre des sections lu directement dans le DOM) et
+  regression complète 6 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 
