@@ -16,7 +16,8 @@ plus avant de marquer un fichier « non utilisé ».
 | Fichier | Utilisée sur |
 |---|---|
 | `evenement-parasols-jaunes-table.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") |
-| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) |
+| `evenement-vespa-fleurie-lemon.jpg` | Non utilisée directement (voir `evenement-vespa-fleurie-lemon-scene.jpg` ci-dessous, dérivée de ce fichier) |
+| `evenement-vespa-fleurie-lemon-scene.jpg` | Engagements — section Fondatrice, plongée au scroll (fond) |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
@@ -153,3 +154,19 @@ La photo `terrace-dinner-assisi.jpg` montre de vraies personnes attablées
 (clients du restaurant photographié, sans lien avec Simposio) — elle sert
 uniquement à illustrer une ambiance de déjeuner d'affaires en terrasse (La
 Tavola). Le site précise "photo d'illustration" sous cette image.
+
+**`evenement-vespa-fleurie-lemon-scene.jpg` (2026-08-18)** : dérivée de
+`evenement-vespa-fleurie-lemon.jpg` par un script Python/Pillow (recadrage
++ vignettage radial doux), pas une nouvelle photo. Contexte : la cliente a
+demandé de retirer les sachets de pâtes visibles sur le comptoir en
+céramique et de détourer la scène (mur/escalier/sol) pour la section
+Fondatrice — aucun outil de retouche générative/inpainting n'étant
+disponible dans l'environnement de développement, un détourage/effacement
+propre n'était pas faisable. Compromis retenu (voir CLAUDE.md pour le
+détail complet) : le fichier source est recadré (le tiers de mur vide
+au-dessus du parasol est retiré) et légèrement vignetté (assombrissement
+radial doux vers les bords, aucun contenu ajouté/inventé) pour atténuer le
+mur/escalier restants sans les effacer ; les sachets de pâtes, eux, ne sont
+pas retouchés — ils restent sur la photo mais sont recouverts par une carte
+de menu en CSS/SVG positionnée exactement à leur emplacement (voir
+`.founder-menu-card` dans `style.css`).

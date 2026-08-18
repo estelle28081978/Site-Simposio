@@ -1393,114 +1393,165 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Founder — la citation "inscrite au fond d'une assiette", posée sur un
-   décor de table Dolce Vita (2026-08-18, remplace la typographie centrée
-   minimaliste sur fond crème uni ci-dessous — demande explicite de la
-   cliente, à retravailler ensemble). Si `.founder-minimal`/
-   `.founder-quote-minimal`/`.founder-rule`/`.founder-id-minimal` réapparaissent
-   directement enfants de `.container` (sans `.founder-scene`/`.founder-plate`),
-   c'est cette version minimaliste précédente, à ne pas réintroduire sans
-   qu'on le redemande. Versions encore antérieures : `.founder-plate-id`/
-   `.founder-plate-quote`/`.founder-mark` (plaque bicolore) et
-   `.founder-card`/`.founder-photo`/`.founder-scrim` (carte postale sur
-   photo floutée) — voir l'historique déjà documenté dans CLAUDE.md.
-   **Toujours aucune photo fabriquée d'Estelle** (règle du site) : la photo
-   de fond est une ambiance de table dressée réelle Simposio (déjà utilisée
-   ailleurs sur cette page dans les flip-cards Engagements, ici traitée très
-   différemment — floutée/assombrie en fond plutôt que nette au premier
-   plan), jamais un portrait.
-   **Structure** : `.founder-scene-photo` (photo plein cadre,
-   `evenement-tablee-diner-bougies.jpg`, floutée + assombrie) +
-   `.founder-scene-scrim` (dégradé terracotta→rouge Venise sombre, pour la
-   couleur "Dolce Vita" chaude demandée en plus de la simple lisibilité) en
-   fond de section ; par-dessus, `.founder-scene` (colonne centrée) avec
-   `.founder-plate` — un cercle crème avec un rebord décoratif façon
-   céramique italienne (3 anneaux SVG concentriques : trait plein
-   terracotta, trait pointillé rouge Venise, trait fin terracotta) — la
-   citation vit DANS ce cercle, en italique, couleur rouge Terre d'Ombrie
-   (évoque une peinture/glaçure sur céramique plutôt qu'une simple couleur
-   de texte). En dessous, `.founder-card` : une petite carte type
-   marque-place, légèrement inclinée, portant l'eyebrow "La fondatrice" +
-   le médaillon "EL" + la signature (classes `.founder-avatar-minimal`/
-   `.founder-signature-minimal` réutilisées telles quelles). `data-reveal`
-   sur `.founder-scene` : apparition en un seul mouvement, comme les
-   versions précédentes. */
-.founder { position: relative; overflow: hidden; padding-block: var(--space-6); background: var(--rosso-ombria); }
-.founder-scene-photo {
+   Founder — plongée au scroll dans le stand Vespa, carte de menu posée sur
+   le comptoir (2026-08-18, remplace la citation "inscrite au fond d'une
+   assiette" ci-dessous — demande explicite de la cliente, avec un cahier
+   des charges précis). Si `.founder-scene`/`.founder-plate`/
+   `.founder-quote-plate` réapparaissent, c'est cette version assiette
+   précédente ; si `.founder-minimal`/`.founder-quote-minimal`/`.founder-rule`
+   réapparaissent directement enfants de `.container`, c'est la version
+   minimaliste encore antérieure — historique complet dans CLAUDE.md, aucune
+   à réintroduire sans qu'on le redemande.
+   **Contrainte outillage assumée** : pas d'outil de retouche photo
+   générative dans cet environnement (pas d'inpainting) — impossible
+   d'effacer proprement les paquets de pâtes visibles sur la photo source
+   (`evenement-vespa-fleurie-lemon.jpg`, stand Vespa fleuri) ni de détourer
+   la scène pour isoler le stand du mur/escalier/sol. Plutôt qu'un rendu
+   bricolé, la carte de menu est une carte CSS/SVG posée PAR-DESSUS
+   l'emplacement des pâtes (qui restent sous la carte, invisibles à
+   l'écran, pas effacées) — voir `.founder-menu-card` ci-dessous. Le
+   mur/escalier/sol ne sont pas détourés mais atténués via un recadrage +
+   un vignettage doux, appliqués une fois pour toutes sur un dérivé de la
+   photo (`evenement-vespa-fleurie-lemon-scene.jpg`, généré par script
+   Pillow — crop + assombrissement radial progressif, aucun contenu
+   inventé/effacé, donc dans les clous de ce qui est raisonnablement
+   faisable ici) — voir `assets/img/CREDITS.md`.
+   **Structure, en pin façon `.senses-journey`/`.values-reel`** :
+   `.founder-dive` (wrapper haut, `height:280vh`, fournit la distance de
+   scroll) > `.founder-dive-sticky` (`position:sticky; height:100vh`,
+   colonne centrée) contenant l'eyebrow "La fondatrice" (fixe, ne zoome
+   pas), `.founder-scene-frame` (le cadre visible, `overflow:hidden`,
+   dimensionné en `aspect-ratio` identique à la photo source recadrée —
+   1500:1595 — pour que les pourcentages de position de la carte
+   correspondent exactement aux pixels réels de la photo, sans dérive liée
+   à un `object-fit:cover` sur un cadre à ratio différent) et
+   `.founder-scene-caption` (signature, apparaît en fondu en fin de
+   parcours). À l'intérieur du cadre, `.founder-scene-zoom` (100% du
+   cadre, `transform-origin` calé sur la position réelle de la carte dans
+   la photo — 38.7% / 52.7% — mesurée par script Python sur l'image
+   recadrée) enveloppe À LA FOIS la photo et `.founder-menu-card` : les
+   deux sont donc scalées ensemble comme un seul bloc rigide par
+   `updateFounderDive()` (`main.js`), garantissant que la carte reste
+   verrouillée au même endroit visuel de la photo à chaque étape du zoom
+   sans calcul de parallaxe séparé. */
+.founder-dive { position: relative; height: 280vh; background: var(--navy-900); }
+.founder-dive-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  overflow: hidden;
+}
+.founder-dive-eyebrow { color: var(--terracotta-300); }
+.founder-scene-frame {
+  position: relative;
+  width: min(80vw, 34rem);
+  aspect-ratio: 1500 / 1595;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 40px 80px rgba(16, 31, 39, 0.5);
+  flex-shrink: 1;
+}
+.founder-scene-zoom {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transform: scale(1.08);
-  filter: blur(7px) saturate(1.2) brightness(0.75);
+  transform-origin: 38.7% 52.7%;
+  will-change: transform;
 }
-.founder-scene-scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(200deg, rgba(157, 54, 54, 0.55) 0%, rgba(74, 28, 28, 0.82) 60%, rgba(16, 31, 39, 0.85) 100%);
-}
-.founder .container { position: relative; z-index: 1; }
-.founder-scene { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.founder-scene-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
-.founder-plate {
-  position: relative;
-  width: min(78vw, 25rem);
-  aspect-ratio: 1;
-  margin-inline: auto;
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #fffdf8, var(--cream) 72%);
-  box-shadow: 0 30px 60px rgba(16, 31, 39, 0.4), 0 -2px 0 rgba(16, 31, 39, 0.06) inset;
-}
-.founder-plate-rim { position: absolute; inset: 0; width: 100%; height: 100%; }
-.founder-plate-rim-outer { fill: none; stroke: var(--terracotta); stroke-width: 1.1; }
-.founder-plate-rim-dashes { fill: none; stroke: var(--rosso-venezia); stroke-width: 0.9; stroke-dasharray: 1.1 3.2; stroke-linecap: round; }
-.founder-plate-rim-inner { fill: none; stroke: var(--terracotta); stroke-width: 0.55; opacity: 0.55; }
-/* position:absolute + inset:20% (plutôt qu'un padding sur .founder-plate en
-   display:flex, essai précédent) : un pourcentage de padding se résout par
-   rapport à la largeur du CONTENEUR PARENT (.founder-scene, ~1200px+), pas
-   par rapport à l'élément lui-même — sur un cercle de ~470px, ça donnait un
-   padding de plusieurs centaines de pixels de chaque côté, écrasant la
-   largeur de contenu disponible à 0 (bug réel : `quoteWidth` calculé à 0px,
-   tout le texte repartait mot par mot sur une hauteur énorme, qui à son
-   tour étirait le cercle en ovale). `inset` en pourcentage sur un élément
-   absolument positionné se résout, lui, par rapport à son bloc englobant —
-   ici `.founder-plate` (position:relative) — donc 20% signifie bien 20% du
-   diamètre du cercle, quelle que soit la largeur de la page. Étant hors
-   flux, ce paragraphe ne peut plus non plus influencer la hauteur du cercle
-   parent (aspect-ratio reste fiable sans avoir besoin de min-height:0). */
-.founder-quote-plate {
+/* La carte de menu : dimensionnée et positionnée pour recouvrir
+   exactement l'emplacement des sachets de pâtes sur le comptoir en
+   céramique (mesuré par script Python : bbox à 28.7%–48.7% en largeur,
+   45.8%–59.6% en hauteur sur la photo recadrée — la carte déborde
+   légèrement de cette bbox pour une marge de sécurité, aucun sachet ne
+   doit dépasser sur les bords). `rotate(-2.5deg)` : léger angle pour
+   suivre la perspective du comptoir (qui recule légèrement vers la
+   droite sur la photo), comme les petites étiquettes déjà présentes sur
+   les sachets. */
+/* Deux pièges de dimensionnement rencontrés et corrigés ici, tous deux
+   repérés par mesure Playwright (pas supposés) :
+   1. `padding` en `%` se résout par rapport à la largeur du conteneur
+      ENGLOBANT (`.founder-scene-zoom`, ~544px), pas de la carte
+      elle-même (~136px) — `9% 10%` donnait donc ~49-54px de chaque côté
+      sur une carte de 136px de large, ne laissant quasiment plus de
+      largeur pour le texte (~25px), qui débordait alors massivement en
+      hauteur hors de la carte (texte visible sous la carte, sur le motif
+      en céramique). Corrigé en `padding` fixe, petit, en px.
+   2. Un `font-size` en `clamp()`/`vw` (ou même en unités de conteneur
+      `cqw`, essayées ensuite) ne suit pas fidèlement la taille RÉELLE de
+      la carte, qui est elle-même un pourcentage d'un cadre dont la
+      largeur plafonne de façon non linéaire (`min(80vw, 34rem)`) — la
+      carte passe d'environ 307px de large en grand écran à ~62px sur
+      mobile étroit, un rapport que ni `vw` ni `cqw` ne suivaient
+      correctement dans les tests (le second, `cqw`, se résolvait même à
+      des tailles quasi nulles dans cet environnement — support de
+      Container Queries pas assez fiable ici pour en dépendre seul, sans
+      compter les navigateurs réels des visiteurs). Corrigé en calculant
+      la taille de police en JS (`fitFounderCard()`, `main.js`) — même
+      principe que `fitPromiseLines()` déjà établi ailleurs sur le site :
+      mesurer l'espace réellement disponible et réduire la police jusqu'à
+      ce que le texte tienne, au chargement et au resize. */
+.founder-menu-card {
   position: absolute;
-  inset: 20%;
-  z-index: 1;
+  left: 26%;
+  top: 43%;
+  width: 25%;
+  height: 19%;
+  background: linear-gradient(155deg, #fffaf0 0%, var(--cream) 65%);
+  border: 1px solid rgba(var(--navy-rgb), 0.16);
+  border-radius: 3px;
+  box-shadow: 0 10px 26px rgba(16, 31, 39, 0.4);
+  transform: rotate(-2.5deg);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 5px 7px;
+}
+.founder-menu-card::before {
+  content: "";
+  position: absolute;
+  inset: 11%;
+  border: 0.5px solid var(--rosso-venezia);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.founder-menu-card-corner {
+  position: absolute;
+  width: 15%;
+  height: 22%;
+  border: 1.4px solid var(--terracotta);
+  pointer-events: none;
+}
+.founder-menu-card-corner-tl { top: 7%; left: 7%; border-right: none; border-bottom: none; }
+.founder-menu-card-corner-tr { top: 7%; right: 7%; border-left: none; border-bottom: none; }
+.founder-menu-card-corner-bl { bottom: 7%; left: 7%; border-right: none; border-top: none; }
+.founder-menu-card-corner-br { bottom: 7%; right: 7%; border-left: none; border-top: none; }
+.founder-menu-card-quote {
+  position: relative;
+  z-index: 1;
+  width: 100%;
   font-family: var(--font-display);
   font-style: italic;
-  font-size: clamp(0.82rem, 0.55vw + 0.68rem, 1.02rem);
-  line-height: 1.5;
+  line-height: 1.22;
   text-align: center;
   color: var(--rosso-ombria);
 }
 
-.founder-card {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-  background: var(--cream);
-  border-radius: var(--radius-sm);
-  padding: 1.1rem 1.8rem;
-  box-shadow: 0 16px 34px rgba(16, 31, 39, 0.28);
-  transform: rotate(-1.6deg);
-}
-.founder-card .eyebrow { color: var(--accent); }
-.founder-id-minimal {
+.founder-scene-caption {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  text-align: left;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .founder-avatar-minimal {
   flex: 0 0 auto;
@@ -1510,8 +1561,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 2.6rem;
   height: 2.6rem;
   border-radius: 50%;
-  border: 1px solid rgba(var(--navy-rgb), 0.28);
-  color: var(--navy);
+  border: 1px solid rgba(246, 241, 231, 0.4);
+  color: var(--cream);
   font-family: var(--font-display);
   font-size: 0.85rem;
 }
@@ -1521,7 +1572,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--navy);
+  color: var(--cream);
+  text-align: left;
 }
 .founder-signature-minimal span {
   display: block;
@@ -1530,10 +1582,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-weight: 500;
   letter-spacing: 0.02em;
   text-transform: none;
-  color: var(--fg-muted);
+  color: var(--fg-muted-inverse);
 }
-@media (max-width: 480px) {
-  .founder-plate { padding: 24%; }
+@media (prefers-reduced-motion: reduce) {
+  /* Le zoom reste un mapping 1:1 avec le scroll (comme le tracé des 5 sens
+     et le fil des Valeurs) — pas une animation autoplay, donc actif même
+     sous cette préférence ; seul le fondu de la signature est coupé. */
+  .founder-scene-caption { transition: none; }
 }
 
 /* ==========================================================================

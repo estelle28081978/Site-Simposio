@@ -932,4 +932,89 @@
       el.addEventListener("input", function () { setFieldError(el, false); });
     });
   }
+
+  // ==========================================================================
+  // Fondatrice — plongée au scroll dans le stand Vespa (engagements.html)
+  // ==========================================================================
+  var founderDive = document.getElementById("founderDive");
+  var founderZoom = document.getElementById("founderZoom");
+  if (founderDive && founderZoom) {
+    var founderCaption = document.getElementById("founderCaption");
+    var founderTicking = false;
+    var founderCard = document.querySelector(".founder-menu-card");
+    var founderQuote = document.querySelector(".founder-menu-card-quote");
+
+    // La carte est dimensionnée en % pour recouvrir exactement l'emplacement
+    // des sachets de pâtes sur la photo (voir CSS) — sa taille en pixels
+    // varie donc beaucoup selon la largeur d'écran (~307px en grand écran,
+    // ~62px sur mobile étroit), un rapport qu'aucune unité CSS fiable
+    // (clamp/vw, ni même cqw — support pas assez constant, essayé et
+    // écarté) ne suit correctement. Même principe que fitPromiseLines() :
+    // mesurer l'espace réellement disponible et réduire la police jusqu'à
+    // ce que le texte tienne.
+    function fitFounderCard() {
+      if (!founderCard || !founderQuote) return;
+      var cs = getComputedStyle(founderCard);
+      var availableH =
+        founderCard.clientHeight -
+        parseFloat(cs.paddingTop) -
+        parseFloat(cs.paddingBottom);
+      var fontSize = Math.max(founderCard.clientWidth * 0.16, 4);
+      var minSize = 3;
+      founderQuote.style.fontSize = fontSize + "px";
+      var guard = 0;
+      while (founderQuote.scrollHeight > availableH && fontSize > minSize && guard < 60) {
+        fontSize -= 0.4;
+        founderQuote.style.fontSize = fontSize + "px";
+        guard += 1;
+      }
+      // Légère marge de sécurité anti-arrondi (même précaution que pour les
+      // lignes de la Promesse : viser pile 100% de l'espace disponible peut
+      // faire replier le dernier mot d'un pixel).
+      founderQuote.style.fontSize = fontSize * 0.96 + "px";
+    }
+
+    fitFounderCard();
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitFounderCard);
+    }
+    var founderResizeTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(founderResizeTimer);
+      founderResizeTimer = setTimeout(fitFounderCard, 200);
+    });
+
+    function updateFounderDive() {
+      var rect = founderDive.getBoundingClientRect();
+      var total = rect.height - window.innerHeight;
+      var scrolled = -rect.top;
+      var progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
+
+      // Mapping 1:1 avec le scroll (comme le tracé des 5 sens/le fil des
+      // Valeurs) — jamais désactivé sous prefers-reduced-motion, cf. la
+      // même convention déjà établie ailleurs sur le site.
+      var scale = 1 + progress * 2.4;
+      founderZoom.style.transform = "scale(" + scale.toFixed(3) + ")";
+
+      if (founderCaption) {
+        var capOpacity = progress > 0.72 ? Math.min(1, (progress - 0.72) / 0.22) : 0;
+        founderCaption.style.opacity = String(capOpacity);
+      }
+
+      founderTicking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!founderTicking) {
+          window.requestAnimationFrame(updateFounderDive);
+          founderTicking = true;
+        }
+      },
+      { passive: true }
+    );
+
+    updateFounderDive();
+  }
 })();

@@ -3096,6 +3096,132 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   de travail à affiner ensemble** (couverts/accessoires de table
   supplémentaires, ajustement des couleurs/tailles...) plutôt qu'une
   version considérée figée.
+- **Fondatrice — remplacée par une plongée au scroll dans une photo réelle
+  du stand Vespa, carte de menu sur le comptoir (2026-08-18)**
+  (`.founder-dive*`, `.founder-scene*`, `.founder-menu-card*`,
+  `engagements.html`) : remplace entièrement l'assiette CSS/SVG du bullet
+  précédent, sur cahier des charges précis de la cliente. Si
+  `.founder-scene`/`.founder-plate`/`.founder-quote-plate` réapparaissent,
+  c'est cette version assiette, à ne pas réintroduire sans qu'on le
+  redemande (historique complet des 3 versions encore antérieures — plaque
+  bicolore, carte postale sur photo floutée, typographie minimaliste —
+  déjà documenté plus haut).
+  **Contrainte outillage explicitement posée avant de commencer** : la
+  cliente demandait de retirer par retouche photo les sachets de pâtes
+  visibles sur une photo de stand Vespa et de détourer la scène
+  (mur/escalier/sol). Aucun outil de retouche générative/inpainting n'est
+  disponible dans cet environnement de développement (uniquement du code,
+  pas de Photoshop/IA d'édition d'image) — un détourage ou un effacement
+  d'objet pixel par pixel via script aurait rendu un résultat visiblement
+  bricolé, à l'opposé du standard premium tenu partout ailleurs sur ce
+  site. Dit explicitement à la cliente, qui a tranché pour l'option
+  proposée : une carte de menu en CSS/SVG posée PAR-DESSUS l'emplacement
+  des pâtes (qui restent sous la carte, invisibles à l'écran, jamais
+  effacées), et un recadrage + vignettage (pas un détourage) pour le
+  mur/escalier/sol.
+  **Photo source identifiée** : la cliente décrivait une image jointe
+  (`image_5a35c9.jpg`) qui n'est en réalité jamais arrivée dans la
+  session (aucun fichier reçu, vérifié sur le disque) — mais sa
+  description (comptoir en céramique à motifs citron, sachets de pâtes,
+  stand Vespa) correspondait exactement à `evenement-vespa-fleurie-lemon.jpg`,
+  déjà présente dans `assets/img/` mais inutilisée sur le site jusqu'ici
+  (photo Simposio réelle, résolution source limitée déjà documentée dans
+  ce fichier — non retouchée davantage ici que par le crop/vignettage
+  ci-dessous, aucun agrandissement).
+  **Recadrage + vignettage** (nouveau fichier dérivé
+  `evenement-vespa-fleurie-lemon-scene.jpg`, généré par un script Python/
+  Pillow, voir `assets/img/CREDITS.md` pour le détail) : le tiers de mur
+  vide au-dessus du parasol est recadré (1875px de haut → 1595px, les
+  280px du haut retirés), puis un vignettage radial doux (assombrissement
+  progressif vers les bords, jusqu'à ~32% aux coins, centré légèrement
+  au-dessus du comptoir) atténue le reste du mur ainsi que l'escalier en
+  pierre visible en bas à gauche — sans effacer ni inventer aucun pixel,
+  contrairement à un détourage qui aurait nécessité un outil non
+  disponible ici.
+  **Structure, en pin façon `.senses-journey`/`.values-reel`** :
+  `.founder-dive` (wrapper `height:280vh`, fournit la distance de scroll)
+  contient `.founder-dive-sticky` (`position:sticky; height:100vh`) avec
+  l'eyebrow "La fondatrice" (fixe), `.founder-scene-frame` (cadre visible,
+  `overflow:hidden`, `aspect-ratio:1500/1595` — identique à la photo
+  recadrée, pour que les pourcentages de position de la carte
+  correspondent exactement aux pixels réels de la photo) et
+  `.founder-scene-caption` (signature, apparaît en fondu en fin de
+  parcours). À l'intérieur du cadre, `.founder-scene-zoom` enveloppe À LA
+  FOIS la photo et `.founder-menu-card` — les deux sont donc scalées
+  ensemble comme un seul bloc rigide par `updateFounderDive()`
+  (`main.js`), garantissant que la carte reste verrouillée au même endroit
+  visuel de la photo à chaque étape du zoom sans calcul de parallaxe
+  séparé. `transform-origin` de `.founder-scene-zoom` calé sur la position
+  réelle de la carte (38.7% / 52.7%, mesurée par script Python sur l'image
+  recadrée) : le zoom "plonge" donc précisément vers la carte plutôt que
+  vers le centre générique du cadre.
+  **Position de la carte** : mesurée par script Python (crop successifs +
+  inspection visuelle) sur la photo recadrée — bbox des sachets de pâtes à
+  28.7–48.7% en largeur, 45.8–59.6% en hauteur. `.founder-menu-card` est
+  positionnée à 26–51% / 43–62% (légère marge de sécurité sur la bbox
+  mesurée) avec une rotation `-2.5deg` pour suivre la perspective du
+  comptoir (qui recule légèrement vers la droite sur la photo) — vérifié
+  par capture d'écran rapprochée : aucun sachet ni étiquette ne dépasse
+  des bords de la carte. 4 coins décoratifs (`.founder-menu-card-corner`,
+  traits terracotta en L) + un double-liséré (`::before`, rouge Venise) —
+  ce sont les "petites décorations aux couleurs de Simposio sur les
+  bords" demandées.
+  **Deux bugs réels de dimensionnement du texte, trouvés et corrigés en
+  cascade, tous deux repérés par mesure Playwright (jamais supposés)** :
+  1. `padding: 9% 10%` sur `.founder-menu-card` — un pourcentage de
+     padding se résout par rapport à la largeur du conteneur ENGLOBANT
+     (`.founder-scene-zoom`, ~544px), pas de la carte elle-même (~136px) —
+     même piège que celui déjà rencontré et corrigé sur l'assiette de la
+     version précédente, mais réintroduit ici sans y penser. Ça donnait
+     ~49–54px de padding de chaque côté sur une carte de 136px de large,
+     ne laissant quasiment plus de largeur pour le texte (~25px), qui
+     débordait alors massivement en hauteur hors de la carte
+     (`quoteScrollH` mesuré à 262px pour une carte de 108px de haut) — le
+     texte se retrouvait visible sous la carte, sur le motif en céramique,
+     au lieu de rester contenu dans son cadre crème. Repéré par capture
+     d'écran (`dive_100.png`, dernière ligne de la citation visible hors
+     de la carte) puis confirmé par script.
+  2. Une fois le padding corrigé (fixe, en px), un `font-size` en
+     `clamp()`/`vw` ne suivait pas fidèlement la taille RÉELLE de la
+     carte, qui est un pourcentage d'un cadre dont la largeur plafonne de
+     façon non linéaire (`min(80vw, 34rem)`) — la carte passe d'environ
+     307px de large en grand écran à ~62px sur mobile étroit (390px et
+     moins), un rapport qu'aucune unité CSS testée ne suit correctement.
+     Un essai avec les unités de conteneur CSS (`container-type:
+     inline-size` + `cqw`) — la solution "propre" en théorie — s'est
+     résolu à des tailles de police quasi nulles dans cet environnement
+     (`font-size` calculé à 0px sur plusieurs largeurs testées) : support
+     de Container Queries pas assez fiable ici pour en dépendre seul, sans
+     compter l'incertitude sur les navigateurs réels des visiteurs du
+     site. Écarté au profit d'un calcul JS (`fitFounderCard()`,
+     `main.js`) — même principe que `fitPromiseLines()` déjà établi
+     ailleurs sur le site : mesure l'espace réellement disponible dans la
+     carte (hauteur moins padding) et réduit `font-size` par pas de 0.4px
+     jusqu'à ce que `scrollHeight` du texte tienne dans cet espace, avec
+     une marge de sécurité de 4% ; appelée au chargement, après
+     `document.fonts.ready` (même précaution que `fitPromiseLines()`,
+     déjà documentée comme nécessaire pour éviter une mesure prise avec
+     la police de repli du navigateur) et au resize.
+  **Zoom au scroll** (`updateFounderDive()`, `main.js`) : mapping direct
+  1:1 avec la progression de scroll dans `.founder-dive` (même mécanisme
+  que `updateJourney()`/`updateValuesReel()` — `rAF`-throttlé sur
+  `scroll`), `scale = 1 + progress × 2.4` (donc jusqu'à ×3.4 en fin de
+  parcours) appliqué à `.founder-scene-zoom`. Comme le tracé des 5 sens et
+  le fil des Valeurs, ce mapping reste actif sous
+  `prefers-reduced-motion` (mouvement piloté par le geste de l'utilisateur,
+  pas une animation autoplay) — seule la transition d'apparition de la
+  signature est coupée sous cette préférence. La signature
+  (`.founder-scene-caption`) apparaît en fondu une fois `progress > 0.72`
+  (les derniers 22% du scroll), pour se révéler seulement une fois la
+  carte suffisamment agrandie/lisible.
+  Vérifié par script Playwright : `scale` mesuré à 5 fractions de
+  progression (1 → 3.4, linéaire), fondu de la signature confirmé
+  (opacité 0 avant 72%, croissante ensuite), citation entièrement lisible
+  et contenue dans la carte à son plus grand zoom, aucun sachet de pâtes
+  visible autour de la carte à aucun niveau de zoom (0 débordement du
+  texte, 0 fragment de sachet visible) à 320/390/768/1024/1440/1600/
+  1920px. Regression complète 5 pages × 2 viewports : 0 débordement,
+  0 erreur console.
 
 ## État d'avancement
 
