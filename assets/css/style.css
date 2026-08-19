@@ -1473,6 +1473,35 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   z-index: 0;
   background: var(--navy-900);
 }
+/* Filet de sécurité : l'attribut `autoplay` natif (HTML) est le mécanisme
+   principal, mais certains contextes le bloquent quand même (aperçu dans
+   une iframe sans `allow="autoplay"`, politique de navigateur plus
+   stricte) — ce bouton reste caché tant que la vidéo joue réellement
+   (`main.js` bascule `.is-hidden` sur les évènements `play`/`playing`) et
+   permet de démarrer la lecture d'un simple clic si l'autoplay n'a pas
+   fonctionné, sans dépendre du scroll. */
+.founder-story-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 31, 39, 0.55);
+  backdrop-filter: blur(6px);
+  color: var(--cream);
+  cursor: pointer;
+  transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+}
+.founder-story-play svg { width: 2.4rem; height: 2.4rem; }
+.founder-story-play:hover { transform: translate(-50%, -50%) scale(1.06); }
+.founder-story-play.is-hidden { opacity: 0; pointer-events: none; }
 
 /* ==========================================================================
    Prestations — four full-viewport "worlds", each with its own dominant

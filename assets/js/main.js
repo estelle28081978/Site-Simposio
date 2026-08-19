@@ -934,26 +934,58 @@
   }
 
   // ==========================================================================
-  // Fondatrice — vraie mini vidéo cinématique, se lance une fois quand la
-  // section entre dans le viewport (engagements.html). La citation est
-  // intégrée directement dans les pixels de la vidéo (voir le commentaire
-  // CSS au-dessus de .founder-story) — aucun texte piloté par le scroll
-  // ici, juste un déclenchement de lecture classique.
+  // Fondatrice — vraie mini vidéo cinématique (engagements.html). La
+  // citation est intégrée directement dans les pixels de la vidéo (voir le
+  // commentaire CSS au-dessus de .founder-story) — aucun texte piloté par
+  // le scroll ici. Trois filets de sécurité empilés pour le démarrage,
+  // du plus automatique au plus manuel : (1) l'attribut HTML `autoplay`
+  // natif, principal mécanisme ; (2) un déclenchement JS de secours à
+  // l'entrée dans le viewport, au cas où l'autoplay natif serait bloqué
+  // par le navigateur mais qu'un `play()` déclenché par script passe quand
+  // même ; (3) un bouton de lecture manuel toujours visible tant que la
+  // vidéo n'a pas réellement commencé (`.founder-story-play`), pour le cas
+  // où l'autoplay est bloqué dans les deux cas — par ex. un aperçu affiché
+  // dans une iframe sans `allow="autoplay"`, qui bloque tout autoplay
+  // muet quel que soit le déclencheur.
   // ==========================================================================
   var founderStoryVideo = document.getElementById("founderStoryVideo");
-  if (founderStoryVideo && "IntersectionObserver" in window) {
-    var founderVideoObserver = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            founderStoryVideo.currentTime = 0;
-            founderStoryVideo.play().catch(function () {});
-            founderVideoObserver.unobserve(founderStoryVideo);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    founderVideoObserver.observe(founderStoryVideo);
+  var founderStoryPlayBtn = document.getElementById("founderStoryPlay");
+  if (founderStoryVideo) {
+    function hideFounderPlayBtn() {
+      if (founderStoryPlayBtn) founderStoryPlayBtn.classList.add("is-hidden");
+    }
+    founderStoryVideo.addEventListener("playing", hideFounderPlayBtn);
+
+    // Le bouton manuel est attaché EN PREMIER et inconditionnellement, avant
+    // toute tentative d'IntersectionObserver — s'il fallait attendre après
+    // un bloc qui peut échouer (observer non disponible/bloqué dans un
+    // contexte restreint, ex. aperçu en iframe), une exception y aurait
+    // empêché ce bouton de secours d'être fonctionnel pile quand on en a
+    // le plus besoin. Piège rencontré et corrigé pendant cette tâche.
+    if (founderStoryPlayBtn) {
+      founderStoryPlayBtn.addEventListener("click", function () {
+        founderStoryVideo.play().catch(function () {});
+      });
+    }
+
+    try {
+      if ("IntersectionObserver" in window) {
+        var founderVideoObserver = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting && founderStoryVideo.paused) {
+                founderStoryVideo.play().catch(function () {});
+                founderVideoObserver.unobserve(founderStoryVideo);
+              }
+            });
+          },
+          { threshold: 0.15 }
+        );
+        founderVideoObserver.observe(founderStoryVideo);
+      }
+    } catch (e) {
+      // Le bouton manuel (ci-dessus) reste utilisable même si l'observer
+      // échoue à l'instanciation dans ce contexte.
+    }
   }
 })();

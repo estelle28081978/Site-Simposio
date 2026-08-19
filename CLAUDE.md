@@ -3581,6 +3581,51 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   réel) — à la différence de toutes les autres photos du site.
   Vérifié par regression Playwright complète (5 pages × 2 viewports) : 0
   débordement, 0 erreur console.
+- **Fondatrice — trois filets de sécurité pour le démarrage de la vidéo
+  (2026-08-18, même journée)** (`.founder-story-play`, `engagements.html`/
+  `style.css`/`main.js`) : la cliente a signalé que la vidéo ne se lançait
+  pas chez elle (visionnage en aperçu privé) alors qu'elle fonctionnait
+  dans tous les tests menés ici (serveur local, ouverture directe du
+  fichier, desktop et mobile). Cause la plus probable, non confirmée mais
+  cohérente avec le symptôme : un aperçu affiché dans une iframe sans
+  attribut `allow="autoplay"` bloque tout autoplay, y compris muet, quel
+  que soit le mécanisme de déclenchement — hors de contrôle du code du
+  site (c'est l'attribut de la page PARENTE qui embarque l'iframe qui en
+  décide). Plutôt que de continuer à deviner, trois mécanismes sont
+  désormais empilés, du plus automatique au plus manuel : (1) attribut
+  HTML `autoplay` natif ; (2) `IntersectionObserver` (`main.js`) qui
+  appelle `.play()` dès que la section est visible à 15% (seuil aligné sur
+  le reveal générique du site, au lieu de 0.4 précédemment) ; (3) un
+  bouton de lecture manuel (`.founder-story-play`, cercle translucide avec
+  triangle "lecture", centré sur la vidéo) toujours visible tant que la
+  vidéo n'a pas réellement démarré (masqué sur l'évènement `playing`, pas
+  sur un simple appel à `.play()` qui peut échouer silencieusement).
+  **Piège rencontré et corrigé pendant la mise en place de ce filet** : le
+  gestionnaire de clic du bouton était attaché APRÈS le bloc
+  `IntersectionObserver`, dans le même `if` non protégé — si
+  `new IntersectionObserver(...)` avait levé une exception dans un
+  contexte restreint (ex. un aperçu fournissant un global
+  `IntersectionObserver` cassé/absent), le reste du bloc, y compris
+  l'attachement du bouton, n'aurait jamais été exécuté : le filet de
+  secours aurait été indisponible pile dans le scénario où il est le plus
+  nécessaire. Corrigé en attachant le bouton EN PREMIER,
+  inconditionnellement, puis en enveloppant l'initialisation de
+  l'`IntersectionObserver` dans un `try/catch` séparé. Repéré en isolant le
+  bouton dans un test Playwright dédié (autoplay et observer désactivés
+  manuellement) — un premier test avait donné un faux négatif à cause d'un
+  mock cassant par ailleurs le reste du script (`window.IntersectionObserver
+  = undefined` rendait `"IntersectionObserver" in window` toujours vrai,
+  donc `new IntersectionObserver` levait quand même une exception, y
+  compris dans du code sitewide plus haut dans le même IIFE) — reproduit
+  proprement en dispatchant un `click` directement via JS plutôt qu'en
+  passant par les vérifications d'actionabilité de Playwright, confirmant
+  que le bouton fonctionne correctement une fois cette regression de test
+  écartée.
+  Vérifié : lecture déclenchée par l'observer au scroll (`paused:false`,
+  `currentTime` progresse, `ended:true` en fin de lecture), bouton masqué
+  correctement une fois la lecture réellement commencée, clic manuel sur
+  le bouton fonctionnel de façon indépendante. Regression complète 5 pages
+  × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
