@@ -3724,6 +3724,34 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   menu vérifié bord à bord aux 2 largeurs, toggle du menu mobile revérifié
   fonctionnel) et regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Formules Prestations — titre remonté, bulles agrandies et recentrées
+  sur l'information principale (2026-08-19, même journée)** : retour de la
+  cliente sur le bullet précédent. **Titre/tagline remontés** :
+  `.world-copy-inner` reçoit `margin-top: clamp(-6rem, -9vh, -3rem)`
+  (≥701px seulement — sous 700px `.world` est déjà contraint en `100svh`,
+  remonter davantage rapprocherait trop le titre du header fixe) — un
+  simple décalage négatif dans le flex centré de `.world` (`align-items:
+  center`), pas besoin de changer le mode de centrage. **Bulles
+  agrandies** : `font-size` 0.8rem→1.05rem, padding 0.55em/1.1em→
+  0.75em/1.4em, gap 0.65rem→0.85rem (desktop) ; `white-space:nowrap`
+  retiré (`max-width:15rem` à la place) pour permettre un repli sur 2
+  lignes dans la bulle plutôt qu'une pilule qui déborderait avec les
+  libellés plus longs de cette itération. **Contenu recentré sur
+  l'information principale** : la cliente a jugé les mots-clés du bullet
+  précédent "trop précis" (des éléments de mise en scène pris isolément —
+  "Mobilier chiné", "Signalétique"...) et a demandé des repères qui
+  décrivent le service dans son ensemble. Remplacés par des value
+  props/traits distinctifs de chaque formule plutôt que des items de sa
+  liste de composants : La Cartolina → "Décor clé en main" / "Immersion
+  Dolce Vita" / "Sans changer de lieu" ; L'Esperienza → "Service
+  signature" / "Organisation clé en main" / "Immersion totale" ;
+  L'Aperitivo → "Format court & convivial" / "Rituel d'équipe" /
+  "Ponctuel ou en abonnement" ; La Tavola → "Atmosphère sobre & élégante"
+  / "Discrétion du service" / "L'échange au centre". Toutes passées de
+  3-4 à exactement 3 par formule (cohérent avec des bulles plus grandes
+  prenant plus de place). Vérifié par capture d'écran des 4 formules
+  desktop + 2 en mobile et regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
