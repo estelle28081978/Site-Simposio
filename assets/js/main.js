@@ -497,6 +497,35 @@
     }
   }
 
+  /* ---------- Engagements: équipe — stage photo + sélecteur de cercles (2026-08-19) ----------
+     Un cercle-avatar cliqué bascule .is-active sur trois groupes en
+     parallèle (avatars, photos, panneaux de texte), tous les trois
+     repérés par le même data-talent-target — un seul clic suffit à
+     resynchroniser la photo de fond et le texte affiché. */
+  var talentStage = document.querySelector(".talent-stage");
+  if (talentStage) {
+    var talentAvatars = Array.prototype.slice.call(talentStage.querySelectorAll(".talent-stage-avatar"));
+    var talentPhotos = Array.prototype.slice.call(talentStage.querySelectorAll(".talent-stage-photo"));
+    var talentPanels = Array.prototype.slice.call(talentStage.querySelectorAll(".talent-stage-panel"));
+
+    talentAvatars.forEach(function (avatar) {
+      avatar.addEventListener("click", function () {
+        var target = avatar.getAttribute("data-talent-target");
+        talentAvatars.forEach(function (a) {
+          var active = a === avatar;
+          a.classList.toggle("is-active", active);
+          a.setAttribute("aria-selected", String(active));
+        });
+        talentPhotos.forEach(function (p) {
+          p.classList.toggle("is-active", p.getAttribute("data-talent-target") === target);
+        });
+        talentPanels.forEach(function (p) {
+          p.classList.toggle("is-active", p.getAttribute("data-talent-target") === target);
+        });
+      });
+    });
+  }
+
   /* ---------- Engagements: valeurs — album filmique horizontal (2026-08-17) ----------
      Remplace l'ancien carrousel de texte façon "paroles" (voir CLAUDE.md pour
      l'historique complet des 13 itérations précédentes) par un mécanisme

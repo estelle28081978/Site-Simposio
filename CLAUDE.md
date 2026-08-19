@@ -3780,6 +3780,71 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   explicite. Vérifié par script (mesure de hauteur à 6 largeurs) et
   capture d'écran desktop + mobile ; regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Équipe — refonte en "stage" photo + sélecteur de petits cercles
+  (2026-08-19)** (`.talent-stage*`, `engagements.html`) : la cliente a
+  fourni une image de référence (design "Kollektiva") — une grande photo
+  de la personne actuellement sélectionnée, un texte informatif sur son
+  rôle à côté, et une rangée de petits cercles-avatars en bas permettant
+  de changer de personne, la photo de fond changeant au clic. Repris pour
+  le MÉCANISME et la composition générale, pas une copie pixel de la
+  typographie/mise en page de la référence — adapté à l'identité Simposio
+  (Yeseva One pour le nom, palette navy/terracotta/crème). **Remplace
+  entièrement** l'ancienne grille `.talents-grid` de deux `.talent-card`
+  (fond dégradé + icône "Photo à venir") — si `.talents-grid`/
+  `.talent-card`/`.talent-photo-placeholder` réapparaissent dans un diff,
+  c'est cette ancienne version, à ne pas réintroduire sans qu'on le
+  redemande.
+  **Structure** : `.talent-stage` est une seule carte (fond `--navy-900`,
+  coins arrondis, `overflow:hidden`) contenant `.talent-stage-media` (les
+  2 `<img class="talent-stage-photo">` empilées en `position:absolute`,
+  fondu croisé par `opacity`/`transition` — même principe que
+  `.values-media-photo` ailleurs sur cette page) puis `.talent-stage-bar`,
+  une **vraie barre en flux normal sous la photo** (pas un chevauchement
+  en marge négative par-dessus la photo) contenant à gauche
+  `.talent-stage-panels` (un `.talent-stage-panel` par personne,
+  `display:none`/`block` selon `.is-active`, pas de fondu sur le texte)
+  et à droite `.talent-stage-selector` (les cercles-avatars, `3.2rem` de
+  diamètre — "si petits" demandé explicitement par la cliente).
+  **Pourquoi une barre en flux plutôt qu'un chevauchement** : un premier
+  jet plaçait la barre de texte en `margin-top` négatif par-dessus le bas
+  de la photo (comme un bandeau de légende superposé) — écarté avant même
+  d'être committé, repéré par calcul : la hauteur du panneau de texte
+  dépend de la longueur de la bio de chaque personne (donnée réelle,
+  pas maîtrisée à l'avance côté design), donc un chevauchement calé pour
+  une bio tiendrait mais déborderait sur le fond de la section pour une
+  bio plus longue — fragile par construction. La barre en flux normal
+  avec son propre fond opaque est robuste quelle que soit la longueur du
+  texte, sans calcul à maintenir.
+  **JS** (`main.js`, bloc dédié après les flip-cards Engagements) : un
+  clic sur un `.talent-stage-avatar` (de vrais `<button>`, focus/Enter
+  clavier natifs) bascule `.is-active` en parallèle sur les avatars, les
+  2 photos et les 2 panneaux, tous repérés par le même attribut
+  `data-talent-target` — un seul gestionnaire de clic suffit à
+  resynchroniser les trois groupes. `role="tablist"`/`role="tab"`/
+  `aria-selected` pour l'accessibilité (pattern d'onglets standard).
+  **Photos temporaires** : la cliente a demandé de "prendre des photos
+  dans notre banque d'image, des photos de personnes au hasard, le temps
+  de choisir les bonnes et les nôtres" — deux portraits professionnels
+  Pexels (`talent-placeholder-1.jpg`/`-2.jpg`, aucune attribution requise,
+  cf. `CREDITS.md`) tiennent lieu de vraies photos d'équipe. Nommés
+  volontairement `talent-placeholder-*` (pas `evenement-*` ni un nom
+  suggérant que c'est la vraie photo d'Estelle) pour qu'aucune confusion
+  ne soit possible dans le code une fois les vraies photos ajoutées — TODO
+  détaillé dans `engagements.html` juste au-dessus de la section.
+  **Bug de recadrage trouvé et corrigé avant publication** : la 2ᵉ photo
+  (portrait avec beaucoup d'espace vide au-dessus de la tête) se
+  retrouvait cadrée sur le haut du front avec les yeux à peine visibles en
+  bas du cadre avec `object-position:top center` — repéré par capture
+  d'écran, pas supposé. Corrigé en `object-position:center 22%`, qui cadre
+  correctement les deux visages (vérifié sur les deux). Purement
+  cosmétique et sans rapport avec le contenu réel à venir — à revérifier
+  une fois les vraies photos en place, leur cadrage peut demander un
+  réglage différent.
+  Vérifié par script Playwright (clic + navigation clavier Tab/Enter,
+  état `is-active` des 3 groupes confirmé synchronisé après chaque
+  interaction, 0 erreur console) et capture d'écran desktop + mobile pour
+  les deux personnes. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
@@ -3867,10 +3932,11 @@ sans qu'on le redemande.
   correspondre à l'esprit du site double2.fr, mais sans accès réseau à
   double2.fr dans cet environnement pour un calage pixel-exact — à affiner
   si des captures d'écran de leurs pages sont fournies.
-- **Photos d'équipe** (`engagements.html`) : deux emplacements prêts
-  (placeholders avec dégradé + icône), en attente des vraies photos couleur
-  et du nom/rôle/bio de la 2ᵉ personne (voir commentaires `TODO` dans le
-  fichier).
+- **Photos d'équipe** (`engagements.html`, section `.talent-stage`) :
+  utilise actuellement `talent-placeholder-1.jpg`/`-2.jpg`, deux photos de
+  banque prises au hasard (cf. bullet dédié plus haut et `CREDITS.md`) —
+  en attente des vraies photos et du nom/rôle/bio de la 2ᵉ personne (voir
+  commentaire `TODO` dans le fichier).
 - **Liens réseaux sociaux** (`#` dans le header) : placeholders `TODO` à
   remplacer, présents dans les 6 pages.
 - **Coordonnées du bandeau Contact** (`.contact-band`, `contact.html`) :

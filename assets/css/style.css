@@ -1821,48 +1821,107 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .engagements .lede { color: rgba(255, 255, 255, 0.88); }
 
 .talents { background: var(--bg-dim); padding-block: var(--space-6); }
-.talents-grid { display: grid; gap: var(--space-5); margin-top: var(--space-5); max-width: 46rem; margin-inline: auto; }
-@media (min-width: 640px) { .talents-grid { grid-template-columns: repeat(2, 1fr); } }
 
-.talent-card { text-align: left; }
-.talent-photo {
-  position: relative;
-  aspect-ratio: 4 / 5;
+/* Équipe — "stage" photo unique avec sélecteur de petits cercles
+   (2026-08-19), inspiré d'une référence fournie par la cliente (design
+   "Kollektiva" : grande photo de la personne sélectionnée + rangée de
+   petits cercles-avatars pour changer de personne) — repris pour le
+   MÉCANISME (photo de fond qui change au clic sur un cercle, texte
+   informatif à côté) et adapté à l'identité Simposio (Yeseva One,
+   palette navy/terracotta/crème), pas une copie pixel de la mise en page
+   ni de la typographie de la référence. Remplace entièrement l'ancienne
+   grille `.talents-grid` de deux `.talent-card` séparées (fond dégradé +
+   icône "Photo à venir") — si `.talents-grid`/`.talent-card`/
+   `.talent-photo-placeholder` réapparaissent dans un diff, c'est cette
+   ancienne version, à ne pas réintroduire sans qu'on le redemande.
+   Les deux photos utilisées (`talent-placeholder-1/2.jpg`) sont des
+   photos de banque prises au hasard (cf. TODO dans le HTML) — à
+   remplacer par les vraies photos d'équipe. */
+/* Carte unique (photo + barre d'info), pas un chevauchement en marge
+   négative : la hauteur du panneau de texte varie selon la longueur de
+   chaque bio (donnée réelle, pas maîtrisée à l'avance) — un chevauchement
+   calé en dur aurait fonctionné pour une bio pile de la bonne longueur et
+   cassé (texte qui déborde sur le fond de la section, illisible) pour une
+   bio plus longue. La barre d'info est ici un vrai bloc en flux normal,
+   sous la photo, avec son propre fond opaque — robuste quelle que soit la
+   longueur du texte. */
+.talent-stage {
+  margin-top: var(--space-5);
+  max-width: 52rem;
+  margin-inline: auto;
   border-radius: var(--radius-lg);
-  margin-bottom: var(--space-3);
-  background: linear-gradient(150deg, var(--from, var(--navy)), var(--to, var(--terracotta)));
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
+  background: var(--navy-900);
 }
-.talent-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.talent-photo-placeholder {
+.talent-stage-media { position: relative; aspect-ratio: 4 / 3; }
+@media (min-width: 640px) { .talent-stage-media { aspect-ratio: 16 / 9; } }
+/* `opacity` seule dans la transition (pas `transform`) : deux photos
+   empilées en `position:absolute`, un fondu croisé simple suffit — pas
+   besoin d'un mécanisme de scale/parallaxe comme ailleurs sur le site. */
+.talent-stage-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+}
+.talent-stage-photo.is-active { opacity: 1; }
+/* Simple vignette de transition vers la barre d'info opaque en dessous
+   (plus un rôle de lisibilité de texte, le texte ne vit plus sur la
+   photo). */
+.talent-stage-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(16, 31, 39, 0.55) 0%, transparent 22%);
+}
+
+.talent-stage-bar {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-  color: rgba(246, 241, 231, 0.75);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
 }
-.talent-photo-placeholder svg { width: 34px; height: 34px; }
-.talent-photo-placeholder span {
-  font-family: var(--font-subtitle);
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.talent-card h3 { color: var(--navy); font-size: 1.3rem; }
-.talent-role {
+.talent-stage-panels { flex: 1 1 20rem; }
+.talent-stage-panel { display: none; }
+.talent-stage-panel.is-active { display: block; }
+.talent-stage-name { display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 1.4vw + 1.15rem, 2.1rem); color: var(--cream); }
+.talent-stage-role {
+  display: block;
   font-family: var(--font-subtitle);
   font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--terracotta-300);
   margin-block: 0.4rem 0.6rem;
 }
-.talent-bio { color: var(--fg-muted); font-size: 0.95rem; }
+.talent-stage-bio { color: rgba(246, 241, 231, 0.85); font-size: 0.95rem; max-width: 28rem; }
+
+.talent-stage-selector { display: flex; gap: 0.75rem; list-style: none; flex: 0 0 auto; }
+.talent-stage-avatar {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid rgba(246, 241, 231, 0.4);
+  cursor: pointer;
+  background: none;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.talent-stage-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.talent-stage-avatar:hover { transform: scale(1.08); }
+.talent-stage-avatar.is-active { border-color: var(--terracotta-300); transform: scale(1.1); }
+.talent-stage-avatar:focus-visible { outline: 2px solid var(--terracotta-300); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+  .talent-stage-bar { flex-direction: column; align-items: flex-start; }
+}
 
 /* ==========================================================================
    Engagements — Valeurs : album filmique horizontal (2026-08-17, refonte).
