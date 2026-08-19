@@ -3626,6 +3626,39 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   correctement une fois la lecture réellement commencée, clic manuel sur
   le bouton fonctionnel de façon indépendante. Regression complète 5 pages
   × 2 viewports : 0 débordement, 0 erreur console.
+- **Fondatrice — la piste vidéo mise en pause, retour au minimalisme
+  typographique (2026-08-18, même journée)** (`.founder`/
+  `.founder-minimal*`, `engagements.html`) : la cliente n'a jamais réussi à
+  voir la vidéo se lancer dans son contexte de visionnage (probablement un
+  aperçu en iframe qui bloque tout autoplay indépendamment du code du
+  site, cf. bullet précédent — jamais confirmé avec certitude faute
+  d'accès à son environnement exact) et a tranché : *"retourne à une
+  citation designer de manière plus minimaliste, mais garde cette idée de
+  vidéo en tête"* — une mise en pause explicite, pas un rejet définitif.
+  **La section active redevient une typographie minimaliste sur fond
+  crème**, reprenant la structure de l'avant-dernière itération non-vidéo
+  de cette section (une seule colonne centrée, eyebrow "La fondatrice",
+  citation en Yeseva One directement sur le crème — texte inchangé mot
+  pour mot, trait fin terracotta en séparateur, médaillon "EL" en simple
+  contour + nom) — voir plus haut dans ce fichier pour le détail complet
+  de cette composition déjà documentée une première fois. `.founder`
+  repasse en fond `var(--bg)` (crème), ce qui referme l'alternance de la
+  page (navy `.engagements` → crème-dim `.talents` → navy
+  `.values-reel-sticky` → crème `.founder`).
+  **Rien de la piste vidéo n'est supprimé** — demande explicite de la
+  cliente de la garder "en tête" : `assets/video/founder-story.mp4`/
+  `.webm`/`README.md` restent dans le dépôt tels quels (citation déjà
+  composée dans les pixels de la carte, prête à être réactivée). Seuls le
+  HTML actif (`.founder-story`, vidéo + bouton de lecture), le bloc CSS
+  associé et la logique JS de lecture (`main.js`) sont retirés — code mort
+  une fois la section vidéo hors service, mais rien qui empêche de la
+  refaire pointer vers ces mêmes fichiers plus tard si la cliente
+  redemande cette piste. Si le filigrane PixVerse peut être retiré
+  entre-temps (export propre, prestataire de retouche), ce serait le bon
+  moment pour le faire avant une éventuelle réactivation.
+  Vérifié par script Playwright (0 débordement, 0 erreur console, 2
+  viewports) et capture d'écran desktop + mobile. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
@@ -3693,15 +3726,21 @@ sans qu'on le redemande.
 
 ## Limites connues / à traiter avec la cliente
 
-- **Vidéo de la section Fondatrice** (`assets/video/founder-story.mp4`/
-  `.webm`, `engagements.html`) : (1) filigrane "PixVerse.ai" visible en
+- **Vidéo de la section Fondatrice, en pause, pas supprimée**
+  (`assets/video/founder-story.mp4`/`.webm`) : la cliente n'a jamais réussi
+  à voir la vidéo se lancer dans son contexte de visionnage et a demandé de
+  revenir à une citation typographique minimaliste pour l'instant, "en
+  gardant l'idée en tête" — la section active d'`engagements.html`
+  n'utilise donc plus ces fichiers, mais ils restent dans le dépôt (citation
+  déjà composée dans les pixels de la carte, prêts à être réactivés). Si
+  cette piste est reprise plus tard : (1) filigrane "PixVerse.ai" visible en
   haut à droite sur toute la durée — à faire retirer via un export sans
   filigrane (compte PixVerse de la cliente) ou un prestataire de retouche
-  vidéo avant mise en ligne définitive, aucun outil d'inpainting
-  disponible dans cet environnement pour l'effacer proprement ; (2) la
-  scène est entièrement générée par IA (personnes, lieu, évènement
-  fictifs), à la différence de toutes les autres photos du site qui sont
-  100% réelles — voir `assets/video/README.md` pour le détail complet.
+  vidéo, aucun outil d'inpainting disponible dans cet environnement pour
+  l'effacer proprement ; (2) la scène est entièrement générée par IA
+  (personnes, lieu, évènement fictifs), à la différence de toutes les
+  autres photos du site qui sont 100% réelles — voir
+  `assets/video/README.md` pour le détail complet.
 - **Police Canter** non disponible → substituée par Oswald (cf. ci-dessus).
 - **Mosaïque Projets & page Talents (Engagements)** : conçues pour
   correspondre à l'esprit du site double2.fr, mais sans accès réseau à

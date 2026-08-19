@@ -1393,115 +1393,88 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Founder — vraie mini vidéo cinématique, citation intégrée à la carte du
-   menu à l'intérieur même de la vidéo (2026-08-18). Remplace entièrement
-   la séquence scroll-pilotée de 4 photos qui crossfadaient
-   (`.founder-story-scenes`/`.founder-story-scene`/`updateFounderStory()`,
-   bullet précédent) : la cliente a fourni en référence un clip vidéo
-   cinématographique (plongée continue d'une scène de cocktail jusqu'à une
-   carte de menu posée sur un comptoir) et a demandé "une vidéo comme ça...
-   mais sur la carte du menu intègre la citation comme s'il était déjà
-   dans la vidéo". Si `.founder-story-scenes`/`.founder-story-scene`/
-   `.founder-story-scrim`/`.founder-story-dots`/`.founder-story-quote`
-   réapparaissent ici, c'est cette ancienne version (crossfade de photos),
-   à ne pas réintroduire sans qu'on le redemande.
-   **Provenance et limites de la vidéo, documentées en détail dans
-   `assets/video/README.md`** : le clip de base est une vidéo générée par
-   IA (PixVerse.ai, fournie par la cliente) — ni scène ni personnes
-   réelles, contrairement à toutes les photos utilisées ailleurs sur le
-   site. La citation a été composée à l'intérieur même des pixels de la
-   vidéo (warp de perspective image par image sur la carte visible à
-   l'écran, suivant son mouvement de caméra), pas en surimpression HTML —
-   c'est la réponse directe à "comme s'il était déjà dans la vidéo". Le
-   filigrane "PixVerse.ai" n'a pas pu être retiré (aucun outil
-   d'inpainting disponible dans cet environnement) : à faire remplacer par
-   une cliente disposant d'un export sans filigrane avant mise en ligne
-   définitive, voir « Limites connues » dans `CLAUDE.md`.
-   **Structure, plein écran mais SANS mécanisme de scroll-pin cette fois**
-   (contrairement à `.senses-journey`/`.values-reel`/l'ancienne version de
-   cette section) : `.founder-story` est un simple bloc `height:100vh` en
-   flux normal — une vraie vidéo avec sa propre temporalité ne se prête
-   pas au scroll-scrubbing des autres sections (durée fixe, lecture en
-   temps réel), donc plutôt que de forcer un pin+scroll-scrub fragile
-   (source de bugs répétée ailleurs sur ce site), la vidéo se lance
-   simplement une fois quand la section entre dans le viewport
-   (`IntersectionObserver`, `main.js`), comme n'importe quelle vidéo
-   intégrée sur le web — plus simple, plus robuste. Toujours les bandes
-   `.founder-story-letterbox` (haut/bas, effet "cadre cinéma") et
-   l'eyebrow "La fondatrice" positionné sous le header fixe (même
-   correctif de collision que la version précédente, conservé). La
-   signature "Estelle Lorusso, fondatrice" est désormais intégrée à la
-   vidéo elle-même (sur la carte) — plus besoin de bloc de signature HTML
-   séparé (`.founder-avatar-minimal`/`.founder-signature-minimal`,
-   retirés). */
-.founder-story {
-  position: relative;
-  height: 100vh;
-  min-height: 32rem;
-  background: var(--navy-900);
-  overflow: hidden;
+   Founder — retour à une typographie minimaliste sur fond crème uni
+   (2026-08-18, même journée). La cliente a explicitement mis la piste
+   vidéo en pause ("retourne à une citation designer de manière plus
+   minimaliste, mais garde cette idée de vidéo en tête") plutôt que de la
+   rejeter définitivement — remplace donc l'affichage actif de la section
+   (`.founder-story*`, mini vidéo cinématique + bouton de lecture, bullets
+   précédents) SANS supprimer les fichiers vidéo ni leur documentation
+   (`assets/video/founder-story.mp4`/`.webm`/`README.md` restent dans le
+   dépôt, prêts à être réactivés si la cliente redemande cette piste — cf.
+   « État d'avancement »/« Limites connues » dans CLAUDE.md). Si
+   `.founder-story`/`.founder-story-video`/`.founder-story-play`
+   réapparaissent ici, c'est cette version vidéo, à ne pas réintroduire
+   sans qu'on le redemande.
+   **Composition** : reprend la structure de l'avant-dernière itération de
+   cette section (assiette CSS/SVG et détourage mis de côté entre-temps,
+   cf. historique plus haut dans ce fichier) — une seule colonne centrée
+   (`.founder-minimal`, `max-width:42rem`) posée directement sur le fond
+   crème de `.founder` (`var(--bg)`), qui referme l'alternance de fonds de
+   la page (navy `.engagements` → crème-dim `.talents` → navy
+   `.values-reel-sticky` → **crème** `.founder`). Eyebrow "La fondatrice"
+   (style générique `.eyebrow` du site), citation en Yeseva One directement
+   sur le crème (texte inchangé mot pour mot), un trait fin
+   (`.founder-rule`, `2.75rem`, `1.5px solid var(--terracotta)`) en
+   séparateur, puis l'identité (`.founder-id-minimal` : médaillon "EL" en
+   simple contour + nom). */
+.founder { background: var(--bg); padding-block: var(--space-6); }
+.founder-minimal { max-width: 42rem; margin-inline: auto; text-align: center; }
+.founder-quote-minimal {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 1vw + 1.15rem, 2rem);
+  line-height: 1.5;
+  color: var(--navy);
+  margin-top: 1.5rem;
 }
-.founder-story-letterbox {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 7vh;
-  min-height: 44px;
-  background: var(--navy-900);
-  z-index: 3;
-  pointer-events: none;
-}
-.founder-story-letterbox-top { top: 0; }
-.founder-story-letterbox-bottom { bottom: 0; }
-/* Même marge de dégagement que `.page-header` pour le header fixe du site
-   (`z-index:100`, ~91px de haut) — voir l'historique de cette section
-   dans CLAUDE.md pour le bug de collision déjà rencontré et corrigé une
-   fois lorsque ce libellé vivait à l'intérieur de la bande fine. */
-.founder-story-eyebrow {
-  position: absolute;
-  top: calc(6.5rem + 0.4rem);
-  left: var(--space-4);
-  z-index: 3;
-  color: var(--terracotta-300);
-}
-.founder-story-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  background: var(--navy-900);
-}
-/* Filet de sécurité : l'attribut `autoplay` natif (HTML) est le mécanisme
-   principal, mais certains contextes le bloquent quand même (aperçu dans
-   une iframe sans `allow="autoplay"`, politique de navigateur plus
-   stricte) — ce bouton reste caché tant que la vidéo joue réellement
-   (`main.js` bascule `.is-hidden` sur les évènements `play`/`playing`) et
-   permet de démarrer la lecture d'un simple clic si l'autoplay n'a pas
-   fonctionné, sans dépendre du scroll. */
-.founder-story-play {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  width: 4.6rem;
-  height: 4.6rem;
-  border-radius: 50%;
+.founder-rule {
+  display: block;
+  width: 2.75rem;
+  height: 1.5px;
+  background: var(--terracotta);
   border: none;
-  display: flex;
+  margin: 2.25rem auto;
+}
+.founder-id-minimal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.founder-avatar-minimal {
+  flex: 0 0 auto;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(16, 31, 39, 0.55);
-  backdrop-filter: blur(6px);
-  color: var(--cream);
-  cursor: pointer;
-  transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--navy-rgb), 0.28);
+  color: var(--navy);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
 }
-.founder-story-play svg { width: 2.4rem; height: 2.4rem; }
-.founder-story-play:hover { transform: translate(-50%, -50%) scale(1.06); }
-.founder-story-play.is-hidden { opacity: 0; pointer-events: none; }
+.founder-signature-minimal {
+  font-family: var(--font-subtitle);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--navy);
+  text-align: left;
+}
+.founder-signature-minimal span {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--fg-muted);
+}
+@media (max-width: 700px) {
+  .founder-id-minimal { flex-direction: column; gap: 0.5rem; }
+  .founder-id-minimal .founder-signature-minimal { text-align: center; }
+}
 
 /* ==========================================================================
    Prestations — four full-viewport "worlds", each with its own dominant
