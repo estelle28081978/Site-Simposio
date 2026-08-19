@@ -1292,6 +1292,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   object-fit: cover;
   will-change: transform;
 }
+.engagement-card-front-img--pos-left { object-position: 12% center; }
 .engagement-card-front-scrim {
   position: absolute;
   inset: 0;

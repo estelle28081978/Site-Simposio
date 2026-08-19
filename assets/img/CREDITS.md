@@ -58,22 +58,28 @@ est utilisée en fond plein écran de la section Promesse — d'abord sur
 redistribué, cf. CLAUDE.md) sur `index.html`, qui réutilise exactement le
 même traitement pour sa propre section "Notre promesse". Son auteur (Tracey
 Hind) a été ajouté au bloc `.photo-credits` d'`index.html` (à côté du crédit
-Andrew Parlette déjà présent). Depuis le 2026-08-19, `alsace-maisons-colombages.jpg`
-est utilisée sur `engagements.html` (grille de flip-cards, "Ancrage
-alsacien") — voir « Important » plus bas pour le contexte de ce
-remplacement ; son auteur (Didivo67) est crédité dans le bloc
-`.photo-credits` de cette page, qui ne cite plus que lui (les 3 anciens
-crédits Wikimedia de cette page — JIP, Hartmut Schmidt Heidelberg, Nicolas
-Torquet — ont été retirés, leurs 3 photos n'étant plus utilisées nulle part
-sur le site, cf. lignes correspondantes ci-dessous). Les fichiers restants
-ci-dessous sont inutilisés ; s'ils sont un jour réutilisés, remettre leur
-lien de crédit dans les footers concernés.
+Andrew Parlette déjà présent). Depuis le 2026-08-19, cinq nouvelles photos
+Wikimedia sont utilisées sur `engagements.html` (`alsace-maisons-colombages.jpg`,
+`ravello-villa-cimbrone-jardin.jpg`, `ravello-terrasse-infini.jpg`,
+`vietri-ceramique-detail.jpg`, `amalfi-coteside-signature.jpg`) — voir
+« Important » plus bas pour le contexte de ce remplacement ; leurs 5
+auteurs (Didivo67, Greg Willis, Nessy, Anila amataj, Ra Boe) sont crédités
+dans le bloc `.photo-credits` de cette page, qui ne cite plus que ces
+5-là (les 3 anciens crédits Wikimedia de cette page — JIP, Hartmut Schmidt
+Heidelberg, Nicolas Torquet — ont été retirés, leurs 3 photos n'étant plus
+utilisées nulle part sur le site, cf. lignes correspondantes ci-dessous).
+Les fichiers restants ci-dessous sont inutilisés ; s'ils sont un jour
+réutilisés, remettre leur lien de crédit dans les footers concernés.
 
 | Fichier | Utilisée sur | Source | Auteur | Licence |
 |---|---|---|---|---|
 | `terrace-dinner-assisi.jpg` | Prestations — La Tavola + Accueil (carte formule La Tavola) | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
 | `amalfi-coast-sunset.jpg` | Accueil — fond plein écran de la section "Notre promesse" (ex-Univers, page supprimée le 2026-08-18) | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 | `alsace-maisons-colombages.jpg` | Engagements — grille de flip-cards ("Ancrage alsacien") | [Donnenheim maison rue du villageA.jpg](https://commons.wikimedia.org/wiki/File:Donnenheim_maison_rue_du_villageA.jpg) | Didivo67 | CC BY-SA 4.0 |
+| `ravello-villa-cimbrone-jardin.jpg` | Engagements — grille de flip-cards ("Concept clé en main") | [Ravello - Villa Cimbrone (4786631550).jpg](https://commons.wikimedia.org/wiki/File:Ravello_-_Villa_Cimbrone_(4786631550).jpg) | Greg Willis | CC BY-SA 2.0 |
+| `ravello-terrasse-infini.jpg` | Engagements — grille de flip-cards ("Positionnement premium") | [Terrace Villa Cimbrone.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Villa_Cimbrone.jpg) | Nessy | CC BY-SA 4.0 |
+| `vietri-ceramique-detail.jpg` | Engagements — carrousel Valeurs ("Le détail qui change tout") | [Ceramiche Vietri Sul Mare Italia.jpg](https://commons.wikimedia.org/wiki/File:Ceramiche_Vietri_Sul_Mare_Italia.jpg) | Anila amataj | CC BY-SA 4.0 |
+| `amalfi-coteside-signature.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") | [Costiera amalfitana 2019 -Castiglione, Ravello- by-RaBoe 270.jpg](https://commons.wikimedia.org/wiki/File:Costiera_amalfitana_2019_-Castiglione,_Ravello-_by-RaBoe_270.jpg) | Ra Boe | CC BY-SA 3.0 de |
 | `spritz-terrasse.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("L'exigence comme point de départ"), remplacée par une toute nouvelle photo, voir « Important » plus bas | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
 | `piazza-evening-menaggio.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("L'Italie comme art de vivre, pas comme décor"), remplacée par une toute nouvelle photo, voir « Important » plus bas | [Evening Piazza Tomaso Grossi, Menaggio.jpg](https://commons.wikimedia.org/wiki/File:Evening_Piazza_Tomaso_Grossi,_Menaggio.jpg) | Hartmut Schmidt Heidelberg | CC BY-SA 4.0 |
 | `alsace-vineyard.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("La confiance avant la prestation") et grille de flip-cards ("Ancrage alsacien"), remplacée par deux toutes nouvelles photos, voir « Important » plus bas | [Route des vins, Alsace.jpg](https://commons.wikimedia.org/wiki/File:Route_des_vins,_Alsace.jpg) | Nicolas Torquet | CC BY-SA 2.0 |
@@ -100,15 +106,11 @@ de fichier, pour ne pas les confondre avec les vraies photos de la cliente.
 |---|---|---|---|
 | `positano-ceramiche-decor.jpg` | Prestations — La Cartolina (fond) + Accueil (carte formule La Cartolina) | [Pexels photo 12986066](https://www.pexels.com/photo/12986066/) | Paco de Bydzia |
 | `vespa-fleuriste-rue.jpg` | Prestations — L'Esperienza (fond) + Accueil (carte formule L'Esperienza) | [Pexels photo 7539898](https://www.pexels.com/photo/7539898/) | ROMAN ODINTSOV |
-| `salle-reception-verriere.jpg` | Engagements — grille de flip-cards ("Concept clé en main") | [Pexels photo 34672232](https://www.pexels.com/photo/elegant-banquet-hall-with-skylight-ceiling-34672232/) | Adrien Olichon |
-| `salon-lustres-restaurant.jpg` | Engagements — grille de flip-cards ("Positionnement premium") | [Pexels photo 29649754](https://www.pexels.com/photo/elegant-restaurant-interior-with-chandeliers-29649754/) | Clément Proust |
 | `piazza-siena-terrasses.jpg` | Engagements — grille de flip-cards ("Spécialiste Dolce Vita") | [Pexels photo 36825577](https://www.pexels.com/photo/lively-piazza-del-campo-in-siena-italy-36825577/) | Claudia Solano |
-| `chef-dressage-assiette.jpg` | Engagements — carrousel Valeurs ("L'exigence comme point de départ") | [Pexels photo 16931502](https://www.pexels.com/photo/chef-hands-in-gloves-decorating-dish-in-plate-16931502/) | Kioto Estudio |
+| `chef-dressage-pates.jpg` | Engagements — carrousel Valeurs ("L'exigence comme point de départ") | [Pexels photo 17216559](https://www.pexels.com/photo/a-chef-putting-pasta-on-a-plate-17216559/) | Luca Luperto |
 | `burano-ruelle-facades.jpg` | Engagements — carrousel Valeurs ("L'Italie comme art de vivre, pas comme décor") | [Pexels photo 31801216](https://www.pexels.com/photo/colorful-houses-in-burano-venice-street-view-31801216/) | Eileen Gao |
 | `diner-duo-toast-vin.jpg` | Engagements — carrousel Valeurs ("Un interlocuteur, jamais un standard") | [Pexels photo 5086625](https://www.pexels.com/photo/people-toasting-their-wine-glasses-5086625/) | Jep Gambardella |
-| `bouquet-vase-dore-detail.jpg` | Engagements — carrousel Valeurs ("Le détail qui change tout") | [Pexels photo 34615486](https://www.pexels.com/photo/elegant-table-setting-with-floral-centerpiece-34615486/) | Caleb Oquendo |
 | `poignee-main-confiance.jpg` | Engagements — carrousel Valeurs ("La confiance avant la prestation") | [Pexels photo 9870223](https://www.pexels.com/photo/unrecognizable-hands-handshaking-over-table-9870223/) | Ron Lach |
-| `table-signature-automne.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") | [Pexels photo 6479604](https://www.pexels.com/photo/served-table-decorated-with-flowers-bouquet-and-candles-during-festive-dinner-6479604/) | Tara Winstead |
 | `terrasse-lanternes-soir.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("Le détail qui change tout"), remplacée par une toute nouvelle photo, voir « Important » plus bas | [Pexels photo 18331431](https://www.pexels.com/photo/18331431/) | Chris F |
 | `spritz-duo-sicile.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("Un interlocuteur, jamais un standard"), remplacée par une toute nouvelle photo, voir « Important » plus bas | [Pexels photo 36786940](https://www.pexels.com/photo/36786940/) | Ilma Elsberga |
 
@@ -141,25 +143,88 @@ Wikimedia Commons, la sélection et les crédits (auteur, licence, URL
 source) viennent directement de l'API officielle (`action=query&prop=
 imageinfo`), donc fiables au même titre que les autres crédits Wikimedia
 de ce fichier.
-10 fichiers ajoutés, tous vérifiés visuellement avant intégration
-(prévisualisation basse résolution puis téléchargement en pleine
-résolution — 2400px de large pour les Pexels comme la convention déjà
-établie sur ce projet, 1920px pour le Wikimedia) : `salle-reception-verriere.jpg`,
-`salon-lustres-restaurant.jpg`, `piazza-siena-terrasses.jpg`,
-`alsace-maisons-colombages.jpg`, `chef-dressage-assiette.jpg`,
+**2ᵉ passe le même jour — davantage d'identité Italie explicite** : la
+cliente a précisé, une fois le 1er jeu de 10 photos en place, qu'elle
+voulait des photos "vraiment tournées autour de l'Italie" en plus de
+rester représentatives de leur engagement/valeur — plusieurs choix du 1er
+jet étaient trop neutres/génériques (un hall de réception qui aurait pu
+être n'importe où, un restaurant "de Québec" d'après sa propre légende
+Pexels, une assiette de ceviche plus péruvienne qu'italienne, un bouquet
+de fleurs éditorial sans ancrage géographique, une table champêtre
+automnale). 5 des 10 photos ont donc été remplacées une seconde fois par
+des photos beaucoup plus explicitement italiennes — la démarche de
+recherche (Pexels via extraits de résultats web + CDN direct, faute
+d'accès à `pexels.com` lui-même ; Wikimedia via l'API officielle) est
+identique à celle décrite ci-dessus pour la 1ʳᵉ passe. **`E4` — "Ancrage
+alsacien" — reste volontairement la seule photo NON italienne** :
+c'est le point de contraste explicite de cet engagement précis (l'ancrage
+de l'agence en Alsace face à son inspiration Dolce Vita), donc rester sur
+`alsace-maisons-colombages.jpg` est cohérent avec la demande plutôt qu'une
+exception oubliée. Remplacements de la 2ᵉ passe :
+- **E1 "Concept clé en main"** : `salle-reception-verriere.jpg` (salle de
+  réception générique) → `ravello-villa-cimbrone-jardin.jpg` (fontaine aux
+  angelots du jardin de la Villa Cimbrone, Ravello — mise en scène/décor
+  pensé dans le moindre détail, symbole d'un concept entièrement composé).
+- **E2 "Positionnement premium"** : `salon-lustres-restaurant.jpg`
+  (restaurant à lustres, légende Pexels le situant au Québec — repéré
+  avant publication, pas laissé passer) → `ravello-terrasse-infini.jpg`
+  (la célèbre Terrasse de l'Infini de la Villa Cimbrone surplombant la
+  côte amalfitaine — un des lieux les plus emblématiques du luxe italien).
+  **Crop recadré** : le buste en marbre (sujet principal) se retrouvait
+  presque hors cadre avec le recadrage `object-fit:cover` centré par
+  défaut sur ce format de carte étroit (5/6) — repéré par capture d'écran,
+  corrigé avec une nouvelle classe scopée
+  `.engagement-card-front-img--pos-left` (`object-position:12% center`,
+  `style.css`) appliquée uniquement à cette image via une classe
+  supplémentaire sur le `<img>`, sans toucher au comportement des 3 autres
+  cartes.
+- **V1 "L'exigence comme point de départ"** : `chef-dressage-assiette.jpg`
+  (chef dressant un plat façon ceviche, esthétique plus péruvienne
+  qu'italienne) → `chef-dressage-pates.jpg` (chef italien — veste
+  "Chef Domante Giusepe" visible — dressant des tagliatelles au tastevin,
+  geste de précision sans ambiguïté sur la cuisine italienne).
+- **V4 "Le détail qui change tout"** : `bouquet-vase-dore-detail.jpg`
+  (bouquet de fleurs éditorial générique) → `vietri-ceramique-detail.jpg`
+  (détail d'une fresque en céramique peinte à la main représentant des
+  vendanges, Vietri sul Mare — la capitale historique de la céramique de
+  la côte amalfitaine).
+- **V6 "Chaque événement, une signature"** : `table-signature-automne.jpg`
+  (tablée automnale, esthétique nord-américaine/scandinave neutre) →
+  `amalfi-coteside-signature.jpg` (vue aérienne de la côte amalfitaine
+  depuis la mer, Ravello/Castiglione — un paysage aussi unique et
+  reconnaissable qu'un événement signature).
+Les 5 fichiers remplacés à cette 2ᵉ passe (`salle-reception-verriere.jpg`,
+`salon-lustres-restaurant.jpg`, `chef-dressage-assiette.jpg`,
+`bouquet-vase-dore-detail.jpg`, `table-signature-automne.jpg`) n'ont **pas**
+été conservés dans `assets/img/` contrairement à la convention habituelle
+de ce fichier (garder les anciennes photos, les marquer "non utilisée") —
+ils ont été supprimés du dépôt (`git rm`) car jamais restés en ligne plus
+de quelques minutes le temps de cette même session, jamais vus par la
+cliente en production : les garder aurait juste accumulé des fichiers
+orphelins sans valeur d'historique réelle, contrairement aux autres photos
+"non utilisées" de ce document qui ont, elles, existé en production.
+
+10 fichiers au total actuellement en place, tous vérifiés visuellement
+avant intégration (prévisualisation basse résolution puis téléchargement
+en pleine résolution — 2400px de large pour les Pexels comme la convention
+déjà établie sur ce projet, 1920–2400px pour le Wikimedia selon la
+résolution source disponible) : `ravello-villa-cimbrone-jardin.jpg`,
+`ravello-terrasse-infini.jpg`, `piazza-siena-terrasses.jpg`,
+`alsace-maisons-colombages.jpg`, `chef-dressage-pates.jpg`,
 `burano-ruelle-facades.jpg`, `diner-duo-toast-vin.jpg`,
-`bouquet-vase-dore-detail.jpg`, `poignee-main-confiance.jpg`,
-`table-signature-automne.jpg`. Les 10 anciennes photos qu'elles remplacent
-restent disponibles dans `assets/img/` (aucune suppression) — 3 sont
-encore utilisées ailleurs sur le site (`evenement-tablee-diner-bougies.jpg`,
+`vietri-ceramique-detail.jpg`, `poignee-main-confiance.jpg`,
+`amalfi-coteside-signature.jpg`. Les 10 photos originales qu'elles
+remplacent (1ʳᵉ passe) restent disponibles dans `assets/img/` (aucune
+suppression, cf. convention habituelle) — 3 sont encore utilisées ailleurs
+sur le site (`evenement-tablee-diner-bougies.jpg`,
 `evenement-carte-degustation.jpg`, `evenement-vespa-gelato-brindapino.jpg`,
 cf. section Simposio ci-dessus) et 6 sont désormais totalement inutilisées
 (`evenement-parasols-jaunes-table.jpg`, `spritz-terrasse.jpg`,
 `piazza-evening-menaggio.jpg`, `alsace-vineyard.jpg`,
 `terrasse-lanternes-soir.jpg`, `spritz-duo-sicile.jpg`) — leurs 3 crédits
 Wikimedia (JIP, Hartmut Schmidt Heidelberg, Nicolas Torquet) ont donc été
-retirés du bloc `.photo-credits` d'`engagements.html`, remplacés par le
-seul nouveau crédit requis (Didivo67, pour `alsace-maisons-colombages.jpg`).
+retirés du bloc `.photo-credits` d'`engagements.html`, remplacés par les 5
+nouveaux crédits requis (Didivo67, Greg Willis, Nessy, Anila amataj, Ra Boe).
 
 **Historique des fonds de formule (page Prestations)**, du plus récent au
 plus ancien, en cas de retour en arrière souhaité par la cliente :
