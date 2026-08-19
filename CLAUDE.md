@@ -3659,6 +3659,71 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Vérifié par script Playwright (0 débordement, 0 erreur console, 2
   viewports) et capture d'écran desktop + mobile. Regression complète
   5 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Bandeau menu plein largeur, escalier de la méthodologie corrigé,
+  bulles de mots-clés sur les formules Prestations (2026-08-19)** : trois
+  demandes distinctes de la cliente sur trois zones différentes du site.
+  **Header (`.site-header`, `style.css`, toutes les pages)** : la barre de
+  navigation était une pilule flottante (`.site-header .container` portait
+  elle-même le fond/flou/bordure, avec `border-radius:999px` et un
+  `max-width` réduit de 3rem par rapport au reste du site) — la cliente a
+  demandé qu'elle prenne toute la largeur. Le fond/flou/bordure/`border-bottom`
+  sont déplacés sur `.site-header` (déjà `inset-inline:0`, donc bord à bord
+  par nature), `.site-header .container` n'a plus de style propre et
+  hérite simplement de la règle `.container` générique du site — effet de
+  bord : le contenu (logo, icônes, bouton menu) s'aligne maintenant très
+  exactement sur les mêmes marges que le reste du contenu de chaque page,
+  ce qui n'était pas garanti avant (la pilule avait son propre padding
+  fixe `0.6rem 0.6rem 0.6rem 1.6rem`, sans rapport avec le padding-inline
+  responsive de `.container`). Si `border-radius:999px` ou un `max-width`
+  réduit réapparaissent sur `.site-header .container`, c'est cette
+  ancienne pilule flottante, à ne pas réintroduire sans qu'on le redemande.
+  **Méthodologie (`.method-step-2`/`.method-step-3`, `index.html`)** : les
+  3 panneaux "Écouter"/"Concevoir"/"Orchestrer" étaient déjà légèrement
+  décalés horizontalement (`margin-left`), mais selon un zigzag — panneau 2
+  décalé de `6vw`/`3.5rem`, panneau 3 seulement `3vw`/`1.75rem` (donc en
+  retrait par rapport au 2, pas un vrai escalier qui continue de descendre).
+  La cliente a demandé de corriger l'irrégularité ("recentre les données
+  correctement pour avoir les mêmes écarts partout... le décalage fait en
+  escalier"). Corrigé en donnant aux deux marches le même incrément —
+  `4vw`/`2.25rem` pour la 2ᵉ, exactement le double (`8vw`/`4.5rem`) pour la
+  3ᵉ — l'écart marche 1→2 est désormais strictement égal à l'écart marche
+  2→3 (mesuré par script Playwright : 36px puis 36px à 1440px de large),
+  un vrai escalier à pas régulier plutôt qu'un aller-retour.
+  **Formules Prestations (`prestations.html`, les 4 `<article class="world">`)** :
+  le long paragraphe descriptif (`.desc`) de chaque formule est retiré et
+  remplacé par 3-4 petites étiquettes de mots-clés (`.world-tags-wrap` >
+  `.container` > `.world-tags`, nouvel élément frère de `.world-media`/
+  `.world-copy` dans `.world`, pas un enfant du bloc de texte centré
+  verticalement) ancrées au bas de la photo plein cadre plutôt que dans le
+  texte — demande explicite, avec liberté sur le style visuel des
+  étiquettes. Effet verre dépoli choisi (`background:rgba(cream,0.14)` +
+  `backdrop-filter:blur(16px) saturate(160%)` + liseré clair) plutôt qu'un
+  aplat de couleur : reste lisible quelle que soit la photo en fond, sans
+  ajouter une teinte par formule à gérer. Alignées à gauche (Cartolina,
+  Aperitivo) ou à droite (Esperienza, Tavola) en écho au texte de la
+  formule au-dessus, imbriquées dans leur propre `.container` pour
+  s'aligner exactement sur les mêmes marges que `.world-copy` — sous
+  700px, toutes repassent à gauche (comme `.world-copy-inner` sur mobile,
+  cf. règle existante juste au-dessus dans le fichier). Mots-clés choisis
+  en reprenant directement les éléments énumérés dans les anciens
+  paragraphes retirés (rien d'inventé) : La Cartolina → "Mobilier chiné" /
+  "Éclairage d'ambiance" / "Signalétique" / "Musique" ; L'Esperienza →
+  "Décoration" / "Animation" / "Gastronomie italienne" / "Service
+  personnalisé" ; L'Aperitivo → "Comptoir illuminé" / "Guirlandes
+  lumineuses" / "Spritz & cicchetti" ; La Tavola → "Menu sur mesure" /
+  "Vins italiens" / "Service discret". Retirer `.desc` du texte fait
+  automatiquement remonter le bouton "Demander un devis" juste sous la
+  tagline (`.tagline` a déjà `margin-bottom:var(--space-3)`) — aucun CSS de
+  bouton à retoucher pour ça, effet secondaire attendu du retrait plutôt
+  qu'un repositionnement calculé. Si `<p class="desc">` réapparaît dans
+  l'un des 4 formulas, ou si `.world-tags-wrap` est absent, c'est un
+  retour à l'ancienne version, à ne pas réintroduire sans qu'on le
+  redemande.
+  Vérifié par script Playwright (mesure des rectangles des 3 panneaux
+  méthodologie, capture d'écran des 4 formules desktop + mobile, bandeau
+  menu vérifié bord à bord aux 2 largeurs, toggle du menu mobile revérifié
+  fonctionnel) et regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 

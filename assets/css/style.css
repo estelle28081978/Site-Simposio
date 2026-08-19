@@ -301,27 +301,38 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Header / Nav — persistent glass bar
    ========================================================================== */
+/* Full-width glass bar (2026-08-19) : auparavant `.site-header .container`
+   portait elle-même le fond/flou/bordure avec un `max-width` réduit et un
+   `border-radius:999px`, ce qui donnait une pilule flottante avec des
+   marges visibles de chaque côté — la cliente a demandé que le bandeau
+   prenne toute la largeur. Le fond/flou/bordure vivent maintenant sur
+   `.site-header` (déjà `inset-inline:0`, donc bord à bord) ; `.container`
+   à l'intérieur n'a plus de style propre et hérite simplement de la règle
+   `.container` générique du site (`max-width:1320px`, `margin-inline:auto`,
+   `padding-inline` responsive) — le contenu (logo, icônes, menu) s'aligne
+   donc exactement sur les mêmes marges que le reste du contenu de page,
+   au lieu d'un `max-width`/padding propres au bandeau qui pouvaient
+   légèrement décaler logo et contenu. Si `border-radius:999px` ou un
+   `max-width` réduit réapparaissent ici, c'est l'ancienne pilule flottante,
+   à ne pas réintroduire sans qu'on le redemande. */
 .site-header {
   position: fixed;
   inset-inline: 0;
   top: 0;
   z-index: 100;
   padding-block: var(--space-2);
+  background: var(--glass-bg-dark);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--border-inverse);
+  transition: padding var(--dur) var(--ease), background var(--dur) var(--ease);
 }
+.site-header.is-scrolled { padding-block: 0.45rem; }
 .site-header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--glass-bg-dark);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--border-inverse);
-  border-radius: 999px;
-  padding: 0.6rem 0.6rem 0.6rem 1.6rem;
-  max-width: calc(var(--max-width) - 3rem);
-  transition: padding var(--dur) var(--ease), background var(--dur) var(--ease);
 }
-.site-header.is-scrolled .container { padding-block: 0.45rem; }
 
 .logo {
   font-family: var(--font-display);
@@ -1558,6 +1569,57 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   .world-tavola .world-copy-inner .visual-note { margin-left: 0; }
 }
 
+/* Formules Prestations — bulles de mots-clés en bas de la photo
+   (2026-08-19) : remplace le long paragraphe descriptif (`.desc`, retiré
+   du HTML) par 3-4 petites étiquettes reprenant les mots-clés de chaque
+   formule, ancrées au bas de la photo plein cadre plutôt que dans le bloc
+   de texte centré verticalement — demande explicite de la cliente, qui
+   voulait aussi que le bouton "Demander un devis" remonte juste sous la
+   tagline (effet automatique du retrait de `.desc`, aucun CSS de bouton à
+   toucher). Élément frère de `.world-media`/`.world-copy` dans `.world`
+   (pas un enfant de `.world-copy`, qui reste centré verticalement par le
+   `align-items:center` de `.world`) — imbriqué dans son propre `.container`
+   pour que les étiquettes s'alignent exactement sur les mêmes marges que
+   le bloc de texte au-dessus, plutôt qu'un padding réinventé. Effet verre
+   dépoli (`backdrop-filter`) choisi plutôt qu'un aplat de couleur : les
+   étiquettes restent lisibles quelle que soit la photo en fond, sans
+   ajouter une nouvelle teinte à gérer par formule. */
+.world-tags-wrap {
+  position: absolute;
+  inset-inline: 0;
+  bottom: var(--space-4);
+  z-index: 1;
+  pointer-events: none;
+}
+.world-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  list-style: none;
+}
+.world-esperienza .world-tags,
+.world-tavola .world-tags { justify-content: flex-end; }
+.world-tags li {
+  background: rgba(246, 241, 231, 0.14);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(246, 241, 231, 0.32);
+  color: var(--cream);
+  font-family: var(--font-subtitle);
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  padding: 0.55em 1.1em;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .world-tags-wrap { bottom: var(--space-3); }
+  .world-esperienza .world-tags,
+  .world-tavola .world-tags { justify-content: flex-start; }
+  .world-tags li { font-size: 0.74rem; padding: 0.5em 0.9em; }
+}
+
 /* ==========================================================================
    Projets — Double2-inspired seamless mosaic: a grid of square tiles, no
    gaps, larger than the viewport, that the visitor drags/pans freely.
@@ -2486,12 +2548,18 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   position: relative;
   max-width: 34rem;
 }
-/* Léger décalage horizontal en escalier, comme la référence — jamais de
+/* Décalage horizontal en escalier, comme la référence — jamais de
    chevauchement vertical (contrairement aux itérations de cascade des
-   cartes Engagements documentées plus haut) : juste un margin-left croissant
-   puis décroissant, purement décoratif, aucun calcul JS nécessaire. */
-.method-step-2 { margin-left: clamp(0px, 6vw, 3.5rem); }
-.method-step-3 { margin-left: clamp(0px, 3vw, 1.75rem); }
+   cartes Engagements documentées plus haut) : purement décoratif, aucun
+   calcul JS nécessaire. Corrigé le 2026-08-19 : la version précédente
+   (`6vw/3.5rem` puis `3vw/1.75rem`) montait puis redescendait — un zigzag,
+   pas un vrai escalier — repéré par la cliente ("recentre les données...
+   pour avoir les mêmes écarts partout"). Les deux marches utilisent
+   maintenant le même incrément (`4vw`/`2.25rem`), simplement doublé pour la
+   3ᵉ marche : l'écart marche 1→2 est strictement égal à l'écart marche
+   2→3, un vrai escalier à pas régulier plutôt qu'un aller-retour. */
+.method-step-2 { margin-left: clamp(0px, 4vw, 2.25rem); }
+.method-step-3 { margin-left: clamp(0px, 8vw, 4.5rem); }
 /* Le panneau et le badge numéroté restent deux éléments distincts, tous
    deux enfants directs de .method-step : même si le panneau n'est plus
    clippé (donc ne rognerait plus un enfant qui déborde), garder le badge en
