@@ -526,6 +526,42 @@
     });
   }
 
+  /* ---------- Prestations: panneaux "En savoir plus" par formule (2026-08-19) ----------
+     Chaque `[data-more-toggle]` ouvre/ferme son propre `[data-more-panel]`
+     (relié par `aria-controls`/`id`) — indépendant d'une formule à l'autre,
+     donc pas de fermeture croisée nécessaire entre les 4 panneaux. Fermeture
+     par re-clic sur le déclencheur, par le bouton dédié `[data-more-close]`,
+     ou par Échap (clavier) une fois un panneau ouvert. */
+  var moreToggles = Array.prototype.slice.call(document.querySelectorAll("[data-more-toggle]"));
+  if (moreToggles.length) {
+    moreToggles.forEach(function (toggle) {
+      var panel = document.getElementById(toggle.getAttribute("aria-controls"));
+      if (!panel) return;
+      var closeBtn = panel.querySelector("[data-more-close]");
+
+      function closePanel() {
+        panel.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+      function openPanel() {
+        panel.classList.add("is-open");
+        toggle.setAttribute("aria-expanded", "true");
+      }
+
+      toggle.addEventListener("click", function () {
+        if (panel.classList.contains("is-open")) {
+          closePanel();
+        } else {
+          openPanel();
+        }
+      });
+      if (closeBtn) closeBtn.addEventListener("click", closePanel);
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && panel.classList.contains("is-open")) closePanel();
+      });
+    });
+  }
+
   /* ---------- Engagements: valeurs — album filmique horizontal (2026-08-17) ----------
      Remplace l'ancien carrousel de texte façon "paroles" (voir CLAUDE.md pour
      l'historique complet des 13 itérations précédentes) par un mécanisme

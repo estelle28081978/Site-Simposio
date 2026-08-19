@@ -1543,22 +1543,22 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 .world-copy { position: relative; z-index: 1; width: 100%; padding-block: var(--space-6); }
-/* Remontée (2026-08-19, 2ᵉ passe : la cliente a demandé de remonter encore)
-   `.world` centre `.world-copy` verticalement (`align-items:center`) —
-   avec les bulles de mots-clés maintenant ancrées au bas de la photo
-   (cf. `.world-tags-wrap` plus bas), le titre/tagline centrés laissaient un
-   grand vide au-dessus. Un simple `margin-top` négatif sur
+/* Remontée (2026-08-19, 3ᵉ passe : la cliente a redemandé de remonter
+   encore) `.world` centre `.world-copy` verticalement (`align-items:
+   center`) — avec les bulles de mots-clés maintenant ancrées au bas de la
+   photo (cf. `.world-tags-wrap` plus bas), le titre/tagline centrés
+   laissaient un grand vide au-dessus. Un simple `margin-top` négatif sur
    `.world-copy-inner` suffit (le centrage flex du parent recalcule autour,
-   pas besoin de toucher `align-items`) — poussé plus loin qu'au 1er passage
-   (`-6rem/-9vh/-3rem` → `-8rem/-12vh/-4.5rem`). Pas appliqué sous 700px :
-   `.world` y est en `100svh` et le viewport est déjà contraint
-   verticalement, une remontée identique y rapprocherait trop le titre du
-   header fixe. */
+   pas besoin de toucher `align-items`) — poussé encore plus loin qu'aux
+   deux passages précédents (`-6rem/-9vh/-3rem` → `-8rem/-12vh/-4.5rem` →
+   `-10rem/-15vh/-6rem`). Pas appliqué sous 700px : `.world` y est en
+   `100svh` et le viewport est déjà contraint verticalement, une remontée
+   identique y rapprocherait trop le titre du header fixe. */
 .world-copy-inner { max-width: 34rem; }
 .world-esperienza .world-copy-inner,
 .world-tavola .world-copy-inner { margin-left: auto; text-align: right; }
 @media (min-width: 701px) {
-  .world-copy-inner { margin-top: clamp(-8rem, -12vh, -4.5rem); }
+  .world-copy-inner { margin-top: clamp(-10rem, -15vh, -6rem); }
 }
 
 .world-num { display: block; font-family: var(--font-display); font-size: 1rem; color: var(--terracotta-300); margin-bottom: 0.6rem; }
@@ -1605,36 +1605,47 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   z-index: 1;
   pointer-events: none;
 }
-/* `align-items:flex-end` corrige un vrai bug de rendu (repéré par script,
-   pas au jugé) : sans override, `stretch` (valeur par défaut de
-   `align-items` sur un conteneur flex) étire TOUS les éléments d'une même
-   ligne flex à la hauteur du plus grand — donc dès qu'une bulle repliait
-   son texte sur 2 lignes, ses voisines à 1 ligne étaient étirées à la
-   même hauteur qu'elle (mesuré : 68px au lieu de 47px sur "Rituel
-   d'équipe" à plusieurs largeurs de viewport), avec leur texte recentré
-   au milieu d'un vide. La cliente a explicitement demandé l'inverse :
-   chaque bulle dimensionnée pour SON propre contenu (compacte à 1 ligne,
-   plus grande à 2), quitte à ce que les bulles d'une même formule n'aient
-   pas toutes la même taille. `flex-end` (plutôt que `flex-start`) aligne
-   les bulles sur leur bord bas, cohérent avec leur ancrage
-   `.world-tags-wrap { bottom: … }` au bas de la photo. */
+/* `.container` (pas `.world-tags-wrap`) porte le flex column : c'est lui
+   qui contient à la fois les bulles et le déclencheur "En savoir plus"
+   dans le HTML (`.world-tags-wrap > .container > ul.world-tags +
+   button.world-more-trigger`) — le garder sur `.container` plutôt que sur
+   son parent évite un niveau de nesting flex inutile et garde
+   `.world-tags-wrap` comme simple ancre de position. */
+.world-tags-wrap > .container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+.world-esperienza .world-tags-wrap > .container,
+.world-tavola .world-tags-wrap > .container { align-items: flex-end; }
+/* Toujours 1 ligne par bulle (2026-08-19, revirement demandé par la
+   cliente) : l'itération précédente autorisait un repli sur 2 lignes via
+   `max-width` pour les libellés les plus longs ("Ponctuel ou en
+   abonnement") — la cliente a explicitement redemandé que tout tienne sur
+   une seule ligne. `max-width` est retiré et `white-space:nowrap` est de
+   retour ; la ligne de bulles elle-même reste `flex-wrap:wrap` donc une
+   bulle entière (jamais son texte) peut passer à la ligne suivante sur
+   un écran étroit — c'est le repli au niveau de la LISTE, pas du texte
+   DANS une bulle, qui est autorisé. Le `font-size` mobile est calibré
+   (voir la media query plus bas) pour que même la bulle la plus longue
+   ("Ponctuel ou en abonnement", "Atmosphère sobre & élégante") tienne sur
+   une seule ligne sans dépasser la largeur du plus petit écran ciblé
+   (360px) — vérifié par script Playwright, pas au jugé. Si `max-width`
+   réapparaît sur `.world-tags li`, c'est un retour à l'ancienne version
+   (bulles à 1 ou 2 lignes selon leur contenu), à ne pas réintroduire sans
+   qu'on le redemande. */
 .world-tags {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
   gap: 0.85rem;
   list-style: none;
+  pointer-events: auto;
 }
 .world-esperienza .world-tags,
 .world-tavola .world-tags { justify-content: flex-end; }
-/* Agrandies (2026-08-19) et repensées comme des repères d'information
-   principale ("ce qu'est le service", au sens large) plutôt que des
-   détails de mise en scène — voir le HTML pour le texte retenu par
-   formule. Plus de `white-space:nowrap` : ces libellés plus longs
-   peuvent se replier sur 2 lignes DANS la bulle (`max-width`) sur les
-   petits écrans sans forcer une pilule qui déborde du cadre. */
 .world-tags li {
-  max-width: 15rem;
+  white-space: nowrap;
   background: rgba(246, 241, 231, 0.16);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
@@ -1643,16 +1654,102 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-subtitle);
   font-weight: 600;
   font-size: 1.05rem;
-  line-height: 1.25;
   letter-spacing: 0.02em;
   padding: 0.75em 1.4em;
   border-radius: 999px;
 }
+/* Déclencheur "En savoir plus" (2026-08-19) : sous les bulles, même
+   colonne (`.world-tags-wrap` en flex column) — réutilise `.link-arrow`
+   (déjà établi sur le site, ex. "Entrer dans l'univers" du hero accueil)
+   plutôt qu'un nouveau style de lien, avec sa propre couleur terracotta
+   (les variantes existantes de `.link-arrow` sont navy ou crème, aucune
+   n'était terracotta). Un vrai `<button>` (pas un lien `#`) car il ne
+   navigue nulle part, il ouvre `.world-more-panel` — voir plus bas. */
+.world-more-trigger {
+  pointer-events: auto;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--terracotta-300);
+}
+.world-more-trigger:hover,
+.world-more-trigger:focus-visible { color: var(--cream); }
+
+/* Panneau "En savoir plus" (2026-08-19) : glisse depuis le côté qui ne
+   porte NI le titre NI les bulles — demande explicite de la cliente. Le
+   titre/les bulles vivent à gauche sur Cartolina/Aperitivo (pas de
+   `margin-left:auto` sur `.world-copy-inner`) et à droite sur
+   Esperienza/Tavola : le panneau prend donc systématiquement le côté
+   opposé, ancré `right` par défaut et basculé à `left` pour ces deux
+   dernières via les mêmes sélecteurs de formule déjà utilisés partout
+   ailleurs sur cette page pour inverser gauche/droite. Contenu : reprise
+   telle quelle du paragraphe descriptif original de chaque formule
+   (`.desc`, retiré du texte principal à la demande de la cliente le
+   2026-08-19 plus tôt dans la journée — cf. CLAUDE.md) plutôt qu'un texte
+   réécrit, la longueur ("pas très long, mais pas trop court") avait déjà
+   été validée par la cliente à l'époque. */
+.world-more-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: min(26rem, 46%);
+  z-index: 2;
+  background: rgba(16, 31, 39, 0.94);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  align-items: center;
+  overflow-y: auto;
+  right: 0;
+  transform: translateX(100%);
+  transition: transform 0.55s var(--ease);
+}
+.world-more-panel.is-open { transform: translateX(0); }
+.world-esperienza .world-more-panel,
+.world-tavola .world-more-panel { right: auto; left: 0; transform: translateX(-100%); }
+.world-esperienza .world-more-panel.is-open,
+.world-tavola .world-more-panel.is-open { transform: translateX(0); }
+.world-more-panel-inner { position: relative; }
+.world-more-close {
+  position: absolute;
+  top: -0.75rem;
+  right: -0.5rem;
+  background: none;
+  border: none;
+  padding: 0.4rem;
+  cursor: pointer;
+  color: rgba(246, 241, 231, 0.7);
+}
+.world-more-close:hover, .world-more-close:focus-visible { color: var(--cream); }
+.world-more-close svg { width: 20px; height: 20px; display: block; }
+.world-more-panel p { color: rgba(246, 241, 231, 0.9); font-size: 1rem; line-height: 1.7; padding-right: 1.5rem; }
+
 @media (max-width: 700px) {
   .world-tags-wrap { bottom: var(--space-3); }
-  .world-esperienza .world-tags,
-  .world-tavola .world-tags { justify-content: flex-start; }
-  .world-tags li { font-size: 0.92rem; padding: 0.6em 1.1em; max-width: 12rem; }
+  .world-tags li { font-size: 0.82rem; padding: 0.6em 1.1em; }
+  /* Un panneau latéral n'a plus de sens une fois le texte/les bulles
+     empilés pleine largeur — remonte du bas à la place, sur toute la
+     largeur, quelle que soit la formule (plus de distinction gauche/droite
+     ici, `left`/`right`/`transform` d'origine sont neutralisés). */
+  .world-more-panel {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 75vh;
+    transform: translateY(100%);
+  }
+  .world-more-panel.is-open,
+  .world-esperienza .world-more-panel.is-open,
+  .world-tavola .world-more-panel.is-open { transform: translateY(0); }
+  .world-esperienza .world-more-panel,
+  .world-tavola .world-more-panel { left: 0; transform: translateY(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-more-panel { transition: none; }
 }
 
 /* ==========================================================================

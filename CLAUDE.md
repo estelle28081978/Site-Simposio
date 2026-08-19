@@ -3845,6 +3845,67 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   interaction, 0 erreur console) et capture d'écran desktop + mobile pour
   les deux personnes. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Formules Prestations — bulles forcées sur 1 ligne, titre remonté une
+  3ᵉ fois, panneau "En savoir plus" glissant (2026-08-19)** : trois
+  demandes de la cliente en une fois.
+  **Bulles toujours sur 1 ligne** : revirement par rapport à l'itération
+  précédente (qui autorisait explicitement un repli sur 2 lignes pour les
+  libellés les plus longs, avec une hauteur de bulle adaptée). `max-width`
+  est retiré de `.world-tags li`, `white-space:nowrap` remis — la LISTE
+  reste `flex-wrap:wrap` (une bulle entière peut passer à la ligne
+  suivante sur un écran étroit) mais plus aucun texte ne se replie DANS
+  une bulle. Le `font-size` mobile est recalibré (`0.92rem`→`0.82rem`) et
+  vérifié par script Playwright balayant 360 à 1920px : les 12 bulles (3
+  par formule × 4 formules) restent sur 1 ligne à toutes ces largeurs,
+  0 débordement horizontal. Le garde-fou `align-items:flex-end` de
+  l'itération précédente (qui corrigeait un bug de hauteurs mélangées
+  1-ligne/2-lignes) devient sans objet une fois toutes les bulles
+  uniformément sur 1 ligne, mais reste en place sans effet négatif.
+  **Titre/tagline remontés une 3ᵉ fois** : `margin-top` sur
+  `.world-copy-inner` passe de `clamp(-8rem, -12vh, -4.5rem)` à
+  `clamp(-10rem, -15vh, -6rem)` — vérifié à plusieurs hauteurs de
+  viewport (700 à 1080px) que le titre reste toujours nettement dégagé du
+  bandeau du header fixe (jamais moins de 100px d'écart mesuré).
+  **Panneau "En savoir plus"** (`.world-more-trigger`/`.world-more-panel`,
+  `main.js`) : sous les bulles, un petit lien texte+flèche en terracotta
+  (réutilise `.link-arrow`, déjà établi sur le site pour ce type de CTA
+  discret — ex. "Entrer dans l'univers" du hero accueil — avec une
+  nouvelle couleur `.world-more-trigger` puisqu'aucune variante existante
+  de `.link-arrow` n'était terracotta) plutôt qu'un bouton. Au clic, un
+  panneau glisse depuis le côté qui NE porte NI le titre NI les bulles —
+  demande explicite de la cliente. Comme le titre/les bulles vivent à
+  gauche sur Cartolina/Aperitivo et à droite sur Esperienza/Tavola (même
+  logique d'alignement que `.world-copy-inner` déjà en place), le panneau
+  est ancré à droite par défaut et bascule à gauche pour ces deux
+  dernières via les mêmes sélecteurs de formule utilisés partout ailleurs
+  sur cette page. **Contenu du panneau : le paragraphe descriptif
+  d'origine de chaque formule** (`.desc`, retiré du texte principal plus
+  tôt dans la journée, cf. bullet correspondant) réutilisé tel quel — sa
+  longueur ("pas très long, mais pas trop court") avait déjà été validée
+  par la cliente à l'époque, pas de nouveau texte à rédiger. Sous 700px
+  (où gauche/droite n'a plus de sens, tout étant empilé), le panneau perd
+  sa distinction de côté et remonte du bas à la place (`transform:
+  translateY(100%)→0`, pleine largeur, `max-height:75vh`).
+  **JS** (`main.js`, bloc dédié juste après la logique du "stage" équipe) :
+  chaque déclencheur `[data-more-toggle]` est relié à son propre panneau
+  via `aria-controls`/`id` (4 paires indépendantes, une par formule) —
+  re-clic sur le déclencheur, bouton `[data-more-close]` dédié, ou touche
+  Échap ferment le panneau ; `aria-expanded` tenu à jour sur le
+  déclencheur.
+  **Piège de test rencontré, pas un bug du site** : une première vérification
+  par capture d'écran semblait montrer le panneau de "La Cartolina" affichant
+  le contenu de "L'Esperienza" — en fait un artefact de `page.click()` de
+  Playwright, qui fait défiler automatiquement l'ÉLÉMENT CLIQUÉ (le
+  déclencheur, situé tout en bas de chaque section `min-height:92vh`) dans
+  la vue, ramenant surtout la section SUIVANTE à l'écran plutôt que celle
+  visée. Revérifié en re-scrollant explicitement vers le haut de la bonne
+  section après le clic : chaque panneau affiche bien le contenu de sa
+  propre formule, ancré du bon côté. Vérifié par script Playwright
+  (mesure `getBoundingClientRect` confirmant l'ancrage gauche/droite selon
+  la formule, ouverture/fermeture par clic/clavier Enter/Échap, 0 erreur
+  console) et capture d'écran desktop + mobile (panneau latéral vs.
+  panneau du bas). Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
