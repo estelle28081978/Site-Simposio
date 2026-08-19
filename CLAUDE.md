@@ -3752,6 +3752,34 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   prenant plus de place). Vérifié par capture d'écran des 4 formules
   desktop + 2 en mobile et regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Formules Prestations — titre encore remonté, vrai bug de hauteur des
+  bulles corrigé (2026-08-19, même journée)** : nouveau retour de la
+  cliente. **Titre remonté davantage** : `margin-top` sur
+  `.world-copy-inner` passe de `clamp(-6rem, -9vh, -3rem)` à
+  `clamp(-8rem, -12vh, -4.5rem)`, même mécanisme que l'itération
+  précédente, juste poussé plus loin.
+  **Bug réel trouvé et corrigé, pas supposé** : la cliente demandait que
+  chaque bulle soit "adaptée à la taille" de son propre contenu (compacte
+  sur 1 ligne, plus grande sur 2, même si ça donne des bulles de tailles
+  différentes dans une même formule) — repéré par script Playwright
+  (mesure de `getBoundingClientRect().height` de chaque bulle à plusieurs
+  largeurs de viewport) que ce n'était PAS le cas : `.world-tags` est un
+  conteneur flex sans `align-items` explicite, donc `stretch` (valeur par
+  défaut) s'appliquait — dès qu'une bulle repliait son texte sur 2 lignes
+  (ex. "Ponctuel ou en abonnement"), ses voisines à 1 ligne dans la même
+  ligne flex étaient étirées à la même hauteur qu'elle (mesuré : 68px au
+  lieu de 47px sur "Rituel d'équipe" à 1440/1024/820/768/701px de large),
+  avec leur texte recentré dans un vide au lieu de rester compactes.
+  Corrigé en ajoutant `align-items: flex-end` à `.world-tags` — chaque
+  bulle retrouve sa hauteur naturelle (revérifié : 47px/68px sur desktop,
+  37px/56px sur mobile, stable à toutes les largeurs testées), alignées
+  sur leur bord bas (cohérent avec `.world-tags-wrap { bottom: … }`,
+  l'ancrage au bas de la photo). Si `align-items` disparaît de
+  `.world-tags` (retour à `stretch` implicite), ce bug redevient
+  probable — ne pas le retirer sans le remplacer par un autre override
+  explicite. Vérifié par script (mesure de hauteur à 6 largeurs) et
+  capture d'écran desktop + mobile ; regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 

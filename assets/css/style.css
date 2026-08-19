@@ -1543,21 +1543,22 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 .world-copy { position: relative; z-index: 1; width: 100%; padding-block: var(--space-6); }
-/* Remontée légère (2026-08-19) : `.world` centre `.world-copy` verticalement
-   (`align-items:center`) — avec les bulles de mots-clés maintenant ancrées
-   au bas de la photo (cf. `.world-tags-wrap` plus bas), le titre/tagline
-   centrés laissaient un grand vide au-dessus et se retrouvaient un peu
-   proches des bulles en dessous. La cliente a demandé de remonter le bloc
-   titre — un simple `margin-top` négatif sur `.world-copy-inner` suffit
-   (la centrage flex du parent recalcule autour, pas besoin de toucher
-   `align-items`). Pas appliqué sous 700px : `.world` y est en `100svh`
-   et le viewport est déjà contraint verticalement, une remontée
-   identique y rapprocherait trop le titre du header fixe. */
+/* Remontée (2026-08-19, 2ᵉ passe : la cliente a demandé de remonter encore)
+   `.world` centre `.world-copy` verticalement (`align-items:center`) —
+   avec les bulles de mots-clés maintenant ancrées au bas de la photo
+   (cf. `.world-tags-wrap` plus bas), le titre/tagline centrés laissaient un
+   grand vide au-dessus. Un simple `margin-top` négatif sur
+   `.world-copy-inner` suffit (le centrage flex du parent recalcule autour,
+   pas besoin de toucher `align-items`) — poussé plus loin qu'au 1er passage
+   (`-6rem/-9vh/-3rem` → `-8rem/-12vh/-4.5rem`). Pas appliqué sous 700px :
+   `.world` y est en `100svh` et le viewport est déjà contraint
+   verticalement, une remontée identique y rapprocherait trop le titre du
+   header fixe. */
 .world-copy-inner { max-width: 34rem; }
 .world-esperienza .world-copy-inner,
 .world-tavola .world-copy-inner { margin-left: auto; text-align: right; }
 @media (min-width: 701px) {
-  .world-copy-inner { margin-top: clamp(-6rem, -9vh, -3rem); }
+  .world-copy-inner { margin-top: clamp(-8rem, -12vh, -4.5rem); }
 }
 
 .world-num { display: block; font-family: var(--font-display); font-size: 1rem; color: var(--terracotta-300); margin-bottom: 0.6rem; }
@@ -1604,9 +1605,23 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   z-index: 1;
   pointer-events: none;
 }
+/* `align-items:flex-end` corrige un vrai bug de rendu (repéré par script,
+   pas au jugé) : sans override, `stretch` (valeur par défaut de
+   `align-items` sur un conteneur flex) étire TOUS les éléments d'une même
+   ligne flex à la hauteur du plus grand — donc dès qu'une bulle repliait
+   son texte sur 2 lignes, ses voisines à 1 ligne étaient étirées à la
+   même hauteur qu'elle (mesuré : 68px au lieu de 47px sur "Rituel
+   d'équipe" à plusieurs largeurs de viewport), avec leur texte recentré
+   au milieu d'un vide. La cliente a explicitement demandé l'inverse :
+   chaque bulle dimensionnée pour SON propre contenu (compacte à 1 ligne,
+   plus grande à 2), quitte à ce que les bulles d'une même formule n'aient
+   pas toutes la même taille. `flex-end` (plutôt que `flex-start`) aligne
+   les bulles sur leur bord bas, cohérent avec leur ancrage
+   `.world-tags-wrap { bottom: … }` au bas de la photo. */
 .world-tags {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-end;
   gap: 0.85rem;
   list-style: none;
 }
