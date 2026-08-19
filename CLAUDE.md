@@ -3906,6 +3906,74 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   console) et capture d'écran desktop + mobile (panneau latéral vs.
   panneau du bas). Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Formules Prestations — repères sans habillage bulle, "En savoir plus"
+  devenu un vrai bouton (2026-08-19, même journée)** : la cliente a
+  inversé les deux traitements visuels de l'itération précédente — les
+  repères de mots-clés en pilules "donnent envie de cliquer" alors qu'ils
+  sont purement informatifs, et inversement "En savoir plus" (qui, lui,
+  déclenche une action) devait ressembler à un bouton plutôt qu'à un
+  simple lien texte+flèche. **`.world-tags li` perd tout habillage de
+  bouton** (fond `rgba(cream,0.16)`, bordure, `border-radius:999px`,
+  `backdrop-filter`) — remplacé par une liste en ligne, typographie
+  `--font-subtitle` majuscules espacées (même langage que les eyebrows du
+  site) sur un `text-shadow` pour la lisibilité sur photo, séparée par de
+  fins traits verticaux (`::after`) plutôt que par des puces ou un fond.
+  **`.world-more-trigger` devient un vrai bouton pilule** : réutilise
+  `.btn` (la classe de bouton générique du site, même famille que
+  "Demander un devis" juste au-dessus) avec une nouvelle variante
+  `.btn-terracotta` — aucune variante de `.btn` existante n'était
+  terracotta. Toujours le même mécanisme JS (`data-more-toggle`,
+  inchangé) ; seule l'habillage visuel change. Si `background`/
+  `border-radius:999px` réapparaissent sur `.world-tags li`, ou si
+  `.world-more-trigger` redevient un `.link-arrow` sans fond de bouton,
+  c'est un retour à l'itération précédente, à ne pas réintroduire sans
+  qu'on le redemande. Vérifié par capture d'écran des 4 formules et
+  regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
+- **Équipe — photo aux 3/4 à droite, texte sur zone floutée à gauche,
+  cercles agrandis (2026-08-19, même journée)** (`.talent-stage*`,
+  `engagements.html`) : nouvelle direction de la cliente, plus proche de
+  la référence "Kollektiva" d'origine — "la photo occupe les 3/4 de la
+  page vers la droite, la partie gauche forme un dégradé, un peu flou, sur
+  laquelle il y aura du texte informatif". **Remplace** la carte "photo en
+  haut / barre d'info opaque pleine largeur en dessous" de la 1ʳᵉ passe
+  (`.talent-stage-bar`/`.talent-stage-scrim`) par une seule photo plein
+  cadre avec le texte superposé dans une zone floutée/assombrie sur la
+  gauche. Si ces deux classes réapparaissent (photo+barre empilées plutôt
+  que superposées), c'est l'ancienne version, à ne pas réintroduire sans
+  qu'on le redemande.
+  **`.talent-stage-blur`** : pas une 2ᵉ copie de l'image — un
+  `backdrop-filter:blur(22px)` qui floute directement la photo visible à
+  travers lui, surmonté d'un dégradé sombre (`linear-gradient`) pour la
+  lisibilité du texte, le tout estompé vers la photo nette via
+  `mask-image` (flou/assombrissement pleins jusqu'à 30% de large, fondu
+  jusqu'à 55%) plutôt qu'une coupure nette entre les deux zones.
+  **`.talent-stage` (pas `.talent-stage-media`) reste le conteneur
+  `position:relative`** : `.talent-stage-media` et `.talent-stage-caption`
+  sont deux enfants séparés plutôt que la légende en position absolue à
+  l'intérieur du bloc photo — évite un piège déjà rencontré ailleurs sur
+  ce site (l'assiette de la Fondatrice, itération abandonnée, cf. plus
+  haut dans ce fichier) : un enfant en `position:static` dans une boîte à
+  `aspect-ratio` peut forcer la boîte à grandir au-delà du ratio si son
+  contenu déborde. En gardant les deux en enfants directs de
+  `.talent-stage`, `.talent-stage-media` garde un `aspect-ratio` fiable
+  quelle que soit la longueur de la bio.
+  **Responsive assumé, pas juste une media query mineure** : sous 640px, un
+  partage gauche/droite écraserait la photo en une bande trop étroite pour
+  être lisible — `.talent-stage-blur` est simplement masqué
+  (`display:none` par défaut, réactivé ≥640px) et `.talent-stage-caption`
+  redevient un enfant en flux normal (fond `--navy-900` plein, sous la
+  photo) plutôt qu'une superposition — repli sur la composition "empilée"
+  de la 1ʳᵉ passe, qui reste la plus lisible sur petit écran.
+  **Cercles-avatars agrandis** ("un petit peu", pas "si petits" comme la
+  toute première demande) : `.talent-stage-avatar` passe de `3.2rem` à
+  `4rem` de diamètre.
+  Vérifié par script Playwright (0 erreur console, clic + navigation
+  clavier Tab/Enter toujours fonctionnels) et capture d'écran à
+  640/700/768/900/1440px desktop + 390px mobile : texte toujours lisible
+  sur la zone floutée, aucun chevauchement avec la photo nette, avatars
+  visiblement plus grands. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 

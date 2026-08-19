@@ -1583,21 +1583,29 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   .world-tavola .world-copy-inner .visual-note { margin-left: 0; }
 }
 
-/* Formules Prestations — bulles de mots-clés en bas de la photo
-   (2026-08-19) : remplace le long paragraphe descriptif (`.desc`, retiré
-   du HTML) par 3-4 petites étiquettes reprenant les mots-clés de chaque
-   formule, ancrées au bas de la photo plein cadre plutôt que dans le bloc
-   de texte centré verticalement — demande explicite de la cliente, qui
-   voulait aussi que le bouton "Demander un devis" remonte juste sous la
-   tagline (effet automatique du retrait de `.desc`, aucun CSS de bouton à
-   toucher). Élément frère de `.world-media`/`.world-copy` dans `.world`
-   (pas un enfant de `.world-copy`, qui reste centré verticalement par le
-   `align-items:center` de `.world`) — imbriqué dans son propre `.container`
-   pour que les étiquettes s'alignent exactement sur les mêmes marges que
-   le bloc de texte au-dessus, plutôt qu'un padding réinventé. Effet verre
-   dépoli (`backdrop-filter`) choisi plutôt qu'un aplat de couleur : les
-   étiquettes restent lisibles quelle que soit la photo en fond, sans
-   ajouter une nouvelle teinte à gérer par formule. */
+/* Formules Prestations — repères de mots-clés + CTA "En savoir plus"
+   (2026-08-19, 2ᵉ passe : la cliente a inversé les deux traitements
+   visuels). La 1ʳᵉ passe avait mis les mots-clés en bulles/pilules et le
+   déclencheur "En savoir plus" en simple lien texte+flèche — la cliente a
+   trouvé que les bulles "donnent envie de cliquer" alors qu'elles ne sont
+   qu'informatives (pas de redirection), et inversement voulait que "En
+   savoir plus" (qui, lui, déclenche une action) ressemble davantage à un
+   bouton. **Les mots-clés perdent tout habillage de bouton** (fond, bordure,
+   `border-radius:999px`, flou) — remplacés par une simple liste en ligne,
+   typographie `--font-subtitle` majuscules espacées (même langage que les
+   eyebrows/labels du site), séparée par de fins traits verticaux plutôt
+   que des puces ou un fond, pour bien lire "informations", pas "boutons".
+   **`.world-more-trigger` devient un vrai bouton pilule** (réutilise `.btn`,
+   la classe de bouton générique du site — même famille que "Demander un
+   devis" juste au-dessus — avec une nouvelle variante `.btn-terracotta`,
+   aucune variante existante n'étant terracotta). Si `background`/
+   `border-radius:999px`/`backdrop-filter` réapparaissent sur `.world-tags
+   li`, ou si `.world-more-trigger` redevient un simple `.link-arrow` sans
+   fond, c'est cette ancienne version à ne pas réintroduire sans qu'on le
+   redemande. Structure HTML inchangée depuis la 1ʳᵉ passe : élément frère
+   de `.world-media`/`.world-copy` dans `.world`, imbriqué dans son propre
+   `.container` pour s'aligner sur les mêmes marges que le bloc de texte
+   au-dessus. */
 .world-tags-wrap {
   position: absolute;
   inset-inline: 0;
@@ -1605,76 +1613,75 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   z-index: 1;
   pointer-events: none;
 }
-/* `.container` (pas `.world-tags-wrap`) porte le flex column : c'est lui
-   qui contient à la fois les bulles et le déclencheur "En savoir plus"
-   dans le HTML (`.world-tags-wrap > .container > ul.world-tags +
-   button.world-more-trigger`) — le garder sur `.container` plutôt que sur
-   son parent évite un niveau de nesting flex inutile et garde
-   `.world-tags-wrap` comme simple ancre de position. */
 .world-tags-wrap > .container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.85rem;
+  gap: 1.1rem;
 }
 .world-esperienza .world-tags-wrap > .container,
 .world-tavola .world-tags-wrap > .container { align-items: flex-end; }
-/* Toujours 1 ligne par bulle (2026-08-19, revirement demandé par la
-   cliente) : l'itération précédente autorisait un repli sur 2 lignes via
-   `max-width` pour les libellés les plus longs ("Ponctuel ou en
-   abonnement") — la cliente a explicitement redemandé que tout tienne sur
-   une seule ligne. `max-width` est retiré et `white-space:nowrap` est de
-   retour ; la ligne de bulles elle-même reste `flex-wrap:wrap` donc une
-   bulle entière (jamais son texte) peut passer à la ligne suivante sur
-   un écran étroit — c'est le repli au niveau de la LISTE, pas du texte
-   DANS une bulle, qui est autorisé. Le `font-size` mobile est calibré
-   (voir la media query plus bas) pour que même la bulle la plus longue
-   ("Ponctuel ou en abonnement", "Atmosphère sobre & élégante") tienne sur
-   une seule ligne sans dépasser la largeur du plus petit écran ciblé
-   (360px) — vérifié par script Playwright, pas au jugé. Si `max-width`
-   réapparaît sur `.world-tags li`, c'est un retour à l'ancienne version
-   (bulles à 1 ou 2 lignes selon leur contenu), à ne pas réintroduire sans
-   qu'on le redemande. */
+/* Toujours 1 ligne par repère (hérité de l'itération précédente, toujours
+   valable) : `white-space:nowrap` sur chaque item, mais la LISTE reste
+   `flex-wrap:wrap` — un repère entier (jamais son texte) peut passer à la
+   ligne suivante sur un écran étroit. Vérifié jusqu'à 360px de large. */
 .world-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.85rem;
+  align-items: center;
+  gap: 0;
   list-style: none;
   pointer-events: auto;
 }
 .world-esperienza .world-tags,
 .world-tavola .world-tags { justify-content: flex-end; }
 .world-tags li {
+  position: relative;
   white-space: nowrap;
-  background: rgba(246, 241, 231, 0.16);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(246, 241, 231, 0.34);
   color: var(--cream);
+  text-shadow: 0 1px 10px rgba(16, 31, 39, 0.7);
   font-family: var(--font-subtitle);
   font-weight: 600;
-  font-size: 1.05rem;
-  letter-spacing: 0.02em;
-  padding: 0.75em 1.4em;
-  border-radius: 999px;
+  font-size: 0.85rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding-inline: 0.9rem;
 }
-/* Déclencheur "En savoir plus" (2026-08-19) : sous les bulles, même
-   colonne (`.world-tags-wrap` en flex column) — réutilise `.link-arrow`
-   (déjà établi sur le site, ex. "Entrer dans l'univers" du hero accueil)
-   plutôt qu'un nouveau style de lien, avec sa propre couleur terracotta
-   (les variantes existantes de `.link-arrow` sont navy ou crème, aucune
-   n'était terracotta). Un vrai `<button>` (pas un lien `#`) car il ne
-   navigue nulle part, il ouvre `.world-more-panel` — voir plus bas. */
-.world-more-trigger {
-  pointer-events: auto;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+.world-tags li:first-child { padding-left: 0; }
+.world-tags li:last-child { padding-right: 0; }
+/* Trait fin de séparation entre deux repères — pas après le dernier. */
+.world-tags li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 0.85em;
+  background: rgba(246, 241, 231, 0.45);
+}
+/* Déclencheur "En savoir plus" (2026-08-19, agrandi en vrai bouton) :
+   réutilise `.btn` (pilule, padding généreux, `min-height:44px` — la
+   classe générique de bouton du site) plutôt que les dimensions
+   minimales d'un lien texte, pour que ce CTA secondaire donne
+   explicitement envie de cliquer, comme demandé. */
+.world-more-trigger { pointer-events: auto; }
+.btn-terracotta {
+  background: rgba(193, 98, 45, 0.22);
   color: var(--terracotta-300);
+  border-color: rgba(193, 98, 45, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
-.world-more-trigger:hover,
-.world-more-trigger:focus-visible { color: var(--cream); }
+.btn-terracotta:hover, .btn-terracotta:focus-visible {
+  background: var(--terracotta);
+  color: var(--white);
+  border-color: var(--terracotta);
+  box-shadow: 0 10px 26px rgba(193, 98, 45, 0.35);
+  transform: translateY(-2px);
+}
+.btn-terracotta svg { width: 16px; height: 16px; flex-shrink: 0; transition: transform var(--dur-fast) var(--ease); }
+.btn-terracotta:hover svg { transform: translateX(2px); }
 
 /* Panneau "En savoir plus" (2026-08-19) : glisse depuis le côté qui ne
    porte NI le titre NI les bulles — demande explicite de la cliente. Le
@@ -1728,7 +1735,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 
 @media (max-width: 700px) {
   .world-tags-wrap { bottom: var(--space-3); }
-  .world-tags li { font-size: 0.82rem; padding: 0.6em 1.1em; }
+  .world-tags li { font-size: 0.7rem; letter-spacing: 0.07em; padding-inline: 0.6rem; }
   /* Un panneau latéral n'a plus de sens une fois le texte/les bulles
      empilés pleine largeur — remonte du bas à la place, sur toute la
      largeur, quelle que soit la formule (plus de distinction gauche/droite
@@ -1934,22 +1941,29 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Les deux photos utilisées (`talent-placeholder-1/2.jpg`) sont des
    photos de banque prises au hasard (cf. TODO dans le HTML) — à
    remplacer par les vraies photos d'équipe. */
-/* Carte unique (photo + barre d'info), pas un chevauchement en marge
-   négative : la hauteur du panneau de texte varie selon la longueur de
-   chaque bio (donnée réelle, pas maîtrisée à l'avance) — un chevauchement
-   calé en dur aurait fonctionné pour une bio pile de la bonne longueur et
-   cassé (texte qui déborde sur le fond de la section, illisible) pour une
-   bio plus longue. La barre d'info est ici un vrai bloc en flux normal,
-   sous la photo, avec son propre fond opaque — robuste quelle que soit la
-   longueur du texte. */
-.talent-stage {
-  margin-top: var(--space-5);
-  max-width: 52rem;
-  margin-inline: auto;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--navy-900);
-}
+/* 2ᵉ passe (2026-08-19) : la cliente a fourni une nouvelle direction —
+   "la photo occupe les 3/4 de la page vers la droite, la partie gauche
+   forme une sorte de dégradé, un peu flou, sur laquelle il y aura du
+   texte informatif". Remplace la carte "photo en haut / barre d'info
+   pleine largeur en dessous" de la 1ʳᵉ passe par une seule photo plein
+   cadre avec le texte superposé dans une zone floutée/assombrie sur la
+   gauche — plus proche de la référence "Kollektiva" d'origine. Si
+   `.talent-stage-scrim`/`.talent-stage-bar` réapparaissent (photo+barre
+   empilées plutôt que superposées), c'est cette ancienne version, à ne
+   pas réintroduire sans qu'on le redemande.
+   `.talent-stage` (et non `.talent-stage-media`) est le conteneur
+   `position:relative` : `.talent-stage-media` et `.talent-stage-caption`
+   sont deux enfants SÉPARÉS plutôt que la légende en position absolue
+   à l'intérieur du bloc photo — ça évite un piège déjà rencontré ailleurs
+   sur ce site (assiette de la Fondatrice, cf. plus haut dans ce fichier) :
+   un enfant en `position:static` dans une boîte à `aspect-ratio` peut
+   forcer la boîte à grandir au-delà du ratio si son contenu déborde. En
+   gardant les deux en enfants directs de `.talent-stage`, `.talent-stage-
+   media` conserve un `aspect-ratio` fiable quel que soit la longueur de
+   la bio, et `.talent-stage-caption` peut librement être `position:
+   absolute` (desktop, superposée) ou `position:static` (mobile, empilée
+   en dessous) sans jamais affecter la boîte photo. */
+.talent-stage { position: relative; margin-top: var(--space-5); max-width: 58rem; margin-inline: auto; border-radius: var(--radius-lg); overflow: hidden; background: var(--navy-900); }
 .talent-stage-media { position: relative; aspect-ratio: 4 / 3; }
 @media (min-width: 640px) { .talent-stage-media { aspect-ratio: 16 / 9; } }
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
@@ -1966,24 +1980,24 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   transition: opacity 0.6s var(--ease);
 }
 .talent-stage-photo.is-active { opacity: 1; }
-/* Simple vignette de transition vers la barre d'info opaque en dessous
-   (plus un rôle de lisibilité de texte, le texte ne vit plus sur la
-   photo). */
-.talent-stage-scrim {
+/* Zone floutée/assombrie sur la gauche (desktop uniquement, cf. media
+   query plus bas) : `backdrop-filter:blur()` floute la photo qui se voit
+   à travers cet élément (pas besoin d'une 2ᵉ copie de l'image), un
+   dégradé sombre par-dessus assure la lisibilité du texte, et
+   `mask-image` fait fondre progressivement le flou/l'assombrissement
+   vers la photo nette à droite plutôt qu'une coupure nette. */
+.talent-stage-blur {
+  display: none;
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(16, 31, 39, 0.55) 0%, transparent 22%);
 }
 
-.talent-stage-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-3);
+.talent-stage-caption {
+  position: relative;
+  z-index: 1;
   padding: var(--space-4);
+  background: var(--navy-900);
 }
-.talent-stage-panels { flex: 1 1 20rem; }
 .talent-stage-panel { display: none; }
 .talent-stage-panel.is-active { display: block; }
 .talent-stage-name { display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 1.4vw + 1.15rem, 2.1rem); color: var(--cream); }
@@ -1999,16 +2013,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .talent-stage-bio { color: rgba(246, 241, 231, 0.85); font-size: 0.95rem; max-width: 28rem; }
 
-.talent-stage-selector { display: flex; gap: 0.75rem; list-style: none; flex: 0 0 auto; }
+/* Cercles-avatars agrandis "un petit peu" (2026-08-19) : 3.2rem → 4rem. */
+.talent-stage-selector { display: flex; gap: 0.75rem; list-style: none; margin-top: var(--space-3); }
 .talent-stage-avatar {
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   overflow: hidden;
   padding: 0;
   border: 2px solid rgba(246, 241, 231, 0.4);
   cursor: pointer;
   background: none;
+  flex-shrink: 0;
   transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 .talent-stage-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -2016,8 +2032,27 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .talent-stage-avatar.is-active { border-color: var(--terracotta-300); transform: scale(1.1); }
 .talent-stage-avatar:focus-visible { outline: 2px solid var(--terracotta-300); outline-offset: 2px; }
 
-@media (max-width: 480px) {
-  .talent-stage-bar { flex-direction: column; align-items: flex-start; }
+/* ≥640px : la légende passe en superposition sur la gauche de la photo,
+   la zone floutée/dégradée apparaît derrière elle. */
+@media (min-width: 640px) {
+  .talent-stage-blur {
+    display: block;
+    background: linear-gradient(90deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.72) 26%, rgba(16, 31, 39, 0.25) 45%, transparent 58%);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    -webkit-mask-image: linear-gradient(90deg, black 0%, black 30%, transparent 55%);
+    mask-image: linear-gradient(90deg, black 0%, black 30%, transparent 55%);
+  }
+  .talent-stage-caption {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: min(24rem, 46%);
+    padding: var(--space-5) var(--space-4);
+    background: none;
+  }
 }
 
 /* ==========================================================================
