@@ -4308,6 +4308,113 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   documenté — images non scrollées dans le viewport au moment du test,
   confirmées fonctionnelles par requête directe, sans rapport avec les
   changements de cette session).
+- **Engagements — fond rouge Pourpre de Venise ; Équipe — titre sur 2
+  lignes exactement, boîte qui s'adapte au contenu (bug de rognage
+  corrigé), nouvelles photos avec plus d'espace, texte remonté
+  (2026-08-20, même journée)** (`.engagements`, `.talent-stage*`,
+  `engagements.html`) : cinq demandes de la cliente en une fois, sur le
+  rendu de l'itération précédente.
+  **1) Fond Engagements recoloré en rouge Pourpre de Venise**
+  (`var(--rosso-venezia)`, `#9d3636`) — remplace le terracotta uni de
+  l'itération précédente (elle-même un remplacement du bleu Méditerranéen,
+  lui-même un remplacement du fond animé à lueurs). Aucun ajustement de
+  contraste nécessaire (`.engagements .lede` en blanc à 88% d'opacité
+  reste lisible).
+  **2) Titre "Les talents derrière Simposio" forcé à exactement 2 lignes**,
+  demande explicite, à la taille de police générique du site (déjà
+  restaurée à l'itération précédente). `<br>` manuel dans le HTML ("Les
+  talents" / "derrière Simposio") plutôt que de compter sur un retour à la
+  ligne automatique. **`.talent-stage-heading` élargi au-delà de la
+  colonne de `.talent-stage-caption`** (`width:max-content; max-width:
+  52rem`, contre la colonne à `min(26rem,48%)`) — à la taille générique
+  (jusqu'à `clamp(…,5.6rem)`), aucune colonne aussi étroite ne peut
+  contenir "derrière Simposio" sur une seule ligne. `.talent-stage-caption`
+  n'a pas `overflow:hidden` (seul `.talent-stage`, son grand-parent, l'a),
+  donc un enfant peut dépasser la largeur nominale de son parent sans être
+  rogné — seul le titre partagé (identique pour les deux personnes) a
+  besoin de cette largeur ; le nom/rôle/bio, propre à chaque membre, reste
+  lui dans la colonne étroite pour ne jamais s'approcher du visage.
+  `52rem` calibré empiriquement par script Playwright balayant plusieurs
+  valeurs à 2000px de large (le cas le plus contraignant, où le `clamp`
+  atteint son plafond) : `50rem` est le minimum qui tient encore sur 2
+  lignes, `52rem` garde une petite marge.
+  **Piège réel rencontré et corrigé** : un premier essai donnait
+  `max-width:46rem` seul à `.talent-stage-heading` sans `width:
+  max-content` — en enfant d'un flex column, l'alignement par défaut
+  (`align-items:stretch`) étire un enfant à la largeur du conteneur
+  (26rem) quel que soit son `max-width` (qui ne fait que plafonner cet
+  étirement, il ne rend jamais l'enfant plus large que son parent) —
+  repéré par capture d'écran : le titre repliait sur 4 lignes au lieu de
+  2 malgré le `max-width` généreux. Corrigé en ajoutant `width:
+  max-content` (fait dépendre la largeur du texte réel, comme un
+  `inline-block`, jusqu'au plafond de `max-width`).
+  **3) Bug de rognage du haut du titre trouvé et corrigé, plus grave que
+  le point 2** : avant ce correctif, `.talent-stage-caption` utilisait
+  `position:absolute;inset:0` (calé exactement sur la hauteur de
+  `.talent-stage-media`, une hauteur CIBLE en `vh`/`rem`) avec
+  `justify-content:flex-end` pour ancrer le groupe [titre+panneau] en bas
+  — mais à la taille de police générique, titre (2 lignes + eyebrow) et
+  panneau (nom+rôle+bio) mesurés ensemble (~740px) dépassaient largement
+  la hauteur cible réellement disponible à un viewport courant de
+  900px de haut (~846px moins les paddings ≈ 580px) : la légende
+  débordait de `inset:0` par le HAUT, hors du cadre, et se faisait rogner
+  par `overflow:hidden` sur `.talent-stage` — repéré par script Playwright
+  (`getBoundingClientRect` du titre commençant à une coordonnée NÉGATIVE
+  par rapport à la photo, pas seulement au visuel : le mot "Les" était
+  visiblement coupé en haut de la capture d'écran). **Corrigé en
+  remplaçant `position:relative` + `inset:0` par une grille CSS à une
+  seule cellule** : `.talent-stage` passe en `display:grid` (≥640px),
+  `.talent-stage-media` et `.talent-stage-caption` partagent
+  `grid-area:1/1` — la grille dimensionne alors `.talent-stage` sur le
+  PLUS GRAND des deux enfants au lieu de forcer la légende à occuper
+  exactement la hauteur (désormais `min-height`, pas `height`) de la
+  photo. Si le contenu a besoin de plus de place, la photo s'étire pour
+  suivre (elle reste `position:relative` avec des enfants `inset:0`, donc
+  elle suit automatiquement la hauteur réelle de la cellule) — plus jamais
+  de rognage, au prix d'un débordement de la hauteur cible sur les
+  fenêtres courtes (un peu de défilement dans la section) plutôt qu'un
+  titre tronqué, compromis assumé. `.talent-stage-caption` a aussi reçu
+  `align-self:stretch` explicite (nécessaire pour que `justify-content:
+  flex-end` ait de l'espace à exploiter quand c'est la photo, pas la
+  légende, qui pilote la hauteur de la cellule) et `justify-self:start`
+  (aligné à gauche dans la cellule, pas centré/étiré par défaut).
+  **4) Nouvelles photos, moins zoomées, avec plus d'espace** ("trouve
+  d'autres photos de membres qui sont moins zoomées et qui laissent plus
+  de place... sans cacher ou être trop près des photos des membres") :
+  les deux anciennes photos (Zoe Galarza et Edmond Dantès, portraits
+  serrés tête+épaules) laissaient peu de marge une fois recadrées dans la
+  boîte très large/peu haute. Remplacées par deux photos à fond uni avec
+  énormément d'espace vide autour du sujet — `talent-placeholder-1.jpg`
+  (Pisey Tuon, fond crème, buste complet bras croisés) et
+  `talent-placeholder-2.jpg` (Karola G, fond blanc, quasiment la moitié du
+  cadre est un mur vide au-dessus de la tête) — choisies dans le même
+  esprit (fond uni, bras croisés) pour former une paire visuellement
+  cohérente. Un premier candidat (photo de bureau avec bibliothèque et
+  cadres photo en fond) a été écarté avant même d'être testé : le décor
+  montrait d'autres visages photographiés, source de confusion possible
+  sur une page "équipe". `assets/img/CREDITS.md` mis à jour pour les deux
+  remplacements. `object-position` générique repassé à `30% 22%` (les
+  anciennes valeurs `22%`/`38%` par photo, calibrées pour les anciennes
+  images, n'ont plus lieu d'être) — fonctionne bien pour les deux
+  nouvelles photos grâce à leur généreux espace négatif, aucun réglage par
+  photo nécessaire cette fois.
+  **5) Texte descriptif remonté davantage** ("remonte le texte
+  descriptif des membres... trop proche de la ligne du bas") : la colonne
+  de texte (`.talent-stage-caption`) est élargie de `min(24rem,46%)` à
+  `min(26rem,48%)` (arrêts du dégradé/masque et position du sélecteur
+  d'avatars ajustés en proportion : `min(58%,34rem)`→`min(58%,37rem)`,
+  `max(34rem,48%)`→`max(37rem,50%)`) et le `padding-bottom` du groupe
+  bas-ancré passe à `12rem` (contre ~8.5rem à l'itération précédente) —
+  la bio finit désormais nettement plus haut au-dessus de la rangée
+  d'avatars.
+  Vérifié par script Playwright (0 chevauchement titre/panneau à toutes
+  les largeurs testées, `h2` confirmé à 2 lignes exactement de 768 à
+  2000px de large — balayage de plusieurs `max-width` à la largeur la
+  plus contraignante avant de fixer 52rem —, navigation clavier Tab/Enter
+  et reveal `[data-reveal]` toujours fonctionnels, 0 débordement
+  horizontal) et capture d'écran aux mêmes largeurs pour les deux photos.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 

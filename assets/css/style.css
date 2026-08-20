@@ -1909,17 +1909,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Engagements & Talents
    ========================================================================== */
-/* Fond terracotta uni (2026-08-20), demande explicite de la cliente —
-   remplace le bleu Méditerranéen uni de l'itération précédente (lui-même
+/* Fond rouge Pourpre de Venise uni (2026-08-20, 2ᵉ passe), demande
+   explicite de la cliente — remplace le terracotta uni de l'itération
+   précédente, lui-même un remplacement du bleu Méditerranéen uni, lui-même
    un remplacement du fond dynamique à lueurs radiales animées, encore
-   antérieur). Si `background: var(--navy)` réapparaît ici, ou si
-   `.engagements::before`/`@keyframes engagementsBgDrift` réapparaissent,
-   c'est une ancienne version, à ne pas réintroduire sans qu'on le
-   redemande. */
+   antérieur. Si `background: var(--navy)`/`var(--terracotta)` réapparaît
+   ici, ou si `.engagements::before`/`@keyframes engagementsBgDrift`
+   réapparaissent, c'est une ancienne version, à ne pas réintroduire sans
+   qu'on le redemande. */
 .engagements {
   position: relative;
   overflow: hidden;
-  background: var(--terracotta);
+  background: var(--rosso-venezia);
   padding-block: var(--space-6);
 }
 .engagements .container { position: relative; z-index: 1; }
@@ -1994,26 +1995,46 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    redemande. */
 .talent-stage { position: relative; overflow: hidden; background: var(--navy-900); }
 .talent-stage-media { position: relative; aspect-ratio: 4 / 3; }
-/* ≥640px : `aspect-ratio` est remplacé par une hauteur bornée en `vh`.
-   **Agrandie une 3ᵉ fois le 2026-08-20**, de `min(88vh,54rem)` à
-   `min(88vh,60rem)` puis à `min(92vh, 66rem)` : la cliente trouvait les
-   photos "trop zoomées", pas assez de la personne visible — avec
-   `object-fit:cover` sur une boîte plein écran, la largeur (fixe, celle
-   du viewport) impose déjà l'échelle ; SEULE une boîte plus haute réduit
-   le zoom effectif (montre une plus grande tranche de la photo source),
-   une boîte plus courte l'augmente — vérifié par calcul avant de choisir
-   ce sens plutôt que de deviner. Cette 3ᵉ hausse répond en plus à un
-   besoin direct : le titre (`h2`) est repassé à sa taille générique
-   (cf. `.talent-stage-heading h2` plus bas), donc nettement plus haut
-   qu'avant sur plusieurs lignes — la boîte doit grandir en conséquence
-   pour lui laisser sa place sans comprimer le nom/rôle/bio en dessous.
-   Le titre de section ayant été fusionné dans cette même boîte plutôt que
-   d'occuper une rangée séparée au-dessus (et le bandeau `.visual-note`
-   supprimé, cf. `.talents` plus haut), l'espace total de la section reste
-   comparable à une section "pleine page" classique malgré la boîte plus
-   haute — c'est ce qui permet de satisfaire à la fois "moins zoomé" ET
-   "tient sur un écran de PC" avec un titre à taille normale. */
-@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(92vh, 66rem); } }
+/* ≥640px : `.talent-stage` passe en grille à une seule cellule
+   (2026-08-20, correctif) — `.talent-stage-media` et `.talent-stage-
+   caption` partagent `grid-area:1/1` (empilés visuellement, comme avant)
+   mais la grille CSS dimensionne alors `.talent-stage` sur le PLUS GRAND
+   des deux enfants, contrairement à l'ancien `position:absolute;inset:0`
+   qui forçait la légende à occuper EXACTEMENT la hauteur de la photo
+   (`height` fixe) — si le contenu de la légende avait besoin de plus de
+   place que cette hauteur, il débordait et se faisait rogner par
+   `overflow:hidden` sur `.talent-stage` (bug réel rencontré : le haut du
+   titre "Les talents" coupé à 1440×900, repéré par script Playwright —
+   `getBoundingClientRect` du titre commençant à une coordonnée NÉGATIVE
+   par rapport à la photo — pas seulement au visuel). Avec la grille,
+   `.talent-stage-media` garde un `min-height` cible (cf. media query plus
+   bas) mais peut désormais s'étirer plus haut si la légende a besoin de
+   plus de place — la photo grandit alors en conséquence (elle reste
+   `position:relative` avec des enfants `inset:0`, donc elle suit
+   automatiquement la hauteur réelle de la cellule de grille) : plus
+   jamais de rognage, au prix d'un débordement de la hauteur cible sur les
+   fenêtres très courtes plutôt que d'un contenu coupé — un compromis
+   assumé, un peu de défilement dans la section valant mieux qu'un titre
+   tronqué. Scopé à `≥640px` : sous cette largeur, `.talent-stage` reste
+   en flux normal (`display:block` implicite), photo et légende empilées
+   verticalement comme avant, aucun changement. */
+/* ≥640px : `aspect-ratio` est remplacé par une hauteur CIBLE bornée en
+   `vh`, en `min-height` (pas `height`) depuis le passage en grille
+   ci-dessus — si la légende a besoin de plus de place que cette cible,
+   `.talent-stage-media` s'étire au-delà plutôt que de forcer un rognage.
+   **Agrandie 4 fois au total le 2026-08-20**, de `min(88vh,54rem)` à
+   `min(88vh,60rem)` à `min(92vh,66rem)` à `min(94vh,72rem)` : la cliente
+   trouvait les photos "trop zoomées", pas assez de la personne visible —
+   avec `object-fit:cover` sur une boîte plein écran, la largeur (fixe,
+   celle du viewport) impose déjà l'échelle ; SEULE une boîte plus haute
+   réduit le zoom effectif (montre une plus grande tranche de la photo
+   source), une boîte plus courte l'augmente — vérifié par calcul avant de
+   choisir ce sens plutôt que de deviner. */
+@media (min-width: 640px) {
+  .talent-stage { display: grid; }
+  .talent-stage-media { grid-area: 1 / 1; aspect-ratio: auto; min-height: min(94vh, 72rem); }
+  .talent-stage-caption { grid-area: 1 / 1; }
+}
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
    empilées en `position:absolute`, un fondu croisé simple suffit — pas
    besoin d'un mécanisme de scale/parallaxe comme ailleurs sur le site. */
@@ -2079,30 +2100,64 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    vit comme premier enfant de `.talent-stage-caption`, dans la même
    colonne superposée que le nom/rôle/bio du membre sélectionné — plus de
    `.section-head` séparé au-dessus de la photo (demande explicite : "que
-   les deux réunis tiennent sur un écran de PC"). Comme
-   `.talent-stage-caption` est `justify-content:center` (≥640px), le
-   groupe [titre + panneau] se centre comme une seule unité — le titre
-   n'a besoin d'aucun positionnement/`padding-top` dédié pour dégager le
-   header fixe, le centrage vertical de la colonne (dans une boîte photo
-   de plusieurs dizaines de `rem` de haut) suffit largement. Sous 640px,
-   `.talent-stage-caption` redevient un bloc navy plein en flux normal
-   sous la photo (inchangé) — le titre s'y empile simplement avant le
-   nom, sans CSS supplémentaire.
+   les deux réunis tiennent sur un écran de PC"). Sous 640px,
+   `.talent-stage-caption` reste un bloc navy plein en flux normal sous la
+   photo (inchangé) — le titre s'y empile simplement avant le nom, sans
+   CSS supplémentaire.
    **`h2` repassé à la taille générique du site (2026-08-20, 2ᵉ passe)** :
    un premier essai avait réduit `h2` à une taille scopée bien plus petite
    (`clamp(1.7rem,…,2.4rem)` contre le `clamp(2.4rem,…,5.6rem)` générique)
    — la cliente a explicitement redemandé "la même taille de police
-   qu'avant" (avant la fusion dans la photo) et que le titre soit "plus
-   dans la longueur que dans la largeur" (qu'il se déploie sur plusieurs
-   lignes plutôt que de s'étaler horizontalement) — supprimer l'override
-   local suffit : à la taille générique, dans la colonne étroite
-   (`width:min(24rem,46%)`, inchangée), le texte replie naturellement sur
-   3-4 lignes au lieu de 2. La largeur de la colonne n'a PAS été
-   élargie — c'est justement ce qui garantit que le titre agrandi ne
-   déborde jamais sur la photo/le visage à droite, quel que soit son
-   nombre de lignes. Si `font-size` réapparaît sur `.talent-stage-heading
-   h2`, c'est cet ancien override réduit, à ne pas réintroduire sans
-   qu'on le redemande. */
+   qu'avant" (avant la fusion dans la photo). Si `font-size` réapparaît
+   sur `.talent-stage-heading h2`, c'est cet ancien override réduit, à ne
+   pas réintroduire sans qu'on le redemande.
+   **Groupe [titre + panneau] bas-ancré plutôt que centré globalement
+   (2026-08-20, 3ᵉ passe)** : la version précédente centrait [titre +
+   panneau] comme un seul bloc via `justify-content:center` sur
+   `.talent-stage-caption` — deux problèmes réels signalés par la cliente
+   une fois testé sur son écran : l'eyebrow "L'équipe" se retrouvait
+   visuellement "coupée" par la bande Engagements juste au-dessus (pas
+   assez de marge réservée en haut de la boîte, très haute — jusqu'à
+   66rem — donc le centrage plaçait le groupe trop haut sur certains
+   ratios d'écran), et la bio du membre sélectionné finissait trop près
+   de la ligne du bas (pas assez de marge réservée avant la rangée
+   d'avatars). Remplacé par `justify-content:flex-end` (cf. media query
+   plus bas) : le groupe entier colle au bas de la colonne, avec un
+   `padding-bottom` généreux qui réserve la marge au-dessus des avatars —
+   l'eyebrow/titre se retrouve alors mécaniquement au-dessus avec la
+   respiration naturelle du flux, jamais collé à la frontière du haut tant
+   que la boîte est assez haute pour le contenu (`padding-top` en filet de
+   sécurité). **Un premier essai avait utilisé deux ancrages
+   `position:absolute` indépendants (`top` fixe sur le titre, `bottom`
+   fixe sur le panneau)** — repéré par script Playwright que ça se
+   chevauchait franchement (jusqu'à 180px de recouvrement mesuré à
+   1440px), le titre à taille générique (~430px de haut sur 2 lignes)
+   étant bien plus grand que prévu. Le flex bas-ancré ne peut pas
+   chevaucher (chaque enfant pousse le suivant en flux normal) — voir le
+   commentaire détaillé dans la media query `≥640px` pour le détail
+   complet. Scopé à `≥640px` ; sous 640px, `.talent-stage-caption` reste
+   un bloc en flux normal (empilement classique, inchangé).
+   **`.talent-stage-heading` élargi au-delà de la colonne de
+   `.talent-stage-caption`** (`max-width:52rem` contre la colonne à
+   `min(26rem,48%)`) : demande explicite — le titre doit tenir sur "2
+   lignes seulement" à la taille de police générique, ce qu'une colonne de
+   26rem ne permet pas (le mot le plus long, à `clamp(…,5.6rem)`, dépasse
+   largement cette largeur). `52rem` calibré empiriquement (script
+   Playwright balayant plusieurs valeurs à 2000px de large, la plus
+   contraignante — "derrière Simposio" y atteint le plafond du `clamp` à
+   5.6rem) : `50rem` est le minimum qui tient encore sur 2 lignes,
+   `52rem` garde une petite marge de sécurité. `.talent-stage-caption` n'a pas
+   `overflow:hidden` (seul `.talent-stage`, son grand-parent, l'a — la
+   limite réelle reste donc le bord du viewport, pas la colonne de texte)
+   — un enfant peut donc être plus large que le `width` nominal de son
+   parent sans être rogné. Le nom/rôle/bio (`.talent-stage-panels`,
+   propre à chaque membre) reste lui dans la colonne étroite, pour ne
+   jamais s'approcher du visage — seul le titre partagé (identique pour
+   les deux personnes) a besoin de cette largeur pour tenir sur 2 lignes.
+   Le `<br>` manuel dans le HTML ("Les talents" / "derrière Simposio")
+   fixe le point de coupure plutôt que de compter sur un retour à la ligne
+   automatique, qui aurait pu varier selon la largeur réelle rendue du
+   texte à chaque taille de `clamp()`. */
 .talent-stage-heading { margin-bottom: var(--space-4); }
 .talent-stage-heading h2 { margin-top: 0.5rem; color: var(--cream); }
 /* Panneaux empilés en `position:absolute` avec fondu + glissement depuis
@@ -2237,32 +2292,81 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    sur le site pour ce genre de teinte) plutôt que les composantes RGB en
    dur. */
 @media (min-width: 640px) {
+  /* Zone floutée/dégradée élargie (2026-08-20, 3ᵉ passe) : `.talent-stage-
+     caption` passe de `min(24rem,46%)` à `min(26rem,48%)` (demande "plus
+     de place" pour le texte) — les arrêts du dégradé/masque suivent
+     proportionnellement (24→26rem, 34→37rem, et les paliers
+     intermédiaires). */
   .talent-stage-blur {
     display: block;
-    background: linear-gradient(90deg, rgba(var(--navy-rgb), 0.88) 0, rgba(var(--navy-rgb), 0.72) min(18%, 10rem), rgba(var(--navy-rgb), 0.3) min(38%, 22rem), transparent min(55%, 32rem));
+    background: linear-gradient(90deg, rgba(var(--navy-rgb), 0.88) 0, rgba(var(--navy-rgb), 0.72) min(18%, 11rem), rgba(var(--navy-rgb), 0.3) min(38%, 24rem), transparent min(55%, 35rem));
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
-    -webkit-mask-image: linear-gradient(90deg, black 0, black min(42%, 24rem), transparent min(58%, 34rem));
-    mask-image: linear-gradient(90deg, black 0, black min(42%, 24rem), transparent min(58%, 34rem));
+    -webkit-mask-image: linear-gradient(90deg, black 0, black min(42%, 26rem), transparent min(58%, 37rem));
+    mask-image: linear-gradient(90deg, black 0, black min(42%, 26rem), transparent min(58%, 37rem));
   }
+  /* **Groupe [titre + panneau] en flex bas-ancré, pas deux ancrages
+     `position:absolute` indépendants (2026-08-20, correctif après
+     premier essai)** : un premier essai ancrait `.talent-stage-heading`
+     en `top` fixe ET `.talent-stage-panels` en `bottom` fixe
+     indépendamment — repéré par script Playwright (mesure
+     `getBoundingClientRect`, pas juste au visuel) : à la taille de
+     police générique du `h2` (jusqu'à `5.6rem` sur 2 lignes + l'eyebrow,
+     mesuré ~390-430px de haut), le titre est bien plus haut qu'anticipé
+     — ses ~430px + le `top` fixe dépassaient largement le point où le
+     panneau démarrait avec son propre `bottom` fixe, les deux ancrages
+     indépendants se chevauchant franchement (jusqu'à 180px de
+     recouvrement mesuré à 1440px de large). Un flex `justify-content:
+     flex-end` NE PEUT PAS chevaucher (chaque enfant pousse le suivant en
+     flux normal) : le groupe entier colle au bas de la colonne
+     (`padding-bottom:12rem` = la marge demandée au-dessus des avatars,
+     satisfait "remonte le texte descriptif"), et l'eyebrow/titre se
+     retrouve mécaniquement au-dessus avec la respiration naturelle du
+     `gap`/`margin` — plus de calcul de collision à maintenir. Le
+     `padding-top` reste un plancher de sécurité (jamais collé à la
+     frontière avec Engagements) pour le cas où le contenu serait plus
+     court que l'espace disponible. */
   .talent-stage-caption {
-    position: absolute;
-    inset: 0;
+    justify-self: start;
+    align-self: stretch;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    width: min(24rem, 46%);
-    padding: var(--space-5) var(--space-4) var(--space-5) var(--space-5);
+    justify-content: flex-end;
+    width: min(26rem, 48%);
+    padding: var(--space-5) var(--space-4) 12rem var(--space-5);
     background: none;
   }
-  /* Décalé encore plus à droite (2026-08-20, 2ᵉ passe) : `max(28rem,42%)`
-     → `max(34rem,48%)` — la cliente trouvait que les cercles collaient
-     encore trop au dégradé, jusqu'à ce que celui-ci coupe un peu les
-     visages sur les avatars. Même logique `max()` qu'avant (plancher
-     absolu + dérive proportionnelle sur grand écran), juste poussée plus
-     loin ; revérifié qu'aucun avatar ne sort du viewport aux largeurs
-     desktop/tablette testées (640-1920px). */
-  .talent-stage-selector { left: max(34rem, 48%); }
+  /* Titre plus large que la colonne (2026-08-20, 3ᵉ passe) : demande
+     explicite — le titre doit tenir sur "2 lignes seulement" à la taille
+     de police générique, ce qu'une colonne de 26rem ne permet pas (le mot
+     le plus long, à `clamp(…,5.6rem)`, dépasse largement cette largeur).
+     `.talent-stage-caption` n'a pas `overflow:hidden` (seul
+     `.talent-stage`, son grand-parent, l'a — la limite réelle reste donc
+     le bord du viewport, pas la colonne de texte) — un enfant flex peut
+     donc être plus large que la piste `width` nominale de son parent sans
+     être rogné, tant qu'on lui donne un `max-width` explicite (sinon un
+     enfant flex se réduirait à la largeur du conteneur par défaut). Le
+     nom/rôle/bio (`.talent-stage-panels`, propre à chaque membre) reste
+     lui dans la colonne étroite, pour ne jamais s'approcher du visage —
+     seul le titre partagé (identique pour les deux personnes) a besoin de
+     cette largeur pour tenir sur 2 lignes. Le `<br>` manuel dans le HTML
+     ("Les talents" / "derrière Simposio") fixe le point de coupure plutôt
+     que de compter sur un retour à la ligne automatique, qui aurait pu
+     varier selon la largeur réelle rendue du texte à chaque taille de
+     `clamp()`. */
+  /* `width:max-content` nécessaire en plus de `max-width` : en enfant
+     d'un flex column, l'alignement par défaut (`align-items:stretch`)
+     étire sinon le titre à la largeur de `.talent-stage-caption`
+     (26rem) — `max-width` seul ne fait que plafonner cet étirement, il
+     ne rend pas le titre plus large que son conteneur. `max-content`
+     fait dépendre la largeur du texte réel (jusqu'au plafond de
+     `max-width`), comme un élément en `inline-block`. */
+  .talent-stage-heading { width: max-content; max-width: 52rem; margin-bottom: var(--space-4); }
+  /* Décalé encore plus à droite (2026-08-20, 3ᵉ passe) : `max(34rem,48%)`
+     → `max(37rem,50%)`, en proportion de la colonne élargie ci-dessus —
+     même logique `max()` qu'avant (plancher absolu + dérive
+     proportionnelle sur grand écran). */
+  .talent-stage-selector { left: max(37rem, 50%); }
 }
 
 /* ==========================================================================
