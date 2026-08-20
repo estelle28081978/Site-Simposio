@@ -1924,7 +1924,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .engagements .container { position: relative; z-index: 1; }
 .engagements .lede { color: rgba(255, 255, 255, 0.88); }
 
-.talents { background: var(--bg-dim); padding-block: var(--space-6); }
+/* `padding-block` asymétrique (2026-08-20) : la cliente trouvait que le
+   petit bandeau crème contenant `.visual-note` (entre la photo et la
+   citation de la fondatrice) se lisait comme un espace vide distinct —
+   elle a demandé que la photo/le texte de l'équipe "prennent même la
+   place" de ce bandeau. Le padding du bas est réduit (7rem → 2.75rem)
+   pendant que `.talent-stage-media` grandit (cf. plus bas) pour absorber
+   cet espace ; le padding du haut reste inchangé pour la respiration
+   au-dessus du titre de section. */
+.talents { background: var(--bg-dim); padding-block: var(--space-6) var(--space-4); }
 
 /* Équipe — "stage" photo unique avec sélecteur de petits cercles
    (2026-08-19), inspiré d'une référence fournie par la cliente (design
@@ -1983,22 +1991,48 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ≥640px : `aspect-ratio` est remplacé par une hauteur bornée en `vh` —
    une fois la photo étirée à toute la largeur de l'écran (jusqu'à
    ~1920px+), garder un `aspect-ratio:16/9` aurait rendu la boîte
-   démesurément haute (jusqu'à 1080px). `min(68vh, 40rem)` garde une
-   hauteur proportionnée à la fenêtre plutôt qu'à la largeur de la photo. */
-@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(68vh, 40rem); } }
+   démesurément haute (jusqu'à 1080px). `min(88vh, 54rem)` (agrandi le
+   2026-08-20, était `min(68vh,40rem)` — cf. commentaire sur `.talents`
+   juste au-dessus) garde une hauteur proportionnée à la fenêtre plutôt
+   qu'à la largeur de la photo, tout en se rapprochant du plein écran de
+   la référence "Kollektiva" pour absorber l'espace du bandeau crème qui
+   suivait. */
+@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(88vh, 54rem); } }
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
    empilées en `position:absolute`, un fondu croisé simple suffit — pas
    besoin d'un mécanisme de scale/parallaxe comme ailleurs sur le site. */
+/* `object-position` horizontal décalé sous 50% ("center") vers 30%
+   (2026-08-20) : la cliente a signalé que le visage touchait la zone
+   floutée/dégradée de gauche (repéré aussi de notre côté par capture
+   d'écran — voir bug du crop vertical corrigé au même endroit). Pour
+   `object-fit:cover`, DIMINUER le `%` horizontal montre davantage le
+   bord GAUCHE de la photo source (et non le centre), ce qui a pour effet
+   de pousser le sujet vers la DROITE de la boîte affichée — vérifié
+   empiriquement par capture d'écran avant de fixer cette valeur plutôt
+   que de supposer le sens de l'effet. */
 .talent-stage-photo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 22%;
+  object-position: 30% 22%;
   opacity: 0;
   transition: opacity 0.6s var(--ease);
 }
+/* `object-position` vertical propre à la 2ᵉ photo (2026-08-20) : la boîte
+   `.talent-stage-media` est très large et peu haute (`min(88vh,54rem)`
+   sur un écran large, cf. plus haut), donc `object-fit:cover` zoome
+   fortement — `22%` (calé sur la 1ʳᵉ photo, Zoe Galarza, qui a beaucoup de
+   cheveux au-dessus du visage) recadrait celle-ci en gros plan yeux/nez/
+   bouche, sans front ni menton visibles. Vérifié empiriquement (balayage
+   de plusieurs valeurs, 0% à 50%, capture d'écran à chaque fois — pas
+   deviné) : `38%` est la valeur qui montre tête+cou+épaules sans rogner
+   ni le haut du crâne ni le menton, aux 3 largeurs desktop testées
+   (1440, 768, plus l'extrême 2000px) et en mobile. Si une 3ᵉ photo est
+   ajoutée un jour, revérifier avec la même méthode plutôt que de
+   supposer qu'`object-position` générique convient. */
+.talent-stage-photo[data-talent-target="1"] { object-position: 30% 38%; }
 .talent-stage-photo.is-active { opacity: 1; }
 /* Zone floutée/assombrie sur la gauche (desktop uniquement, cf. media
    query plus bas) : `backdrop-filter:blur()` floute la photo qui se voit
@@ -2027,18 +2061,25 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .talent-stage-panel { display: none; }
 .talent-stage-panel.is-active { display: block; }
-.talent-stage-name { display: block; font-family: var(--font-display); font-size: clamp(1.5rem, 1.4vw + 1.15rem, 2.1rem); color: var(--cream); }
+/* Tailles agrandies "en jouant sur différentes tailles" (2026-08-20,
+   demande explicite) : plutôt qu'un simple facteur uniforme sur les 3
+   éléments, l'écart entre eux est creusé pour renforcer la hiérarchie —
+   le nom fait un bond plus marqué (clamp jusqu'à 3.4rem, +62% sur le
+   plafond desktop) que le rôle et la bio (respectivement +22% et +26%),
+   pour que le nom domine clairement plutôt que les trois tailles montent
+   en bloc. */
+.talent-stage-name { display: block; font-family: var(--font-display); font-size: clamp(2rem, 2.6vw + 1.4rem, 3.4rem); color: var(--cream); }
 .talent-stage-role {
   display: block;
   font-family: var(--font-subtitle);
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--terracotta-300);
-  margin-block: 0.4rem 0.6rem;
+  margin-block: 0.6rem 0.85rem;
 }
-.talent-stage-bio { color: rgba(246, 241, 231, 0.85); font-size: 0.95rem; max-width: 28rem; }
+.talent-stage-bio { color: rgba(246, 241, 231, 0.85); font-size: 1.2rem; line-height: 1.5; max-width: 28rem; }
 
 /* Sélecteur flottant, pas dans un rectangle (2026-08-19) : la cliente a
    pointé une référence (Kollektiva) où les cercles-avatars flottent
@@ -2107,11 +2148,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    grande de la largeur totale de la photo, floutant quasiment tout le
    visage (repéré par capture d'écran à 640px, pas supposé). `min()`
    garde le meilleur des deux : proportionnel (comme avant) sur les
-   largeurs étroites, plafonné (nouveau) sur les très grandes. */
+   largeurs étroites, plafonné (nouveau) sur les très grandes.
+   **Dégradé recoloré en terracotta (2026-08-20)**, demande explicite de
+   la cliente — remplace le dégradé bleu marine (`rgba(16,31,39,…)`,
+   couleur de `--navy-900`) par un dégradé basé sur `--terracotta`
+   (`#c1622d` → `rgb(193,98,45)`), même structure d'opacités. */
 @media (min-width: 640px) {
   .talent-stage-blur {
     display: block;
-    background: linear-gradient(90deg, rgba(16, 31, 39, 0.88) 0, rgba(16, 31, 39, 0.72) min(18%, 10rem), rgba(16, 31, 39, 0.28) min(38%, 22rem), transparent min(55%, 32rem));
+    background: linear-gradient(90deg, rgba(193, 98, 45, 0.88) 0, rgba(193, 98, 45, 0.72) min(18%, 10rem), rgba(193, 98, 45, 0.3) min(38%, 22rem), transparent min(55%, 32rem));
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
     -webkit-mask-image: linear-gradient(90deg, black 0, black min(42%, 24rem), transparent min(58%, 34rem));

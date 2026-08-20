@@ -4102,6 +4102,74 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `founder`, `values-reel`) directement dans le DOM. Capture d'écran aux 6
   largeurs + mobile. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Équipe — photo agrandie jusqu'au bandeau, dégradé terracotta, visage
+  décalé, typographie plus grande, 2ᵉ photo remplacée deux fois
+  (2026-08-20, même journée)** (`.talent-stage*`, `engagements.html`) :
+  cinq demandes de la cliente en une fois, à partir d'une capture d'écran
+  montrant un vrai bug (cercles-avatars posés en plein sur le front de la
+  2ᵉ photo, quasiment aucun visage visible).
+  **1) "Prennent même la place" du petit bandeau au-dessus de la
+  citation** : `.talents` passe de `padding-block: var(--space-6)` (7rem
+  haut ET bas) à `var(--space-6) var(--space-4)` (7rem haut, 2.75rem
+  bas seulement) et `.talent-stage-media` (≥640px) de `height:min(68vh,
+  40rem)` à `min(88vh, 54rem)` — le bandeau `.visual-note` (fond
+  `--bg-dim`) qui séparait la photo de la citation de la fondatrice
+  (fond `--bg`, quasiment la même teinte crème) se réduit d'autant que la
+  photo grandit, sans être supprimé entièrement (le texte "Photos
+  provisoires..." reste nécessaire tant que les vraies photos ne sont pas
+  en place).
+  **2) Dégradé recoloré en terracotta** : `.talent-stage-blur`
+  (`background`, le calque de lisibilité derrière le texte) passe de
+  `rgba(16,31,39,…)` (`--navy-900`) à `rgba(193,98,45,…)` (`--terracotta`)
+  — mêmes paliers d'opacité et arrêts `min(%, rem)` déjà en place,
+  seule la teinte change.
+  **3) Visage décalé pour ne plus toucher le dégradé** : `object-position`
+  passe de `center 22%` à `30% 22%` sur `.talent-stage-photo` — piège
+  vérifié avant d'appliquer (pas supposé) : pour `object-fit:cover`,
+  DIMINUER le `%` horizontal montre davantage le bord GAUCHE de la photo
+  source, ce qui pousse le sujet vers la DROITE de la boîte affichée (et
+  non l'inverse, comme l'intuition pourrait le suggérer) — confirmé par
+  capture d'écran avant de fixer la valeur.
+  **4) Typographie agrandie "en jouant sur différentes tailles"** :
+  plutôt qu'un facteur uniforme sur les 3 éléments, l'écart entre eux est
+  creusé pour renforcer la hiérarchie — `.talent-stage-name` (`clamp`
+  jusqu'à `3.4rem`, +62% sur le plafond desktop) grandit nettement plus
+  que `.talent-stage-role` (`0.78rem→0.95rem`, +22%) et `.talent-stage-bio`
+  (`0.95rem→1.2rem`, +26%), pour que le nom domine clairement plutôt que
+  les trois tailles montent en bloc.
+  **5) 2ᵉ photo remplacée deux fois le même jour** — la cliente a
+  précisé que les deux membres de l'équipe représentées sont des femmes
+  ("le clip est composé des deux filles non"), donc `talent-placeholder-2.jpg`
+  (jusque-là un portrait d'homme, Christoph Sixt) devait devenir une
+  photo de femme. **1er remplacement** (Pexels photo 29852895, Ifeyinka
+  Adeyemo, tête seule très serrée) : **bug réel trouvé après coup, pas
+  supposé** — une fois affichée dans la boîte `.talent-stage-media`
+  désormais très large et peu haute (jusqu'à 2,3:1 en plein écran), le
+  visage se retrouvait recadré en gros plan yeux/nez/bouche, sans front
+  ni menton visibles (`object-fit:cover` zoome fortement dès que la boîte
+  est beaucoup plus large que haute — un sujet déjà cadré serré dans la
+  photo source n'a alors plus aucune marge). **2ᵉ remplacement** (Pexels
+  photo 4342352, Edmond Dantès, buste bras croisés avec beaucoup plus
+  d'espace au-dessus de la tête et sous les épaules) : bien mieux, mais
+  toujours trop serré avec le même `object-position` vertical que la 1ʳᵉ
+  photo (`22%`, calé sur Zoe Galarza qui a beaucoup de cheveux
+  au-dessus du visage) — **calibré empiriquement par balayage de
+  plusieurs valeurs (0% à 50% par pas de 5-10, capture d'écran à chaque
+  fois, jamais deviné)** : `.talent-stage-photo[data-talent-target="1"]`
+  reçoit un `object-position:30% 38%` propre à cette photo (spécificité
+  CSS plus élevée que la règle générique `30% 22%`, qui reste inchangée
+  pour la 1ʳᵉ photo) — tête, cou et épaules visibles sans rogner ni le
+  haut du crâne ni le menton, vérifié aux largeurs 2000, 1440, 768px et
+  en mobile (le fond bordeaux de cette photo, choisi sans arrière-pensée,
+  se marie d'ailleurs bien avec le Rouge Pourpre de Venise/Rouge Terre
+  d'Ombrie de la palette de marque). `assets/img/CREDITS.md` mis à jour
+  pour les deux remplacements successifs.
+  Vérifié par script Playwright (0 chevauchement, 0 débordement
+  horizontal aux largeurs 2000/1440/768/390px, navigation clavier
+  Tab/Enter toujours fonctionnelle, transition de fondu entre les 2
+  photos confirmée complète) et capture d'écran à chaque largeur pour
+  les deux photos. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
