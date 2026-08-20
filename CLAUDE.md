@@ -3974,6 +3974,56 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   sur la zone floutée, aucun chevauchement avec la photo nette, avatars
   visiblement plus grands. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Équipe — cercles-avatars sortis du rectangle de texte, décalés à droite
+  (2026-08-19, même journée)** (`.talent-stage-selector`,
+  `engagements.html`/`style.css`) : la cliente a repointé la même référence
+  "Kollektiva" (mockup laptop) en précisant cette fois : "je veux juste que
+  les ronds de l'équipe ne sont pas dans un rectangle et que tu les
+  décales plus à droite". Bien que `.talent-stage-selector` n'ait jamais eu
+  de fond/bordure propre, il vivait comme enfant de `.talent-stage-caption`
+  (itération précédente) — la colonne de texte à `width:min(24rem,46%)`
+  avec la zone floutée/assombrie derrière elle — donc les cercles se
+  lisaient visuellement comme confinés dans ce bloc rectangulaire, sans
+  déborder sur la photo nette.
+  **`.talent-stage-selector` devient un enfant direct de `.talent-stage`**
+  (frère de `.talent-stage-media`/`.talent-stage-caption`, plus un enfant
+  de `.talent-stage-caption`) — `position:absolute` par rapport à
+  `.talent-stage` (inchangé, déjà le conteneur `position:relative`).
+  Décalé à `left:38%` sur desktop (≥640px) : déborde volontairement au-delà
+  de la colonne de texte (46% de large) pour flotter sur la photo nette à
+  droite, comme le montre la référence — un vrai flottement, plus confiné
+  à aucun bloc. Sous 640px, reste à `left:var(--space-4)` (aligné au bord
+  gauche de la carte, cohérent avec `.talent-stage-caption` qui redevient
+  empilée pleine largeur sous la photo à cette largeur — décaler à droite
+  n'aurait aucun sens sur cette mise en page repliée).
+  **Bug réel trouvé et corrigé avant publication** : en sortant le
+  sélecteur du flux normal de `.talent-stage-caption` (devenu
+  `position:absolute`), plus rien ne réservait d'espace pour lui sous
+  640px — la légende y reste en flux normal (empilée sous la photo,
+  hauteur dictée par son contenu), donc son `padding` d'origine
+  (`var(--space-4)` partout) ne laissait aucune marge pour les cercles
+  (4rem de diamètre) qui flottent par-dessus le bas de la carte : repéré
+  par capture d'écran mobile (`v3_mobile.png`), le texte de la bio passait
+  visuellement derrière les avatars. Corrigé en ajoutant
+  `padding-bottom: calc(4rem + var(--space-4) + var(--space-3))` sur la
+  règle mobile de base de `.talent-stage-caption` (sans toucher à la
+  règle `≥640px`, qui redéfinit déjà tout `padding` pour la mise en page
+  superposée où ce problème ne se pose pas). Revérifié par script
+  Playwright comparant les rectangles (`getBoundingClientRect`) de
+  `.talent-stage-bio` et `.talent-stage-selector` aux deux viewports : plus
+  aucun chevauchement (avant : bio et sélecteur se recouvraient
+  verticalement sur mobile ; après : 0 intersection aux deux largeurs).
+  `box-shadow` ajoutée sur `.talent-stage-avatar` (`0 6px 18px
+  rgba(16,31,39,0.35)`) pour détacher visuellement les cercles de la photo
+  maintenant qu'ils flottent librement, sans fond de conteneur pour les
+  distinguer autrement. Si `.talent-stage-selector` réapparaît comme enfant
+  de `.talent-stage-caption`, c'est l'ancienne version confinée à la
+  colonne de texte, à ne pas réintroduire sans qu'on le redemande.
+  Vérifié par script Playwright (0 chevauchement bio/sélecteur aux 2
+  viewports, fond du sélecteur confirmé transparent — `rgba(0,0,0,0)` —,
+  navigation clavier Tab/Enter toujours fonctionnelle, 0 erreur console) et
+  capture d'écran desktop + mobile. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
