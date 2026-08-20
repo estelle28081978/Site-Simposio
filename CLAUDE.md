@@ -4910,6 +4910,53 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   d'écran desktop (1440px, 1920px, état normal + survol) et mobile
   (390px). Regression complète 5 pages × 2 viewports : 0 débordement, 0
   erreur console.
+- **Bandeau chiffres clés — le "défaut de centrage" n'en était pas un
+  (effet optique), donnée 1 et 2 interverties (2026-08-20, même journée)**
+  (`index.html`) : la cliente a renvoyé une nouvelle capture Safari montrant
+  un écart visiblement inégal entre "4" et le bord gauche vs. "100% B2B" et
+  le bord droit — après les deux correctifs précédents (rythme des
+  séparateurs, compensation scrollbar), ce troisième signalement méritait
+  une vérification directe dans SON navigateur plutôt qu'une nouvelle
+  hypothèse à l'aveugle : script de diagnostic fourni à coller dans la
+  console Safari (mesure `getBoundingClientRect()` du 1ᵉʳ et du dernier
+  `<dt>` par rapport aux bords de la fenêtre réelle). **Résultat sans appel,
+  mesuré dans son propre navigateur** : `gapLeft_dataToWindow: 124` et
+  `gapRight_dataToWindow: 124` — rigoureusement identiques au pixel près,
+  aucune scrollbar comptée (`scrollbarVar: "0px"`, `innerWidth === clientWidth`),
+  aucun scroll horizontal résiduel (`scrollX: 0`). **Le bandeau est donc
+  mathématiquement centré à la perfection — il n'y avait plus de bug de
+  layout à corriger.** L'écart perçu vient d'un effet purement optique,
+  inévitable et non spécifique à ce site : "4" est un seul chiffre étroit,
+  laissant beaucoup de vide visible autour de lui dans sa colonne, tandis
+  que "100% B2B" (texte bien plus long) remplit davantage sa colonne — son
+  encre visuelle se rapproche donc naturellement des bords, même si sa
+  boîte est géométriquement centrée exactement comme celle du "4". L'œil
+  compare "la distance jusqu'au texte visible", pas "la distance jusqu'à
+  la boîte" — un artefact qui apparaît sur pratiquement tout bandeau de
+  chiffres-clés avec des libellés de longueurs différentes, pas un défaut
+  de ce bandeau en particulier.
+  **Cliente consultée explicitement** (`AskUserQuestion`, plutôt que de
+  décider seul entre "laisser tel quel" et "rééquilibrer optiquement en
+  cassant la symétrie géométrique exacte") : elle a choisi une 3ᵉ option
+  plus simple — **intervertir les données 1 et 2** ("4" ↔ "5 sens") dans
+  `index.html`. `<dt data-count="4">`/`<dd>` (avec son attribut
+  `data-count` qui pilote le compteur JS) et le bloc "5 sens" échangent
+  simplement de position dans le HTML — aucun changement CSS/JS requis,
+  le compteur suit son `<dt>` quel que soit son rang dans la grille. Le
+  nouvel ordre ("5 sens" / "4" / "Alsace" / "100% B2B") atténue l'effet
+  optique signalé : le chiffre le plus court ("4") n'est plus en 1ʳᵉ
+  position contre le bord de la bande, il est encadré par "5 sens" et
+  "Alsace" des deux côtés.
+  Vérifié par script Playwright : ordre confirmé dans le DOM après le
+  swap, animation de comptage du "4" toujours fonctionnelle (atteint sa
+  valeur finale), 0 débordement. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console. **Retenue méthodologique
+  pour la suite** : face à un 3ᵉ signalement du même problème après deux
+  correctifs déjà vérifiés par script, demander une mesure directe dans le
+  navigateur de la cliente (au lieu d'une 3ᵉ hypothèse à l'aveugle) a permis
+  de trancher en un seul aller-retour entre "vrai bug" et "effet de
+  perception" — à réutiliser si un désaccord similaire (visuel vs. mesuré)
+  se reproduit ailleurs sur le site.
 
 ## État d'avancement
 
