@@ -4415,6 +4415,79 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   horizontal) et capture d'écran aux mêmes largeurs pour les deux photos.
   Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Équipe — décalage horizontal des photos via `transform` (`object-position`
+  s'avère inopérant à cette échelle) ; Engagements — fond repris tel quel
+  du chemin des 5 sens (2026-08-20, même journée)**
+  (`.talent-stage-photo`, `.engagements`, `style.css`) : deux demandes de
+  la cliente sur deux zones distinctes de cette même page.
+  **1) Photos Équipe décalées à droite, sans toucher au titre** : la
+  cliente a signalé (captures à l'appui) que le titre "Les talents
+  derrière Simposio", redevenu grand à l'itération précédente,
+  chevauchait visuellement le visage des deux membres — et a explicitement
+  demandé de ne PAS réduire/retoucher le titre, seulement de décaler les
+  photos vers la droite. **`object-position` horizontal s'est révélé
+  totalement inopérant dans cette configuration précise** — vérifié
+  empiriquement d'abord (balayage de 30% à 0%, aucun changement visible à
+  l'écran, contrairement à tous les réglages `object-position` précédents
+  sur cette même image qui avaient un effet net), puis confirmé par
+  calcul plutôt que laissé comme une anomalie non expliquée : avec
+  `object-fit:cover`, le facteur d'échelle appliqué vaut
+  `max(largeur_boîte/largeur_image, hauteur_boîte/hauteur_image)`. La
+  boîte `.talent-stage-media` est extrêmement large et relativement peu
+  haute (`min(94vh,72rem)` de haut pour une largeur qui peut dépasser
+  1900px, cf. itération précédente), alors que les 2 photos sources
+  (1600px de large) ne le sont pas dans ces proportions — l'échelle est
+  donc systématiquement pilotée par la LARGEUR à ces dimensions, ce qui ne
+  laisse mathématiquement plus aucune marge horizontale : la photo occupe
+  déjà 100% de la largeur de la boîte une fois mise à l'échelle, donc
+  glisser le point d'ancrage `object-position` horizontalement n'a
+  littéralement rien à décaler. Corrigé en sortant du système
+  `object-fit`/`object-position` pour l'axe horizontal : un
+  `transform:scale()+translateX()` posé directement sur l'`<img>` (une
+  opération visuelle appliquée APRÈS le calcul de `cover`, donc
+  indépendante de sa logique de mise à l'échelle) zoome légèrement
+  au-delà du cadre puis décale ce surplus vers la droite —
+  `.talent-stage` a déjà `overflow:hidden` (établi à une itération
+  précédente), donc le débordement induit par le zoom est proprement
+  rogné sans jamais laisser de bord vide, vérifié par script (0
+  débordement horizontal à 390/768/1024/1440/2000px). Valeurs calibrées
+  séparément par photo, par balayage empirique (plusieurs couples
+  `scale`/`translateX`, capture d'écran à chaque valeur, jamais deviné) :
+  photo 1 (Pisey Tuon) → `scale(1.4) translateX(14%)` ; photo 2 (Karola
+  G), qui avait déjà davantage d'espace négatif autour du sujet dans sa
+  composition d'origine, supportait un décalage bien plus modeste sans
+  perdre en naturel → `scale(1.15) translateX(6%)`. **Une première tentative
+  a appliqué la valeur de la photo 1 aux deux photos** — repéré avant
+  publication en re-capturant explicitement la photo 2 avec cette même
+  valeur (pas supposé applicable par défaut) : trop zoomée/décalée par
+  rapport à sa composition plus aérée. Si `object-position` horizontal est
+  retouché sur `.talent-stage-photo` en espérant un effet visible, revoir
+  d'abord ce calcul de saturation d'échelle avant de perdre du temps sur
+  des valeurs qui n'auront aucun effet à ces dimensions de boîte.
+  **2) Fond `.engagements` repris du chemin des 5 sens** ("prends le même
+  fond que pour le chemin des cinq sens") : remplace le rouge Pourpre de
+  Venise uni de l'itération précédente par le dégradé exact de
+  `.senses-journey-sticky` — `radial-gradient(55% 50% at 88% 8%,
+  rgba(193,98,45,0.3), transparent 60%)` + `linear-gradient(190deg,
+  var(--rosso-ombria) 0%, #2b1010 100%)` — copié tel quel plutôt que
+  réécrit, pour rester automatiquement synchronisé si l'un des deux est
+  retouché plus tard. **`.engagements` ajoutée au sélecteur partagé du
+  grain photo** (`.hero::after, .senses-journey-sticky::after,
+  .engagements::after`) en plus du dégradé : la texture fait partie de la
+  façon dont ce fond se lit sur la section des 5 sens, l'omettre aurait
+  donné un fond visuellement proche mais pas "le même" au sens strict de
+  la demande — sans risque de conflit, `.engagements::after` avait été
+  entièrement libéré à une itération précédente (retrait du carré
+  terracotta décoratif qui l'occupait). Si `.engagements` retrouve un
+  `background: var(--rosso-venezia)` uni ou si `.engagements::after` est
+  retiré du sélecteur partagé, c'est un retour à l'itération précédente, à
+  ne pas réintroduire sans qu'on le redemande.
+  Vérifié par script Playwright (0 débordement horizontal aux 5 largeurs,
+  0 erreur console, `transform` confirmé appliqué sur les deux
+  `<img>`, fond en dégradé + grain confirmés sur `.engagements`) et
+  capture d'écran des deux photos (les deux membres) à 768/1024/1440/2000px
+  et du fond Engagements à mi-scroll. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 

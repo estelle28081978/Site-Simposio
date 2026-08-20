@@ -1045,7 +1045,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    .contact when that CTA band was rebuilt as .method-cta (fond crème, plus de
    texture de grain, pensée pour un fond sombre uniquement). */
 .hero::after,
-.senses-journey-sticky::after {
+.senses-journey-sticky::after,
+.engagements::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1917,10 +1918,22 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    ici, ou si `.engagements::before`/`@keyframes engagementsBgDrift`
    réapparaissent, c'est une ancienne version, à ne pas réintroduire sans
    qu'on le redemande. */
+/* Fond identique à `.senses-journey-sticky` (2026-08-20, demande explicite
+   de la cliente : "pour le fond des cartes d'engagement, prends le même
+   fond que pour le chemin des cinq sens") — remplace le rouge Pourpre de
+   Venise uni de l'itération précédente. Le dégradé exact (radial +
+   linéaire) est copié tel quel plutôt que réécrit, pour rester
+   strictement identique si l'un des deux est retouché plus tard. Le grain
+   photo partagé (`.hero::after`/`.senses-journey-sticky::after`, cf. plus
+   bas) est aussi étendu à `.engagements` : la texture fait partie de la
+   façon dont ce fond se lit sur la section des 5 sens, l'omettre aurait
+   donné un fond visuellement proche mais pas "le même". */
 .engagements {
   position: relative;
   overflow: hidden;
-  background: var(--rosso-venezia);
+  background:
+    radial-gradient(55% 50% at 88% 8%, rgba(193, 98, 45, 0.3), transparent 60%),
+    linear-gradient(190deg, var(--rosso-ombria) 0%, #2b1010 100%);
   padding-block: var(--space-6);
 }
 .engagements .container { position: relative; z-index: 1; }
@@ -2060,16 +2073,43 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* `object-position` vertical propre à la 2ᵉ photo (2026-08-20) : la boîte
    `.talent-stage-media` est très large et peu haute (`min(88vh,54rem)`
    sur un écran large, cf. plus haut), donc `object-fit:cover` zoome
-   fortement — `22%` (calé sur la 1ʳᵉ photo, Zoe Galarza, qui a beaucoup de
-   cheveux au-dessus du visage) recadrait celle-ci en gros plan yeux/nez/
-   bouche, sans front ni menton visibles. Vérifié empiriquement (balayage
-   de plusieurs valeurs, 0% à 50%, capture d'écran à chaque fois — pas
-   deviné) : `38%` est la valeur qui montre tête+cou+épaules sans rogner
-   ni le haut du crâne ni le menton, aux 3 largeurs desktop testées
-   (1440, 768, plus l'extrême 2000px) et en mobile. Si une 3ᵉ photo est
-   ajoutée un jour, revérifier avec la même méthode plutôt que de
-   supposer qu'`object-position` générique convient. */
+   fortement — `22%` (calé sur la 1ʳᵉ photo) recadrait la 2ᵉ en gros plan
+   yeux/nez/bouche, sans front ni menton visibles. Vérifié empiriquement
+   (balayage de plusieurs valeurs, 0% à 50%, capture d'écran à chaque
+   fois — pas deviné) : `38%` est la valeur qui montre tête+cou+épaules
+   sans rogner ni le haut du crâne ni le menton, aux 3 largeurs desktop
+   testées (1440, 768, plus l'extrême 2000px) et en mobile. Si une 3ᵉ
+   photo est ajoutée un jour, revérifier avec la même méthode plutôt que
+   de supposer qu'`object-position` générique convient. */
 .talent-stage-photo[data-talent-target="1"] { object-position: 30% 38%; }
+/* Décalage supplémentaire vers la droite, via `transform` plutôt que
+   `object-position` (2026-08-20) : la cliente a signalé que le titre "Les
+   talents derrière Simposio" (redevenu grand, cf. plus haut) empiétait
+   visuellement sur les visages des deux photos. **`object-position`
+   horizontal s'est révélé totalement inopérant ici** — vérifié par
+   balayage (30%→0%, aucun changement visible), puis confirmé par calcul :
+   avec `object-fit:cover`, l'échelle appliquée vaut
+   `max(largeur_boîte/largeur_image, hauteur_boîte/hauteur_image)`. Cette
+   boîte est bien plus large que haute (`min(94vh,72rem)` de haut pour une
+   largeur qui peut dépasser 1900px) alors que les 2 photos sources ne le
+   sont pas autant — l'échelle est donc systématiquement pilotée par la
+   LARGEUR, ce qui ne laisse plus aucune marge horizontale à exploiter :
+   `object-position` horizontal n'a mathématiquement plus rien à décaler
+   dans cette configuration précise, quelle que soit la valeur. Corrigé en
+   sortant du système `object-fit`/`object-position` : un `transform:
+   scale()+translateX()` posé directement sur l'`<img>` (une opération
+   purement visuelle, appliquée après le calcul de `cover`) zoome
+   légèrement au-delà du cadre puis décale ce surplus vers la droite —
+   `.talent-stage` a déjà `overflow:hidden` (cf. plus haut), donc le
+   débordement induit par le zoom est proprement rogné, sans jamais
+   laisser de bord vide. Valeurs calibrées séparément par photo par
+   balayage empirique (capture d'écran à chaque valeur, jamais deviné) :
+   la 2ᵉ photo, qui avait déjà plus d'espace négatif autour du sujet,
+   supportait une valeur bien plus forte que la 1ʳᵉ, qui recadrait au
+   verso. Si un futur remplacement de photo change la composition, refaire
+   ce balayage plutôt que réutiliser ces valeurs telles quelles. */
+.talent-stage-photo[data-talent-target="0"] { transform: scale(1.4) translateX(14%); }
+.talent-stage-photo[data-talent-target="1"] { transform: scale(1.15) translateX(6%); }
 .talent-stage-photo.is-active { opacity: 1; }
 /* Zone floutée/assombrie sur la gauche (desktop uniquement, cf. media
    query plus bas) : `backdrop-filter:blur()` floute la photo qui se voit
