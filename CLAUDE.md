@@ -4170,6 +4170,89 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   photos confirmée complète) et capture d'écran à chaque largeur pour
   les deux photos. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Équipe — titre fusionné dans la photo, moins zoomée, dégradé bleu
+  Méditerranéen, glissement au changement de profil (2026-08-20, même
+  journée)** (`.talent-stage*`, `engagements.html`) : six demandes de la
+  cliente en une fois, à partir d'une nouvelle capture d'écran.
+  **1) Bandeau "Photos provisoires" retiré** : `<div class="container">
+  <p class="visual-note">…</p></div>` supprimé du HTML, `.talents`
+  repasse à `padding-block: var(--space-5) 0` (plus de padding bas, plus
+  besoin d'absorber l'espace d'un bandeau qui n'existe plus).
+  **2) Titre + eyebrow fusionnés dans la photo** ("intègre le titre...
+  ainsi que la baseline... dans une seule et même partie avec les photos
+  de présentation pour que les deux réunis tiennent sur un écran de PC") :
+  `.section-head` (bloc séparé au-dessus de `.talent-stage`) est retiré ;
+  eyebrow + `h2` deviennent `.talent-stage-heading`, premier enfant de
+  `.talent-stage-caption` — ils vivent donc dans la même colonne
+  superposée/floutée que le nom-rôle-bio, et se centrent avec elle comme
+  un seul groupe (`.talent-stage-caption` reste `justify-content:center`,
+  inchangé). Aucun scrim/padding-top dédié au header fixe n'a été
+  nécessaire : le titre hérite du padding du haut de `.talents` et du
+  centrage vertical de la colonne, dans la même zone déjà floutée/
+  assombrie que la légende (le dégradé gauche, `inset:0` sur
+  `.talent-stage-blur`, couvre déjà toute la hauteur de la photo, pas
+  seulement la zone de la légende). `h2` reçoit une taille scopée bien
+  plus petite que le `h2` générique du site (`clamp(1.7rem,…,2.4rem)`
+  contre jusqu'à `5.6rem`) — un repère de wayfinding secondaire ici, pas
+  le point focal (qui reste le nom du membre).
+  **3) Photos moins zoomées** ("j'aimerais qu'elle soit moins zoomée pour
+  faire apparaître davantage la personne") : `.talent-stage-media`
+  (≥640px) passe de `min(88vh,54rem)` à `min(88vh,60rem)`. **Point clé
+  vérifié par calcul avant de choisir ce sens** : avec `object-fit:cover`
+  sur une boîte plein écran, la largeur (fixe, celle du viewport) impose
+  déjà l'échelle — la fraction de la photo source réellement visible vaut
+  `(hauteur_boîte / largeur_boîte) × ratio_image`, donc c'est la HAUTEUR
+  de la boîte qui contrôle le zoom : une boîte plus haute montre une plus
+  grande tranche de la photo (moins zoomé), une boîte plus courte en
+  montre moins (plus zoomé) — le sens inverse de l'intuition "réduire la
+  boîte pour moins zoomer". Le titre fusionné (point 2) et le bandeau
+  retiré (point 1) libèrent la marge nécessaire pour agrandir la boîte
+  sans casser "tient sur un écran de PC" : hauteur totale de la section
+  mesurée entre 666px (1024×768) et 946px (2000×1250) selon la largeur —
+  reste dans l'ordre de grandeur d'un écran, vérifié par script Playwright
+  plutôt que supposé.
+  **4) Texte "mieux organisé" avec des tailles variées, "très visuel"** :
+  `.talent-stage-role` passe d'un simple libellé uppercase à un badge/
+  pilule (fond `rgba(224,149,106,0.14)`, bordure assortie, coins
+  arrondis, padding) — se distingue mieux entre le nom énorme et la bio
+  qu'une ligne de texte de plus. `.talent-stage-name` reçoit
+  `line-height:1.05` (hérite sinon du `line-height:1.6` du site, bien trop
+  aéré pour un nom en 2 lignes à `3.4rem` — un `<span>`, pas un `h1-h3`,
+  donc pas couvert par la règle générique `line-height:1.02` des titres).
+  **5) Glissement depuis la gauche au changement de profil** ("qu'ils
+  apparaissent avec un effet de glissement venant de la gauche") : les 2
+  `.talent-stage-panel` passent de `display:none/block` (aucune transition
+  possible sur `display`) à un empilement permanent en `position:absolute`
+  (même principe déjà établi sur cette page pour les 2
+  `.talent-stage-photo`), avec `opacity`/`transform:translateX(-2rem→0)`
+  piloté par `.is-active` — le mécanisme de bascule JS existant
+  (`classList.toggle`) n'a nécessité aucun changement, seule la traduction
+  CSS de l'état change. `.talent-stage-panels` reçoit un `min-height`
+  fixe (`19rem`, calibré sur le nom le plus long affiché sur 2 lignes)
+  puisque ses enfants sont sortis du flux normal. Neutralisé sous
+  `prefers-reduced-motion` par la règle globale déjà en place sur le site
+  (`transition-duration:0.01ms !important`), sans règle dédiée
+  supplémentaire à écrire.
+  **6) Dégradé recoloré une 2ᵉ fois, en bleu Méditerranéen** ("le
+  dégradé, fais-le finalement en bleu méditerranéen") : `.talent-stage-blur`
+  repasse du terracotta (itération précédente, même journée) au bleu
+  marine de marque, via `rgba(var(--navy-rgb), …)` (la variable déjà
+  définie dans `:root`) plutôt que des composantes RGB en dur.
+  **7) Cercles-avatars décalés encore plus à droite** ("décalant encore
+  les photos des membres... pour pas qu'elle ne colle trop le dégradé et
+  que le dégradé coupe un peu les visages") : `.talent-stage-selector`
+  passe de `left:max(28rem,42%)` à `max(34rem,48%)` — même mécanisme
+  `max()` (plancher absolu + dérive proportionnelle), poussé plus loin.
+  Revérifié par script Playwright (mesure `getBoundingClientRect`) que le
+  sélecteur reste au-delà de la largeur de `.talent-stage-caption` (donc
+  hors de la zone floutée) et jamais hors du viewport, à 4 largeurs
+  (1024-2000px).
+  Vérifié par script Playwright (bandeau confirmé absent du DOM, reveal
+  `[data-reveal]` toujours fonctionnel sur le titre fusionné, navigation
+  clavier Tab/Enter toujours fonctionnelle, 0 débordement horizontal à
+  4 largeurs) et capture d'écran aux mêmes largeurs pour les deux photos.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 

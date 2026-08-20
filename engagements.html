@@ -190,20 +190,18 @@
 
   <!-- ============================== TALENTS ============================== -->
   <section class="talents">
-    <div class="container">
-      <div class="section-head" data-reveal>
-        <span class="eyebrow">L'équipe</span>
-        <h2>Les talents derrière Simposio</h2>
-      </div>
-    </div>
-
     <!-- TODO: Estelle — les 2 photos (talent-placeholder-1.jpg / -2.jpg) sont des
          photos de banque prises au hasard, le temps de choisir les vraies photos
          d'équipe. Remplacez src, alt, nom, rôle et bio pour chaque personne. -->
     <!-- `.talent-stage` est volontairement hors de `.container` (2026-08-20) :
          la cliente a demandé que la photo + le dégradé prennent toute la
          largeur de l'écran, pas seulement la largeur du contenu centré —
-         voir CLAUDE.md et le commentaire CSS associé. -->
+         voir CLAUDE.md et le commentaire CSS associé.
+         Titre + eyebrow fusionnés dans `.talent-stage-caption` (2026-08-20,
+         2ᵉ passe) : la cliente voulait que le titre de section et la photo
+         "tiennent sur un écran de PC" ensemble — plus de bloc `.section-head`
+         séparé au-dessus, `.talent-stage-heading` vit directement dans la
+         même colonne superposée que le nom/rôle/bio, cf. CLAUDE.md. -->
     <div class="talent-stage" data-reveal>
       <div class="talent-stage-media">
         <img class="talent-stage-photo is-active" data-talent-target="0" src="assets/img/talent-placeholder-1.jpg" alt="" />
@@ -212,6 +210,11 @@
       </div>
 
       <div class="talent-stage-caption">
+        <div class="talent-stage-heading" data-reveal>
+          <span class="eyebrow on-dark">L'équipe</span>
+          <h2>Les talents derrière Simposio</h2>
+        </div>
+
         <div class="talent-stage-panels">
           <div class="talent-stage-panel is-active" data-talent-target="0">
             <span class="talent-stage-name">Estelle Lorusso</span>
@@ -238,12 +241,6 @@
           </button>
         </li>
       </ul>
-    </div>
-
-    <div class="container">
-      <p class="visual-note" style="text-align:center;margin-top:var(--space-3);">
-        Photos provisoires — sélectionnez un cercle pour changer de portrait.
-      </p>
     </div>
   </section>
 

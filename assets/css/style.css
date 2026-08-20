@@ -1924,15 +1924,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .engagements .container { position: relative; z-index: 1; }
 .engagements .lede { color: rgba(255, 255, 255, 0.88); }
 
-/* `padding-block` asymétrique (2026-08-20) : la cliente trouvait que le
-   petit bandeau crème contenant `.visual-note` (entre la photo et la
-   citation de la fondatrice) se lisait comme un espace vide distinct —
-   elle a demandé que la photo/le texte de l'équipe "prennent même la
-   place" de ce bandeau. Le padding du bas est réduit (7rem → 2.75rem)
-   pendant que `.talent-stage-media` grandit (cf. plus bas) pour absorber
-   cet espace ; le padding du haut reste inchangé pour la respiration
-   au-dessus du titre de section. */
-.talents { background: var(--bg-dim); padding-block: var(--space-6) var(--space-4); }
+/* `padding-block` (2026-08-20, 2ᵉ passe) : le bandeau `.visual-note`
+   ("Photos provisoires...") est entièrement retiré — demande explicite de
+   la cliente ("enlève la bande avec marqué photo provisoire"). Le padding
+   du bas repasse donc à 0 (`.talent-stage` touche directement le bas de la
+   section) ; seul le padding du haut subsiste, pour la respiration entre
+   la section Engagements (navy) qui précède et le début de la photo. */
+.talents { background: var(--bg-dim); padding-block: var(--space-5) 0; }
 
 /* Équipe — "stage" photo unique avec sélecteur de petits cercles
    (2026-08-19), inspiré d'une référence fournie par la cliente (design
@@ -1986,18 +1984,23 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    d'avoir des coins arrondis). Si `max-width: 58rem` réapparaît ici,
    c'est l'ancienne carte centrée, à ne pas réintroduire sans qu'on le
    redemande. */
-.talent-stage { position: relative; margin-top: var(--space-5); overflow: hidden; background: var(--navy-900); }
+.talent-stage { position: relative; overflow: hidden; background: var(--navy-900); }
 .talent-stage-media { position: relative; aspect-ratio: 4 / 3; }
-/* ≥640px : `aspect-ratio` est remplacé par une hauteur bornée en `vh` —
-   une fois la photo étirée à toute la largeur de l'écran (jusqu'à
-   ~1920px+), garder un `aspect-ratio:16/9` aurait rendu la boîte
-   démesurément haute (jusqu'à 1080px). `min(88vh, 54rem)` (agrandi le
-   2026-08-20, était `min(68vh,40rem)` — cf. commentaire sur `.talents`
-   juste au-dessus) garde une hauteur proportionnée à la fenêtre plutôt
-   qu'à la largeur de la photo, tout en se rapprochant du plein écran de
-   la référence "Kollektiva" pour absorber l'espace du bandeau crème qui
-   suivait. */
-@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(88vh, 54rem); } }
+/* ≥640px : `aspect-ratio` est remplacé par une hauteur bornée en `vh`.
+   **Ré-agrandie le 2026-08-20 (2ᵉ passe)**, de `min(88vh,54rem)` à
+   `min(88vh, 60rem)` : la cliente trouvait les photos "trop zoomées",
+   pas assez de la personne visible — avec `object-fit:cover` sur une
+   boîte plein écran, la largeur (fixe, celle du viewport) impose déjà
+   l'échelle ; SEULE une boîte plus haute réduit le zoom effectif (montre
+   une plus grande tranche de la photo source), une boîte plus courte
+   l'augmente — vérifié par calcul avant de choisir ce sens plutôt que de
+   deviner. Le titre de section (`.talent-stage-heading`, cf. plus bas)
+   ayant été fusionné dans cette même boîte plutôt que d'occuper une
+   rangée séparée au-dessus (et le bandeau `.visual-note` supprimé,
+   cf. `.talents` plus haut), l'espace total de la section reste
+   comparable malgré la boîte plus haute — c'est justement ce qui permet
+   de satisfaire à la fois "moins zoomé" ET "tient sur un écran de PC". */
+@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(88vh, 60rem); } }
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
    empilées en `position:absolute`, un fondu croisé simple suffit — pas
    besoin d'un mécanisme de scale/parallaxe comme ailleurs sur le site. */
@@ -2059,8 +2062,45 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   padding-bottom: calc(4rem + var(--space-4) + var(--space-3));
   background: var(--navy-900);
 }
-.talent-stage-panel { display: none; }
-.talent-stage-panel.is-active { display: block; }
+/* Titre de section fusionné ici (2026-08-20) : `.talent-stage-heading`
+   vit désormais comme premier enfant de `.talent-stage-caption`, dans la
+   même colonne superposée que le nom/rôle/bio du membre sélectionné —
+   plus de `.section-head` séparé au-dessus de la photo (demande
+   explicite : "que les deux réunis tiennent sur un écran de PC"). Comme
+   `.talent-stage-caption` est `justify-content:center` (≥640px), le
+   groupe [titre + panneau] se centre comme une seule unité — le titre
+   n'a donc besoin d'aucun positionnement/`padding-top` dédié pour
+   dégager le header fixe : il hérite du padding généreux du haut de
+   `.talents` (cf. plus haut) et du centrage vertical de la colonne. Sous
+   640px, `.talent-stage-caption` redevient un bloc navy plein en flux
+   normal sous la photo (inchangé) — le titre s'y empile simplement avant
+   le nom, sans CSS supplémentaire. `h2` reçoit une taille propre à cette
+   instance (bien plus petite que le `h2` générique du site, jusqu'à
+   `5.6rem`) : c'est un repère de wayfinding secondaire ici, le nom du
+   membre reste le point focal. */
+.talent-stage-heading { margin-bottom: var(--space-4); }
+.talent-stage-heading h2 { margin-top: 0.5rem; font-size: clamp(1.7rem, 1.6vw + 1.2rem, 2.4rem); color: var(--cream); }
+/* Panneaux empilés en `position:absolute` avec fondu + glissement depuis
+   la gauche (2026-08-20, demande explicite : "un effet de glissement
+   venant de la gauche lorsqu'on change de profil") — remplace le simple
+   `display:none/block` (aucune transition possible sur `display`). Les 2
+   panneaux se superposent désormais en permanence dans le DOM (comme les
+   2 `.talent-stage-photo`, même principe déjà établi sur cette page) ;
+   `.talent-stage-panels` reçoit un `min-height` fixe pour rester
+   dimensionné correctement pendant que ses enfants sont hors du flux
+   normal — calibré empiriquement (capture d'écran) sur le nom le plus
+   long ("Estelle Lorusso", 2 lignes au plafond desktop du `clamp`) plutôt
+   que deviné. */
+.talent-stage-panels { position: relative; min-height: 19rem; }
+.talent-stage-panel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateX(-2rem);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  pointer-events: none;
+}
+.talent-stage-panel.is-active { opacity: 1; transform: translateX(0); pointer-events: auto; }
 /* Tailles agrandies "en jouant sur différentes tailles" (2026-08-20,
    demande explicite) : plutôt qu'un simple facteur uniforme sur les 3
    éléments, l'écart entre eux est creusé pour renforcer la hiérarchie —
@@ -2068,16 +2108,25 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    plafond desktop) que le rôle et la bio (respectivement +22% et +26%),
    pour que le nom domine clairement plutôt que les trois tailles montent
    en bloc. */
-.talent-stage-name { display: block; font-family: var(--font-display); font-size: clamp(2rem, 2.6vw + 1.4rem, 3.4rem); color: var(--cream); }
+.talent-stage-name { display: block; font-family: var(--font-display); font-size: clamp(2rem, 2.6vw + 1.4rem, 3.4rem); line-height: 1.05; color: var(--cream); }
+/* Rôle transformé en petit badge/pilule (2026-08-20, 2ᵉ passe) : demande
+   de "mieux organiser" le texte avec des tailles variées mais "très
+   visuel" — un simple libellé uppercase se perdait entre le nom énorme et
+   la bio ; un fond translucide + coins arrondis le fait lire comme une
+   étiquette à part entière plutôt qu'une ligne de texte parmi d'autres. */
 .talent-stage-role {
-  display: block;
+  display: inline-block;
   font-family: var(--font-subtitle);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--terracotta-300);
-  margin-block: 0.6rem 0.85rem;
+  background: rgba(224, 149, 106, 0.14);
+  border: 1px solid rgba(224, 149, 106, 0.35);
+  border-radius: 999px;
+  padding: 0.35em 0.95em;
+  margin-block: 0.7rem 0.9rem;
 }
 .talent-stage-bio { color: rgba(246, 241, 231, 0.85); font-size: 1.2rem; line-height: 1.5; max-width: 28rem; }
 
@@ -2149,14 +2198,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    visage (repéré par capture d'écran à 640px, pas supposé). `min()`
    garde le meilleur des deux : proportionnel (comme avant) sur les
    largeurs étroites, plafonné (nouveau) sur les très grandes.
-   **Dégradé recoloré en terracotta (2026-08-20)**, demande explicite de
-   la cliente — remplace le dégradé bleu marine (`rgba(16,31,39,…)`,
-   couleur de `--navy-900`) par un dégradé basé sur `--terracotta`
-   (`#c1622d` → `rgb(193,98,45)`), même structure d'opacités. */
+   **Dégradé recoloré en terracotta (2026-08-20), puis en bleu
+   Méditerranéen (2026-08-20, 2ᵉ passe)** : la cliente a d'abord demandé du
+   terracotta (remplaçant le bleu marine d'origine), puis "finalement" du
+   bleu Méditerranéen (`--navy`/`--navy-rgb`, `#1c3b4a`) — dernière valeur
+   en date, ne pas revenir au terracotta (`rgba(193,98,45,…)`) sans qu'on
+   le redemande. Utilise `rgba(var(--navy-rgb), …)` (déjà établi ailleurs
+   sur le site pour ce genre de teinte) plutôt que les composantes RGB en
+   dur. */
 @media (min-width: 640px) {
   .talent-stage-blur {
     display: block;
-    background: linear-gradient(90deg, rgba(193, 98, 45, 0.88) 0, rgba(193, 98, 45, 0.72) min(18%, 10rem), rgba(193, 98, 45, 0.3) min(38%, 22rem), transparent min(55%, 32rem));
+    background: linear-gradient(90deg, rgba(var(--navy-rgb), 0.88) 0, rgba(var(--navy-rgb), 0.72) min(18%, 10rem), rgba(var(--navy-rgb), 0.3) min(38%, 22rem), transparent min(55%, 32rem));
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
     -webkit-mask-image: linear-gradient(90deg, black 0, black min(42%, 24rem), transparent min(58%, 34rem));
@@ -2172,7 +2225,14 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
     padding: var(--space-5) var(--space-4) var(--space-5) var(--space-5);
     background: none;
   }
-  .talent-stage-selector { left: max(28rem, 42%); }
+  /* Décalé encore plus à droite (2026-08-20, 2ᵉ passe) : `max(28rem,42%)`
+     → `max(34rem,48%)` — la cliente trouvait que les cercles collaient
+     encore trop au dégradé, jusqu'à ce que celui-ci coupe un peu les
+     visages sur les avatars. Même logique `max()` qu'avant (plancher
+     absolu + dérive proportionnelle sur grand écran), juste poussée plus
+     loin ; revérifié qu'aucun avatar ne sort du viewport aux largeurs
+     desktop/tablette testées (640-1920px). */
+  .talent-stage-selector { left: max(34rem, 48%); }
 }
 
 /* ==========================================================================
