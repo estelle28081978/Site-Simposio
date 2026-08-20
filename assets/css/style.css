@@ -1931,9 +1931,26 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    `background: var(--rosso-venezia)` ou un dégradé identique à
    `.senses-journey-sticky` réapparaissent ici, c'est une itération
    précédente, à ne pas réintroduire sans qu'on le redemande. */
+/* Bandeau resserré en largeur (2026-08-20, 4ᵉ passe) : la cliente a
+   signalé que le fond terracotta plein-bleed (100vw) paraissait "trop
+   gros" une fois comparé à la largeur réelle des 4 cartes (~66rem au
+   total) — remplace le fond bord-à-bord par un bloc centré, plafonné à
+   `var(--max-width)` (1320px, la même largeur que `.container` partout
+   ailleurs sur le site plutôt qu'une valeur inventée), avec des coins
+   arrondis puisque ce n'est plus une bande plein écran mais un panneau
+   qui flotte sur le fond crème de la page. Sous ~1320px+marges, le bloc
+   redevient naturellement plein-largeur (aucun écart artificiel introduit
+   sur mobile/tablette) — l'écart n'apparaît que sur les écrans assez
+   larges pour qu'il reste modeste (ex. ~150px de chaque côté à 1620px de
+   large), jamais un vide disproportionné. Si `overflow:hidden` seul (sans
+   `max-width`/`margin-inline:auto`) réapparaît ici, c'est le bandeau
+   plein-bleed précédent, à ne pas réintroduire sans qu'on le redemande. */
 .engagements {
   position: relative;
   overflow: hidden;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  border-radius: var(--radius-lg);
   background: linear-gradient(200deg, var(--terracotta) 0%, #7a3a1c 100%);
   padding-block: var(--space-6);
 }

@@ -4546,6 +4546,54 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   que rester figée) et capture d'écran des cartes Engagements desktop
   (1440px) + mobile (390px). Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Engagements repassé avant Équipe, bandeau resserré en largeur
+  (2026-08-20, même journée)** (`engagements.html`, `.engagements`,
+  `style.css`) : la cliente est revenue sur l'inversion précédente
+  (ci-dessus) et a demandé un ajustement de proportions sur le fond.
+  **1) Ordre remis dans le sens d'origine** : `.engagements` (les
+  flip-cards) repasse AVANT `.talents` (le "stage" équipe) — annule
+  exactement le réordonnancement du bullet précédent. Nouvel ordre de
+  `<main>` : bandeau titre → **engagements** → **talents** → founder →
+  values-reel. Le commentaire `<!-- ENGAGEMENTS -->` ajouté lors de
+  l'inversion précédente (pour la lisibilité une fois les deux sections
+  adjacentes dans l'autre sens) est retiré avec le retour à l'ordre
+  d'origine, qui n'en avait jamais eu.
+  **2) Bandeau terracotta resserré en largeur** ("réduis la taille du
+  bandeau en largeur car là il est trop gros par rapport à la taille des
+  cartes, je veux qu'il y ait un moins grand écart entre le bord d'écran
+  et le bandeau") : le fond terracotta dynamique (introduit au bullet
+  précédent) était plein-bleed (`100vw`, comme la plupart des sections du
+  site), ce qui le faisait paraître disproportionné par rapport aux 4
+  cartes qu'il contient (~66rem de large au total, bien moins que la
+  largeur d'un grand écran). **`.engagements` reçoit `max-width:
+  var(--max-width)` (1320px — la même largeur que `.container` partout
+  ailleurs sur le site, réutilisée plutôt qu'une valeur inventée) +
+  `margin-inline:auto` + `border-radius:var(--radius-lg)`** : le fond
+  devient un panneau centré, proportionné aux cartes, avec des coins
+  arrondis puisque ce n'est plus une bande bord-à-bord mais un bloc qui
+  flotte sur le crème de la page. Sous ~1320px de large (tablette/mobile,
+  où le site n'a de toute façon jamais de marges génériques latérales
+  hors `.container`), le bloc redevient naturellement plein-largeur — la
+  cliente a précisé vouloir "un MOINS grand écart" (pas de très grande
+  marge), donc plafonner à la largeur de `.container` plutôt qu'à une
+  valeur plus étroite : l'écart résultant reste modeste sur les largeurs
+  desktop courantes (60px de chaque côté à 1440px, 150px à 1620px) et ne
+  devient plus généreux que sur les très grands écrans (300px à 1920px),
+  sans jamais créer un vide disproportionné. `overflow:hidden` (déjà en
+  place pour clipper le calque de lueurs animées `::before`) continue de
+  fonctionner correctement avec le nouveau `border-radius` — le
+  navigateur clippe bien le contenu aux coins arrondis, vérifié par
+  capture d'écran (aucune lueur qui déborde des coins). Si
+  `.engagements` retrouve `overflow:hidden` seul (sans `max-width`/
+  `margin-inline:auto`/`border-radius`), c'est le bandeau plein-bleed
+  précédent, à ne pas réintroduire sans qu'on le redemande.
+  Vérifié par script Playwright (ordre des sections confirmé dans le DOM —
+  `engagements`, `talents`, `founder`, `values-reel` —, largeur/écart du
+  bandeau mesurés à 5 largeurs : plein-largeur sous 1320px, écart
+  symétrique croissant au-delà, 0 débordement horizontal, 0 erreur
+  console) et capture d'écran desktop (1024/1440/1920px) + mobile
+  (390px). Regression complète 5 pages × 2 viewports : 0 débordement, 0
+  erreur console.
 
 ## État d'avancement
 
