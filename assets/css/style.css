@@ -394,38 +394,49 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   .nav-toggle-label { display: none; }
 }
 
-/* Menu plein écran — 2ᵉ refonte, "panneau divisé" tenant sur un seul
-   écran (2026-08-20) : la refonte précédente (liens en `vw` jusqu'à
-   `7.5rem`) débordait en hauteur sur des fenêtres courtes — demande
-   explicite de la cliente ("retravailler complètement le menu pour que ça
-   tienne sur un écran et fais un nouveau design"). **Remplace entièrement**
-   la colonne unique + bande basse de l'itération précédente par un
-   panneau divisé en deux (terracotta à gauche / navy à droite dès 860px,
-   navy seul en dessous) — un langage visuel différent, pas juste un
-   réglage de taille. Si `.mobile-menu-grid`/`.mobile-menu-tagline` (en
-   bas de page) réapparaissent, c'est cette ancienne version, à ne pas
+/* Menu plein écran — 3ᵉ refonte, minimaliste avec chiffres "fantômes"
+   (2026-08-20) : la cliente a rejeté le panneau divisé terracotta/navy de
+   la refonte précédente et demandé "un menu plus minimaliste, mais
+   toujours avec les grosses polices et un peu plus original".
+   **Remplace entièrement** `.mobile-menu-panels`/`.mobile-menu-brand`/
+   `.mobile-menu-nav`/`.mobile-menu-eyebrow` — plus de panneau terracotta,
+   plus de citation de marque, plus de bloc "Menu" séparé : un seul fond
+   navy uni, les liens seuls portent toute l'identité visuelle. Si ces
+   classes réapparaissent, c'est l'itération précédente, à ne pas
    réintroduire sans qu'on le redemande.
-   **Le point technique clé pour "tenir sur un écran"** : la taille des
-   liens (`.mobile-menu-links a`) est indexée sur `vh` (hauteur de
-   viewport) et non `vw` — même technique déjà établie et éprouvée sur ce
-   site pour cette exact contrainte (cf. `fitPromiseLines()`/le calibrage
-   en `vh` de la 4ᵉ itération de la Promesse, `univers.html` à l'origine) :
-   une contrainte "tient sur un écran" est une contrainte de HAUTEUR, donc
-   la taille doit suivre la hauteur disponible, pas la largeur — sinon un
-   écran plus large mais pas plus haut (ex. 1920×1080 vs 1440×1080) affiche
-   un texte plus gros sans plus d'espace vertical pour le loger. Le bouton
-   fermer passe en `position:absolute` (ne consomme plus de hauteur dans le
-   flux) et `overflow-y:auto` reste en filet de sécurité pur (jamais censé
-   s'activer aux hauteurs réelles, vérifié par script Playwright de 640 à
-   1200px de haut). */
+   **"Un peu plus original"** : chaque numéro d'index (`01`-`05`) n'est
+   plus un petit repère à côté du libellé — c'est un très grand chiffre
+   "fantôme" (`.idx`), en terracotta très translucide, posé EN FOND du
+   lien, débordant à droite derrière le texte (façon filigrane d'un
+   sommaire de magazine) — le libellé (`.label`) est superposé par-dessus
+   en pleine opacité. Plus aucune ligne de séparation entre les liens
+   (`border-bottom` retiré) : c'est ce chiffre fantôme, pas un trait, qui
+   rythme la liste — plus minimal en surface (aucun filet visible tant
+   qu'on ne survole/n'atteint pas la page courante) tout en gardant une
+   vraie identité graphique distincte du reste du site.
+   **Toujours "tient sur un écran"** (contrainte conservée de l'itération
+   précédente, non redemandée à nouveau mais pas abandonnée pour autant) :
+   même technique `vh`/`min(vh,vw)` déjà établie sur ce site pour ce type
+   de contrainte (cf. `fitPromiseLines()`), reprise ici pour le libellé ET
+   pour le chiffre fantôme. Le bouton fermer reste en `position:absolute`
+   (ne consomme pas de hauteur dans le flux) ; `overflow-y:auto` reste un
+   pur filet de sécurité (vérifié par script Playwright de 640 à 1200px de
+   haut, jamais censé s'activer aux hauteurs réelles). */
 .mobile-menu {
   position: fixed;
   inset: 0;
   background: var(--navy-900);
   z-index: 199;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: var(--space-4) var(--space-3);
   transform: translateY(-100%);
   transition: transform var(--dur-slow) var(--ease);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 .mobile-menu.is-open { transform: translateY(0); }
 
@@ -444,112 +455,81 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mobile-menu-close:hover { background: rgba(246, 241, 231, 0.1); transform: rotate(90deg); }
 .mobile-menu-close svg { width: 18px; height: 18px; display: block; }
 
-.mobile-menu-panels { display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; }
-@media (min-width: 860px) { .mobile-menu-panels { flex-direction: row; } }
-
-/* Panneau terracotta — décoratif, réservé au desktop (masqué <860px pour
-   ne pas grignoter le budget vertical déjà serré en mobile) : la citation
-   de marque déjà utilisée ailleurs sur le site (pas de texte inventé),
-   pour donner au menu une identité propre plutôt qu'un simple aplat navy. */
-.mobile-menu-brand {
-  display: none;
-  background: var(--terracotta);
-  padding: var(--space-5);
-  align-items: flex-end;
-}
-@media (min-width: 860px) { .mobile-menu-brand { display: flex; flex: 0 0 36%; } }
-.mobile-menu-brand-quote {
-  font-family: var(--font-display);
-  font-style: italic;
-  color: var(--cream);
-  font-size: clamp(1.3rem, 2.4vw + 0.6rem, 2.1rem);
-  line-height: 1.3;
-  max-width: 22rem;
-}
-
-.mobile-menu-nav {
-  flex: 1;
+.mobile-menu-links {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: clamp(0.6rem, 2.2vh, 1.4rem);
-  padding: var(--space-4) var(--space-3);
+  gap: clamp(0.3rem, 1.6vh, 1rem);
+  max-width: var(--max-width);
+  margin-inline: auto;
+  width: 100%;
   min-width: 0;
 }
-@media (min-width: 860px) { .mobile-menu-nav { padding: var(--space-4) var(--space-5); } }
-
-.mobile-menu-eyebrow { display: block; flex: 0 0 auto; }
-
-.mobile-menu-links { display: flex; flex-direction: column; flex: 0 0 auto; min-width: 0; }
-/* `clamp(1.5rem, min(7.2vh, 11.5vw), 3.4rem)` + `padding-block`/`gap` eux
-   aussi en `vh` : calibré par script Playwright balayant 640 à 1200px de
-   HAUTEUR (pas de largeur) pour que les 5 lignes + eyebrow + pied de page
-   tiennent toujours sans scroll, tout en restant nettement plus grand que
-   la toute première version du menu (max `4.5rem`).
-   `min-width:0` en cascade (`.mobile-menu-nav` → `.mobile-menu-links` →
-   `a` → `.label`) : un vrai bug trouvé par capture d'écran à 390px de
-   large, pas seulement supposé — sans ce `min-width:0` à CHAQUE étage flex
-   imbriqué (colonne dans colonne dans ligne), le mot le plus long
-   ("Prestations") gardait sa largeur intrinsèque non repliée et débordait
-   hors de l'écran, invisible dans `scrollWidth` (donc absent d'un test
-   d'overflow classique) car `overflow-x:clip` sur `<html>` (règle globale
-   du site) rogne silencieusement le dépassement au lieu de créer une
-   scrollbar — le mot se retrouvait juste tronqué à l'écran. `overflow-wrap:
-   break-word` sur `.label` en filet de sécurité si un futur libellé est
-   encore plus long qu'un mot replié ne suffit pas à contenir.
-   **2ᵉ bug trouvé juste après avoir corrigé le 1er** : une fois le
-   débordement horizontal résolu par le retour à la ligne, "Prestations"
-   repliait sur 2 lignes sur les téléphones les plus étroits/courts (320-
-   360px de large), ce qui faisait déborder la hauteur du menu — le
-   `font-size` n'étant indexé QUE sur `vh`, rien ne le réduisait quand
-   c'est la LARGEUR qui manque. Corrigé en prenant le plus petit des deux
-   `min(7.2vh, 11.5vw)` : `11.5vw` calibré par balayage (10 à 12vw, capture
-   du nombre de lignes réellement rendu par lien via `Range.getClientRects()`
-   — pas juste `scrollWidth`, qui ne détecte pas un retour à la ligne) —
-   la plus grande valeur qui garde "Prestations" sur une seule ligne à
-   320/360/375px de large, sans jamais dépasser la hauteur du viewport. */
+/* `min-width:0` sur `a`/`.label` : même bug déjà rencontré et corrigé à
+   l'itération précédente (un flex item imbriqué garde sa largeur de
+   contenu non repliée par défaut) — reconduit ici pour la même raison,
+   revérifié par le même script à 320-390px de large. */
 .mobile-menu-links a {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-3);
+  position: relative;
+  display: block;
   min-width: 0;
+  padding-block: clamp(0.2rem, 1vh, 0.5rem);
+  overflow: hidden;
+  transition: padding-left var(--dur) var(--ease);
+}
+.mobile-menu-links a:hover,
+.mobile-menu-links a:focus-visible { padding-left: var(--space-2); }
+.mobile-menu-links .idx {
+  position: absolute;
+  top: 50%;
+  right: clamp(-0.3rem, 1vw, 1.5rem);
+  transform: translateY(-50%);
+  z-index: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, min(15vh, 19vw), 8rem);
+  line-height: 1;
+  color: rgba(193, 98, 45, 0.16);
+  pointer-events: none;
+  user-select: none;
+  transition: color var(--dur) var(--ease);
+}
+.mobile-menu-links a:hover .idx,
+.mobile-menu-links a:focus-visible .idx { color: rgba(193, 98, 45, 0.3); }
+.mobile-menu-links .label {
+  position: relative;
+  z-index: 1;
+  display: block;
+  min-width: 0;
+  overflow-wrap: break-word;
   font-family: var(--font-display);
   font-size: clamp(1.5rem, min(7.2vh, 11.5vw), 3.4rem);
   line-height: 1.05;
   color: var(--cream);
-  padding-block: clamp(0.15rem, 1vh, 0.5rem);
-  border-bottom: 1px solid var(--border-inverse);
-  transition: color var(--dur-fast) var(--ease), padding-left var(--dur) var(--ease);
+  transition: color var(--dur-fast) var(--ease);
 }
-.mobile-menu-links a .label { min-width: 0; overflow-wrap: break-word; }
-.mobile-menu-links a:first-child { border-top: 1px solid var(--border-inverse); }
-.mobile-menu-links a:hover,
-.mobile-menu-links a:focus-visible { color: var(--terracotta-300); padding-left: var(--space-2); }
+.mobile-menu-links a:hover .label,
+.mobile-menu-links a:focus-visible .label { color: var(--terracotta-300); }
 /* Page courante repérée en marge : chaque fichier HTML porte
    `.is-current`/`aria-current="page"` sur son propre lien plutôt qu'un
    calcul JS — cohérent avec le balisage dupliqué par page déjà en place
-   partout ailleurs sur le site (header/menu/footer). */
-.mobile-menu-links a.is-current { color: var(--terracotta-300); }
-.mobile-menu-links a.is-current .idx { color: var(--cream); }
-.mobile-menu-links .idx {
-  font-family: var(--font-subtitle);
-  font-size: clamp(0.68rem, 1.6vh, 1rem);
-  font-weight: 600;
-  color: var(--terracotta-300);
-  min-width: 2.4ch;
-}
+   partout ailleurs sur le site (header/menu/footer). Le chiffre fantôme
+   passe en pleine teinte terracotta (au lieu d'un survol ponctuel) : la
+   page courante reste identifiable même sans interaction. */
+.mobile-menu-links a.is-current .label { color: var(--terracotta-300); }
+.mobile-menu-links a.is-current .idx { color: rgba(193, 98, 45, 0.55); }
 
 /* Pied de page compact : coordonnées + réseaux sociaux sur une seule
-   ligne dès 560px (au lieu de 700px, la place étant plus contrainte
-   dans cette refonte). Les icônes Instagram/LinkedIn (mêmes SVG et
-   classe `.nav-social` que le header) sont dupliquées ici : le header
-   passe derrière l'overlay plein écran (`z-index:100` contre `199`) tant
-   que le menu est ouvert, ces icônes y étaient donc inaccessibles. */
+   ligne dès 560px. Les icônes Instagram/LinkedIn (mêmes SVG et classe
+   `.nav-social` que le header) sont dupliquées ici : le header passe
+   derrière l'overlay plein écran (`z-index:100` contre `199`) tant que le
+   menu est ouvert, ces icônes y étaient donc inaccessibles. */
 .mobile-menu-footer {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  flex: 0 0 auto;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  width: 100%;
+  margin-top: clamp(1rem, 3vh, var(--space-4));
   padding-top: clamp(0.5rem, 1.6vh, 1rem);
   border-top: 1px solid var(--border-inverse);
 }
@@ -853,6 +833,22 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
      était repeat(3, 1fr). */
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-4);
+  /* Recalage par rapport à la fenêtre réelle, scrollbar comprise
+     (2026-08-20) — `--scrollbar-w` posée par `main.js`
+     (`updateScrollbarWidth()`), 0px par défaut (scrollbar overlay ou
+     absente). Voir le commentaire dans `main.js` pour le détail complet :
+     ciblé sur ce bandeau précis plutôt qu'un `scrollbar-gutter` sur
+     `html`, qui aurait introduit une marge crème permanente sur toutes les
+     sections plein-bleed du site.
+     Sens du décalage : le contenu est centré par défaut sur `clientWidth`
+     (qui EXCLUT la scrollbar) — par rapport à la fenêtre RÉELLE (qui
+     inclut la scrollbar, uniquement du côté droit), l'écart avec le bord
+     droit vaut donc "marge + largeur scrollbar" alors que l'écart avec le
+     bord gauche ne vaut que "marge" : le contenu est donc légèrement
+     décalé vers la GAUCHE par rapport à la fenêtre réelle. Un décalage
+     positif (vers la droite) de la moitié de la largeur de la scrollbar
+     rétablit l'égalité des deux écarts. */
+  transform: translateX(calc(var(--scrollbar-w, 0px) / 2));
 }
 /* min-width:0 : sans ça, une piste `1fr` reste bornée par le max-content de
    son contenu (le mot le plus long qui ne peut pas casser), donc les 4

@@ -4818,6 +4818,98 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   clavier Tab/Enter revérifiée fonctionnelle après le changement de
   structure (`<span class="label">`). Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Bandeau chiffres clés — asymétrie liée à la scrollbar corrigée ; menu
+  — 3ᵉ refonte minimaliste avec chiffres fantômes (2026-08-20, même
+  journée)** : la cliente a envoyé une capture d'écran Safari macOS
+  montrant un écart visiblement inégal entre la 1ʳᵉ donnée et le bord
+  gauche de la fenêtre vs. la 4ᵉ donnée et le "bord blanc" (la scrollbar
+  native, visible comme une fine bande claire à droite) — puis redemandé
+  un menu "plus minimaliste, mais toujours avec les grosses polices et un
+  peu plus original".
+  **1) Bandeau chiffres clés — cause enfin isolée : la scrollbar, pas le
+  CSS du bandeau lui-même** (`main.js`, `style.css`) : tout le travail de
+  centrage précédent (colonnes, puis rythme des séparateurs) était
+  correct — invisible dans cet environnement de développement (Chromium
+  headless utilise des scrollbars overlay qui ne réservent aucun espace de
+  mise en page), mais la cliente utilise Safari avec une scrollbar
+  classique (probablement une souris branchée — macOS bascule alors sur
+  une scrollbar "toujours visible" qui réserve de la place, contrairement
+  au comportement par défaut au trackpad). Tout élément centré via
+  `margin-inline:auto` se centre par rapport à `document.documentElement.
+  clientWidth`, qui EXCLUT la largeur de la scrollbar — donc par rapport à
+  la fenêtre RÉELLE (scrollbar comprise, uniquement à droite), l'écart
+  avec le bord droit vaut algébriquement `marge + largeur_scrollbar` alors
+  que l'écart avec le bord gauche ne vaut que `marge` : le contenu est
+  donc systématiquement décalé vers la gauche par rapport à la fenêtre
+  réelle sur ce type de navigateur/configuration — démontré par calcul
+  algébrique (pas juste mesuré) avant d'écrire le correctif.
+  **Solution écartée d'abord** : `scrollbar-gutter: stable both-edges` sur
+  `html` — corrige bien la symétrie en réservant une marge miroir à
+  gauche, MAIS teste dans cet environnement révèle un effet de bord
+  majeur non souhaité : ça introduit une marge crème permanente (~15px)
+  sur TOUTES les sections plein-bleed du site (hero, bandeaux de couleur,
+  etc.), cassant l'esthétique "pleine largeur" établie sur l'ensemble du
+  site pour corriger un seul bandeau — changement bien plus large que ce
+  qui a été demandé, écarté avant publication.
+  **Solution retenue, ciblée** : `updateScrollbarWidth()` dans `main.js`
+  mesure `window.innerWidth - document.documentElement.clientWidth` (0px
+  sur un navigateur à scrollbar overlay) et l'expose en variable CSS
+  `--scrollbar-w` sur `:root`, au chargement et au redimensionnement.
+  `.stats-band-grid` seul applique `transform: translateX(calc(var(
+  --scrollbar-w, 0px) / 2))` — un décalage vers la DROITE de la moitié de
+  la largeur de la scrollbar, qui rétablit l'égalité des deux écarts par
+  rapport à la fenêtre réelle (vérifié par calcul : après décalage, les
+  deux écarts valent chacun `marge + largeur_scrollbar/2`). Sans effet sur
+  le reste du site (contrairement à `scrollbar-gutter`), ni sur les
+  navigateurs à scrollbar overlay (`--scrollbar-w` reste à 0px, `transform:
+  translateX(0)`, no-op). Vérifié par script Playwright simulant une
+  scrollbar de 16px (`--scrollbar-w` forcée manuellement) : le décalage
+  mesuré correspond exactement à la moitié (8px), dans le bon sens.
+  **2) Menu — 3ᵉ refonte, minimaliste avec chiffres "fantômes"**
+  (`.mobile-menu*`, les 5 pages) : la cliente a rejeté le panneau divisé
+  terracotta/navy de la refonte précédente. **Remplace entièrement**
+  `.mobile-menu-panels`/`.mobile-menu-brand`/`.mobile-menu-nav`/
+  `.mobile-menu-eyebrow` — plus de panneau terracotta, plus de citation de
+  marque, plus de bloc "Menu" séparé : un seul fond navy uni, retour à une
+  structure plus simple en surface (demande explicite "plus minimaliste").
+  Si ces classes réapparaissent, c'est l'itération précédente, à ne pas
+  réintroduire sans qu'on le redemande.
+  **"Un peu plus original"** : chaque numéro d'index (`01`-`05`) devient
+  un très grand chiffre "fantôme" en terracotta très translucide
+  (`rgba(193,98,45,0.16)`), posé en fond de son lien et débordant
+  légèrement à droite derrière le texte (façon filigrane de sommaire de
+  magazine) — le libellé (`.label`) est superposé par-dessus en pleine
+  opacité crème. Plus aucune ligne de séparation entre les liens (le
+  `border-bottom` de l'itération précédente est retiré) : c'est ce chiffre
+  fantôme qui rythme la liste, pas un trait — plus sobre en surface tout
+  en gardant une identité graphique distincte. Au survol/focus clavier, le
+  chiffre fantôme s'éclaircit (`rgba(...,0.3)`) et le libellé passe en
+  terracotta clair, en plus du décalage `padding-left` déjà établi
+  ailleurs sur le site pour ce type d'interaction ; la page courante
+  reste identifiable même sans interaction (chiffre fantôme à
+  `rgba(...,0.55)`, libellé en terracotta clair fixe).
+  **"Tient sur un écran" reconduit sans qu'on le redemande à nouveau** :
+  même technique `vh`/`min(vh,vw)` déjà établie à l'itération précédente
+  (taille du libellé ET, cette fois, aussi du chiffre fantôme, tous deux
+  calés sur la hauteur disponible) — reconduite ici pour ne pas
+  réintroduire le débordement de la toute première refonte. Bouton fermer
+  toujours en `position:absolute`. Vérifié par script Playwright balayant
+  les mêmes 17 combinaisons largeur×hauteur (640-1200px de haut) : 0
+  débordement vertical à chaque fois, et les 6 largeurs étroites dédiées
+  (320-414px) : 0 débordement horizontal, chaque libellé toujours rendu
+  sur une seule ligne — bug de `min-width:0` déjà rencontré et corrigé à
+  l'itération précédente, revérifié absent ici (reconduit dans la nouvelle
+  structure : `.mobile-menu-links`, `a` et `.label` portent tous
+  `min-width:0`).
+  Vérifié par script Playwright (0 débordement horizontal/vertical sur les
+  5 pages × 2 viewports, menu ouvert ET fermé ; page courante confirmée
+  correcte sur les 5 pages ; navigation clavier revérifiée avec un vrai
+  `Tab` — pas seulement `.focus()` programmatique, qui ne déclenche pas
+  toujours `:focus-visible` — confirmant la coloration terracotta au focus
+  clavier réel, puis `Enter` déclenchant bien la navigation) et capture
+  d'écran desktop (1440px, 1920px, état normal + survol) et mobile
+  (390px). Regression complète 5 pages × 2 viewports : 0 débordement, 0
+  erreur console.
 
 ## État d'avancement
 

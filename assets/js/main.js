@@ -3,6 +3,30 @@
 
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* ---------- Scrollbar width compensation ---------- */
+  /* Sur un navigateur à scrollbar "classique" (réservant de la place —
+     ex. Safari/Chrome sur Mac avec une souris branchée, ou Windows par
+     défaut), le contenu centré via `margin-inline:auto` se centre par
+     rapport à `clientWidth` (qui EXCLUT la scrollbar), donc légèrement
+     décalé par rapport à la fenêtre RÉELLE que l'œil perçoit — repéré par
+     la cliente via capture d'écran Safari (écart visible entre la 1ʳᵉ
+     donnée du bandeau chiffres clés et le bord gauche vs. la 4ᵉ donnée et
+     la scrollbar à droite). Invisible dans cet environnement de
+     développement (Chromium headless utilise des scrollbars overlay, sans
+     réservation d'espace). Corrigé de façon ciblée (pas via
+     `scrollbar-gutter` sur `html`, qui introduirait une marge crème
+     permanente sur TOUTES les sections plein-bleed du site — bien plus
+     large que ce qui a été demandé) : la largeur réelle de la scrollbar
+     est mesurée et exposée en variable CSS `--scrollbar-w`, utilisée
+     uniquement par `.stats-band-grid` (cf. `style.css`) pour se recaler
+     par rapport à la fenêtre réelle sans toucher au reste du site. */
+  function updateScrollbarWidth() {
+    var w = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty("--scrollbar-w", w + "px");
+  }
+  updateScrollbarWidth();
+  window.addEventListener("resize", updateScrollbarWidth);
+
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
