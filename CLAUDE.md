@@ -4727,6 +4727,97 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   en page à deux colonnes (`.mobile-menu-side`) réapparaît dans un diff,
   c'est cette ancienne version, à ne pas réintroduire sans qu'on le
   redemande.
+- **Bandeau chiffres clés — vrai défaut de rythme des séparateurs corrigé ;
+  menu — 2ᵉ refonte complète en "panneau divisé" garanti tenir sur un
+  écran (2026-08-20, même journée)** : la cliente est revenue sur les deux
+  chantiers précédents avec un jugement plus tranché ("il faut que
+  vraiment tout soit centré à la perfection" / "retravailler complètement
+  le menu pour que ça tienne sur un écran").
+  **1) Bandeau chiffres clés — le centrage des colonnes était déjà exact,
+  le vrai défaut était ailleurs** : re-vérifié par script Playwright à 21
+  largeurs (701 à 2560px), mesurant le milieu de chaque `<dt>` contre le
+  milieu de sa colonne ET le milieu du bandeau lui-même — **0,0px d'écart
+  partout**, confirmant que le correctif de la passe précédente
+  (`::before` au lieu de `padding-left`/`border-left`) tenait bien. Le
+  vrai problème, trouvé en examinant le RYTHME visuel plutôt que la seule
+  géométrie des colonnes : chaque séparateur (`::before`, `left:0`) se
+  plaçait au bord GAUCHE de sa propre colonne, donc juste après le `gap`
+  complet (44px) qui suit la colonne précédente — le trait "colle" au
+  bord de la colonne suivante avec zéro espace de son côté droit, tout
+  l'espace du gap se retrouvant de son côté gauche. Répété 3 fois sur la
+  ligne, ce déséquilibre cumulatif (plein d'espace avant chaque trait,
+  aucun après) est ce qui donnait l'impression que "tout est poussé vers
+  la droite", même si le TEXTE de chaque colonne restait, lui,
+  parfaitement centré dans sa piste. **Corrigé en recentrant chaque
+  séparateur au milieu de son `gap`** (`left: calc(var(--space-4) / -2)`,
+  ≥701px uniquement — sous 700px la mise en page passe en une seule
+  colonne empilée, le trait y reste un simple accent vertical `left:0`,
+  pas un séparateur "entre deux colonnes"). Vérifié par script Playwright :
+  chaque trait tombe exactement au milieu géométrique de son gap (mesuré
+  par rapport au bord droit de la colonne précédente et au bord gauche de
+  la colonne suivante) aux 3 positions.
+  **2) Menu — 2ᵉ refonte complète, contrainte de hauteur d'abord** : la
+  1ʳᵉ refonte (bullet précédent, même journée) débordait en hauteur sur
+  des fenêtres de navigateur courtes — la cliente a demandé une refonte
+  complète avec cette contrainte comme priorité n°1 ("pour que ça tienne
+  sur un écran") et un nouveau design ("fais un nouveau design"), pas
+  seulement un ajustement de taille. **Remplace entièrement** la colonne
+  unique + bande basse de l'itération précédente par un **panneau divisé
+  en deux** : `.mobile-menu-brand` (terracotta, la citation de marque déjà
+  utilisée ailleurs sur le site, réservé au desktop ≥860px pour ne pas
+  grignoter le budget vertical déjà serré en mobile) + `.mobile-menu-nav`
+  (navy-900, les liens + pied de page) — empilés en une seule colonne sous
+  860px (le panneau terracotta disparaît alors). Si `.mobile-menu-grid`/
+  `.mobile-menu-tagline` en bas de page réapparaissent, c'est l'itération
+  précédente, à ne pas réintroduire sans qu'on le redemande.
+  **Le point technique clé pour garantir "tient sur un écran"** : la
+  taille des liens est indexée sur `vh` (hauteur de viewport) et non `vw`
+  — même technique déjà établie et éprouvée sur ce site pour cette exacte
+  contrainte (cf. `fitPromiseLines()`/le calibrage en `vh` de la Promesse,
+  historiquement sur `univers.html`) : "tenir sur un écran" est une
+  contrainte de HAUTEUR, la taille doit donc suivre la hauteur
+  disponible, pas la largeur. Le bouton fermer passe en `position:absolute`
+  (ne consomme plus de hauteur dans le flux). **Vérifié par script
+  Playwright balayant 17 combinaisons largeur×hauteur (640 à 1200px de
+  haut, 390 à 1920px de large)** : `scrollHeight === clientHeight` du
+  menu à chaque fois (0 débordement vertical, 0 scroll nécessaire) —
+  `overflow-y:auto` reste en place mais uniquement comme filet de
+  sécurité, jamais censé s'activer aux hauteurs réelles.
+  **Deux bugs réels trouvés par capture d'écran après ce premier
+  calibrage réussi, aucun supposé** :
+  1. À 390px de large, "Prestations" (le libellé le plus long) débordait
+     hors de l'écran horizontalement — invisible dans un test d'overflow
+     classique (`document.documentElement.scrollWidth`) car
+     `overflow-x:clip` sur `<html>` (règle globale du site) rogne
+     silencieusement le dépassement au lieu de créer une scrollbar
+     mesurable ; repéré uniquement par capture d'écran, montrant le mot
+     visiblement tronqué. Cause : chaque lien est un `<a>` en
+     `display:flex` imbriqué dans plusieurs niveaux de flex-colonne
+     (`.mobile-menu-nav` → `.mobile-menu-links` → `a`) — sans `min-width:0`
+     à CHAQUE étage, un flex item garde sa largeur intrinsèque de contenu
+     non replié (`min-width:auto` par défaut), empêchant tout retour à la
+     ligne même si le conteneur est plus étroit. Corrigé en ajoutant
+     `min-width:0` en cascade à chaque niveau, et en isolant le texte du
+     lien dans un `<span class="label">` dédié (`min-width:0;
+     overflow-wrap:break-word`) plutôt que de compter sur le texte brut
+     directement enfant du flex container.
+  2. Une fois ce retour à la ligne permis, "Prestations" repliait sur 2
+     lignes sur les téléphones les plus étroits/courts (320-360px), ce qui
+     faisait déborder la hauteur du menu — le `font-size` n'étant indexé
+     QUE sur `vh`, rien ne le réduisait quand c'est la LARGEUR qui manque.
+     Corrigé en prenant `min(7.2vh, 11.5vw)` plutôt que `7.2vh` seul —
+     `11.5vw` calibré par balayage (10 à 12vw, mesure du nombre de lignes
+     réellement rendu par lien via `Range.getClientRects()`, pas
+     `scrollWidth` qui ne détecte pas un retour à la ligne) : la plus
+     grande valeur qui garde "Prestations" sur une seule ligne à
+     320/360/375px de large, sans jamais dépasser la hauteur du viewport.
+  Vérifié après ces deux correctifs : re-balayage complet des 17
+  combinaisons largeur×hauteur (0 débordement vertical) + 6 largeurs
+  étroites dédiées 320-414px (0 débordement horizontal, 0 retour à la
+  ligne sur aucun lien). Page courante toujours mise en valeur, navigation
+  clavier Tab/Enter revérifiée fonctionnelle après le changement de
+  structure (`<span class="label">`). Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
