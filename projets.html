@@ -40,18 +40,32 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </button>
   <div class="mobile-menu-grid">
+    <span class="eyebrow on-dark mobile-menu-eyebrow">Menu</span>
     <nav class="mobile-menu-links" aria-label="Navigation principale">
-      <a href="prestations.html">Prestations</a>
-      <a href="projets.html">Projets</a>
-      <a href="engagements.html">À propos</a>
-      <a href="contact.html">Contact</a>
+      <a href="index.html"><span class="idx">01</span>Accueil</a>
+      <a href="prestations.html"><span class="idx">02</span>Prestations</a>
+      <a href="projets.html" class="is-current" aria-current="page"><span class="idx">03</span>Projets</a>
+      <a href="engagements.html"><span class="idx">04</span>À propos</a>
+      <a href="contact.html"><span class="idx">05</span>Contact</a>
     </nav>
-    <div class="mobile-menu-side">
-      <div class="mobile-menu-info">
-        <span class="eyebrow on-dark">Contact</span>
-        <a href="mailto:Estellelorusso@eurhekaconseil.com">Estellelorusso<span class="mailto-at">@</span>eurhekaconseil.com</a>
-        <span class="eyebrow on-dark">Basée en</span>
-        <span>Alsace, France</span>
+    <div class="mobile-menu-footer">
+      <p class="mobile-menu-tagline">&laquo;&nbsp;L'événement qui a le goût d'une expérience.&nbsp;&raquo;</p>
+      <div class="mobile-menu-footer-side">
+        <div class="mobile-menu-info">
+          <span class="eyebrow on-dark">Contact</span>
+          <a href="mailto:Estellelorusso@eurhekaconseil.com">Estellelorusso<span class="mailto-at">@</span>eurhekaconseil.com</a>
+          <span class="eyebrow on-dark">Basée en</span>
+          <span>Alsace, France</span>
+        </div>
+        <div class="mobile-menu-social">
+          <!-- TODO: remplacer # par les vraies URLs Instagram / LinkedIn de Simposio -->
+          <a href="#" class="nav-social" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" class="nav-social" target="_blank" rel="noopener" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7.2 10v7M7.2 7.2v.01M11.2 17v-4.2a2 2 0 014-.1V17M11.2 12.8V17"/></svg>
+          </a>
+        </div>
       </div>
     </div>
   </div>

@@ -4644,6 +4644,89 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Enter toujours fonctionnel — `aria-expanded` confirmé, dégradé du dos
   mesuré via `getComputedStyle`) et capture d'écran desktop (cartes non
   retournées + carte 1 retournée en gros plan) + mobile (390px).
+- **Bandeau chiffres clés (accueil) — centrage corrigé ; menu plein écran
+  entièrement retravaillé (2026-08-20)** : deux demandes distinctes de la
+  cliente.
+  **1) `.stats-band-grid` — vraie cause du défaut de centrage identifiée
+  et corrigée** (`style.css`) : la cliente a signalé que les infos
+  n'étaient "pas parfaitement centrées" dans leur colonne, ni l'ensemble.
+  Cause réelle, pas une impression : les séparateurs verticaux entre
+  colonnes étaient un `border-left` + `padding-left` sur `.stats-band-grid
+  > div` (retirés uniquement sur `:first-child`) — `border`/`padding`
+  consomment de l'espace UNIQUEMENT à gauche du contenu, donc
+  `text-align:center` centrait chaque chiffre/libellé dans une boîte de
+  contenu asymétrique (décalée vers la droite pour les colonnes 2 à 4, la
+  1ʳᵉ n'ayant ni l'un ni l'autre) — visible sur capture d'écran ("1" et "5
+  sens" nettement à gauche du milieu de leur piste). Corrigé en
+  transformant le séparateur en `::before` décoratif positionné en absolu
+  au bord gauche de la piste (`position:relative` sur le `div`, `::before`
+  en `inset:0 auto 0 0`) : il n'occupe plus aucun espace de mise en page,
+  donc `text-align:center` centre désormais sur toute la largeur réelle de
+  la piste `1fr` — et par construction, la ligne entière de 4 colonnes
+  égales se lit comme parfaitement centrée dans `.container`. Vérifié par
+  script Playwright mesurant le milieu de chaque `<dt>` contre le milieu
+  de sa colonne (`getBoundingClientRect`) : écart de `0.0px` sur les 4
+  colonnes à 1440px de large. Si `padding-left`/`border-left` réapparaissent
+  sur `.stats-band-grid > div`, c'est ce défaut de centrage, à ne pas
+  réintroduire sans qu'on le redemande.
+  **2) Menu plein écran (`.mobile-menu`) — refonte complète** (les 5
+  pages, `style.css`) : demande explicite ("rajoute l'accueil dans la page
+  du menu et retravaille-moi complètement la page du menu, je te laisse me
+  faire une proposition, garde juste l'idée de mettre les polices en très
+  très grand"). **C'est bien "la page du menu" au sens propre** :
+  `.nav-toggle` (le bouton "Menu") n'est masqué par aucune media query
+  dans `style.css` — ce plein écran est l'unique navigation du site, à
+  toutes les largeurs, pas seulement en mobile malgré son nom de classe
+  hérité.
+  **"Accueil" ajouté** : 5ᵉ page manquante du menu (`index.html`), insérée
+  en première position — le menu comptait jusque-là Prestations/Projets/
+  À propos/Contact seulement.
+  **Proposition retenue** — une seule colonne empilée à toutes les
+  largeurs (remplace la disposition à deux colonnes précédente, liens à
+  gauche/bloc contact figé à droite dès 860px, devenue impraticable avec
+  une police aussi grande) :
+  - Eyebrow "Menu" en haut (style `.eyebrow.on-dark` générique du site).
+  - Les 5 liens en pleine largeur, chacun précédé d'un numéro d'index
+    (`01`–`05`, classe `.idx` — **réutilise une classe CSS déjà présente
+    dans le fichier mais jamais posée dans le HTML d'aucune page**,
+    trouvée morte pendant l'audit de ce composant, plutôt que d'en créer
+    une nouvelle). Taille de police portée à
+    `clamp(2.6rem, 5vw + 1.4rem, 7.5rem)` — plafond desktop presque
+    doublé par rapport à l'ancien (`4.5rem`), calibré par script
+    Playwright (390 à 1920px de large) pour rester "très très grand" sans
+    qu'aucun libellé (y compris "Prestations", le plus long) ne déborde
+    ni ne se replie sur mobile étroit.
+  - **Page courante mise en valeur** (nouveauté, absente de l'ancien
+    menu) : chaque fichier HTML porte `class="is-current"
+    aria-current="page"` sur son propre lien (balisage dupliqué par page,
+    cohérent avec la convention déjà en place pour header/footer) — le
+    lien passe en terracotta clair, son numéro d'index repasse en crème
+    pour garder le contraste inversé. Vérifié par script Playwright sur
+    les 5 pages : le bon lien (et lui seul) porte `.is-current` à chaque
+    fois.
+  - **Bande basse remplace la colonne latérale** : citation de marque
+    (« L'événement qui a le goût d'une expérience. », déjà utilisée comme
+    baseline ailleurs sur le site — texte existant réutilisé, rien
+    d'inventé), coordonnées (email/localisation, markup `.mobile-menu-info`
+    inchangé) et icônes Instagram/LinkedIn — empilée sur mobile, sur une
+    ligne dès 700px. **Icônes sociales dupliquées depuis le header**
+    (mêmes SVG, classe `.nav-social` réutilisée telle quelle) : le header
+    (`z-index:100`) passe derrière l'overlay plein écran (`z-index:199`)
+    tant que le menu est ouvert, ces icônes lui étaient donc jusqu'ici
+    inaccessibles pendant la consultation du menu — corrigé au passage,
+    pas seulement esthétique.
+  - `.mobile-menu-sub`/`.mobile-menu-side` (CSS mort, jamais référencé par
+    aucun des 5 fichiers HTML avant cette refonte) retirées plutôt que
+    reconduites.
+  Vérifié par script Playwright (0 débordement horizontal sur les 5 pages
+  × 2 viewports, avec le menu ouvert ET fermé ; navigation clavier
+  Tab/Enter confirmée fonctionnelle — Enter sur un lien focus déclenche
+  bien la navigation ; fermeture/réouverture du menu revérifiée) et
+  capture d'écran desktop (1440px, y compris la bande basse une fois
+  scrollée dans la fenêtre du menu) + mobile (390px). Si l'ancienne mise
+  en page à deux colonnes (`.mobile-menu-side`) réapparaît dans un diff,
+  c'est cette ancienne version, à ne pas réintroduire sans qu'on le
+  redemande.
 
 ## État d'avancement
 
