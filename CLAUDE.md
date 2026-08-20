@@ -4488,6 +4488,64 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   capture d'écran des deux photos (les deux membres) à 768/1024/1440/2000px
   et du fond Engagements à mi-scroll. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Équipe et Engagements interverties, fond Engagements repassé à un
+  dynamique en terracotta (2026-08-20, même journée)**
+  (`engagements.html`, `.engagements`, `style.css`) : deux demandes de la
+  cliente en une fois, arrivées quelques minutes seulement après le fond
+  "identique aux 5 sens" ci-dessus (donc très éphémère — jamais vu en
+  ligne par la cliente avant d'être déjà remplacé).
+  **1) Ordre des sections inversé** : `.talents` (le "stage" photo+texte de
+  l'équipe) passe désormais AVANT `.engagements` (les flip-cards), alors
+  que l'ordre était l'inverse depuis la toute première version de cette
+  page. Simple réordonnancement des deux `<section>` dans le HTML — aucun
+  changement de contenu, de mécanisme ni de style à l'intérieur de chacune.
+  Nouvel ordre complet de `<main>` sur `engagements.html` : bandeau titre
+  (crème) → **talents** (photo pleine largeur, fond navy-900 côté texte) →
+  **engagements** (fond terracotta dynamique, cf. point 2) → founder
+  (typographie minimaliste sur crème) → values-reel (album Valeurs, navy).
+  Un commentaire `<!-- ============================== ENGAGEMENTS
+  ============================== -->` a été ajouté au-dessus de la section
+  (elle n'en avait jamais eu, contrairement à `<!-- TALENTS -->` déjà
+  présent) pour la cohérence de lisibilité du fichier maintenant que les
+  deux sont adjacentes dans un nouvel ordre.
+  **2) Fond Engagements redevenu dynamique, en terracotta** ("mets un fond
+  terracotta dynamique") : remplace le dégradé statique identique à
+  `.senses-journey-sticky` de l'itération précédente (rouge Pourpre de
+  Venise/navy foncé) — celle-ci est donc restée en place moins longtemps
+  que toutes les précédentes itérations de ce fond. Reprend la technique
+  du tout premier fond dynamique de cette section (2026-08-17, lueurs
+  radiales floutées en dérive lente via `::before` + `@keyframes
+  engagementsBgDrift`, retirée le 2026-08-18 puis jamais réutilisée
+  depuis) mais avec un vrai changement de dosage : cette fois le
+  **terracotta est la teinte de base** de tout le fond
+  (`linear-gradient(200deg, var(--terracotta) 0%, #7a3a1c 100%)`), avec des
+  lueurs en rouge Pourpre de Venise/rouge Terre d'Ombrie/crème par-dessus
+  — la version d'origine faisait l'inverse (base navy, terracotta
+  seulement en lueur). C'est la nuance exacte de la nouvelle demande
+  ("fond terracotta dynamique", pas juste "fond dynamique"). `::before`
+  reprend les mêmes paramètres que l'origine (`inset:-25%`, `blur(60px)`,
+  animation `translate`+`scale` sur 26s en boucle alternée) — aucune règle
+  `prefers-reduced-motion` dédiée nécessaire, la règle globale du site
+  (`animation-duration:0.01ms !important`, tout en haut du fichier) neutralise
+  déjà cette animation, même convention que `@keyframes promisePhotoDrift`
+  juste au-dessus dans le fichier. **`.engagements` retirée du sélecteur
+  partagé de grain photo** (`.hero::after`/`.senses-journey-sticky::after`)
+  où elle avait été ajoutée à l'itération précédente pour matcher le fond
+  des 5 sens au pixel près — cette raison d'être n'existe plus une fois le
+  fond remplacé par ce nouveau dégradé dynamique, ce grain n'a donc pas été
+  réappliqué sans qu'on le redemande. Si `background: var(--rosso-venezia)`
+  ou un dégradé identique à `.senses-journey-sticky` réapparaissent sur
+  `.engagements`, ou si `.engagements` réapparaît dans le sélecteur partagé
+  de grain, c'est un retour à l'itération précédente, à ne pas réintroduire
+  sans qu'on le redemande.
+  Vérifié par script Playwright (ordre des sections confirmé dans le DOM —
+  `talents`, `engagements`, `founder`, `values-reel` —, 0 débordement
+  horizontal, 0 erreur console, `animation-name:engagementsBgDrift`
+  confirmé sur `::before`, `transform` de `::before` mesuré à 2s
+  d'intervalle pour confirmer que l'animation progresse réellement plutôt
+  que rester figée) et capture d'écran des cartes Engagements desktop
+  (1440px) + mobile (390px). Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 

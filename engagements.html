@@ -66,6 +66,63 @@
     </div>
   </div>
 
+  <!-- ============================== TALENTS ============================== -->
+  <section class="talents">
+    <!-- TODO: Estelle — les 2 photos (talent-placeholder-1.jpg / -2.jpg) sont des
+         photos de banque prises au hasard, le temps de choisir les vraies photos
+         d'équipe. Remplacez src, alt, nom, rôle et bio pour chaque personne. -->
+    <!-- `.talent-stage` est volontairement hors de `.container` (2026-08-20) :
+         la cliente a demandé que la photo + le dégradé prennent toute la
+         largeur de l'écran, pas seulement la largeur du contenu centré —
+         voir CLAUDE.md et le commentaire CSS associé.
+         Titre + eyebrow fusionnés dans `.talent-stage-caption` (2026-08-20,
+         2ᵉ passe) : la cliente voulait que le titre de section et la photo
+         "tiennent sur un écran de PC" ensemble — plus de bloc `.section-head`
+         séparé au-dessus, `.talent-stage-heading` vit directement dans la
+         même colonne superposée que le nom/rôle/bio, cf. CLAUDE.md. -->
+    <div class="talent-stage" data-reveal>
+      <div class="talent-stage-media">
+        <img class="talent-stage-photo is-active" data-talent-target="0" src="assets/img/talent-placeholder-1.jpg" alt="" />
+        <img class="talent-stage-photo" data-talent-target="1" src="assets/img/talent-placeholder-2.jpg" alt="" />
+        <div class="talent-stage-blur" aria-hidden="true"></div>
+      </div>
+
+      <div class="talent-stage-caption">
+        <div class="talent-stage-heading" data-reveal>
+          <span class="eyebrow on-dark">L'équipe</span>
+          <h2>Les talents<br>derrière Simposio</h2>
+        </div>
+
+        <div class="talent-stage-panels">
+          <div class="talent-stage-panel is-active" data-talent-target="0">
+            <span class="talent-stage-name">Estelle Lorusso</span>
+            <span class="talent-stage-role">Fondatrice</span>
+            <p class="talent-stage-bio">Porte l'art de recevoir à l'italienne jusqu'en Alsace, une initiative Eurheka Conseil.</p>
+          </div>
+          <div class="talent-stage-panel" data-talent-target="1">
+            <span class="talent-stage-name">À compléter</span>
+            <span class="talent-stage-role">Rôle à préciser</span>
+            <p class="talent-stage-bio">Envoyez-moi le nom, le rôle et une courte bio pour compléter cette fiche.</p>
+          </div>
+        </div>
+      </div>
+
+      <ul class="talent-stage-selector" role="tablist" aria-label="Membres de l'équipe">
+        <li role="presentation">
+          <button type="button" class="talent-stage-avatar is-active" data-talent-target="0" role="tab" aria-selected="true" aria-label="Estelle Lorusso, Fondatrice">
+            <img src="assets/img/talent-placeholder-1.jpg" alt="" loading="lazy" />
+          </button>
+        </li>
+        <li role="presentation">
+          <button type="button" class="talent-stage-avatar" data-talent-target="1" role="tab" aria-selected="false" aria-label="Membre de l'équipe à compléter">
+            <img src="assets/img/talent-placeholder-2.jpg" alt="" loading="lazy" />
+          </button>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============================== ENGAGEMENTS ============================== -->
   <section class="engagements">
     <div class="container">
       <p class="lede" style="text-align:center;margin-inline:auto;margin-bottom:var(--space-5);" data-reveal>
@@ -182,62 +239,6 @@
                 </span>
               </span>
             </span>
-          </button>
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ============================== TALENTS ============================== -->
-  <section class="talents">
-    <!-- TODO: Estelle — les 2 photos (talent-placeholder-1.jpg / -2.jpg) sont des
-         photos de banque prises au hasard, le temps de choisir les vraies photos
-         d'équipe. Remplacez src, alt, nom, rôle et bio pour chaque personne. -->
-    <!-- `.talent-stage` est volontairement hors de `.container` (2026-08-20) :
-         la cliente a demandé que la photo + le dégradé prennent toute la
-         largeur de l'écran, pas seulement la largeur du contenu centré —
-         voir CLAUDE.md et le commentaire CSS associé.
-         Titre + eyebrow fusionnés dans `.talent-stage-caption` (2026-08-20,
-         2ᵉ passe) : la cliente voulait que le titre de section et la photo
-         "tiennent sur un écran de PC" ensemble — plus de bloc `.section-head`
-         séparé au-dessus, `.talent-stage-heading` vit directement dans la
-         même colonne superposée que le nom/rôle/bio, cf. CLAUDE.md. -->
-    <div class="talent-stage" data-reveal>
-      <div class="talent-stage-media">
-        <img class="talent-stage-photo is-active" data-talent-target="0" src="assets/img/talent-placeholder-1.jpg" alt="" />
-        <img class="talent-stage-photo" data-talent-target="1" src="assets/img/talent-placeholder-2.jpg" alt="" />
-        <div class="talent-stage-blur" aria-hidden="true"></div>
-      </div>
-
-      <div class="talent-stage-caption">
-        <div class="talent-stage-heading" data-reveal>
-          <span class="eyebrow on-dark">L'équipe</span>
-          <h2>Les talents<br>derrière Simposio</h2>
-        </div>
-
-        <div class="talent-stage-panels">
-          <div class="talent-stage-panel is-active" data-talent-target="0">
-            <span class="talent-stage-name">Estelle Lorusso</span>
-            <span class="talent-stage-role">Fondatrice</span>
-            <p class="talent-stage-bio">Porte l'art de recevoir à l'italienne jusqu'en Alsace, une initiative Eurheka Conseil.</p>
-          </div>
-          <div class="talent-stage-panel" data-talent-target="1">
-            <span class="talent-stage-name">À compléter</span>
-            <span class="talent-stage-role">Rôle à préciser</span>
-            <p class="talent-stage-bio">Envoyez-moi le nom, le rôle et une courte bio pour compléter cette fiche.</p>
-          </div>
-        </div>
-      </div>
-
-      <ul class="talent-stage-selector" role="tablist" aria-label="Membres de l'équipe">
-        <li role="presentation">
-          <button type="button" class="talent-stage-avatar is-active" data-talent-target="0" role="tab" aria-selected="true" aria-label="Estelle Lorusso, Fondatrice">
-            <img src="assets/img/talent-placeholder-1.jpg" alt="" loading="lazy" />
-          </button>
-        </li>
-        <li role="presentation">
-          <button type="button" class="talent-stage-avatar" data-talent-target="1" role="tab" aria-selected="false" aria-label="Membre de l'équipe à compléter">
-            <img src="assets/img/talent-placeholder-2.jpg" alt="" loading="lazy" />
           </button>
         </li>
       </ul>
