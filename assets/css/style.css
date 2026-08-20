@@ -1361,15 +1361,27 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .engagement-card-flip:hover .engagement-card-arrow { transform: translateX(4px); }
 
 /* ---------- Back face ---------- */
+/* Dos des cartes en terracotta (2026-08-20, 5ᵉ passe) : demande explicite
+   de la cliente ("lorsque le retourne elles doivent être de couleur
+   terracotta") — remplace le dégradé navy du dos, hérité de la toute
+   première version des flip-cards. `.engagement-card-num-back` et
+   `.engagement-card-back-close` passent de `var(--terracotta-300)` à
+   `var(--navy)` : la teinte claire, pensée pour ressortir sur un fond
+   sombre, devenait illisible une fois le dos lui-même terracotta (même
+   famille de teinte, contraste quasi nul) — le navy foncé du site est le
+   choix de contraste déjà établi ailleurs pour du texte sur fond
+   terracotta (`.stats-band`, `.contact-band`, cf. CLAUDE.md). Le titre et
+   le texte du dos restent en crème (`--cream`/blanc translucide), déjà
+   suffisamment contrastés sur terracotta. */
 .engagement-card-back {
   transform: rotateY(180deg);
-  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
+  background: linear-gradient(200deg, var(--terracotta) 0%, #7a3a1c 100%);
   display: flex;
   flex-direction: column;
   padding: var(--space-3);
   text-align: left;
 }
-.engagement-card-num-back { margin-bottom: 0.4rem; }
+.engagement-card-num-back { margin-bottom: 0.4rem; color: var(--navy); }
 .engagement-card-back-title {
   font-family: var(--font-display);
   font-weight: 400;
@@ -1394,7 +1406,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--terracotta-300);
+  color: var(--navy);
 }
 .engagement-card-back-close svg { width: 1rem; height: 1rem; }
 
@@ -1909,70 +1921,31 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Engagements & Talents
    ========================================================================== */
-/* Fond terracotta dynamique (2026-08-20, 3ᵉ passe) : la cliente a
-   redemandé un fond "terracotta dynamique" — remplace le fond identique
-   au chemin des 5 sens de l'itération précédente (rouge Pourpre de Venise/
-   navy foncé, très éphémère, quelques minutes seulement avant cette
-   nouvelle demande), lui-même un remplacement du rouge Pourpre de Venise
-   uni, lui-même un remplacement du terracotta uni, lui-même un
-   remplacement du bleu Méditerranéen uni, lui-même un remplacement du tout
-   premier fond dynamique de cette section (lueurs radiales animées en
-   terracotta/rouge Venise/navy foncé, 2026-08-17). **Reprend cette
-   technique d'origine** (`::before` flouté en dérive lente, cf.
-   `@keyframes engagementsBgDrift`), mais avec le terracotta comme teinte
-   DOMINANTE cette fois (base + lueurs), alors que la version d'origine
-   utilisait le navy comme base et le terracotta seulement comme lueur —
-   c'est la nuance de cette nouvelle demande par rapport à l'historique
-   ("fond terracotta dynamique" plutôt qu'un simple "fond dynamique").
-   `animation-duration` est déjà neutralisée sous `prefers-reduced-motion`
-   par la règle globale du site (tout en haut du fichier), donc aucune
-   règle dédiée à écrire ici — même convention que `.promise-photo`/
-   `@keyframes promisePhotoDrift`, juste au-dessus dans ce fichier. Si
-   `background: var(--rosso-venezia)` ou un dégradé identique à
-   `.senses-journey-sticky` réapparaissent ici, c'est une itération
-   précédente, à ne pas réintroduire sans qu'on le redemande. */
-/* Bandeau resserré en largeur (2026-08-20, 4ᵉ passe) : la cliente a
-   signalé que le fond terracotta plein-bleed (100vw) paraissait "trop
-   gros" une fois comparé à la largeur réelle des 4 cartes (~66rem au
-   total) — remplace le fond bord-à-bord par un bloc centré, plafonné à
-   `var(--max-width)` (1320px, la même largeur que `.container` partout
-   ailleurs sur le site plutôt qu'une valeur inventée), avec des coins
-   arrondis puisque ce n'est plus une bande plein écran mais un panneau
-   qui flotte sur le fond crème de la page. Sous ~1320px+marges, le bloc
-   redevient naturellement plein-largeur (aucun écart artificiel introduit
-   sur mobile/tablette) — l'écart n'apparaît que sur les écrans assez
-   larges pour qu'il reste modeste (ex. ~150px de chaque côté à 1620px de
-   large), jamais un vide disproportionné. Si `overflow:hidden` seul (sans
-   `max-width`/`margin-inline:auto`) réapparaît ici, c'est le bandeau
-   plein-bleed précédent, à ne pas réintroduire sans qu'on le redemande. */
-.engagements {
-  position: relative;
-  overflow: hidden;
-  max-width: var(--max-width);
-  margin-inline: auto;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(200deg, var(--terracotta) 0%, #7a3a1c 100%);
-  padding-block: var(--space-6);
-}
-.engagements::before {
-  content: "";
-  position: absolute;
-  inset: -25%;
-  z-index: 0;
-  pointer-events: none;
-  filter: blur(60px);
-  background:
-    radial-gradient(38% 42% at 18% 22%, rgba(246, 241, 231, 0.24), transparent 65%),
-    radial-gradient(42% 46% at 82% 68%, rgba(157, 54, 54, 0.55), transparent 65%),
-    radial-gradient(32% 36% at 55% 88%, rgba(74, 28, 28, 0.5), transparent 62%);
-  animation: engagementsBgDrift 26s ease-in-out infinite alternate;
-}
-@keyframes engagementsBgDrift {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(3%, -2.5%) scale(1.08); }
-}
-.engagements .container { position: relative; z-index: 1; }
-.engagements .lede { color: rgba(255, 255, 255, 0.88); }
+/* Bandeau terracotta retiré, ne reste que les cartes (2026-08-20, 5ᵉ
+   passe) : demande explicite de la cliente ("on va essayer d'enlever
+   complètement le bandeau d'écart d'engagement et laisser uniquement les
+   cartes d'engagement") — remplace le panneau centré resserré de la passe
+   précédente (fond en dégradé terracotta, coins arrondis, calque de
+   lueurs animées `::before`/`@keyframes engagementsBgDrift`). Plus aucun
+   fond propre à cette section : les cartes reposent directement sur le
+   fond crème de la page (`body { background: var(--bg) }`, hérité), donc
+   `.engagements .lede` (qui portait un blanc translucide pensé pour le
+   fond terracotta) revient au style `.lede` générique du site (texte
+   sombre par défaut) plutôt que d'être surchargé. Si un `background`/
+   `border-radius`/`::before` réapparaissent sur `.engagements`, c'est une
+   itération précédente (bandeau plein-bleed ou resserré), à ne pas
+   réintroduire sans qu'on le redemande — désormais **c'est le dos des
+   cartes elles-mêmes qui porte le terracotta** au retournement (cf.
+   `.engagement-card-back` plus bas), pas un fond de section.
+   `padding-block` conservé à `var(--space-6)` pour l'espacement avec les
+   sections voisines : comme `.page-header-full` juste au-dessus force
+   exactement `100vh`/`100svh` (le titre occupe TOUT le premier écran,
+   rien de `.engagements` n'est visible avant le premier scroll — c'est
+   la mécanique déjà en place, pas un ajustement nouveau ici), retirer le
+   fond de cette section ne change rien à ce comportement : le titre reste
+   entièrement visible sur un écran de PC avant tout scroll, puis les
+   cartes apparaissent au scroll suivant, exactement comme demandé. */
+.engagements { padding-block: var(--space-6); }
 
 /* `padding-block` (2026-08-20, 3ᵉ passe) : le bandeau `.visual-note`
    ("Photos provisoires...") a d'abord été retiré (2ᵉ passe, même journée),

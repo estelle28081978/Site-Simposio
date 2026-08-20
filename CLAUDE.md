@@ -4594,6 +4594,56 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   console) et capture d'écran desktop (1024/1440/1920px) + mobile
   (390px). Regression complète 5 pages × 2 viewports : 0 débordement, 0
   erreur console.
+- **Engagements — bandeau retiré, seules les cartes restent ; dos des
+  cartes en terracotta (2026-08-20, 6ᵉ passe)** (`.engagements`,
+  `.engagement-card-back*`, `style.css`) : la cliente a fait marche
+  arrière sur le panneau resserré de la passe précédente ("on va essayer
+  d'enlever complètement le bandeau d'écart d'engagement et laisser
+  uniquement les cartes d'engagement") — remplace entièrement le fond en
+  dégradé terracotta/coins arrondis/calque de lueurs animées
+  (`.engagements::before`/`@keyframes engagementsBgDrift`) par une section
+  sans aucun style de fond propre : `.engagements` ne porte plus que
+  `padding-block`, les 4 cartes reposent directement sur le fond crème de
+  la page (hérité de `body { background: var(--bg) }`). `.engagements
+  .lede` (qui portait un blanc translucide pensé pour le fond terracotta
+  disparu) revient au style `.lede` générique du site (texte sombre par
+  défaut) plutôt que d'être surchargé. Si un `background`/`border-radius`/
+  `::before` réapparaissent sur `.engagements`, c'est une itération
+  précédente (bandeau plein-bleed ou resserré), à ne pas réintroduire sans
+  qu'on le redemande.
+  **Le terracotta ne disparaît pas de la section — il se déplace sur le
+  dos des cartes** ("lorsque le retourne elles doivent être de couleur
+  terracotta") : `.engagement-card-back` passe du dégradé navy hérité de
+  la toute première version des flip-cards à
+  `linear-gradient(200deg, var(--terracotta) 0%, #7a3a1c 100%)` (mêmes
+  arrêts de couleur que l'ancien fond de bandeau, réutilisés ici plutôt
+  qu'une nouvelle valeur inventée). **Ajustement de contraste nécessaire
+  et repéré avant publication, pas après coup** : `.engagement-card-num-back`
+  et `.engagement-card-back-close` ("Retour") héritaient de
+  `var(--terracotta-300)` — une teinte claire pensée pour ressortir sur un
+  fond sombre (navy), qui devenait quasi illisible une fois le dos
+  lui-même terracotta (même famille de teinte, contraste proche de zéro).
+  Recolorés en `var(--navy)`, le choix de contraste déjà établi ailleurs
+  sur le site pour du texte sur fond terracotta (`.stats-band`,
+  `.contact-band`) — le titre et le texte du dos restent en crème/blanc
+  translucide, déjà suffisamment contrastés sans changement.
+  **Le titre reste entièrement visible sur un écran de PC avant tout
+  scroll, sans changement nécessaire à `.page-header-full`** : la cliente
+  a demandé explicitement d'"adapter l'espace par rapport au titre" pour
+  ce résultat, mais `.page-header-full` (déjà en place, cf. plus haut)
+  force `height:100vh`/`100svh` — le titre occupait déjà tout le premier
+  écran et rien de `.engagements` n'était visible avant le premier scroll,
+  qu'il y ait un fond de section ou non. Retirer le bandeau n'affecte donc
+  pas cette mécanique ; vérifié explicitement (pas supposé) par script
+  Playwright mesurant, à 1440×900, 1440×1080 et 390×844, la position du
+  `<h1>` (entièrement dans les bornes du viewport) et celle du haut de
+  `.engagements` (toujours ≥ hauteur du viewport au chargement) — confirmé
+  aux 3 tailles.
+  Vérifié par script Playwright (0 débordement horizontal, 0 erreur
+  console sur les 5 pages × 2 viewports, retournement clic + clavier
+  Enter toujours fonctionnel — `aria-expanded` confirmé, dégradé du dos
+  mesuré via `getComputedStyle`) et capture d'écran desktop (cartes non
+  retournées + carte 1 retournée en gros plan) + mobile (390px).
 
 ## État d'avancement
 
