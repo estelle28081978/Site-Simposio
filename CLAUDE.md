@@ -4253,6 +4253,61 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   4 largeurs) et capture d'écran aux mêmes largeurs pour les deux photos.
   Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Équipe — titre repassé à sa taille normale (déployé en hauteur), photo
+  encore moins zoomée, glissement ralenti ; Engagements — bande crème
+  retirée, fond terracotta (2026-08-20, même journée)** (`.talent-stage*`/
+  `.engagements`/`.talents`, `engagements.html`) : quatre demandes de la
+  cliente sur le rendu de l'itération précédente.
+  **1) Titre à la taille d'avant, "plus dans la longueur que dans la
+  largeur"** : l'override local qui réduisait `.talent-stage-heading h2`
+  (`clamp(1.7rem,…,2.4rem)`, itération précédente) est supprimé — `h2`
+  hérite à nouveau du `clamp(2.4rem,…,5.6rem)` générique du site. La
+  largeur de la colonne (`width:min(24rem,46%)` sur `.talent-stage-caption`)
+  n'a volontairement PAS changé : à la taille générique dans cette même
+  colonne étroite, le texte replie naturellement sur 3-4 lignes au lieu de
+  2 — exactement le "plus dans la longueur que dans la largeur" demandé,
+  sans aucun risque de déborder sur le visage à droite (vérifié par script
+  Playwright : `h2` reste strictement dans les bornes de `.talent-stage-caption`
+  à 4 largeurs).
+  **2) Photo encore moins zoomée pour laisser la place au titre agrandi**
+  ("il faut que tu dézoomes les photos pour laisser de la place à
+  l'apparition du titre") : `.talent-stage-media` (≥640px) passe de
+  `min(88vh,60rem)` à `min(92vh,66rem)` — même levier que l'itération
+  précédente (une boîte plus HAUTE réduit le zoom effectif de
+  `object-fit:cover` sur une largeur fixe), poussé plus loin pour
+  compenser la hauteur supplémentaire qu'occupe désormais le titre à
+  taille normale sur 3-4 lignes.
+  **3) Glissement ralenti** ("fais-le plus lentement") : la transition
+  `opacity`/`transform` de `.talent-stage-panel` passe de `0.5s` à `1s` ;
+  le décalage de départ (`translateX`) est élargi de `-2rem` à `-3rem`
+  pour que le glissement reste perceptible sur cette durée plus longue
+  plutôt que de se lire comme un simple fondu ralenti. Capturé en plein
+  milieu de transition par script Playwright (opacité intermédiaire +
+  `translateX` intermédiaire mesurés sur les deux panneaux simultanément)
+  pour confirmer visuellement l'effet de croisement plutôt que de se fier
+  seulement à la valeur de `transition-duration`.
+  **4) Bande crème retirée entre Engagements et Équipe, fond des cartes en
+  terracotta** : `.talents` perd son dernier padding restant
+  (`padding-block: var(--space-5) 0` → `0`) — c'était ce padding du haut,
+  fond `--bg-dim`, qui se lisait comme un bref bandeau clair ("blanc
+  calcaire") entre la section Engagements et la photo Équipe ; `.engagements`
+  passe de `background: var(--navy)` à `background: var(--terracotta)`.
+  Les deux changements combinés font que la photo Équipe (fond
+  `--navy-900`) touche désormais directement le bas d'Engagements
+  (terracotta) — une vraie rupture de couleur nette plutôt qu'un fondu via
+  une bande intermédiaire, vérifié par script Playwright (écart mesuré
+  entre les deux sections : 0px aux 4 largeurs testées). `.engagements
+  .lede` (texte blanc à 88% d'opacité) n'a demandé aucun ajustement de
+  contraste, déjà suffisamment lisible sur terracotta.
+  Vérifié par script Playwright (0 débordement horizontal, `h2` toujours
+  contenu dans sa colonne, transition mesurée à `1s`, écart Engagements/
+  Talents à 0px) à 4 largeurs desktop/tablette + mobile, et capture
+  d'écran à chaque largeur. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console (les `brokenImgs` occasionnels sur
+  `index.html`/`projets.html` sont le faux positif de lazy-loading déjà
+  documenté — images non scrollées dans le viewport au moment du test,
+  confirmées fonctionnelles par requête directe, sans rapport avec les
+  changements de cette session).
 
 ## État d'avancement
 

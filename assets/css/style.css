@@ -1909,28 +1909,36 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Engagements & Talents
    ========================================================================== */
-/* Fond bleu Méditerranéen uni (2026-08-18, demande explicite de la
-   cliente) — remplace le fond dynamique à lueurs radiales animées de
-   l'itération précédente (dégradé navy + trois `radial-gradient` floutés
-   en dérive continue). Si `.engagements::before`/`@keyframes
-   engagementsBgDrift` réapparaissent ici, c'est cette ancienne version, à
-   ne pas réintroduire sans qu'on le redemande. */
+/* Fond terracotta uni (2026-08-20), demande explicite de la cliente —
+   remplace le bleu Méditerranéen uni de l'itération précédente (lui-même
+   un remplacement du fond dynamique à lueurs radiales animées, encore
+   antérieur). Si `background: var(--navy)` réapparaît ici, ou si
+   `.engagements::before`/`@keyframes engagementsBgDrift` réapparaissent,
+   c'est une ancienne version, à ne pas réintroduire sans qu'on le
+   redemande. */
 .engagements {
   position: relative;
   overflow: hidden;
-  background: var(--navy);
+  background: var(--terracotta);
   padding-block: var(--space-6);
 }
 .engagements .container { position: relative; z-index: 1; }
 .engagements .lede { color: rgba(255, 255, 255, 0.88); }
 
-/* `padding-block` (2026-08-20, 2ᵉ passe) : le bandeau `.visual-note`
-   ("Photos provisoires...") est entièrement retiré — demande explicite de
-   la cliente ("enlève la bande avec marqué photo provisoire"). Le padding
-   du bas repasse donc à 0 (`.talent-stage` touche directement le bas de la
-   section) ; seul le padding du haut subsiste, pour la respiration entre
-   la section Engagements (navy) qui précède et le début de la photo. */
-.talents { background: var(--bg-dim); padding-block: var(--space-5) 0; }
+/* `padding-block` (2026-08-20, 3ᵉ passe) : le bandeau `.visual-note`
+   ("Photos provisoires...") a d'abord été retiré (2ᵉ passe, même journée),
+   ramenant le padding du bas à 0. La cliente a ensuite demandé de retirer
+   aussi "la bande blanc calcaire" restante entre les cartes Engagements et
+   la photo Équipe — c'était le padding du HAUT de `.talents`
+   (`var(--space-5)`, fond `--bg-dim`), visible comme un bref bandeau crème
+   entre le terracotta d'Engagements et la photo/dégradé navy de l'équipe.
+   `padding-block` passe donc à `0` des deux côtés : `.talent-stage`
+   (photo, fond `--navy-900`) touche directement le bas d'`.engagements`
+   (terracotta), sans aucun bandeau clair entre les deux — une vraie
+   rupture de couleur plutôt qu'un fondu. Si un padding non nul réapparaît
+   ici, c'est cette ancienne bande, à ne pas réintroduire sans qu'on le
+   redemande. */
+.talents { background: var(--bg-dim); padding-block: 0; }
 
 /* Équipe — "stage" photo unique avec sélecteur de petits cercles
    (2026-08-19), inspiré d'une référence fournie par la cliente (design
@@ -1987,20 +1995,25 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .talent-stage { position: relative; overflow: hidden; background: var(--navy-900); }
 .talent-stage-media { position: relative; aspect-ratio: 4 / 3; }
 /* ≥640px : `aspect-ratio` est remplacé par une hauteur bornée en `vh`.
-   **Ré-agrandie le 2026-08-20 (2ᵉ passe)**, de `min(88vh,54rem)` à
-   `min(88vh, 60rem)` : la cliente trouvait les photos "trop zoomées",
-   pas assez de la personne visible — avec `object-fit:cover` sur une
-   boîte plein écran, la largeur (fixe, celle du viewport) impose déjà
-   l'échelle ; SEULE une boîte plus haute réduit le zoom effectif (montre
-   une plus grande tranche de la photo source), une boîte plus courte
-   l'augmente — vérifié par calcul avant de choisir ce sens plutôt que de
-   deviner. Le titre de section (`.talent-stage-heading`, cf. plus bas)
-   ayant été fusionné dans cette même boîte plutôt que d'occuper une
-   rangée séparée au-dessus (et le bandeau `.visual-note` supprimé,
-   cf. `.talents` plus haut), l'espace total de la section reste
-   comparable malgré la boîte plus haute — c'est justement ce qui permet
-   de satisfaire à la fois "moins zoomé" ET "tient sur un écran de PC". */
-@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(88vh, 60rem); } }
+   **Agrandie une 3ᵉ fois le 2026-08-20**, de `min(88vh,54rem)` à
+   `min(88vh,60rem)` puis à `min(92vh, 66rem)` : la cliente trouvait les
+   photos "trop zoomées", pas assez de la personne visible — avec
+   `object-fit:cover` sur une boîte plein écran, la largeur (fixe, celle
+   du viewport) impose déjà l'échelle ; SEULE une boîte plus haute réduit
+   le zoom effectif (montre une plus grande tranche de la photo source),
+   une boîte plus courte l'augmente — vérifié par calcul avant de choisir
+   ce sens plutôt que de deviner. Cette 3ᵉ hausse répond en plus à un
+   besoin direct : le titre (`h2`) est repassé à sa taille générique
+   (cf. `.talent-stage-heading h2` plus bas), donc nettement plus haut
+   qu'avant sur plusieurs lignes — la boîte doit grandir en conséquence
+   pour lui laisser sa place sans comprimer le nom/rôle/bio en dessous.
+   Le titre de section ayant été fusionné dans cette même boîte plutôt que
+   d'occuper une rangée séparée au-dessus (et le bandeau `.visual-note`
+   supprimé, cf. `.talents` plus haut), l'espace total de la section reste
+   comparable à une section "pleine page" classique malgré la boîte plus
+   haute — c'est ce qui permet de satisfaire à la fois "moins zoomé" ET
+   "tient sur un écran de PC" avec un titre à taille normale. */
+@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(92vh, 66rem); } }
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
    empilées en `position:absolute`, un fondu croisé simple suffit — pas
    besoin d'un mécanisme de scale/parallaxe comme ailleurs sur le site. */
@@ -2063,23 +2076,35 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   background: var(--navy-900);
 }
 /* Titre de section fusionné ici (2026-08-20) : `.talent-stage-heading`
-   vit désormais comme premier enfant de `.talent-stage-caption`, dans la
-   même colonne superposée que le nom/rôle/bio du membre sélectionné —
-   plus de `.section-head` séparé au-dessus de la photo (demande
-   explicite : "que les deux réunis tiennent sur un écran de PC"). Comme
+   vit comme premier enfant de `.talent-stage-caption`, dans la même
+   colonne superposée que le nom/rôle/bio du membre sélectionné — plus de
+   `.section-head` séparé au-dessus de la photo (demande explicite : "que
+   les deux réunis tiennent sur un écran de PC"). Comme
    `.talent-stage-caption` est `justify-content:center` (≥640px), le
    groupe [titre + panneau] se centre comme une seule unité — le titre
-   n'a donc besoin d'aucun positionnement/`padding-top` dédié pour
-   dégager le header fixe : il hérite du padding généreux du haut de
-   `.talents` (cf. plus haut) et du centrage vertical de la colonne. Sous
-   640px, `.talent-stage-caption` redevient un bloc navy plein en flux
-   normal sous la photo (inchangé) — le titre s'y empile simplement avant
-   le nom, sans CSS supplémentaire. `h2` reçoit une taille propre à cette
-   instance (bien plus petite que le `h2` générique du site, jusqu'à
-   `5.6rem`) : c'est un repère de wayfinding secondaire ici, le nom du
-   membre reste le point focal. */
+   n'a besoin d'aucun positionnement/`padding-top` dédié pour dégager le
+   header fixe, le centrage vertical de la colonne (dans une boîte photo
+   de plusieurs dizaines de `rem` de haut) suffit largement. Sous 640px,
+   `.talent-stage-caption` redevient un bloc navy plein en flux normal
+   sous la photo (inchangé) — le titre s'y empile simplement avant le
+   nom, sans CSS supplémentaire.
+   **`h2` repassé à la taille générique du site (2026-08-20, 2ᵉ passe)** :
+   un premier essai avait réduit `h2` à une taille scopée bien plus petite
+   (`clamp(1.7rem,…,2.4rem)` contre le `clamp(2.4rem,…,5.6rem)` générique)
+   — la cliente a explicitement redemandé "la même taille de police
+   qu'avant" (avant la fusion dans la photo) et que le titre soit "plus
+   dans la longueur que dans la largeur" (qu'il se déploie sur plusieurs
+   lignes plutôt que de s'étaler horizontalement) — supprimer l'override
+   local suffit : à la taille générique, dans la colonne étroite
+   (`width:min(24rem,46%)`, inchangée), le texte replie naturellement sur
+   3-4 lignes au lieu de 2. La largeur de la colonne n'a PAS été
+   élargie — c'est justement ce qui garantit que le titre agrandi ne
+   déborde jamais sur la photo/le visage à droite, quel que soit son
+   nombre de lignes. Si `font-size` réapparaît sur `.talent-stage-heading
+   h2`, c'est cet ancien override réduit, à ne pas réintroduire sans
+   qu'on le redemande. */
 .talent-stage-heading { margin-bottom: var(--space-4); }
-.talent-stage-heading h2 { margin-top: 0.5rem; font-size: clamp(1.7rem, 1.6vw + 1.2rem, 2.4rem); color: var(--cream); }
+.talent-stage-heading h2 { margin-top: 0.5rem; color: var(--cream); }
 /* Panneaux empilés en `position:absolute` avec fondu + glissement depuis
    la gauche (2026-08-20, demande explicite : "un effet de glissement
    venant de la gauche lorsqu'on change de profil") — remplace le simple
@@ -2090,14 +2115,19 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    dimensionné correctement pendant que ses enfants sont hors du flux
    normal — calibré empiriquement (capture d'écran) sur le nom le plus
    long ("Estelle Lorusso", 2 lignes au plafond desktop du `clamp`) plutôt
-   que deviné. */
+   que deviné.
+   **Ralenti (2026-08-20, 2ᵉ passe)** : `0.5s` → `1s`, demande explicite
+   ("fais-le plus lentement"). Le décalage de départ (`translateX`) est
+   aussi élargi de `-2rem` à `-3rem` pour que le glissement reste
+   perceptible sur cette durée plus longue, plutôt que de lire comme un
+   simple fondu ralenti. */
 .talent-stage-panels { position: relative; min-height: 19rem; }
 .talent-stage-panel {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transform: translateX(-2rem);
-  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+  transform: translateX(-3rem);
+  transition: opacity 1s var(--ease), transform 1s var(--ease);
   pointer-events: none;
 }
 .talent-stage-panel.is-active { opacity: 1; transform: translateX(0); pointer-events: auto; }
