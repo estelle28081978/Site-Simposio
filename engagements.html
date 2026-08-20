@@ -195,48 +195,76 @@
         <span class="eyebrow">L'équipe</span>
         <h2>Les talents derrière Simposio</h2>
       </div>
+    </div>
 
-      <!-- TODO: Estelle — les 2 photos (talent-placeholder-1.jpg / -2.jpg) sont des
-           photos de banque prises au hasard, le temps de choisir les vraies photos
-           d'équipe. Remplacez src, alt, nom, rôle et bio pour chaque personne. -->
-      <div class="talent-stage" data-reveal>
-        <div class="talent-stage-media">
-          <img class="talent-stage-photo is-active" data-talent-target="0" src="assets/img/talent-placeholder-1.jpg" alt="" />
-          <img class="talent-stage-photo" data-talent-target="1" src="assets/img/talent-placeholder-2.jpg" alt="" />
-          <div class="talent-stage-blur" aria-hidden="true"></div>
-        </div>
+    <!-- TODO: Estelle — les 2 photos (talent-placeholder-1.jpg / -2.jpg) sont des
+         photos de banque prises au hasard, le temps de choisir les vraies photos
+         d'équipe. Remplacez src, alt, nom, rôle et bio pour chaque personne. -->
+    <!-- `.talent-stage` est volontairement hors de `.container` (2026-08-20) :
+         la cliente a demandé que la photo + le dégradé prennent toute la
+         largeur de l'écran, pas seulement la largeur du contenu centré —
+         voir CLAUDE.md et le commentaire CSS associé. -->
+    <div class="talent-stage" data-reveal>
+      <div class="talent-stage-media">
+        <img class="talent-stage-photo is-active" data-talent-target="0" src="assets/img/talent-placeholder-1.jpg" alt="" />
+        <img class="talent-stage-photo" data-talent-target="1" src="assets/img/talent-placeholder-2.jpg" alt="" />
+        <div class="talent-stage-blur" aria-hidden="true"></div>
+      </div>
 
-        <div class="talent-stage-caption">
-          <div class="talent-stage-panels">
-            <div class="talent-stage-panel is-active" data-talent-target="0">
-              <span class="talent-stage-name">Estelle Lorusso</span>
-              <span class="talent-stage-role">Fondatrice</span>
-              <p class="talent-stage-bio">Porte l'art de recevoir à l'italienne jusqu'en Alsace, une initiative Eurheka Conseil.</p>
-            </div>
-            <div class="talent-stage-panel" data-talent-target="1">
-              <span class="talent-stage-name">À compléter</span>
-              <span class="talent-stage-role">Rôle à préciser</span>
-              <p class="talent-stage-bio">Envoyez-moi le nom, le rôle et une courte bio pour compléter cette fiche.</p>
-            </div>
+      <div class="talent-stage-caption">
+        <div class="talent-stage-panels">
+          <div class="talent-stage-panel is-active" data-talent-target="0">
+            <span class="talent-stage-name">Estelle Lorusso</span>
+            <span class="talent-stage-role">Fondatrice</span>
+            <p class="talent-stage-bio">Porte l'art de recevoir à l'italienne jusqu'en Alsace, une initiative Eurheka Conseil.</p>
+          </div>
+          <div class="talent-stage-panel" data-talent-target="1">
+            <span class="talent-stage-name">À compléter</span>
+            <span class="talent-stage-role">Rôle à préciser</span>
+            <p class="talent-stage-bio">Envoyez-moi le nom, le rôle et une courte bio pour compléter cette fiche.</p>
           </div>
         </div>
-
-        <ul class="talent-stage-selector" role="tablist" aria-label="Membres de l'équipe">
-          <li role="presentation">
-            <button type="button" class="talent-stage-avatar is-active" data-talent-target="0" role="tab" aria-selected="true" aria-label="Estelle Lorusso, Fondatrice">
-              <img src="assets/img/talent-placeholder-1.jpg" alt="" loading="lazy" />
-            </button>
-          </li>
-          <li role="presentation">
-            <button type="button" class="talent-stage-avatar" data-talent-target="1" role="tab" aria-selected="false" aria-label="Membre de l'équipe à compléter">
-              <img src="assets/img/talent-placeholder-2.jpg" alt="" loading="lazy" />
-            </button>
-          </li>
-        </ul>
       </div>
+
+      <ul class="talent-stage-selector" role="tablist" aria-label="Membres de l'équipe">
+        <li role="presentation">
+          <button type="button" class="talent-stage-avatar is-active" data-talent-target="0" role="tab" aria-selected="true" aria-label="Estelle Lorusso, Fondatrice">
+            <img src="assets/img/talent-placeholder-1.jpg" alt="" loading="lazy" />
+          </button>
+        </li>
+        <li role="presentation">
+          <button type="button" class="talent-stage-avatar" data-talent-target="1" role="tab" aria-selected="false" aria-label="Membre de l'équipe à compléter">
+            <img src="assets/img/talent-placeholder-2.jpg" alt="" loading="lazy" />
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="container">
       <p class="visual-note" style="text-align:center;margin-top:var(--space-3);">
         Photos provisoires — sélectionnez un cercle pour changer de portrait.
       </p>
+    </div>
+  </section>
+
+  <!-- ============================== LE MOT DE LA FONDATRICE (typographie minimaliste sur fond crème) ==============================
+       Placée AVANT la section Valeurs (2026-08-20, demande explicite de la
+       cliente : "change de place la citation avec les valeurs, mais la
+       citation au-dessus des valeurs") — auparavant après, cf. CLAUDE.md
+       pour le détail complet et le compromis assumé sur l'alternance de
+       fonds qui en résulte. -->
+  <section class="founder">
+    <div class="container founder-minimal">
+      <span class="eyebrow" data-reveal>La fondatrice</span>
+      <p class="founder-quote-minimal" data-reveal>
+        « Simposio est née de l'envie de porter l'art de recevoir à l'italienne jusqu'en Alsace — pas comme un
+        thème, mais comme une manière de traiter chaque invité. »
+      </p>
+      <span class="founder-rule" aria-hidden="true"></span>
+      <div class="founder-id-minimal" data-reveal>
+        <span class="founder-avatar-minimal" aria-hidden="true">EL</span>
+        <p class="founder-signature-minimal">Estelle Lorusso<span>Fondatrice de Simposio, une initiative Eurheka Conseil</span></p>
+      </div>
     </div>
   </section>
 
@@ -320,22 +348,6 @@
           <span>Faites défiler</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
         </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================== LE MOT DE LA FONDATRICE (typographie minimaliste sur fond crème) ============================== -->
-  <section class="founder">
-    <div class="container founder-minimal">
-      <span class="eyebrow" data-reveal>La fondatrice</span>
-      <p class="founder-quote-minimal" data-reveal>
-        « Simposio est née de l'envie de porter l'art de recevoir à l'italienne jusqu'en Alsace — pas comme un
-        thème, mais comme une manière de traiter chaque invité. »
-      </p>
-      <span class="founder-rule" aria-hidden="true"></span>
-      <div class="founder-id-minimal" data-reveal>
-        <span class="founder-avatar-minimal" aria-hidden="true">EL</span>
-        <p class="founder-signature-minimal">Estelle Lorusso<span>Fondatrice de Simposio, une initiative Eurheka Conseil</span></p>
       </div>
     </div>
   </section>

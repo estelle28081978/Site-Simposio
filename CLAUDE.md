@@ -4024,6 +4024,84 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   navigation clavier Tab/Enter toujours fonctionnelle, 0 erreur console) et
   capture d'écran desktop + mobile. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Citation/Valeurs interverties, Équipe en plein écran (2026-08-20)**
+  (`engagements.html`/`style.css`) : deux demandes de la cliente en une
+  fois, en repointant une nouvelle fois la référence "Kollektiva".
+  **1) Citation et Valeurs interverties, citation en premier** : demande
+  explicite — "change de place la citation avec les valeurs, mais la
+  citation au-dessus des valeurs". Simple réordonnancement des deux
+  `<section>` dans le HTML (aucun changement de contenu, de mécanisme ni
+  de style à l'intérieur de chacune) : `.founder` (citation minimaliste
+  sur fond crème) passe désormais AVANT `.values-reel` (album Valeurs),
+  alors qu'elle était après depuis le déplacement du contenu d'`univers.html`
+  (cf. « État d'avancement » plus bas). **Écart assumé sur l'alternance de
+  fonds** : ce nouvel ordre donne crème (header) → navy (engagements) →
+  crème-dim (talents) → **crème (founder) → navy (valeurs)** — deux
+  sections claires (`--bg-dim` puis `--bg`) se retrouvent adjacentes, alors
+  que l'ordre précédent (crème, navy, crème-dim, navy, crème) alternait
+  strictement. Demande explicite de la cliente suivie telle quelle plutôt
+  que réajustée silencieusement pour préserver l'alternance — à
+  retravailler avec elle si l'effet de deux sections claires consécutives
+  gêne une fois vu en conditions réelles.
+  **2) Équipe (`.talent-stage`) en plein écran** : la cliente a redonné la
+  même référence "Kollektiba" en précisant l'unique écart voulu — "fais en
+  sorte que la photo plus le dégradé prenne toute la largeur sur l'écran,
+  le seul détail que je veux de différent" — et redemandé, dans la même
+  phrase, que les cercles-avatars restent hors de tout rectangle et
+  "plus décalés à droite" (déjà en place depuis l'itération précédente,
+  mais reconfirmé et poussé plus loin ici).
+  **Sorti de `.container` plutôt qu'une astuce de marges négatives en
+  `vw`** : `.talent-stage` devient un enfant direct de
+  `<section class="talents">` dans le HTML (qui n'a pas de padding
+  horizontal propre, seul `.container` en avait) — le `<div class="section-head">`
+  et le `<p class="visual-note">` restent chacun dans leur propre
+  `.container` de part et d'autre. Plus simple et plus sûr qu'un
+  `width:100vw` (qui peut introduire un débordement horizontal lié à la
+  largeur de la barre de scroll) et cohérent avec la façon dont les
+  autres sections plein-large du site (Valeurs, 5 sens) sont déjà
+  construites. `.talent-stage` perd `max-width:58rem`/`margin-inline:auto`/
+  `border-radius` (une boîte bord-à-bord n'a plus de raison d'avoir des
+  coins arrondis). Si `max-width:58rem` réapparaît sur `.talent-stage`,
+  c'est l'ancienne carte centrée, à ne pas réintroduire sans qu'on le
+  redemande.
+  **`.talent-stage-media` : `aspect-ratio` remplacé par une hauteur bornée
+  en `vh`** (`≥640px`) : une fois la photo étirée à toute la largeur de
+  l'écran (jusqu'à 1920px+), garder `aspect-ratio:16/9` aurait rendu la
+  boîte démesurément haute (jusqu'à 1080px) — remplacé par
+  `height:min(68vh,40rem)`, une hauteur proportionnée à la fenêtre plutôt
+  qu'à la largeur de la photo.
+  **Deux bugs réels trouvés et corrigés en cascade, tous deux repérés par
+  capture d'écran à plusieurs largeurs, aucun supposé** :
+  1. Arrêts du dégradé/masque de `.talent-stage-blur` d'abord convertis en
+     longueurs fixes (`rem`) pour éviter qu'ils ne s'étirent en `%` bien
+     au-delà de la colonne de texte (elle-même plafonnée en `rem`,
+     `width:min(24rem,46%)`) sur les très grands écrans — mais à `rem`
+     fixe seul, ce même plafond devient une fraction bien plus grande de
+     la largeur totale de la photo sur les largeurs desktop/tablette plus
+     étroites (~640-900px), floutant quasiment tout le visage (repéré à
+     640px, pas supposé). Corrigé en passant à `min(%, rem)` sur chaque
+     arrêt du dégradé et du masque (`background`, `-webkit-mask-image`,
+     `mask-image`) : proportionnel comme avant sur les largeurs étroites,
+     plafonné comme voulu sur les très grandes. Si un arrêt en `rem` fixe
+     seul (sans `min()`) réapparaît sur `.talent-stage-blur`, revérifier
+     ce compromis avant de le garder.
+  2. `.talent-stage-selector` repositionné en `left:max(28rem, 42%)`
+     (au lieu du `left:38%` seul de l'itération précédente) pour la même
+     raison — un `%` seul aurait soit sous-décalé sur les largeurs
+     desktop étroites (où 38% de la largeur totale peut encore tomber
+     dans la zone floutée), soit sur-décalé sur très grand écran. `max()`
+     garantit un plancher absolu (au-delà de la colonne de texte/zone
+     floutée) tout en continuant de dériver vers la droite en proportion
+     sur les écrans larges.
+  Vérifié par script Playwright à 6 largeurs desktop/tablette (640, 768,
+  900, 1024, 1440, 1920px, plus mobile 390px) : 0 débordement horizontal à
+  aucune largeur, sélecteur toujours hors de la colonne de texte et jamais
+  hors du viewport, aucun chevauchement bio/sélecteur sur mobile, fond du
+  sélecteur confirmé transparent, navigation clavier Tab/Enter toujours
+  fonctionnelle, ordre des sections confirmé (`engagements`, `talents`,
+  `founder`, `values-reel`) directement dans le DOM. Capture d'écran aux 6
+  largeurs + mobile. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 

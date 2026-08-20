@@ -1963,9 +1963,29 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    la bio, et `.talent-stage-caption` peut librement être `position:
    absolute` (desktop, superposée) ou `position:static` (mobile, empilée
    en dessous) sans jamais affecter la boîte photo. */
-.talent-stage { position: relative; margin-top: var(--space-5); max-width: 58rem; margin-inline: auto; border-radius: var(--radius-lg); overflow: hidden; background: var(--navy-900); }
+/* 3ᵉ passe (2026-08-20) : la cliente a repointé la même référence
+   "Kollektiva" en précisant le seul écart qu'elle voulait — que la photo
+   ET le dégradé prennent toute la largeur de l'écran, plutôt que de
+   rester dans une carte centrée à `max-width:58rem`. `.talent-stage` est
+   donc sorti de `.container` dans le HTML (devient un enfant direct de
+   `<section class="talents">`, qui n'a pas de padding horizontal propre)
+   plutôt que d'utiliser une astuce de marges négatives en `vw` — plus
+   simple et plus sûr (pas de risque de débordement horizontal lié à la
+   largeur de la barre de scroll que `100vw` peut introduire), et cohérent
+   avec la façon dont les autres sections plein-large du site (Valeurs,
+   5 sens) sont déjà construites. `max-width`/`margin-inline`/
+   `border-radius` sont retirés (une boîte bord-à-bord n'a plus de raison
+   d'avoir des coins arrondis). Si `max-width: 58rem` réapparaît ici,
+   c'est l'ancienne carte centrée, à ne pas réintroduire sans qu'on le
+   redemande. */
+.talent-stage { position: relative; margin-top: var(--space-5); overflow: hidden; background: var(--navy-900); }
 .talent-stage-media { position: relative; aspect-ratio: 4 / 3; }
-@media (min-width: 640px) { .talent-stage-media { aspect-ratio: 16 / 9; } }
+/* ≥640px : `aspect-ratio` est remplacé par une hauteur bornée en `vh` —
+   une fois la photo étirée à toute la largeur de l'écran (jusqu'à
+   ~1920px+), garder un `aspect-ratio:16/9` aurait rendu la boîte
+   démesurément haute (jusqu'à 1080px). `min(68vh, 40rem)` garde une
+   hauteur proportionnée à la fenêtre plutôt qu'à la largeur de la photo. */
+@media (min-width: 640px) { .talent-stage-media { aspect-ratio: auto; height: min(68vh, 40rem); } }
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
    empilées en `position:absolute`, un fondu croisé simple suffit — pas
    besoin d'un mécanisme de scale/parallaxe comme ailleurs sur le site. */
@@ -2035,7 +2055,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    la largeur en dessous de la photo. Si `.talent-stage-selector`
    réapparaît comme enfant de `.talent-stage-caption`, c'est l'ancienne
    version confinée à la colonne de texte, à ne pas réintroduire sans
-   qu'on le redemande. */
+   qu'on le redemande.
+   **Repositionné en `max(28rem, 42%)` (2026-08-20)**, plutôt qu'un simple
+   `%` : la cliente a redemandé "plus décalé à droite" au moment même où
+   la photo passe en plein écran (bullet ci-dessus) — un `%` seul aurait
+   soit sous-décalé sur les largeurs desktop étroites (640-900px, où 38%
+   de la largeur totale peut encore tomber dans la zone floutée), soit
+   sur-décalé sur très grand écran. `max()` garantit un plancher absolu
+   (28rem, au-delà de la colonne de texte/zone floutée, cf. commentaire
+   sur `.talent-stage-blur` juste en dessous) tout en continuant de
+   dériver vers la droite en proportion sur les écrans larges. */
 .talent-stage-selector {
   position: absolute;
   z-index: 2;
@@ -2065,15 +2094,28 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .talent-stage-avatar:focus-visible { outline: 2px solid var(--terracotta-300); outline-offset: 2px; }
 
 /* ≥640px : la légende passe en superposition sur la gauche de la photo,
-   la zone floutée/dégradée apparaît derrière elle. */
+   la zone floutée/dégradée apparaît derrière elle.
+   **Arrêts du dégradé/masque en `min(%, rem)` plutôt qu'en `%` seul ou en
+   `rem` seul (2026-08-20)** : avec `.talent-stage` désormais plein écran
+   (jusqu'à 1920px+ de large, cf. commentaire plus haut), des arrêts en
+   `%` auraient étiré la zone floutée bien au-delà de la colonne de texte
+   (`width:min(24rem,46%)`, déjà plafonnée en `rem`) — un grand vide
+   flouté sans texte sur les très grands écrans. Un premier essai en
+   `rem` fixe seul réglait ce problème en grand écran mais en créait un
+   autre à l'opposé : sur les largeurs desktop/tablette plus étroites
+   (~640-900px), un plafond fixe en `rem` reste une fraction bien plus
+   grande de la largeur totale de la photo, floutant quasiment tout le
+   visage (repéré par capture d'écran à 640px, pas supposé). `min()`
+   garde le meilleur des deux : proportionnel (comme avant) sur les
+   largeurs étroites, plafonné (nouveau) sur les très grandes. */
 @media (min-width: 640px) {
   .talent-stage-blur {
     display: block;
-    background: linear-gradient(90deg, rgba(16, 31, 39, 0.88) 0%, rgba(16, 31, 39, 0.72) 26%, rgba(16, 31, 39, 0.25) 45%, transparent 58%);
+    background: linear-gradient(90deg, rgba(16, 31, 39, 0.88) 0, rgba(16, 31, 39, 0.72) min(18%, 10rem), rgba(16, 31, 39, 0.28) min(38%, 22rem), transparent min(55%, 32rem));
     backdrop-filter: blur(22px);
     -webkit-backdrop-filter: blur(22px);
-    -webkit-mask-image: linear-gradient(90deg, black 0%, black 30%, transparent 55%);
-    mask-image: linear-gradient(90deg, black 0%, black 30%, transparent 55%);
+    -webkit-mask-image: linear-gradient(90deg, black 0, black min(42%, 24rem), transparent min(58%, 34rem));
+    mask-image: linear-gradient(90deg, black 0, black min(42%, 24rem), transparent min(58%, 34rem));
   }
   .talent-stage-caption {
     position: absolute;
@@ -2082,10 +2124,10 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
     flex-direction: column;
     justify-content: center;
     width: min(24rem, 46%);
-    padding: var(--space-5) var(--space-4);
+    padding: var(--space-5) var(--space-4) var(--space-5) var(--space-5);
     background: none;
   }
-  .talent-stage-selector { left: 38%; }
+  .talent-stage-selector { left: max(28rem, 42%); }
 }
 
 /* ==========================================================================
