@@ -4957,6 +4957,61 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   de trancher en un seul aller-retour entre "vrai bug" et "effet de
   perception" — à réutiliser si un désaccord similaire (visuel vs. mesuré)
   se reproduit ailleurs sur le site.
+- **Page Contact — essai "tout en Blanc Calcaire" (2026-08-20)**
+  (`contact.html`, `style.css`) : demande explicite de la cliente ("on va
+  essayer quelque chose... mets tous les fonds de la page contact en blanc
+  calcaire, mais que par contre tous les éléments et les polices se
+  retrouvent avec les couleurs de la charte graphique"). Un essai, pas un
+  remplacement discret des styles de base — voir ci-dessous pour comment
+  revenir en arrière si elle n'accroche pas.
+  **Scopé à cette seule page** via `<body class="contact-cream">` (ajouté
+  uniquement dans `contact.html`) : toutes les nouvelles règles CSS sont
+  préfixées `body.contact-cream …`, donc aucun risque pour les 4 autres
+  pages, qui gardent leur habillage habituel (footer/FAQ navy, etc. —
+  vérifié par script Playwright comparant la couleur de fond du footer sur
+  les 5 pages : seule `contact.html` change). Le `.site-header`/
+  `.mobile-menu` (chrome persistant, identique sur tout le site) sont
+  volontairement laissés inchangés — un header qui changerait de couleur
+  selon la page serait plus déroutant qu'utile, et ce n'est pas "la page"
+  au sens de son contenu propre.
+  **Quatre sections repassent d'un fond sombre/coloré à `--bg` (Blanc
+  Calcaire)**, chacune avec ses éléments recolorés dans la palette de
+  marque plutôt que de garder les teintes claires pensées pour un fond
+  sombre (`--cream`/`--terracotta-300`, invisibles ou trop pâles sur un
+  fond déjà clair) :
+  - `.contact-band` (bandeau "Nous écrire"/"Nous appeler"/"Réseaux
+    sociaux") : la photo "dolce vita" + son voile terracotta sont masqués
+    (`display:none`, pas retirés du HTML — faciles à réactiver) plutôt que
+    le fond terracotta uni d'origine. Labels/valeurs en navy, icônes en
+    cercle à liseré navy translucide ; au survol, l'icône se remplit de
+    terracotta plein (texte/icône passent en crème) — reprend le même
+    principe de bascule de couleur au survol que l'original (qui basculait
+    vers le navy), juste inversé puisque le fond n'est plus coloré.
+  - `.contact-devis` : `--bg-dim` (crème légèrement assombri) redevient
+    `--bg` (Blanc Calcaire pur). La carte formulaire `.form-card-premium`
+    (pensée pour un fond bleu Méditerranéen, texte crème) retrouve
+    l'habillage clair déjà utilisé par `.form-card` de base ailleurs sur le
+    site — fond blanc, libellés navy, accent terracotta — plutôt
+    qu'inventer une 3ᵉ palette de couleurs pour le formulaire.
+  - `.contact-faq` : fond navy → Blanc Calcaire, cartes de questions
+    passées en blanc pour se détacher du fond (au lieu d'un très léger
+    voile crème-sur-navy, invisible une fois le fond éclairci), eyebrow et
+    icônes +/− repassés en terracotta plein (`--accent`) au lieu de
+    `--terracotta-300`.
+  - `.site-footer` : fond navy → Blanc Calcaire, logo et titres de colonne
+    repassés en navy, liens et mentions légales en navy translucide (même
+    teinte que `--border`/`--navy-rgb`, à différentes opacités) au lieu de
+    crème translucide.
+  Vérifié par script Playwright (0 débordement, 0 erreur console sur les
+  5 pages × 2 viewports ; formulaire toujours fonctionnel — remplissage
+  d'un champ + sélection d'une formule testés ; couleur de fond du footer
+  comparée entre les 5 pages pour confirmer le scope) et capture d'écran
+  pleine page desktop (1440px) + mobile (390px), plus gros plans sur le
+  bandeau contact (état normal et survol), le formulaire, la FAQ (fermée
+  et ouverte) et le footer. **Pour revenir à l'habillage d'origine** : soit
+  retirer `class="contact-cream"` du `<body>` de `contact.html`, soit
+  supprimer le bloc de règles `body.contact-cream …` en fin de
+  `style.css` — les deux suffisent, aucun autre fichier à toucher.
 
 ## État d'avancement
 
