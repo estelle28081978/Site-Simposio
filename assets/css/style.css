@@ -652,39 +652,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 
 /* ==========================================================================
-   Scroll transition seams (accueil, 2026-08-21) — transition de couleur de
-   fond fluide et progressive au scroll entre deux sections adjacentes de
-   couleurs différentes ("si on est sur du blanc calcaire et qu'on passe sur
-   du rouge pourpre, on a un effet de transition fluide et progressif").
-   Remplace une 1ère tentative (crossfade JS scopé à .teaser seul,
-   rAF + IntersectionObserver, avec bascule de couleur de texte basée sur la
-   luminance) explicitement rejetée par la cliente ("Ce n'est pas vraiment cet
-   effet que je recherche") — elle voulait un mécanisme global à toute la
-   page, pas une seule section. Implémenté en CSS pur, zéro JS/zéro
-   scroll-listener : chaque `.scroll-transition` est un petit bandeau
-   `aria-hidden`, purement décoratif (pas de contenu), inséré entre deux
-   sections réelles, avec un `linear-gradient(--from → --to)` reprenant les
-   couleurs de fond exactes des deux sections qu'il sépare — le "fondu" au
-   scroll est simplement le fait de traverser ce dégradé en scrollant, sans
-   calcul JS par frame. Alternative écartée : rendre les sections
-   elles-mêmes transparentes + un calque de fond piloté en JS derrière tout
-   le contenu — beaucoup plus coûteux (un listener de scroll global sur toute
-   la page) et risqué (aurait fallu revoir chaque section une par une).
-   Alternative écartée aussi : un fondu en superposition sur le bord des
-   sections existantes (masque en dégradé par-dessus leur propre contenu) —
-   aurait risqué de voiler des éléments réels proches des bords de section
-   (flèche de scroll du hero, compteur de progression des 5 sens, note de
-   clôture de la méthodologie). `height` en `clamp()` (proportionnel à la
-   hauteur de viewport, jamais nul) pour que le dégradé reste visible et
-   perceptible au scroll à toutes les tailles d'écran, y compris mobile.
-   `--from`/`--to` posés en style inline par instance (une seule règle CSS
-   partagée, pas une classe par paire de couleurs). */
-.scroll-transition {
-  height: clamp(6rem, 16vh, 14rem);
-  background: linear-gradient(to bottom, var(--from), var(--to));
-}
-
-/* ==========================================================================
    Homepage prestations teaser — text-forward, no photos (kept for inner page)
    ========================================================================== */
 .teaser { background: var(--bg-dim); padding-block: var(--space-6); }

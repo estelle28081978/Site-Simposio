@@ -5192,6 +5192,25 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   mécanisme scopé à `#teaser` (bullet ci-dessus) réapparaît, c'est un
   retour à une version antérieure de cet effet, à ne pas réintroduire
   sans qu'on le redemande.
+- **Accueil — transition de couleur de fond au scroll entièrement retirée
+  (2026-08-21, même jour)** : la cliente a demandé de retirer l'effet et
+  de revenir à la version d'avant ("enlève au final et retourne à la
+  version avant") — après avoir vu les deux tentatives ci-dessus (le
+  crossfade JS scopé à `.teaser`, puis les bandeaux `.scroll-transition`
+  en CSS pur entre chaque section), aucune n'a été retenue. `index.html`
+  et `assets/css/style.css` sont restaurés à l'identique de leur état
+  juste avant la 1ʳᵉ tentative (`git checkout` sur le commit précédent
+  ces deux bullets — diff vérifié strictement vide sur les deux
+  fichiers) ; `assets/js/main.js` n'avait plus de différence nette à
+  restaurer, `updateTeaserBg()` ayant déjà été entièrement supprimée lors
+  du remplacement par la version CSS. Les 6 `<div class="scroll-transition">`
+  et la règle `.scroll-transition` associée n'existent donc plus nulle
+  part sur le site — chaque section de l'accueil retrouve son fond fixe
+  opaque d'origine, sans transition au passage de l'une à l'autre. Les
+  deux bullets ci-dessus restent comme trace des deux tentatives et de
+  pourquoi elles ont été écartées ; si `.scroll-transition` ou
+  `updateTeaserBg()` réapparaissent dans un diff, c'est l'une de ces deux
+  versions abandonnées, à ne pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 
