@@ -5022,6 +5022,86 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   erreur console sur les 5 pages × 2 viewports. Si `body.contact-cream`
   ou son bloc de règles réapparaissent, c'est cet essai abandonné, à ne
   pas réintroduire sans qu'on le redemande.
+- **Accueil — transition de couleur de fond au scroll, clair→sombre
+  (2026-08-21)** (`#teaser`, `assets/js/main.js`) : demande explicite,
+  formulée comme un brief technique générique ("exactement comme sur
+  colibrity.com... si le projet utilise GSAP, privilégie GSAP, sinon
+  Intersection Observer / `window.onscroll` optimisé avec
+  `requestAnimationFrame`"). **Adapté à la stack réelle du site** : aucune
+  dépendance sur ce projet (`main.js` est un IIFE vanilla unique, cf. tête
+  de ce fichier) — pas de GSAP ajouté, implémentation en scroll listener
+  + `requestAnimationFrame`, même convention déjà utilisée partout
+  ailleurs sur le site (`updateJourney`, `updateEngagementCards`,
+  `updateValuesReel`...).
+  **Écart assumé sur la couleur, clarifié avec la cliente avant
+  d'implémenter** (`AskUserQuestion`) : la consigne demandait un fond
+  "blanc/off-white → noir/anthracite", mais la charte graphique fixe du
+  site (cf. section Palette plus haut) n'a ni blanc pur ni noir/anthracite
+  — le fond va donc de `--bg-dim`/`--cream-dim` (crème assombri,
+  `#ece3d1`) à `--navy-900` (bleu Méditerranéen le plus sombre,
+  `#101f27`), sur confirmation explicite de la cliente ("adapte à ma
+  palette de couleurs... ne fais pas en noir anthracite").
+  **Section choisie plutôt qu'un fondu sur toute la page** (2ᵉ point
+  clarifié par `AskUserQuestion`, qu'elle a laissé à mon appréciation en
+  validant l'option recommandée) : l'accueil est déjà construit en
+  sections à fond FIXE qui alternent selon la charte (navy/terracotta/
+  crème, cf. section Décisions techniques) — un fondu sur toute la page
+  n'aurait été visible qu'en rendant chaque section transparente, un
+  chantier bien plus large que ce qui a été demandé et qui aurait cassé
+  l'alternance de couleurs établie. `.teaser` ("Quatre mondes, une même
+  Dolce Vita", `id="teaser"` ajouté) est la seule section déjà claire
+  juste avant une section sombre (`#sensesJourney`, navy) dans le flux de
+  la page — y poser la transition prolonge un contraste de ton déjà
+  présent dans la page plutôt que d'en introduire un artificiellement.
+  **Mécanisme** (`updateTeaserBg()`, `main.js`) : à chaque frame de
+  scroll, `progress = (vh - rect.top) / (rect.height + vh)` (0 quand le
+  haut de la section touche le bas du viewport, 1 quand son bas a
+  entièrement défilé au-delà du haut du viewport) pilote une
+  interpolation RGB linéaire du fond, appliquée en `style.backgroundColor`
+  inline (la règle CSS `.teaser { background: var(--bg-dim) }` reste en
+  place comme état de repos/filet de sécurité avant que le JS ne
+  s'exécute). **Mapping direct 1:1 avec le scroll, reste actif sous
+  `prefers-reduced-motion`** — même raisonnement déjà établi ailleurs sur
+  le site pour ce type d'effet (tracé des 5 sens, fil des Valeurs, zoom de
+  la Fondatrice) : une transition de couleur pilotée par le scroll n'est
+  pas le genre de mouvement que cette préférence cherche à supprimer.
+  **Bug réel trouvé et corrigé avant publication, pas supposé** : le titre
+  de la section (`.section-head h2`, "Quatre mondes, une même Dolce
+  Vita") devait aussi changer de couleur pour rester lisible, comme
+  demandé explicitement ("les textes... changent également de couleur si
+  nécessaire"). Un premier essai interpolait le texte en parallèle du
+  fond, à la même vitesse — repéré par script Playwright mesurant les
+  deux couleurs à `progress≈0.5` : fond `rgb(126,129,124)` et texte
+  `rgb(132,138,137)`, quasiment le même gris, contraste proche de 1:1
+  (texte illisible) pile au milieu du scroll — deux couleurs parties
+  d'extrêmes opposés et interpolées au même rythme se croisent
+  forcément au milieu. Corrigé en ne faisant PAS interpoler le texte :
+  il bascule intégralement entre encre foncée (`--ink`) et crème
+  (`--cream`) dès que la LUMINANCE réelle du fond interpolé (formule
+  `0.299R+0.587G+0.114B`, recalculée chaque frame à partir de la couleur
+  de fond réellement affichée) franchit le point milieu entre les
+  luminances de départ/arrivée — pas une simple comparaison
+  `progress > 0.5` (qui aurait été correcte ici mais casserait
+  silencieusement si les couleurs de fond changent un jour vers une paire
+  non-monotone en luminance). Vérifié par balayage Playwright fin (51 pas
+  de `progress` 0→1) : un seul basculement net du texte, exactement au
+  point où le fond franchit sa luminance médiane, contraste large des
+  deux côtés du basculement (jamais de zone grise où fond et texte se
+  confondent). L'eyebrow "Nos prestations" n'a pas besoin d'interpolation :
+  déjà en terracotta plein (`--accent`), lisible aussi bien sur
+  `--bg-dim` que sur `--navy-900`, sans changement.
+  Vérifié par script Playwright : balayage de progression complet (0 →
+  1, un seul basculement de texte, contraste maintenu), `prefers-reduced-
+  motion` confirmé actif (fond différent du repos après scroll), recalcul
+  correct au redimensionnement (`resize` déclenche `updateTeaserBg()`),
+  0 débordement/erreur console sur les 5 pages × 2 viewports (l'effet ne
+  s'exécute que si `#teaser` existe dans le DOM, donc sans effet sur les
+  4 autres pages). Capture d'écran desktop (état initial clair, mi-scroll
+  gris moyen, fin de section fondue dans le sombre) et mobile (mêmes 3
+  points). Si le titre de section réapparaît avec un `style.color`
+  interpolé en continu (au lieu d'un basculement net piloté par la
+  luminance), c'est ce bug de contraste à mi-scroll, à ne pas
+  réintroduire sans le revérifier avec le même balayage.
 
 ## État d'avancement
 

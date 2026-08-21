@@ -108,6 +108,108 @@
     );
   }
 
+  /* ---------- Teaser: background crossfades light → dark while scrolling
+     through the section (accueil uniquement) ---------- */
+  /* Demande explicite de la cliente ("effet de transition de couleur de
+     fond au scroll... d'un fond clair vers un fond sombre, exactement
+     comme sur colibrity.com"), adapté à la stack du site (vanilla JS +
+     rAF, pas de GSAP — le site n'a aucune dépendance, cf. le reste de ce
+     fichier) et à la palette de marque : la page n'a pas de noir/anthracite
+     dans sa charte, donc le fond va de `--bg-dim` (crème assombri) à
+     `--navy-900` (bleu Méditerranéen le plus sombre) plutôt qu'à du noir.
+     **Section choisie plutôt qu'un fondu sur toute la page** : l'accueil
+     est déjà construit en sections à fond FIXE qui alternent selon la
+     charte (navy/terracotta/crème) — un fondu sur toute la page ne
+     serait visible qu'en rendant chaque section transparente, un chantier
+     bien plus large que ce qui a été demandé. `.teaser` ("Quatre mondes,
+     une même Dolce Vita") est la seule section déjà claire juste avant
+     une section sombre (`#sensesJourney`, navy) dans le flux de la page —
+     y poser la transition prolonge un contraste déjà présent dans la
+     page plutôt que d'en introduire un artificiellement.
+     Le texte du titre (`.section-head h2`) est interpolé en parallèle
+     (encre foncée → crème) pour rester lisible tout du long, comme
+     demandé explicitement ("les textes... changent également de couleur
+     si nécessaire"). L'eyebrow n'a pas besoin d'interpolation : `.eyebrow`
+     est déjà en terracotta plein (`--accent`), qui reste lisible aussi
+     bien sur `--bg-dim` que sur `--navy-900`.
+     Mapping direct 1:1 avec la position de scroll (pas une animation
+     autoplay) : reste actif même sous `prefers-reduced-motion`, même
+     raisonnement déjà établi ailleurs sur le site pour ce type d'effet
+     (tracé des 5 sens, fil des Valeurs, zoom de la Fondatrice) — une
+     transition de couleur pilotée par le scroll n'est pas le genre de
+     mouvement que `prefers-reduced-motion` cherche à supprimer.
+     **Bug réel trouvé et corrigé avant publication, pas supposé** : un
+     premier essai interpolait le texte du titre en parallèle du fond, à
+     la même vitesse (`progress` identique pour les deux) — vérifié par
+     script Playwright mesurant la couleur des deux à `progress≈0.5` :
+     fond `rgb(126,129,124)` et texte `rgb(132,138,137)`, quasiment le
+     même gris, contraste proche de 1:1 (texte illisible) pile au milieu
+     du scroll. Deux couleurs qui partent d'extrêmes opposés et
+     convergent au même rythme se croisent forcément au milieu. Corrigé
+     en ne interpolant QUE le fond en continu ; le texte, lui, bascule
+     intégralement (pas de fondu) entre `TEASER_TEXT_FROM`/`_TO` dès que
+     la LUMINANCE réelle du fond interpolé franchit le milieu entre les
+     luminances de départ/arrivée — recalculée à chaque frame à partir de
+     la couleur de fond réellement affichée, pas d'une simple comparaison
+     `progress > 0.5` (qui aurait été correcte ici mais casserait
+     silencieusement si les couleurs de fond changent un jour vers une
+     paire non-monotone). Le texte reste donc toujours fortement
+     contrasté avec le fond sous lui, au prix d'un changement net plutôt
+     que progressif — accepté, un fondu progressif du texte en plus du
+     fond n'est pas ce qui a été demandé ("les textes... changent" est
+     satisfait par un changement nécessairement plus tranché, imposé par
+     la contrainte de contraste). */
+  var teaserSection = document.getElementById("teaser");
+  if (teaserSection) {
+    var teaserHeading = teaserSection.querySelector(".section-head h2");
+    var TEASER_BG_FROM = [236, 227, 209]; // --cream-dim (--bg-dim)
+    var TEASER_BG_TO = [16, 31, 39]; // --navy-900
+    var TEASER_TEXT_FROM_CSS = "rgb(18, 35, 43)"; // --ink (--fg)
+    var TEASER_TEXT_TO_CSS = "rgb(246, 241, 231)"; // --cream
+    var TEASER_LUMINANCE_MID = (luminance(TEASER_BG_FROM) + luminance(TEASER_BG_TO)) / 2;
+
+    function luminance(rgb) {
+      return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
+    }
+
+    function lerpRgbArray(from, to, t) {
+      return [
+        Math.round(from[0] + (to[0] - from[0]) * t),
+        Math.round(from[1] + (to[1] - from[1]) * t),
+        Math.round(from[2] + (to[2] - from[2]) * t),
+      ];
+    }
+
+    var teaserTicking = false;
+    function updateTeaserBg() {
+      var rect = teaserSection.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var total = rect.height + vh;
+      var progress = total > 0 ? (vh - rect.top) / total : 0;
+      progress = Math.min(1, Math.max(0, progress));
+
+      var bgRgb = lerpRgbArray(TEASER_BG_FROM, TEASER_BG_TO, progress);
+      teaserSection.style.backgroundColor = "rgb(" + bgRgb.join(", ") + ")";
+      if (teaserHeading) {
+        teaserHeading.style.color = luminance(bgRgb) > TEASER_LUMINANCE_MID ? TEASER_TEXT_FROM_CSS : TEASER_TEXT_TO_CSS;
+      }
+
+      teaserTicking = false;
+    }
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!teaserTicking) {
+          window.requestAnimationFrame(updateTeaserBg);
+          teaserTicking = true;
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener("resize", updateTeaserBg);
+    updateTeaserBg();
+  }
+
   /* ---------- Promise: one shared giant size, capped by the tightest line ---------- */
   var promiseQuote = document.getElementById("promiseQuote");
 
