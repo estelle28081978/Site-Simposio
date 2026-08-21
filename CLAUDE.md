@@ -5008,10 +5008,20 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   comparée entre les 5 pages pour confirmer le scope) et capture d'écran
   pleine page desktop (1440px) + mobile (390px), plus gros plans sur le
   bandeau contact (état normal et survol), le formulaire, la FAQ (fermée
-  et ouverte) et le footer. **Pour revenir à l'habillage d'origine** : soit
-  retirer `class="contact-cream"` du `<body>` de `contact.html`, soit
-  supprimer le bloc de règles `body.contact-cream …` en fin de
-  `style.css` — les deux suffisent, aucun autre fichier à toucher.
+  et ouverte) et le footer.
+  **Essai abandonné le jour même** ("finalement j'aime moins, remet les
+  fond en couleur") : `class="contact-cream"` retirée du `<body>` de
+  `contact.html` et le bloc de règles `body.contact-cream …` supprimé de
+  `style.css` (les deux étaient documentés dès le départ comme suffisants
+  pour revenir en arrière, cf. ci-dessus — appliqué tel quel). La page
+  Contact retrouve donc son habillage d'origine (bandeau photo "dolce
+  vita" + voile terracotta, carte formulaire bleu Méditerranéen, FAQ et
+  footer sur fond navy). Vérifié par script Playwright : fond du bandeau
+  redevenu terracotta uni (photo réaffichée), fond de la carte formulaire
+  redevenu le dégradé navy, FAQ et footer redevenus navy, 0 débordement/
+  erreur console sur les 5 pages × 2 viewports. Si `body.contact-cream`
+  ou son bloc de règles réapparaissent, c'est cet essai abandonné, à ne
+  pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 
