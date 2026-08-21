@@ -5102,6 +5102,96 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   interpolé en continu (au lieu d'un basculement net piloté par la
   luminance), c'est ce bug de contraste à mi-scroll, à ne pas
   réintroduire sans le revérifier avec le même balayage.
+  **Entièrement remplacée le même jour** (voir bullet suivant) — la
+  cliente a explicitement rejeté ce fondu scopé à une seule section et
+  demandé un mécanisme global. `updateTeaserBg()` a été intégralement
+  supprimée de `main.js` (plus de `style.backgroundColor` inline sur
+  `#teaser`, plus de bascule de couleur de texte sur `.section-head h2`),
+  et `id="teaser"` a été retiré du HTML (plus référencé nulle part). Si
+  `updateTeaserBg()` ou un `id="teaser"` réapparaissent, c'est cette
+  ancienne version scopée à une seule section, à ne pas réintroduire sans
+  qu'on le redemande — l'entrée ci-dessus reste comme trace de la
+  discussion (palette adaptée, section vs. page entière) et du bug de
+  contraste résolu, au cas où la technique de bascule par luminance serve
+  ailleurs un jour.
+- **Accueil — transition de couleur de fond au scroll, entre TOUTES les
+  sections, en CSS pur (2026-08-21, même jour, remplace le bullet
+  ci-dessus)** (`.scroll-transition`, `style.css`/`index.html`) : la
+  cliente a explicitement rejeté le fondu scopé à `.teaser` seul
+  ("Ce n'est pas vraiment cet effet que je recherche") et reformulé sa
+  demande en des termes plus généraux et sans ambiguïté : *"lors du
+  défilement scroll de la page, on a un effet de transition de couleur de
+  fond au scroll. Donc par exemple si on est sur du blanc calcaire et
+  qu'on passe sur du rouge pourpre, on a une sorte d'effet de transition
+  fluide et progressif... en fonction de la position au scroll"* — un
+  mécanisme qui couvre TOUTE la page, à chaque changement de couleur de
+  section, pas un seul endroit choisi.
+  **Deux approches plus lourdes écartées avant d'implémenter** : (1)
+  rendre les sections elles-mêmes transparentes et piloter un calque de
+  fond unique en JS derrière tout le contenu — un chantier bien plus
+  large que ce qui a été demandé (revoir individuellement chaque section
+  du site) et un scroll-listener global sur toute la page, plus coûteux
+  que nécessaire ; (2) un fondu en surimpression (masque dégradé) posé
+  sur les bords des sections existantes — écarté après inspection : ça
+  aurait risqué de voiler des éléments réels proches de ces bords (la
+  flèche "Défiler" du hero, le compteur "X/5 sens découverts en chemin"
+  du parcours SVG, la note de clôture de la méthodologie), un risque
+  visuel réel plutôt qu'hypothétique vu la densité de contenu à ces
+  endroits précis de la page.
+  **Solution retenue : des bandeaux dédiés, en CSS pur, zéro JavaScript**
+  — un `<div class="scroll-transition" aria-hidden="true">` est inséré
+  entre CHAQUE paire de sections adjacentes de couleur différente sur
+  `index.html` (6 seams : hero→stats-band, stats-band→promise,
+  promise→teaser, teaser→senses-journey, senses-journey→method-cta,
+  method-cta→footer), chacun avec ses propres `--from`/`--to` posés en
+  style inline (une seule règle CSS partagée
+  `background: linear-gradient(to bottom, var(--from), var(--to))`,
+  hauteur `clamp(6rem, 16vh, 14rem)` — proportionnelle au viewport donc
+  jamais négligeable, y compris mobile). **C'est le point clé qui rend
+  l'effet "parfaitement fluide, réactif et optimisé pour les
+  performances" sans le moindre calcul par frame** : le "fondu au scroll"
+  n'est pas une interpolation pilotée par un scroll-listener + rAF (comme
+  la version rejetée ci-dessus, ou comme `updateJourney`/
+  `updateEngagementCards`/`updateValuesReel` ailleurs sur le site) —
+  c'est simplement le fait de traverser physiquement un dégradé déjà peint
+  par le navigateur pendant qu'on scrolle, en scroll natif, sans JS du
+  tout impliqué dans l'effet lui-même. Couleurs exactes reprises des
+  vraies déclarations CSS des sections concernées (pas devinées) :
+  `--navy` `#1c3b4a`, `--terracotta` `#c1622d`, `--navy-900` `#101f27`,
+  `--bg-dim` `#ece3d1`, `--rosso-ombria` `#4a1c1c` (couleur de base
+  déclarée de `.senses-journey-sticky`, dont le fond réel est en
+  dégradé — `#2b1010`, son coin le plus sombre, est utilisé côté sortie
+  de section car c'est la teinte visible en bas de cette section très
+  longue, `height:1240vh`, au moment où le scroll en sort), `--bg`
+  `#f6f1e7`.
+  **`#teaser` retiré** (devenu inutile, l'ancien mécanisme JS qui s'y
+  accrochait a été supprimé) — `.teaser` reste une section normale, sans
+  id ni style particulier lié à cet effet.
+  **Vérifié par script Playwright** : les 6 bandeaux confirmés avec le
+  bon dégradé calculé (`getComputedStyle().backgroundImage`) aux 2
+  viewports (12 combinaisons), captures d'écran à chaque seam confirmant
+  visuellement une transition propre sans aucun contenu voilé ni décalé
+  (le tracé SVG des 5 sens et son compteur, la note de clôture de la
+  méthodologie, la flèche du hero — tous intacts), 0 débordement
+  horizontal, 0 image cassée, 0 erreur console sur les 5 pages ×
+  2 viewports (regression complète, cet ajout ne touchant qu'`index.html`
+  mais vérifié sur tout le site par prudence). **Piège de méthodologie de
+  test rencontré et documenté pour éviter de le refaire** : un
+  `window.scrollTo({top, behavior:'auto'})` en Playwright ne bypass PAS
+  le `scroll-behavior:smooth` sitewide (`html`, `style.css`) — `"auto"`
+  au sens de la spec CSSOM View signifie "respecter le CSS de
+  l'élément", pas "instantané" ; seul `behavior:'instant'` force un saut
+  immédiat. Un premier balayage de captures d'écran avec `'auto'`
+  montrait des positions de scroll très en deçà de la cible (jusqu'à
+  10 000px d'écart sur les seams les plus bas), pas parce que l'effet ou
+  la page avaient un bug, mais parce que le scroll était encore en train
+  d'animer en douceur au moment de la capture. Sans rapport avec le site
+  lui-même — un piège de l'outil de test, à éviter en préférant toujours
+  `behavior:'instant'` pour un positionnement de scroll exact en script.
+  Si `.scroll-transition` disparaît d'`index.html` ou si l'ancien
+  mécanisme scopé à `#teaser` (bullet ci-dessus) réapparaît, c'est un
+  retour à une version antérieure de cet effet, à ne pas réintroduire
+  sans qu'on le redemande.
 
 ## État d'avancement
 
