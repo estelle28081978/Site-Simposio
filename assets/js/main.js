@@ -27,6 +27,183 @@
   updateScrollbarWidth();
   window.addEventListener("resize", updateScrollbarWidth);
 
+  /* ---------- Homepage : fond de page unique piloté au scroll (2026-08-21) ---------- */
+  /* Remplace le mécanisme précédent (bandeaux `.scroll-transition` en CSS
+     pur, retiré le même jour à la demande de la cliente — voir CLAUDE.md) :
+     cette fois la demande décrit une vraie mécanique (déclenchement au
+     franchissement d'une section, interpolation liée au scroll,
+     adaptation du texte en contact, requestAnimationFrame) et la cliente a
+     choisi elle-même — après avoir vu le compromis expliqué via
+     AskUserQuestion — l'option "un seul calque de fond qui teinte toute la
+     page" plutôt qu'une bande à chaque jonction. `#pageBgLayer` (fixed,
+     derrière tout, cf. style.css) porte donc la vraie couleur de fond ;
+     les sections concernées (`.hero`/`.stats-band`/`.promise`/`.teaser`/
+     `.method-cta`, plus `.site-footer` scopée à `body.home`) ont leur
+     propre `background` passé à `transparent` pour le laisser transparaître.
+     `#sensesJourney` reste volontairement à l'écart de l'interpolation
+     "visible" : c'est un mécanisme pinned/sticky autonome, déjà 100% opaque
+     une fois épinglé (cf. historique détaillé plus haut dans CLAUDE.md) —
+     le calque global vise juste la même teinte que son bord bas pendant
+     qu'il est caché derrière, pour qu'aucun bord net ne soit visible au
+     moment précis où il cède la place à la section suivante.
+     Recalcule les positions RÉELLES des sections à chaque frame (pas de
+     cache) : le même piège que sur les anciens bandeaux `.scroll-transition`
+     s'applique ici — des images encore `loading="lazy"` plus bas dans la
+     page peuvent décaler la mise en page pendant qu'on scrolle, une
+     position mise en cache au chargement se désynchroniserait. */
+  var pageBgLayer = document.getElementById("pageBgLayer");
+  var pageBgHero = document.getElementById("hero");
+  var pageBgStats = document.querySelector(".stats-band");
+  var pageBgPromise = document.querySelector(".promise");
+  var pageBgTeaser = document.querySelector(".teaser");
+  var pageBgJourney = document.getElementById("sensesJourney");
+  var pageBgMethod = document.querySelector(".method-cta");
+  var pageBgFooter = document.querySelector(".site-footer");
+
+  if (
+    pageBgLayer &&
+    pageBgHero &&
+    pageBgStats &&
+    pageBgPromise &&
+    pageBgTeaser &&
+    pageBgJourney &&
+    pageBgMethod &&
+    pageBgFooter
+  ) {
+    /* Même palette exacte que les fonds d'origine de chaque section
+       (--navy, --terracotta, --navy-900, --bg-dim, --rosso-ombria/#2b1010,
+       --bg, --navy-900) — aucune couleur inventée, aucun écart avec la
+       charte graphique fixe du site. */
+    var PAGE_BG_HERO = [28, 59, 74];
+    var PAGE_BG_STATS = [193, 98, 45];
+    var PAGE_BG_PROMISE = [16, 31, 39];
+    var PAGE_BG_TEASER = [236, 227, 209];
+    var PAGE_BG_JOURNEY = [43, 16, 16];
+    var PAGE_BG_METHOD = [246, 241, 231];
+    var PAGE_BG_FOOTER = [16, 31, 39];
+    /* Distance de scroll (px) sur laquelle chaque transition de couleur se
+       déploie, ancrée sur la frontière réelle entre deux sections (se
+       termine exactement quand le bas de la section précédente quitte le
+       haut du viewport). Plafonnée dynamiquement à la moitié de la plus
+       courte des deux sections concernées, pour ne jamais chevaucher deux
+       frontières voisines sur une section inhabituellement courte. */
+    var PAGE_BG_WINDOW = 560;
+
+    function pageBgLerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function pageBgSample(keyframes, y) {
+      if (y <= keyframes[0].y) return keyframes[0].rgb;
+      for (var i = 0; i < keyframes.length - 1; i++) {
+        var a = keyframes[i];
+        var b = keyframes[i + 1];
+        if (y >= a.y && y <= b.y) {
+          var t = b.y > a.y ? (y - a.y) / (b.y - a.y) : 1;
+          return [
+            pageBgLerp(a.rgb[0], b.rgb[0], t),
+            pageBgLerp(a.rgb[1], b.rgb[1], t),
+            pageBgLerp(a.rgb[2], b.rgb[2], t)
+          ];
+        }
+      }
+      return keyframes[keyframes.length - 1].rgb;
+    }
+
+    function pageBgWindow(gap) {
+      return Math.min(PAGE_BG_WINDOW, Math.max(60, gap / 2));
+    }
+
+    function updatePageBg() {
+      var scrollY = window.scrollY;
+      var statsTop = pageBgStats.getBoundingClientRect().top + scrollY;
+      var promiseTop = pageBgPromise.getBoundingClientRect().top + scrollY;
+      var teaserTop = pageBgTeaser.getBoundingClientRect().top + scrollY;
+      var journeyRect = pageBgJourney.getBoundingClientRect();
+      var journeyTop = journeyRect.top + scrollY;
+      var journeyBottom = journeyTop + journeyRect.height;
+      var footerTop = pageBgFooter.getBoundingClientRect().top + scrollY;
+      /* Le footer est la dernière section de la page et plus courte que
+         le viewport (~390px pour un viewport de 900px) — on ne peut
+         jamais scroller assez loin pour que SON PROPRE bord haut atteigne
+         le haut du viewport (`document.scrollHeight - innerHeight`, la
+         position de scroll maximale possible, s'arrête avant). Sans ce
+         plafond, la rampe finale visait un point de scroll inatteignable
+         et restait bloquée en cours de route, quelle que soit la distance
+         scrollée (bug réel rencontré : le fond restait bloqué en crème
+         jusqu'au bas de la page au lieu d'atteindre le bleu marine du
+         footer — repéré en comparant le point de scroll maximal réel à
+         `footerTop`, pas supposé). Plafonner la cible au scroll maximal
+         réel fait terminer la rampe exactement quand la page ne peut plus
+         défiler, quelle que soit la hauteur du footer. */
+      var maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
+      var footerRampEnd = Math.min(footerTop, maxScrollY);
+
+      var wStats = pageBgWindow(statsTop - 0);
+      var wPromise = pageBgWindow(promiseTop - statsTop);
+      var wTeaser = pageBgWindow(teaserTop - promiseTop);
+      var wJourney = pageBgWindow(journeyTop - teaserTop);
+      var wJourneyExit = pageBgWindow(journeyBottom - journeyTop);
+      var wFooter = pageBgWindow(footerRampEnd - journeyBottom);
+
+      var keyframes = [
+        { y: statsTop - wStats, rgb: PAGE_BG_HERO },
+        { y: statsTop, rgb: PAGE_BG_STATS },
+        { y: promiseTop - wPromise, rgb: PAGE_BG_STATS },
+        { y: promiseTop, rgb: PAGE_BG_PROMISE },
+        { y: teaserTop - wTeaser, rgb: PAGE_BG_PROMISE },
+        { y: teaserTop, rgb: PAGE_BG_TEASER },
+        { y: journeyTop - wJourney, rgb: PAGE_BG_TEASER },
+        { y: journeyTop, rgb: PAGE_BG_JOURNEY },
+        /* Tient la teinte plate PAGE_BG_JOURNEY sur toute la traversée du
+           parcours des 5 sens (jusqu'à 1240vh, largement invisible derrière
+           sa propre section pinned/opaque) — sans ce point intermédiaire,
+           `pageBgSample` interpolerait linéairement entre le point d'entrée
+           et le point de sortie sur toute cette distance, faisant dériver le
+           fond en continu pendant toute la traversée au lieu de rester
+           figé (bug réel rencontré et corrigé en vérifiant les couleurs
+           échantillonnées sur un balayage complet du scroll, pas supposé). */
+        { y: journeyBottom - wJourneyExit, rgb: PAGE_BG_JOURNEY },
+        { y: journeyBottom, rgb: PAGE_BG_METHOD },
+        { y: footerRampEnd - wFooter, rgb: PAGE_BG_METHOD },
+        { y: footerRampEnd, rgb: PAGE_BG_FOOTER }
+      ];
+
+      var rgb = pageBgSample(keyframes, scrollY);
+      var r = Math.round(rgb[0]);
+      var g = Math.round(rgb[1]);
+      var b = Math.round(rgb[2]);
+      pageBgLayer.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
+
+      /* Bascule d'un seul indicateur global (une seule transition de
+         section n'est jamais visible qu'à la fois, donc un seul indicateur
+         suffit à piloter tous les éléments `.bg-adaptive-*`, cf. style.css)
+         — hard-switch sur la luminance réelle plutôt qu'un fondu de couleur
+         continu sur le texte : deux couleurs de texte parties d'extrêmes
+         opposés et interpolées en parallèle du fond se croisent forcément
+         au milieu (bug déjà rencontré et corrigé sur une itération
+         précédente de cet effet, cf. CLAUDE.md) — un seuil net évite ce
+         passage par un gris flou à faible contraste. */
+      var luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      document.body.dataset.tone = luminance < 0.6 ? "dark" : "light";
+    }
+
+    var pageBgTicking = false;
+    function requestPageBgUpdate() {
+      if (!pageBgTicking) {
+        window.requestAnimationFrame(function () {
+          updatePageBg();
+          pageBgTicking = false;
+        });
+        pageBgTicking = true;
+      }
+    }
+    window.addEventListener("scroll", requestPageBgUpdate, { passive: true });
+    window.addEventListener("resize", requestPageBgUpdate);
+    document.fonts && document.fonts.ready && document.fonts.ready.then(requestPageBgUpdate);
+    updatePageBg();
+  }
+
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();

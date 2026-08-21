@@ -654,7 +654,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* ==========================================================================
    Homepage prestations teaser — text-forward, no photos (kept for inner page)
    ========================================================================== */
-.teaser { background: var(--bg-dim); padding-block: var(--space-6); }
+.teaser { background: transparent; padding-block: var(--space-6); } /* voir #pageBgLayer */
 .teaser-grid { display: grid; gap: 1px; background: var(--border); margin-top: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 @media (min-width: 780px) { .teaser-grid { grid-template-columns: repeat(2, 1fr); } }
 /* Fond photo (2026-08-18) : chaque carte formule affiche désormais la même
@@ -744,6 +744,89 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .link-sweep:hover::after { left: 130%; }
 
 /* ==========================================================================
+   Homepage — fond de page unique, piloté en JS au scroll (2026-08-21)
+   ========================================================================== */
+/* Remplace le mécanisme précédent (bandeaux `.scroll-transition` en CSS
+   pur, retiré à la demande de la cliente le même jour — voir CLAUDE.md).
+   Cette fois la demande est explicite et détaillée (mécanique décrite
+   noeud par noeud : déclenchement au franchissement d'une section,
+   interpolation dynamique liée au scroll, adaptation du texte en contact,
+   requestAnimationFrame) et la cliente a choisi elle-même, en connaissance
+   du compromis (`AskUserQuestion`), l'option "fond unique qui teinte toute
+   la page" plutôt que "garder les sections colorées, ajouter une bande à
+   chaque jonction" — donc, contrairement à la version précédente, les
+   sections elles-mêmes deviennent transparentes et c'est UN SEUL calque
+   fixe (`#pageBgLayer`, `assets/js/main.js`) qui porte la couleur de fond
+   réelle, recalculée chaque frame de scroll (rAF-throttlé, cf.
+   `updatePageBg()`).
+   Scopé à `index.html` uniquement (`body.home`, `#pageBgLayer` n'existe
+   que sur cette page) : `.hero`/`.stats-band`/`.promise`/`.teaser`/
+   `.method-cta` sont des classes déjà exclusives à l'accueil (vérifié —
+   aucune des 4 autres pages ne les utilise), donc leur passage à
+   `background: transparent` ci-dessous est sans risque pour le reste du
+   site. `.site-footer`, elle, est PARTAGÉE par les 6 pages (balisage
+   dupliqué) — sa règle de transparence est donc scopée explicitement à
+   `body.home` un peu plus bas, pour ne jamais affecter les 4 autres
+   pages où `#pageBgLayer` n'existe pas (un footer transparent y
+   laisserait voir le fond crème `body` nu, avec un texte toujours stylé
+   clair-sur-sombre — casse totale du contraste).
+   `#sensesJourney` (le parcours des 5 sens) N'EST PAS rendu transparent :
+   c'est un mécanisme pinned/sticky autonome, calibré au pixel près sur de
+   très nombreuses itérations (glow du tracé SVG, contraste des cartes —
+   voir l'historique détaillé plus haut dans CLAUDE.md), bien plus fragile
+   que les sections à fond plat ci-dessus. Le retoucher pour le rendre
+   transparent risquerait de casser ce système sans rien apporter de
+   visible : sa propre `.senses-journey-sticky` étant déjà 100% opaque une
+   fois épinglée, `#pageBgLayer` ne serait de toute façon jamais visible
+   à travers elle. `updatePageBg()` continue seulement de faire viser au
+   calque global la teinte d'entrée/sortie de cette section (mêmes tons
+   que son propre dégradé), pour que la couleur soit déjà correcte au
+   moment précis où le tracé épinglé cède la place à la section suivante
+   — sans quoi un bord net et incohérent serait visible pendant une
+   fraction de seconde à cette transition précise. */
+#pageBgLayer {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--navy);
+  pointer-events: none;
+}
+
+/* Éléments qui reposent directement sur le fond plat d'une section (pas
+   sur leur propre photo/scrim/carte, qui gèrent déjà leur contraste
+   indépendamment) et doivent donc suivre la teinte réelle de
+   #pageBgLayer pour rester lisibles pendant une transition. Un seul
+   indicateur global (`body.home[data-tone]`, posé par `updatePageBg()`
+   sur la luminance réelle du calque) suffit : à un instant donné, une
+   seule transition de section est jamais visible à l'écran, donc les
+   éléments concernés par les AUTRES transitions sont de toute façon hors
+   champ. `[data-tone="dark"]` bascule les éléments nés pour un fond
+   clair (Prestations, Notre méthodologie) vers leurs teintes claires déjà
+   utilisées ailleurs sur le site pour ce rôle (mêmes variables que
+   `.eyebrow.on-dark`/`.lede.on-dark`, pas de nouvelle couleur inventée) ;
+   `[data-tone="light"]` fait l'inverse pour le footer (né pour un fond
+   sombre, seule section de ce groupe dans ce cas). */
+body.home[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
+body.home[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
+body.home[data-tone="dark"] .bg-adaptive-lede { color: var(--fg-muted-inverse); }
+body.home[data-tone="dark"] .bg-adaptive-outline-btn {
+  color: var(--cream);
+  border-color: rgba(246, 241, 231, 0.4);
+}
+body.home[data-tone="dark"] .bg-adaptive-outline-btn:hover {
+  background: var(--cream);
+  color: var(--navy);
+  border-color: var(--cream);
+}
+body.home .site-footer { background: transparent; }
+body.home[data-tone="light"] .bg-adaptive-footer { color: var(--fg-muted); }
+body.home[data-tone="light"] .bg-adaptive-footer .footer-brand p { color: var(--fg-muted); }
+body.home[data-tone="light"] .bg-adaptive-footer .footer-col h4 { color: var(--navy); }
+body.home[data-tone="light"] .bg-adaptive-footer .footer-bottom { color: rgba(18, 35, 43, 0.55); }
+body.home[data-tone="light"] .bg-adaptive-footer .photo-credits { color: rgba(18, 35, 43, 0.45); }
+body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(18, 35, 43, 0.65); }
+
+/* ==========================================================================
    Hero — full viewport, cinematic gradient
    ========================================================================== */
 .hero {
@@ -753,7 +836,10 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   align-items: center;
   justify-content: flex-start;
   overflow: hidden;
-  background: var(--navy);
+  /* transparent, pas var(--navy) : voir #pageBgLayer plus haut dans le
+     fichier — le fond de cette section est désormais porté par le calque
+     de fond global de l'accueil, piloté en JS. */
+  background: transparent;
   color: var(--cream);
   text-align: left;
   padding-top: 7rem;
@@ -826,7 +912,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 
 /* Key figures — isolated on their own solid-color band, distinct from the
    hero photo carousel, per brand brief */
-.stats-band { background: var(--terracotta); padding-block: var(--space-5); }
+.stats-band { background: transparent; padding-block: var(--space-5); } /* voir #pageBgLayer */
 .stats-band-grid {
   display: grid;
   /* 4 colonnes depuis l'ajout du repère B2B (2026-08-18, ci-dessous) —
@@ -1021,7 +1107,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
      tall the centered block gets. */
   padding-top: 6.5rem;
   padding-bottom: 3rem;
-  background: var(--navy-900);
+  /* transparent : le fond derrière la photo (toujours plein cadre, cf.
+     .promise-photo) est désormais porté par #pageBgLayer. */
+  background: transparent;
   color: var(--fg-inverse);
 }
 .promise-photo {
@@ -3228,7 +3316,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    réapparaissent dans un diff, c'est cette ancienne version (ou une
    version encore antérieure), à ne pas réintroduire sans qu'on le
    redemande. */
-.method-cta { position: relative; padding-block: var(--space-6); background: var(--bg); overflow: hidden; }
+.method-cta { position: relative; padding-block: var(--space-6); background: transparent; overflow: hidden; } /* voir #pageBgLayer */
 .method-cta-grid { display: grid; gap: var(--space-6); position: relative; z-index: 1; }
 @media (min-width: 960px) { .method-cta-grid { grid-template-columns: 0.85fr 1.15fr; align-items: start; } }
 

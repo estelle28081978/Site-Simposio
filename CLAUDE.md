@@ -5211,6 +5211,129 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   pourquoi elles ont été écartées ; si `.scroll-transition` ou
   `updateTeaserBg()` réapparaissent dans un diff, c'est l'une de ces deux
   versions abandonnées, à ne pas réintroduire sans qu'on le redemande.
+- **Accueil — 3ᵉ tentative, fond unique qui teinte réellement toute la
+  page, mécanique complète (2026-08-21, même jour)** (`#pageBgLayer`,
+  `updatePageBg()` dans `main.js`, `assets/css/style.css`) : après le
+  retrait complet ci-dessus, la cliente est revenue avec un cahier des
+  charges technique détaillé et non ambigu (4 points : déclenchement au
+  franchissement d'une section, interpolation dynamique liée au scroll —
+  pas un simple changement de classe —, adaptation de couleur du texte en
+  contact, `requestAnimationFrame`/pas de saccade). **Choix d'architecture
+  posé explicitement à la cliente avant d'implémenter** (`AskUserQuestion`,
+  vu le risque) : garder les sections à fond plein et n'ajouter qu'une
+  bande à chaque jonction (l'option des deux tentatives précédentes, déjà
+  rejetée), ou rendre les sections elles-mêmes transparentes au profit d'un
+  unique calque de fond piloté en JS — elle a choisi la seconde,
+  explicitement la plus proche de "la couleur de fond de la page" au sens
+  littéral, en connaissance du compromis (plus de sections à toucher).
+  **Architecture** : `#pageBgLayer` (`position:fixed; inset:0; z-index:-1`,
+  premier enfant de `<body class="home">`) porte désormais la vraie couleur
+  de fond, recalculée à chaque frame de scroll par `updatePageBg()`
+  (rAF-throttlé, même pattern `ticking` que les autres effets scroll-liés
+  du site). `.hero`/`.stats-band`/`.promise`/`.teaser`/`.method-cta`
+  passent à `background:transparent` (classes déjà exclusives à
+  `index.html`, vérifié par grep sur les 5 autres pages avant de les
+  toucher — aucun risque hors accueil). `.site-footer`, elle, est
+  **partagée par les 6 pages** (balisage dupliqué) — sa règle de
+  transparence est donc scopée à `body.home .site-footer` uniquement,
+  jamais touchée sur les 4 autres pages (vérifié explicitement par script
+  Playwright : fond et couleur de texte du footer inchangés partout
+  ailleurs, `#pageBgLayer` absent de leur DOM).
+  **`#sensesJourney` volontairement exclu de la transparence** : ce
+  mécanisme pinned/sticky autonome (tracé SVG, cartes, glow — calibré sur
+  de très nombreuses itérations, cf. plus haut dans ce fichier) est bien
+  plus fragile que les sections à fond plat ; le rendre transparent
+  n'apporterait rien de visible (sa propre `.senses-journey-sticky` est
+  déjà 100% opaque une fois épinglée) tout en risquant de casser un
+  système déjà validé. `updatePageBg()` vise simplement la même teinte que
+  ses bords haut/bas pendant qu'il reste caché derrière, pour qu'aucun
+  bord net ne soit visible au moment précis où il cède la place à la
+  section suivante.
+  **Interpolation par points-clés (keyframes), pas un simple lerp entre
+  deux couleurs par section** : `updatePageBg()` recalcule à chaque frame
+  la position RÉELLE de chaque section (`getBoundingClientRect()`, jamais
+  mise en cache — même piège déjà rencontré et évité sur les anciens
+  bandeaux `.scroll-transition`, des images encore `loading="lazy"` plus
+  bas peuvent décaler la mise en page pendant le scroll) et construit une
+  liste de points `{y, rgb}` ordonnés : pour chaque frontière, une rampe
+  `[top-fenêtre, top]` qui va de la couleur précédente à la couleur de la
+  section qui commence, `pageBgSample()` échantillonnant cette liste par
+  interpolation linéaire entre les deux points encadrants. La fenêtre de
+  chaque rampe (`pageBgWindow()`) est plafonnée à la moitié de l'écart
+  réel entre deux frontières, pour ne jamais faire chevaucher deux
+  transitions voisines sur une section inhabituellement courte.
+  **Bug réel trouvé et corrigé, pas supposé** : un premier jet ne posait
+  qu'un point d'ENTRÉE et un point de SORTIE pour `#sensesJourney` (1240vh,
+  section la plus longue du site de très loin) sans point intermédiaire —
+  `pageBgSample()` interpolait alors linéairement sur toute cette distance
+  énorme, faisant dériver le fond en continu pendant toute la traversée du
+  parcours des 5 sens au lieu de rester figé derrière lui (repéré par un
+  balayage de scroll complet, mesurant la couleur réelle à chaque étape —
+  pas visible en relisant juste le code). Corrigé en ajoutant un point
+  supplémentaire juste avant la sortie de la section, à la même teinte que
+  l'entrée : le fond reste plat sur toute la traversée, puis rampe
+  seulement sur les derniers pixels avant la section suivante.
+  **2ᵉ bug réel trouvé et corrigé** : la rampe finale (vers le footer)
+  restait bloquée en cours de route, quelle que soit la distance
+  scrollée — le footer étant la DERNIÈRE section de la page et plus courte
+  que le viewport (~390px pour 900px de haut), son propre bord haut ne
+  peut jamais atteindre le haut du viewport par un scroll normal (la
+  position de scroll maximale, `document.scrollHeight - innerHeight`,
+  s'arrête avant) ; la rampe visait donc un point de scroll inatteignable.
+  Repéré en comparant explicitement la position de scroll maximale réelle
+  à la position du footer (pas supposé), corrigé en plafonnant la cible de
+  cette dernière rampe au scroll maximal réel (`footerRampEnd`) — elle se
+  termine désormais exactement quand la page ne peut plus défiler, quelle
+  que soit la hauteur du footer.
+  **Adaptation du texte, "point 3" du cahier des charges** : plutôt qu'un
+  fondu continu de couleur sur chaque élément (bug de contraste déjà
+  rencontré et documenté sur la 1ʳᵉ tentative — deux couleurs parties
+  d'extrêmes opposés interpolées au même rythme se croisent forcément au
+  milieu), un seul indicateur global `body.home[data-tone="dark"|"light"]`
+  est posé chaque frame sur la luminance réelle du fond (formule
+  `0.299R+0.587G+0.114B`, seuil à 0,6 — les teintes "dark" du site
+  plafonnent à 0,47, les teintes "light" démarrent à 0,89, large marge de
+  sécurité). Un seul indicateur global suffit : à un instant donné, une
+  seule transition de section est jamais visible à l'écran, donc les
+  éléments concernés par d'autres transitions sont de toute façon hors
+  champ. Appliqué via de nouvelles classes marqueurs
+  (`.bg-adaptive-eyebrow`/`-heading`/`-lede`/`-outline-btn`/`-footer`) sur
+  les seuls éléments qui reposent directement sur le fond plat d'une
+  section (pas sur leur propre photo/scrim/carte, qui gèrent déjà leur
+  contraste indépendamment) : eyebrow/h2 du bandeau Prestations, eyebrow/
+  h2/lede/bouton "Voir nos projets" et eyebrow/note de Notre méthodologie,
+  et l'ensemble du footer (`.footer-brand p`/`.footer-col h4`/
+  `.footer-bottom`/`.photo-credits`). Les couleurs "dark" réutilisent les
+  variantes déjà existantes du site (`--terracotta-300`, mêmes valeurs que
+  `.eyebrow.on-dark`/`.lede.on-dark`) plutôt que d'en inventer de
+  nouvelles ; les couleurs "light" du footer (normalement toujours sombre)
+  réutilisent `--fg-muted`/`--navy` déjà utilisés ailleurs sur le site pour
+  ce rôle sur fond clair.
+  **Performance** : aucune propriété CSS de type `transform`/`opacity`
+  n'était nécessaire ici (contrairement aux autres effets scroll-liés du
+  site) — un repaint plein-écran d'une couleur plate est intrinsèquement
+  bon marché (pas de décodage d'image, pas de géométrie complexe), donc
+  aucun `will-change` n'a été ajouté sur `#pageBgLayer` (n'aurait aucun
+  effet utile sur cette propriété). `getBoundingClientRect()` est appelé
+  sur seulement 5 éléments par frame, uniquement dans le callback déjà
+  planifié par `requestAnimationFrame` (jamais dans le handler `scroll`
+  brut) — vérifié par un test de résistance Playwright (40 allers-retours
+  de scroll instantanés autour d'une frontière, puis un balayage complet
+  109 étapes sur toute la hauteur de page) : aucune valeur de couleur
+  invalide, aucune erreur console.
+  **`prefers-reduced-motion`** : reste actif sous cette préférence, comme
+  tous les autres effets scroll-liés 1:1 du site (mapping direct avec la
+  position de scroll, pas une animation autoplay) — vérifié explicitement.
+  Vérifié par script Playwright : balayage complet du fond sur toute la
+  hauteur de page (couleurs échantillonnées cohérentes à chaque frontière,
+  tenue plate confirmée sur toute la traversée des 5 sens), bascule
+  dark/light du texte confirmée aux bonnes couleurs à chaque frontière
+  (bandeau Prestations, Notre méthodologie, footer), capture d'écran à
+  plusieurs points de chaque transition (desktop et mobile) confirmant
+  visuellement une lisibilité maintenue tout du long, 0 débordement
+  horizontal, 0 erreur console. Regression complète 5 pages × 2 viewports :
+  0 débordement, 0 erreur console, footer et fond des 4 autres pages
+  confirmés strictement inchangés.
 
 ## État d'avancement
 
