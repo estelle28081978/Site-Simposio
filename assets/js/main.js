@@ -65,26 +65,35 @@
      `.contact-faq[data-tone]` dans `style.css` pour l'adaptation du texte
      (mêmes classes `.bg-adaptive-*` que le mécanisme précédent, juste
      rescopées à la section plutôt qu'à `body`). */
+  /* Fraction de la hauteur du viewport (depuis le haut) où le haut de la
+     section doit se trouver pour que la couleur définitive soit atteinte.
+     Passée de 0.5 (milieu de l'écran) à 0.75 (trois quarts de l'écran) le
+     même jour, à l'essai ("j'aimerais que tu essayes") — la couleur
+     définitive est donc désormais atteinte plus tôt dans le scroll (le
+     haut de section n'a plus qu'un quart de la hauteur du viewport à
+     parcourir, contre la moitié avant, pour que `progress` passe de 0 à
+     1). Si `0.5` réapparaît ici, c'est le réglage précédent, à ne pas
+     réintroduire sans qu'on le redemande. */
+  var SCROLL_FADE_TRIGGER_FRACTION = 0.75;
+
   function initScrollFade(el, fromRgb, toRgb) {
     if (!el) return;
 
     function update() {
       var rect = el.getBoundingClientRect();
       var vh = window.innerHeight;
-      var progress = (vh - rect.top) / (vh / 2);
+      var triggerY = vh * SCROLL_FADE_TRIGGER_FRACTION;
+      var progress = (vh - rect.top) / (vh - triggerY);
       /* Filet de sécurité pour une section proche du bas de la page (ex.
          `.contact-faq`, suivie d'un footer plus court que le reste de la
          distance de scroll qu'il faudrait pour que son propre haut
-         atteigne géométriquement le milieu de l'écran) : sans ce filet,
-         `progress` pourrait rester bloqué sous 1 même une fois arrivé
-         tout en bas de la page — la couleur définitive ne serait alors
-         jamais atteinte (même défaut déjà rencontré et corrigé une 1ʳᵉ
-         fois avec le déclencheur précédent basé sur `rect.bottom`, cf.
-         historique juste au-dessus — conservé par précaution avec ce
-         nouveau déclencheur basé sur `rect.top`, moins exposé au problème
-         mais pas à l'abri sur une section très courte en fin de page).
-         Dès que la page ne peut plus défiler (`scrollY` à son maximum),
-         on force `progress` à 1. */
+         atteigne géométriquement ce repère) : sans ce filet, `progress`
+         pourrait rester bloqué sous 1 même une fois arrivé tout en bas de
+         la page — la couleur définitive ne serait alors jamais atteinte
+         (même défaut déjà rencontré et corrigé une 1ʳᵉ fois avec le
+         déclencheur basé sur `rect.bottom`, cf. historique juste
+         au-dessus — conservé par précaution). Dès que la page ne peut
+         plus défiler (`scrollY` à son maximum), on force `progress` à 1. */
       var maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
       if (window.scrollY >= maxScrollY - 1) progress = 1;
       progress = Math.max(0, Math.min(1, progress));

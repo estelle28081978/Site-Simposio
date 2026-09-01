@@ -5960,6 +5960,30 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   les 3 sections, plus aucune valeur bloquée avant la fin de page) et
   regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Repère du déclencheur passé du milieu aux trois quarts de l'écran,
+  à l'essai (2026-09-02, même jour)** : demande explicite ("j'aimerais que
+  tu essayes quand le haut de la section arrive aux trois quarts de
+  l'écran") — `initScrollFade()` prend une nouvelle constante partagée
+  `SCROLL_FADE_TRIGGER_FRACTION = 0.75` (au lieu du milieu, `0.5`, codé en
+  dur dans la formule) : `triggerY = vh × 0.75`, et `progress = (vh -
+  rect.top) / (vh - triggerY)`. Avec un repère plus bas dans l'écran, le
+  haut de la section n'a plus qu'un quart de la hauteur du viewport à
+  parcourir (au lieu de la moitié) pour que `progress` passe de 0 à 1 —
+  la couleur définitive est donc atteinte nettement plus tôt dans le
+  scroll pour les 3 sections. Le filet de sécurité au scroll maximal
+  (pour une section proche de la fin de page, cf. bullet précédent) est
+  inchangé et reste en place par précaution, bien qu'il ne se déclenche
+  plus pour aucune des 3 sections à ce nouveau réglage (`progress`
+  atteint 1 naturellement bien avant la fin réelle du scroll de la page).
+  Si `0.5` réapparaît dans le calcul de `triggerY` (ou si la constante
+  `SCROLL_FADE_TRIGGER_FRACTION` disparaît au profit d'une valeur codée en
+  dur), c'est le réglage précédent, à ne pas réintroduire sans qu'on le
+  redemande — un simple changement de cette seule constante suffit à
+  essayer d'autres valeurs si celle-ci ne convient pas non plus. Vérifié
+  par le même script de balayage de scroll (progress 0→1 atteint quand
+  `rect.top<=0.75×vh` sur les 3 sections, transition visiblement plus
+  rapide confirmée par capture d'écran) et regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
