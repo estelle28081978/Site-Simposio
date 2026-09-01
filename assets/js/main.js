@@ -67,14 +67,18 @@
      rescopées à la section plutôt qu'à `body`). */
   /* Fraction de la hauteur du viewport (depuis le haut) où le haut de la
      section doit se trouver pour que la couleur définitive soit atteinte.
-     Passée de 0.5 (milieu de l'écran) à 0.75 (trois quarts de l'écran) le
-     même jour, à l'essai ("j'aimerais que tu essayes") — la couleur
-     définitive est donc désormais atteinte plus tôt dans le scroll (le
-     haut de section n'a plus qu'un quart de la hauteur du viewport à
-     parcourir, contre la moitié avant, pour que `progress` passe de 0 à
-     1). Si `0.5` réapparaît ici, c'est le réglage précédent, à ne pas
-     réintroduire sans qu'on le redemande. */
-  var SCROLL_FADE_TRIGGER_FRACTION = 0.75;
+     Trois valeurs successives, toutes à l'essai le même jour ("j'aimerais
+     que tu essayes") : 0.5 (milieu de l'écran) → 0.75 (trois quarts) →
+     1/3 (premier tiers) ici. Avec ce repère plus HAUT dans l'écran que les
+     deux précédents, le haut de section doit au contraire parcourir DAVANTAGE
+     de hauteur de viewport (les deux tiers, contre un quart avec 0.75 et
+     la moitié avec 0.5) avant que `progress` passe de 0 à 1 — la couleur
+     définitive est donc atteinte plus tard dans le scroll qu'avec les deux
+     réglages précédents, la section restant plus longtemps affichée dans
+     sa couleur de départ pendant qu'elle apparaît à l'écran. Si `0.5` ou
+     `0.75` réapparaissent ici, ce sont les deux réglages précédents, à ne
+     pas réintroduire sans qu'on le redemande. */
+  var SCROLL_FADE_TRIGGER_FRACTION = 1 / 3;
 
   function initScrollFade(el, fromRgb, toRgb) {
     if (!el) return;

@@ -5984,6 +5984,25 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `rect.top<=0.75×vh` sur les 3 sections, transition visiblement plus
   rapide confirmée par capture d'écran) et regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Repère du déclencheur repassé au premier tiers de l'écran, à l'essai
+  (2026-09-02, même jour)** : nouvelle demande explicite ("j'aimerais que
+  tu essayes quand le haut de la section arrive au premier tiers de
+  l'écran") — `SCROLL_FADE_TRIGGER_FRACTION` passe de `0.75` à `1 / 3`,
+  seule cette constante change (le reste du mécanisme, y compris le filet
+  de sécurité au scroll maximal, est inchangé). **Effet inverse des deux
+  réglages précédents** : ce repère est plus HAUT dans l'écran (premier
+  tiers, pas trois quarts) donc le haut de la section doit parcourir DAVANTAGE
+  de hauteur de viewport avant d'atteindre `progress=1` (les deux tiers de
+  la hauteur du viewport, contre un quart avec `0.75` et la moitié avec
+  `0.5`) — la couleur définitive est donc atteinte plus tard dans le
+  scroll qu'avec les deux réglages précédents, pas plus tôt. Vérifié par
+  le même script de balayage de scroll (progress 0→1 atteint quand
+  `rect.top<=vh/3` sur les 3 sections, y compris `.contact-faq` qui
+  l'atteint là aussi bien avant la fin réelle du scroll de la page — le
+  filet de sécurité ne se déclenche toujours pas) et regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console. Si `0.75`
+  réapparaît dans `SCROLL_FADE_TRIGGER_FRACTION`, c'est le réglage
+  précédent, à ne pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 
