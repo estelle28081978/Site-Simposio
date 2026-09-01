@@ -743,9 +743,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    réelle, recalculée chaque frame de scroll (rAF-throttlé, cf.
    `updatePageBg()`).
    Scopé à `index.html` uniquement (`body.home`, `#pageBgLayer` n'existe
-   que sur cette page) : `.hero`/`.stats-band`/`.promise`/`.teaser`/
-   `.method-cta` sont des classes déjà exclusives à l'accueil (vérifié —
-   aucune des 4 autres pages ne les utilise), donc leur passage à
+   que sur cette page) : `.hero`/`.stats-band`/`.teaser`/`.method-cta`
+   sont des classes déjà exclusives à l'accueil (vérifié — aucune des 4
+   autres pages ne les utilise), donc leur passage à
    `background: transparent` ci-dessous est sans risque pour le reste du
    site. `.site-footer`, elle, est PARTAGÉE par les 6 pages (balisage
    dupliqué) — sa règle de transparence est donc scopée explicitement à
@@ -1039,139 +1039,26 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
 .story-name em { font-style: italic; color: var(--accent); }
 
 /* ==========================================================================
-   Promise — full-bleed photo, staggered "poster" typography
-   (2026-08-17, 3e refonte : ni la scène cinématique (1re refonte) ni le
-   diptyque éditorial façon Louis Vuitton (2e refonte) n'ont convaincu la
-   cliente — elle a fini par fournir sa propre maquette Canva : la citation
-   raccourcie, en très grande typographie, écrite en plusieurs lignes
-   décalées horizontalement les unes des autres avec des espacements
-   irréguliers entre elles (esprit "poster" éditorial), tenant sur un seul
-   écran d'ordinateur, sur la photo plein cadre (visible, pas cachée par un
-   voile trop sombre) — mais avec nos polices/couleurs, pas celles de sa
-   référence. Remplace entièrement le diptyque de la 2e refonte : si
-   `.promise-editorial`/`.promise-visual-frame`/`.promise-mark` réapparaissent
-   ici, ne pas les réintroduire sans qu'on le redemande.
-   **Texte raccourci** : la fin de la citation ("— entre la Riviera de
-   Portofino, les falaises d'Amalfi et la douceur des collines toscanes.")
-   est retirée à la demande explicite de la cliente ; ne reste que
-   "Suspendre le quotidien professionnel pour transporter vos invités au
-   cœur de l'Italie, iconique et intemporelle."
-   **Mécanisme de coloration mot par mot au scroll retiré** (`updatePromise()`
-   dans main.js, supprimé) : la cliente a demandé un effet d'apparition où
-   les 3 lignes apparaissent "toutes en même temps", pas un effet
-   progressif — remplacé par le système de reveal générique du site
-   (`[data-reveal]`, IntersectionObserver + fondu/translateY, déjà utilisé
-   partout ailleurs) posé directement sur `.promise-quote` : les 3 lignes,
-   étant un seul bloc, entrent ensemble en un seul mouvement. Si des
-   `<span class="word">` ou un id `promisePhoto` réapparaissent ici, c'est
-   une ancienne version (1re ou 2e refonte), à ne pas réintroduire sans
-   qu'on le redemande.
-   **Voile allégé** : `.promise-scrim` passe d'un dégradé sombre (jusqu'à
-   88% d'opacité en bas) à un voile beaucoup plus léger (28-50%) — la
-   lisibilité du texte sur la photo est assurée par un `text-shadow`
-   marqué plutôt que par un assombrissement fort de la photo, pour que
-   celle-ci reste "bien visible" comme demandé.
-   .promise-footnote plus bas reste du CSS legacy inutilisé (cf. note de
-   suppression dans CLAUDE.md), non concerné par cette refonte. */
-.promise {
-  position: relative;
-  overflow: hidden;
-  /* min-height rather than a hard height:100vh + overflow:hidden: at the
-     client's requested 1.75x-over-one-screen type scale, the block is
-     deliberately taller than the viewport now — this lets the section grow
-     to fit it (a bit of extra scroll) instead of clipping the giant text
-     top/bottom the way a fixed height would. */
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  /* Reserves clearance under the fixed .site-header (~6.5rem, same constant
-     used sitewide for this) — centering lines of near-full-height type
-     inside a plain 100vh box let the first line creep up behind the
-     header on some widths; this keeps it below the header no matter how
-     tall the centered block gets. */
-  padding-top: 6.5rem;
-  padding-bottom: 3rem;
-  /* Plus de photo de fond ici (retirée le 2026-08-21, cf. CLAUDE.md — la
-     photo amalfi-coast-sunset.jpg est passée dans le diaporama du hero) :
-     le fond visible est donc directement #pageBgLayer (navy-900 sur cette
-     portion de scroll), déjà exactement la teinte sombre pour laquelle le
-     texte crème de cette section (var(--fg-inverse)) est prévu. */
-  background: transparent;
-  color: var(--fg-inverse);
-}
-.promise .container { position: relative; z-index: 1; max-width: 100rem; padding-inline: clamp(1rem, 2.5vw, 2rem); }
-
-.promise-quote {
-  width: 100%;
-  font-family: var(--font-display);
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.005em;
-  color: #f5f5f5;
-}
-.promise-line {
-  display: block;
-  font-size: clamp(2.6rem, 4.2vw, 5.6rem);
-  line-height: 0.85;
-}
-.promise-line + .promise-line { margin-top: 0.02em; }
-/* Alternating left / middle / right rhythm, not a gradual drift — a few
-   lines ("professionnel" & co, the longest words) are pinned near the left
-   edge out of physical necessity (cf. CLAUDE.md), everything else cycles
-   through the three zones so no two consecutive lines read as "both kind
-   of centered." */
-.promise-line-1 { margin-left: 2%; } /* left */
-.promise-line-2 { margin-left: 0; } /* left (longest word, physical floor) */
-.promise-line-3 { margin-left: 20%; } /* middle */
-.promise-line-4 { margin-left: 32%; } /* right */
-.promise-line-5 { margin-left: 4%; } /* left */
-.promise-line-6 { margin-left: 15%; } /* middle */
-.promise-line-7 { margin-left: 28%; } /* right */
-/* Last line: fit-content + auto margin (right-aligned) rather than a numeric
-   offset — kept generic (:last-child) rather than a fixed "promise-line-N"
-   class so future re-splits of the quote into more/fewer lines don't need a
-   matching CSS edit here too (main.js's fitPromiseLines() already detects
-   the last line the same dynamic way). */
-.promise-line:last-child { width: fit-content; margin-left: auto; margin-right: 0; }
-@media (max-width: 640px) {
-  .promise-line {
-    font-size: clamp(1.9rem, 9vw, 3rem);
-    line-height: 1.05;
-  }
-  .promise-line:not(:last-child) { margin-left: 0; }
-  .promise-line:last-child { width: auto; margin-left: 0; }
-}
-
-/* Per-line entrance: slides in from whichever side the line is aligned
-   toward (left-aligned lines arrive from the left, right-aligned/last line
-   from the right) — the generic [data-reveal-group] > * rule only offers a
-   translateY, so it's overridden here with a directional translateX per
-   line instead. Middle-zone lines get whichever direction alternates
-   against the line immediately above (baked into the HTML class, not
-   computed live — the sequence is fixed content, not responsive). */
-.promise-quote[data-reveal-group] > .promise-line {
-  transform: translateX(0);
-  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
-}
-.promise-quote[data-reveal-group] > .promise-line-from-left { transform: translateX(-8vw); }
-.promise-quote[data-reveal-group] > .promise-line-from-right { transform: translateX(8vw); }
-.promise-quote[data-reveal-group].is-visible > .promise-line { opacity: 1; transform: translateX(0); }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(1) { transition-delay: 0ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(2) { transition-delay: 60ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(3) { transition-delay: 120ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(4) { transition-delay: 180ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(5) { transition-delay: 240ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(6) { transition-delay: 300ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(7) { transition-delay: 360ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(8) { transition-delay: 420ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(9) { transition-delay: 480ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(10) { transition-delay: 540ms; }
-.promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(11) { transition-delay: 600ms; }
-
-@media (prefers-reduced-motion: reduce) {
-  .promise-quote[data-reveal-group] > .promise-line { opacity: 1; transform: translateX(0); }
-}
+   Promise — section "Notre promesse" entièrement supprimée (2026-08-21)
+   ========================================================================== */
+/* La section `.promise` (citation "Suspendre le quotidien professionnel...",
+   typographie "poster" en lignes décalées sur fond plein cadre — au moins
+   10 itérations documentées dans CLAUDE.md, de la scène cinématique
+   d'origine jusqu'à la version texte-sans-photo la plus récente) a été
+   retirée entièrement d'`index.html` à la demande explicite de la cliente,
+   avec tout son appareil CSS (`.promise`, `.promise-quote`, `.promise-line*`)
+   et sa logique JS associée (`fitPromiseLines()`, `main.js`, supprimée).
+   `updatePageBg()` (fond de page unique piloté au scroll, cf. plus haut
+   dans ce fichier) passe désormais directement de la couleur de
+   `.stats-band` à celle de `.teaser`, la section qui vivait entre les deux
+   n'existant plus. Si `.promise`/`.promise-quote`/`.promise-line`/
+   `fitPromiseLines()` réapparaissent dans un diff, c'est cette ancienne
+   section, à ne pas réintroduire sans qu'on le redemande — tout
+   l'historique détaillé de ses ~10 itérations reste dans CLAUDE.md pour
+   référence si elle est un jour redemandée sous une autre forme.
+   `.promise-footnote`/`.positioning-tag` juste en dessous étaient déjà du
+   CSS legacy inutilisé avant ce retrait (cf. note de suppression propre
+   dans CLAUDE.md) — sans rapport avec ce changement, non touchés ici. */
 
 .promise-footnote {
   margin-top: var(--space-5);
@@ -3392,9 +3279,8 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    [data-reveal-group] > * du site (fondu + translateY(20px) simple,
    80ms d'écart) : ici fondu + montée + léger zoom, écart plus long entre
    les cartes pour un effet plus premium/posé sur une section qui n'en
-   contient que 3 (contre jusqu'à 5 ailleurs). Même schéma que
-   .promise-quote[data-reveal-group] plus haut dans ce fichier (override
-   ciblé, pas de modification de la règle générique partagée). */
+   contient que 3 (contre jusqu'à 5 ailleurs) — un override ciblé, pas une
+   modification de la règle générique partagée. */
 .method-steps-list[data-reveal-group] > .method-step {
   opacity: 0;
   transform: translateY(36px) scale(0.96);

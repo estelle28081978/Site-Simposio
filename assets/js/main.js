@@ -37,9 +37,12 @@
      AskUserQuestion — l'option "un seul calque de fond qui teinte toute la
      page" plutôt qu'une bande à chaque jonction. `#pageBgLayer` (fixed,
      derrière tout, cf. style.css) porte donc la vraie couleur de fond ;
-     les sections concernées (`.hero`/`.stats-band`/`.promise`/`.teaser`/
-     `.method-cta`, plus `.site-footer` scopée à `body.home`) ont leur
-     propre `background` passé à `transparent` pour le laisser transparaître.
+     les sections concernées (`.hero`/`.stats-band`/`.teaser`/`.method-cta`,
+     plus `.site-footer` scopée à `body.home`) ont leur propre `background`
+     passé à `transparent` pour le laisser transparaître. La section
+     "Notre promesse" (`.promise`), qui vivait entre stats-band et teaser,
+     a été supprimée le 2026-08-21 (cf. CLAUDE.md) — la chaîne de
+     keyframes passe donc directement de PAGE_BG_STATS à PAGE_BG_TEASER.
      `#sensesJourney` reste volontairement à l'écart de l'interpolation
      "visible" : c'est un mécanisme pinned/sticky autonome, déjà 100% opaque
      une fois épinglé (cf. historique détaillé plus haut dans CLAUDE.md) —
@@ -54,7 +57,6 @@
   var pageBgLayer = document.getElementById("pageBgLayer");
   var pageBgHero = document.getElementById("hero");
   var pageBgStats = document.querySelector(".stats-band");
-  var pageBgPromise = document.querySelector(".promise");
   var pageBgTeaser = document.querySelector(".teaser");
   var pageBgJourney = document.getElementById("sensesJourney");
   var pageBgMethod = document.querySelector(".method-cta");
@@ -64,19 +66,17 @@
     pageBgLayer &&
     pageBgHero &&
     pageBgStats &&
-    pageBgPromise &&
     pageBgTeaser &&
     pageBgJourney &&
     pageBgMethod &&
     pageBgFooter
   ) {
     /* Même palette exacte que les fonds d'origine de chaque section
-       (--navy, --terracotta, --navy-900, --bg-dim, --rosso-ombria/#2b1010,
-       --bg, --navy-900) — aucune couleur inventée, aucun écart avec la
-       charte graphique fixe du site. */
+       (--navy, --terracotta, --bg-dim, --rosso-ombria/#2b1010, --bg,
+       --navy-900) — aucune couleur inventée, aucun écart avec la charte
+       graphique fixe du site. */
     var PAGE_BG_HERO = [28, 59, 74];
     var PAGE_BG_STATS = [193, 98, 45];
-    var PAGE_BG_PROMISE = [16, 31, 39];
     var PAGE_BG_TEASER = [236, 227, 209];
     var PAGE_BG_JOURNEY = [43, 16, 16];
     var PAGE_BG_METHOD = [246, 241, 231];
@@ -121,7 +121,6 @@
     function updatePageBg() {
       var scrollY = window.scrollY;
       var statsTop = pageBgStats.getBoundingClientRect().top + scrollY;
-      var promiseTop = pageBgPromise.getBoundingClientRect().top + scrollY;
       var teaserTop = pageBgTeaser.getBoundingClientRect().top + scrollY;
       var journeyRect = pageBgJourney.getBoundingClientRect();
       var journeyTop = journeyRect.top + scrollY;
@@ -144,8 +143,7 @@
       var footerRampEnd = Math.min(footerTop, maxScrollY);
 
       var wStats = pageBgWindow(statsTop - 0);
-      var wPromise = pageBgWindow(promiseTop - statsTop);
-      var wTeaser = pageBgWindow(teaserTop - promiseTop);
+      var wTeaser = pageBgWindow(teaserTop - statsTop);
       var wJourney = pageBgWindow(journeyTop - teaserTop);
       var wJourneyExit = pageBgWindow(journeyBottom - journeyTop);
       var wFooter = pageBgWindow(footerRampEnd - journeyBottom);
@@ -153,9 +151,7 @@
       var keyframes = [
         { y: statsTop - wStats, rgb: PAGE_BG_HERO },
         { y: statsTop, rgb: PAGE_BG_STATS },
-        { y: promiseTop - wPromise, rgb: PAGE_BG_STATS },
-        { y: promiseTop, rgb: PAGE_BG_PROMISE },
-        { y: teaserTop - wTeaser, rgb: PAGE_BG_PROMISE },
+        { y: teaserTop - wTeaser, rgb: PAGE_BG_STATS },
         { y: teaserTop, rgb: PAGE_BG_TEASER },
         { y: journeyTop - wJourney, rgb: PAGE_BG_TEASER },
         { y: journeyTop, rgb: PAGE_BG_JOURNEY },
@@ -287,99 +283,6 @@
       },
       { passive: true }
     );
-  }
-
-  /* ---------- Promise: one shared giant size, capped by the tightest line ---------- */
-  var promiseQuote = document.getElementById("promiseQuote");
-
-  if (promiseQuote) {
-    var promiseLines = Array.prototype.slice.call(promiseQuote.querySelectorAll(".promise-line"));
-    var PROMISE_REF_SIZE = 100; // px, arbitrary reference used only to measure natural text width
-    var PROMISE_MIN_SIZE = 32; // px, floor so a very short/narrow viewport never collapses illegibly
-
-    function measureTextWidth(el) {
-      // Must force a single unwrapped line before measuring: at the reference
-      // size the text can already wrap inside the line's normal (margin-
-      // narrowed) box, and a Range spanning multiple wrapped fragments reports
-      // only the widest fragment's width, not the true full-text width — that
-      // under-reading was making every "ideal" font-size below way too big.
-      var prevWS = el.style.whiteSpace, prevDisplay = el.style.display, prevWidth = el.style.width;
-      el.style.whiteSpace = "nowrap";
-      el.style.display = "inline-block";
-      el.style.width = "auto";
-      var width = el.getBoundingClientRect().width;
-      el.style.whiteSpace = prevWS;
-      el.style.display = prevDisplay;
-      el.style.width = prevWidth;
-      return width;
-    }
-
-    function fitPromiseLines() {
-      if (window.innerWidth <= 640 || !promiseLines.length) {
-        // Below the same breakpoint that already resets margin-left to 0 and
-        // switches to a fixed mobile clamp() — this stays a desktop/tablet-only
-        // effect, same as before.
-        promiseLines.forEach(function (el) { el.style.fontSize = ""; });
-        return;
-      }
-      var containerWidth = promiseQuote.getBoundingClientRect().width;
-      // One shared size for every line (client's request), rather than each
-      // line filling its own width — so the size is capped by whichever line
-      // is tightest for its own margin, same "how much can THIS line's own
-      // available width support" math as before, just taking the minimum
-      // across all lines instead of a size per line.
-      var idealSizes = promiseLines.map(function (el, i) {
-        el.style.fontSize = PROMISE_REF_SIZE + "px";
-        var marginLeftPx = parseFloat(getComputedStyle(el).marginLeft) || 0;
-        // The last line is width:fit-content + margin-left:auto (right-aligned)
-        // rather than a numeric offset, so it has the full width to work with.
-        var isLast = i === promiseLines.length - 1;
-        var available = isLast ? containerWidth : containerWidth - marginLeftPx;
-        // 3% safety margin: text width doesn't scale perfectly linearly with
-        // font-size (hinting/kerning), so sizing to exactly 100% of the
-        // available width can tip a line 1px over and wrap it entirely.
-        available *= 0.97;
-        var natural = measureTextWidth(el);
-        var ideal = natural > 0 ? (available / natural) * PROMISE_REF_SIZE : PROMISE_REF_SIZE;
-        return Math.max(PROMISE_MIN_SIZE, ideal);
-      });
-      // The client asked to keep pushing this bigger (explicitly ~1.75x a
-      // previous size) even if it no longer fits one screen — so there's no
-      // height-based cap here anymore: the shared size is simply the largest
-      // that still lets every line (including "professionnel", the single
-      // longest word in the quote — the real physical ceiling, since a lone
-      // word can't wrap) fit on its own row without overflowing sideways.
-      // .promise is min-height:100vh (not a hard height + overflow:hidden)
-      // so the section grows taller/scrollable to fit instead of clipping.
-      var sharedSize = Math.min.apply(null, idealSizes);
-      // Optional per-instance scale (2026-08-18): the home page reuses this
-      // exact same "poster" treatment/photo for its own "Notre promesse"
-      // section but at 3/4 the size, via data-scale="0.75" on #promiseQuote
-      // — applied last, after the fit-to-width math above, so the scaled
-      // instance is still sized relative to ITS OWN container width (not a
-      // fixed px value copied from the other page). Defaults to 1 (no
-      // change) when the attribute is absent.
-      var scale = parseFloat(promiseQuote.dataset.scale) || 1;
-      sharedSize *= scale;
-
-      promiseLines.forEach(function (el) {
-        el.style.fontSize = sharedSize.toFixed(1) + "px";
-      });
-    }
-
-    fitPromiseLines();
-    // Yeseva One is a self-hosted webfont: on first load, measurement can run
-    // before it's actually available, sizing lines off the fallback font's
-    // (narrower) metrics — the swap-in then makes the "fitted" text overflow
-    // its line. Re-fit once the real font is confirmed ready.
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(fitPromiseLines);
-    }
-    var promiseResizeTimer = null;
-    window.addEventListener("resize", function () {
-      clearTimeout(promiseResizeTimer);
-      promiseResizeTimer = setTimeout(fitPromiseLines, 200);
-    });
   }
 
   /* ---------- Univers: 5 senses — scroll-drawn path with waypoint cards ---------- */

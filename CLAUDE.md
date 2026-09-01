@@ -5399,6 +5399,44 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   dans le bon ordre, section Promesse vérifiée sans `<img>`/scrim restant)
   et capture d'écran desktop + mobile. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Section "Notre promesse" entièrement supprimée (2026-08-21, même
+  jour)** (`.promise`, `index.html`) : suite au retrait de sa photo de
+  fond (bullet précédent), la cliente a demandé de retirer la section
+  entière — la citation "Suspendre le quotidien professionnel pour
+  transporter vos invités au cœur de l'Italie, iconique et intemporelle"
+  (et toute sa mise en page "poster" en lignes décalées) disparaît
+  d'`index.html`. Le flux de la page passe donc directement des chiffres
+  clés (`.stats-band`) à "Quatre mondes, une même Dolce Vita"
+  (`.teaser`).
+  **Nettoyage complet plutôt qu'un simple retrait du HTML** : `<section
+  class="promise">` et tout son contenu (le `<p class="promise-quote"
+  id="promiseQuote">` et ses 8 `<span class="promise-line">`) sont
+  supprimés d'`index.html` ; `fitPromiseLines()` (`main.js`, la fonction
+  JS qui calculait la taille de police partagée des lignes) est
+  entièrement supprimée, n'ayant plus de `#promiseQuote` à cibler ; en
+  CSS, `.promise`, `.promise-quote`, `.promise-line*` et leurs media
+  queries/règles d'apparition sont retirés de `style.css` (`.promise-footnote`/
+  `.positioning-tag` juste à côté étaient déjà du CSS legacy inutilisé
+  avant ce retrait, non touchés). Cohérent avec la convention du site
+  ("si un fichier n'est plus utilisé nulle part, le supprimer plutôt que
+  le laisser en orphelin") déjà appliquée à `founder-vespa-cutout.webp` et
+  à d'autres retraits de section précédents (Réalisations, Univers).
+  **`updatePageBg()` (fond de page unique, cf. plus haut) rebranché sans
+  la section intermédiaire** : la chaîne de keyframes passait par
+  `.promise` (stats-band → promise → teaser) ; elle passe désormais
+  directement de la couleur de `.stats-band` (terracotta) à celle de
+  `.teaser` (crème), `pageBgPromise` et `PAGE_BG_PROMISE` retirés du
+  script. Vérifié par script Playwright : `document.querySelector('.promise')`
+  confirmé absent du DOM, ordre des sections confirmé dans `<main>`
+  (`hero`, `stats-band`, `teaser`, `senses-journey`, `method-cta`), fond
+  de page échantillonné à plusieurs points de la frontière stats-band→
+  teaser (transition directe terracotta→crème, aucun palier navy-900
+  intermédiaire résiduel), 0 valeur de couleur invalide sur un balayage
+  complet. Regression complète 5 pages × 2 viewports : 0 débordement, 0
+  erreur console. Si `.promise`/`.promise-quote`/`fitPromiseLines()`
+  réapparaissent dans un diff, c'est cette ancienne section, à ne pas
+  réintroduire sans qu'on le redemande — l'historique complet de ses
+  ~10 itérations reste documenté plus haut dans ce fichier pour référence.
 
 ## État d'avancement
 
