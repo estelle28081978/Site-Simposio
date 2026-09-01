@@ -922,8 +922,16 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
    flux) remontait visuellement trop haut dans le cadre une fois centré
    verticalement par `.hero`. `margin-top` compense en les abaissant tous
    les deux ensemble (le CTA hérite du décalage puisqu'il suit le titre
-   dans le flux normal), plutôt que de les recentrer tels quels. */
-.hero-content-minimal h1 { margin-top: clamp(2rem, 8vh, 6rem); margin-bottom: var(--space-4); }
+   dans le flux normal), plutôt que de les recentrer tels quels.
+   **Abaissé une 2ᵉ fois (2026-09-01, même jour)** : `clamp(2rem, 8vh,
+   6rem)` → `clamp(3rem, 12vh, 8rem)` — demande explicite ("baisse encore
+   leur position"), même mécanisme, juste poussé plus loin. Toujours en
+   `clamp()` avec un terme `vh` (pas une valeur fixe) pour rester
+   proportionné à la hauteur réelle du viewport plutôt que de pousser le
+   bloc hors écran sur les fenêtres basses — vérifié par script Playwright
+   que le CTA reste entièrement dans le viewport à 700px de haut (le cas
+   le plus bas testé sur ce site). */
+.hero-content-minimal h1 { margin-top: clamp(3rem, 12vh, 8rem); margin-bottom: var(--space-4); }
 /* Title forced onto exactly 3 lines ("L'événement qui" / "a le goût d'une" /
    "expérience", 2 manual <br> in the HTML) without changing font-size. Above
    ~1470px the font-size clamp caps at 5.2rem and "L'événement qui" alone
@@ -1343,11 +1351,14 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
   align-items: flex-start;
   justify-content: center;
   gap: var(--space-3);
-  /* Remontées légèrement (2026-09-01, demande explicite) : réduit de
-     var(--space-5) (4.5rem) à var(--space-4) (2.75rem) — seul l'écart
-     entre le texte d'intro ("Cliquez sur une carte...") et les cartes se
-     resserre, le reste de la section est inchangé. */
-  margin-top: var(--space-4);
+  /* Remontées une 2ᵉ fois (2026-09-01, "remonte encore les cartes
+     d'engagement vers le texte d'intro") : var(--space-5) (4.5rem) →
+     var(--space-4) (2.75rem) une 1ʳᵉ fois, puis var(--space-4) →
+     var(--space-2) (1rem) ici — seul l'écart entre le texte d'intro
+     ("Cliquez sur une carte...") et les cartes continue de se resserrer,
+     le reste de la section (gap entre cartes, largeur, mécanisme de
+     flip/scale au scroll) est inchangé. */
+  margin-top: var(--space-2);
 }
 /* min-width (not min-width:0) is what makes this responsive without a
    manual breakpoint: `flex:1 1 0` alone lets 4 equal cards shrink forever
@@ -2514,6 +2525,22 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
      `padding-top` reste un plancher de sécurité (jamais collé à la
      frontière avec Engagements) pour le cas où le contenu serait plus
      court que l'espace disponible. */
+  /* `padding-bottom` réduit de `12rem` à `9rem` (2026-09-01) : demande
+     explicite de la cliente — "coupe le bas de la section jusqu'à
+     atteindre au-dessus des ronds actuels" — la section se dimensionne
+     sur le plus grand des deux enfants de la grille (`.talent-stage-media`/
+     `.talent-stage-caption`, cf. commentaire plus haut) ; comme cette
+     `padding-bottom` fait partie de la hauteur de contenu de la légende
+     (flex `justify-content:flex-end`, elle réserve un vide sous le
+     nom/rôle/bio), la réduire raccourcit directement la hauteur totale de
+     la section dès que la légende est le facteur limitant (le cas sur les
+     largeurs d'écran courantes, ~1440-1600px — au-delà, c'est le
+     `min-height` de `.talent-stage-media` qui prend le relais, cf.
+     commentaire dessus). Voir `.talent-stage-selector` juste en dessous
+     pour le second changement nécessaire (remonter les avatars) : réduire
+     seulement ce padding sans y toucher aurait laissé les avatars
+     chevaucher légèrement le bas du texte de bio (~8px de recouvrement
+     mesuré par script Playwright avant ce second ajustement). */
   .talent-stage-caption {
     justify-self: start;
     align-self: stretch;
@@ -2521,7 +2548,7 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
     flex-direction: column;
     justify-content: flex-end;
     width: min(26rem, 48%);
-    padding: var(--space-5) var(--space-4) 12rem var(--space-5);
+    padding: var(--space-5) var(--space-4) 9rem var(--space-5);
     background: none;
   }
   /* Titre plus large que la colonne (2026-08-20, 3ᵉ passe) : demande
@@ -2554,7 +2581,18 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
      → `max(37rem,50%)`, en proportion de la colonne élargie ci-dessus —
      même logique `max()` qu'avant (plancher absolu + dérive
      proportionnelle sur grand écran). */
-  .talent-stage-selector { left: max(37rem, 50%); }
+  /* `bottom` remonté de `var(--space-4)` (44px) à `3.5rem` (56px)
+     (2026-09-01) : conséquence directe de la réduction de `padding-bottom`
+     ci-dessus sur `.talent-stage-caption` — sans ce 2ᵉ ajustement, les
+     avatars (positionnés indépendamment en `position:absolute` par
+     rapport à `.talent-stage`, pas dans le flux de la légende) se
+     seraient retrouvés à chevaucher légèrement le bas du texte de bio une
+     fois la section raccourcie (~8px de recouvrement mesuré). Les remonte
+     davantage que nécessaire pour compenser cette réduction (44px→56px,
+     alors que la section elle-même perd ~130-140px de hauteur), demande
+     explicite de la cliente ("remonte les deux ronds un peu plus haut
+     pour qu'ils ne soient pas coupés"). */
+  .talent-stage-selector { left: max(37rem, 50%); bottom: 3.5rem; }
 }
 
 /* ==========================================================================

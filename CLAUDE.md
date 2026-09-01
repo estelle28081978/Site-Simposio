@@ -5620,6 +5620,69 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   section Équipe visiblement plus courte en hauteur mais toujours pleine
   largeur, aucun débordement. Regression complète 5 pages × 2 viewports :
   0 débordement, 0 erreur console.
+- **Équipe — cadre rogné jusqu'au-dessus des avatars, hero encore abaissé,
+  cartes Engagements encore remontées (2026-09-01, même jour)**
+  (`.talent-stage-caption`, `.talent-stage-selector`,
+  `.hero-content-minimal h1`, `.engagement-cards`, `style.css`) : trois
+  retouches supplémentaires de la cliente sur les changements ci-dessus,
+  toujours en une seule salve.
+  **Équipe — rognée jusqu'au-dessus des avatars** : demande explicite,
+  "coupe le bas de la section jusqu'à atteindre au-dessus des ronds
+  actuels, et remonte les ronds pour qu'ils ne soient pas coupés". Sur
+  cette section (`.talent-stage`, grille CSS à une seule cellule
+  `grid-area:1/1` où `.talent-stage-media` et `.talent-stage-caption`
+  partagent la même piste, cf. plus haut dans ce fichier), la hauteur
+  totale se cale sur le plus grand des deux enfants — et sur les largeurs
+  d'écran courantes (~1440-1600px), c'est en réalité `.talent-stage-caption`
+  qui est le facteur limitant, pas `.talent-stage-media` : son
+  `padding-bottom` (`12rem`) réserve un vide sous le nom/rôle/bio pour
+  laisser la place aux avatars (positionnés indépendamment en
+  `position:absolute` par rapport à `.talent-stage`, pas dans le flux de
+  la légende), et ce vide fait à lui seul une bonne partie de la hauteur
+  de la section. **`padding-bottom` réduit de `12rem` à `9rem`** — la
+  section se raccourcit directement dès que la légende est le facteur
+  limitant (mesuré : hauteur totale à 1440×900 passée de 830,7px à
+  783,4px, soit -47px ; à 1600×900, 844,2px→796,9px ; à 1920×1080,
+  inchangée, `.talent-stage-media` y devient le facteur limitant à cette
+  largeur, cf. plus bas). **`.talent-stage-selector` remonté de
+  `var(--space-4)` (44px) à `3.5rem` (56px)** : nécessaire en plus de la
+  réduction ci-dessus — un premier essai à `8rem` de `padding-bottom`
+  sans toucher au `bottom` des avatars laissait ceux-ci chevaucher
+  légèrement le bas du texte de bio (~8px de recouvrement mesuré par
+  script Playwright, pas supposé) puisque la réduction du
+  `padding-bottom` grignote l'espace réservé sans que les avatars
+  (positionnés indépendamment) suivent automatiquement d'autant. Calibré
+  empiriquement (mesure des écarts bio→avatar et avatar→bord bas par
+  script, pas juste visuellement) jusqu'à un résultat propre : `~18px`
+  entre le bas de la bio et le haut des avatars, `~55px` entre le bas des
+  avatars et le nouveau bord de la section, aux trois largeurs testées
+  (1440/1600/1920px) — vérifié aussi par capture d'écran que les avatars
+  ne sont ni tronqués ni superposés au texte, desktop et mobile.
+  **Effet de bord attendu, cohérent avec l'itération précédente** : sur
+  les très grands écrans (1920px+), où `.talent-stage-media` (dimensionné
+  en `vh`/`rem`, inchangé ici) redevient le facteur limitant, cette
+  réduction n'a par construction aucun effet visible sur la hauteur
+  totale — seul l'espacement interne autour des avatars change. Si un
+  effet de raccourcissement est aussi souhaité sur ces très grandes
+  largeurs, il faudrait alors retoucher `.talent-stage-media`
+  (`min-height`) lui-même, pas seulement `.talent-stage-caption`.
+  **Hero encore abaissé** : `margin-top` sur `.hero-content-minimal h1`
+  passe de `clamp(2rem, 8vh, 6rem)` à `clamp(3rem, 12vh, 8rem)` — demande
+  explicite ("baisse encore leur position"), même mécanisme que la
+  1ʳᵉ passe (une seule règle CSS pousse le titre ET le CTA qui le suit
+  dans le même flux), juste des bornes plus généreuses. Vérifié par script
+  Playwright que le CTA reste entièrement dans le viewport même à 700px de
+  hauteur (le cas le plus bas testé sur ce site) — aucun risque de passer
+  sous la ligne de flottaison sur une fenêtre basse.
+  **Cartes Engagements encore remontées** : `margin-top` sur
+  `.engagement-cards` passe de `var(--space-4)` (2,75rem) à `var(--space-2)`
+  (1rem) — demande explicite ("remonte encore les cartes d'engagement vers
+  le texte d'intro"), 2ᵉ réduction de suite sur ce même réglage (la 1ʳᵉ
+  passe l'avait déjà réduit depuis `var(--space-5)`). Le reste de la
+  grille (gap entre cartes, largeur, mécanisme de flip/scale au scroll)
+  est inchangé.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 
