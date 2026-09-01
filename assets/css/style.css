@@ -534,17 +534,23 @@ body.home[data-tone="light"] .teaser .section-head h2 {
   font-family: var(--font-display);
   font-size: clamp(2.2rem, min(9.5vh, 15vw), 6.4rem);
   line-height: 1.05;
+  text-transform: uppercase;
   color: var(--cream);
   transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
   transform-origin: center;
 }
+/* Petit mouvement au survol (2026-09-01, en plus du fondu/agrandissement
+   déjà en place) : un léger soulèvement vertical, en plus du changement de
+   couleur et du léger agrandissement déjà en place. */
 .mobile-menu-links a:hover .label,
-.mobile-menu-links a:focus-visible .label { color: var(--terracotta-300); transform: scale(1.04); }
-/* Page courante repérée directement sur le libellé : chaque fichier HTML
-   porte `.is-current`/`aria-current="page"` sur son propre lien plutôt
-   qu'un calcul JS — cohérent avec le balisage dupliqué par page déjà en
-   place partout ailleurs sur le site (header/menu/footer). */
-.mobile-menu-links a.is-current .label { color: var(--terracotta-300); }
+.mobile-menu-links a:focus-visible .label { color: var(--terracotta-300); transform: translateY(-6px) scale(1.04); }
+/* Page courante (2026-09-01) : ne se distingue plus par la couleur (la
+   cliente la trouvait visible en terracotta même hors survol, alors que
+   les autres liens restent crème) — reste crème comme les autres au repos,
+   seul `aria-current="page"` (déjà posé dans le HTML) continue de
+   l'identifier pour les lecteurs d'écran. Si une couleur distincte
+   réapparaît ici hors état `:hover`/`:focus-visible`, c'est un retour à
+   l'ancien comportement, à ne pas réintroduire sans qu'on le redemande. */
 
 /* Pied de page compact : coordonnées + réseaux sociaux sur une seule
    ligne dès 560px. Les icônes Instagram/LinkedIn (mêmes SVG et classe

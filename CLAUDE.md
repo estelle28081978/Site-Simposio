@@ -5541,6 +5541,32 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   réintroduire sans qu'on le redemande — l'historique complet des 3
   refontes précédentes (panneau divisé, chiffres fantômes) reste
   documenté plus haut dans ce fichier pour référence.
+- **Menu plein écran — page courante en crème, mouvement au survol,
+  majuscules (2026-09-01)** (`.mobile-menu-links`, `style.css`) : trois
+  retouches de la cliente sur la 4ᵉ refonte ci-dessus, à partir d'une
+  capture d'écran montrant "Accueil" en terracotta au repos alors
+  qu'elle ne survolait rien.
+  **Page courante plus en couleur au repos** : `.mobile-menu-links
+  a.is-current .label { color: var(--terracotta-300) }` est retiré — le
+  lien de la page courante reste crème comme les autres tant qu'il n'est
+  pas survolé/focus. `aria-current="page"` (déjà posé dans le HTML de
+  chaque page) continue de l'identifier pour les lecteurs d'écran, seul
+  le repère visuel disparaît.
+  **Mouvement au survol** : en plus du changement de couleur et du léger
+  agrandissement déjà en place (`scale(1.04)`), le survol/focus ajoute
+  désormais un léger soulèvement vertical (`translateY(-6px)`), combiné
+  dans la même valeur de `transform` — un vrai "petit mouvement" plutôt
+  qu'un simple agrandissement sur place.
+  **Majuscules** : `text-transform: uppercase` ajouté sur
+  `.mobile-menu-links .label` — les accents restent gérés correctement
+  par le navigateur ("À propos" → "À PROPOS"). Scopé à ce seul élément :
+  le pied de page du menu (email, "Alsace, France") n'est pas concerné,
+  seuls les 5 liens de navigation passent en majuscules.
+  Vérifié par script Playwright (couleur de la page courante confirmée
+  identique aux autres liens au repos sur 2 pages différentes, `transform`
+  au survol confirmé combiné translateY+scale, `text-transform:uppercase`
+  confirmé sur les 5 liens) et capture d'écran desktop. Regression
+  complète 5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
