@@ -6033,6 +6033,70 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   0 débordement horizontal confirmé desktop et mobile, 0 erreur console) :
   le lien survolé s'affiche visiblement plus grand et chevauche
   proprement l'espace de ses voisins, en terracotta, au-dessus d'eux.
+- **Menu plein écran — texte agrandi et aligné à gauche, agrandissement au
+  survol remplacé par un décalage horizontal (2026-09-02, même jour)**
+  (`.mobile-menu-links`, `style.css`) : trois demandes de la cliente en une
+  fois sur le rendu de l'itération précédente ("mets l'écriture en plus
+  gros et centre, le texte à gauche dans le menu ensuite enlève l'effet qui
+  grandit lorsqu'on passe la souris et trouve un autre effet pour mettre en
+  évidence en plus de la couleur").
+  **Bloc centré, texte aligné à gauche** : `.mobile-menu-links` passe de
+  `align-items:center; text-align:center` à `align-items:flex-start;
+  text-align:left` — `margin-inline:auto`/`max-width:var(--max-width)`
+  restent inchangés, donc le bloc de liens dans son ensemble reste centré
+  sur la largeur de l'écran (comme demandé, "centre"), mais chaque libellé
+  s'aligne désormais à gauche à l'intérieur de ce bloc plutôt que d'être
+  centré individuellement ("le texte à gauche").
+  **Texte agrandi, calibré empiriquement à la contrainte "tient sur un
+  écran"** : `.mobile-menu-links .label` passe de
+  `clamp(2.2rem, min(9.5vh, 15vw), 6.4rem)` à
+  `clamp(2.2rem, min(10.1vh, 15.5vw), 7.2rem)` — même famille de calcul
+  déjà établie sur ce composant (le plafond `vh` reste le levier principal,
+  "tient sur un écran" étant une contrainte de hauteur, pas de largeur ; le
+  terme `vw` reste un filet pour les écrans très étroits). **Calibré par
+  script Playwright** (`menu_fit_check.js`, mesurant
+  `menu.scrollHeight <= menu.clientHeight` sur 10 tailles de viewport
+  réalistes, de 320×568 à 1920×1080) plutôt que deviné : un premier essai à
+  `clamp(2.2rem, min(13vh, 18vw), 9rem)` débordait (nécessitait un scroll
+  interne) sur 7 des 10 tailles testées, y compris des tailles desktop
+  courantes (1440×900, 1024×768) — réduit par pas jusqu'à la valeur
+  retenue, qui tient sur toutes les tailles testées **sauf** 320×568 (un
+  iPhone 5 de 2012, déjà toléré comme cas résiduel ailleurs sur ce
+  composant — `overflow-y:auto` reste le filet de sécurité). Confirmé
+  malgré tout nettement plus grand que la valeur précédente à toutes les
+  tailles usuelles (calcul direct des deux clamps : +5,4px à 1440×900,
+  +4,6px à 1024×768, +2,0px à 390×844, +6,7px à 1920×1080). Aucun retour à
+  la ligne introduit par cet agrandissement (`maxLines:1` sur les 5 liens à
+  toutes les tailles testées, mesuré via `Range.selectNodeContents()` +
+  `getClientRects()`, la technique déjà établie ailleurs sur le site pour
+  ce type de vérification).
+  **Effet d'agrandissement au survol retiré, remplacé par un décalage
+  horizontal** : demande explicite de retirer le `scale(1.35)`/
+  `translateY(-6px)`/`z-index:2` ajoutés le même jour, un tour plus tôt, à
+  la demande de la cliente elle-même — `.mobile-menu-links a:hover,
+  .mobile-menu-links a:focus-visible { z-index: 2; }` est retiré (plus
+  nécessaire : un simple décalage horizontal ne fait chevaucher aucun lien
+  voisin, contrairement à un agrandissement) et
+  `transform: translateY(-6px) scale(1.35)` devient
+  `transform: translateX(clamp(0.75rem, 2.5vw, 2rem))` sur
+  `.mobile-menu-links a:hover .label`/`a:focus-visible .label` — le lien
+  survolé glisse vers la droite (cohérent avec le nouvel alignement à
+  gauche : le texte "part" de sa position naturelle vers l'espace libre à
+  droite) en plus du changement de couleur déjà en place
+  (`color: var(--terracotta-300)`), sans changer sa taille ni son
+  empilement. Si `scale(1.35)`/`translateY(-6px)` ou la règle `z-index:2`
+  sur le lien survolé réapparaissent ici, c'est l'itération précédente
+  (agrandissement "premier plan"), à ne pas réintroduire sans qu'on le
+  redemande — de même pour `align-items:center; text-align:center` sur
+  `.mobile-menu-links`, qui serait un retour à l'alignement centré
+  d'avant cette itération.
+  Vérifié par script Playwright (alignement à gauche confirmé par capture
+  d'écran desktop et mobile, taille de police mesurée cohérente avec le
+  nouveau clamp, survol du 3ᵉ lien confirmé : décalage horizontal +
+  changement de couleur, sans changement de taille ni chevauchement des
+  voisins, 0 débordement horizontal desktop et mobile, 0 erreur console) et
+  regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 

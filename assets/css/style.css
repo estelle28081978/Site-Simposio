@@ -479,11 +479,20 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mobile-menu-close:hover { background: rgba(246, 241, 231, 0.1); transform: rotate(90deg); }
 .mobile-menu-close svg { width: 18px; height: 18px; display: block; }
 
+/* Aligné à gauche (2026-09-02, demande explicite : "centre, le texte à
+   gauche dans le menu") — remplace `align-items:center; text-align:center`
+   par `flex-start`/`left` : le BLOC de liens reste centré sur l'écran
+   (`margin-inline:auto`, `max-width` inchangés — c'est le "centre" de la
+   demande), mais le texte de chaque ligne s'aligne désormais à gauche à
+   l'intérieur de ce bloc plutôt que d'être individuellement centré. Si
+   `align-items:center; text-align:center` réapparaissent ici, c'est
+   l'ancien réglage (4ᵉ refonte, 2026-08-21), à ne pas réintroduire sans
+   qu'on le redemande. */
 .mobile-menu-links {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
   gap: clamp(0.3rem, 1.8vh, 1.2rem);
   max-width: var(--max-width);
   margin-inline: auto;
@@ -537,30 +546,30 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   min-width: 0;
   overflow-wrap: break-word;
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, min(9.5vh, 15vw), 6.4rem);
+  font-size: clamp(2.2rem, min(10.1vh, 15.5vw), 7.2rem);
   line-height: 1.05;
   color: var(--cream);
   transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
   transform-origin: center;
 }
-/* Agrandissement au survol nettement accentué (2026-09-02, demande
-   explicite : "j'aimerais qu'il apparaisse en plus gros que les autres,
-   en prenant plus de place comme s'il allait un peu au premier plan") —
-   remplace le léger `scale(1.04)` précédent (à peine perceptible, pensé
-   comme un simple "petit mouvement") par un vrai agrandissement
-   (`scale(1.35)`), conservant le léger soulèvement vertical déjà en
-   place. `z-index:2` sur le lien survolé/focus (pas seulement sur
-   `.label`) fait passer son texte AU-DESSUS des liens voisins une fois
-   agrandi — sans ça, un lien deux fois plus grand chevaucherait ses
-   voisins mais resterait dans l'ordre d'empilement normal du flux,
-   contredisant le "premier plan" demandé. `.mobile-menu-links a` est déjà
-   `position:relative` (nécessaire pour que `z-index` ait un effet). Si
-   `scale(1.04)` réapparaît ici, c'est cet ancien réglage plus discret, à
-   ne pas réintroduire sans qu'on le redemande. */
-.mobile-menu-links a:hover,
-.mobile-menu-links a:focus-visible { z-index: 2; }
+/* Effet d'agrandissement retiré (2026-09-02, demande explicite : "enlève
+   l'effet qui grandit lorsqu'on passe la souris et trouve un autre effet
+   pour mettre en évidence en plus de la couleur") — remplace le
+   `scale(1.35)`/`translateY(-6px)` de la version précédente (même jour)
+   par un léger décalage horizontal (`translateX`) : le lien survolé
+   "avance" vers la droite plutôt que de grossir, cohérent avec le texte
+   désormais aligné à gauche (cf. `.mobile-menu-links` plus haut) — un
+   indice de survol plus discret que l'agrandissement, mais net une fois
+   combiné à la couleur. `z-index` n'est plus nécessaire (plus de risque
+   de chevaucher les liens voisins, `translateX` ne change pas la hauteur
+   occupée). Si `scale(...)` réapparaît sur cette règle, c'est
+   l'agrandissement retiré, à ne pas réintroduire sans qu'on le
+   redemande. */
 .mobile-menu-links a:hover .label,
-.mobile-menu-links a:focus-visible .label { color: var(--terracotta-300); transform: translateY(-6px) scale(1.35); }
+.mobile-menu-links a:focus-visible .label {
+  color: var(--terracotta-300);
+  transform: translateX(clamp(0.75rem, 2.5vw, 2rem));
+}
 /* Page courante (2026-09-01) : ne se distingue plus par la couleur (la
    cliente la trouvait visible en terracotta même hors survol, alors que
    les autres liens restent crème) — reste crème comme les autres au repos,
