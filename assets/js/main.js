@@ -86,8 +86,12 @@
        termine exactement quand le bas de la section précédente quitte le
        haut du viewport). Plafonnée dynamiquement à la moitié de la plus
        courte des deux sections concernées, pour ne jamais chevaucher deux
-       frontières voisines sur une section inhabituellement courte. */
-    var PAGE_BG_WINDOW = 560;
+       frontières voisines sur une section inhabituellement courte.
+       Réduite de 560 à 220 (2026-08-21) : la cliente a trouvé la 1ʳᵉ valeur
+       trop lente à s'installer — chaque rampe se déploie maintenant sur une
+       distance de scroll bien plus courte, la nouvelle couleur "apparaît"
+       nettement plus vite en entrant dans une section. */
+    var PAGE_BG_WINDOW = 220;
 
     function pageBgLerp(a, b, t) {
       return a + (b - a) * t;

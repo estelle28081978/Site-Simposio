@@ -5334,6 +5334,19 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   horizontal, 0 erreur console. Regression complète 5 pages × 2 viewports :
   0 débordement, 0 erreur console, footer et fond des 4 autres pages
   confirmés strictement inchangés.
+- **Fond de page unique — transitions accélérées (2026-08-21, même jour)**
+  (`PAGE_BG_WINDOW`, `main.js`) : la cliente a trouvé la couleur de chaque
+  section trop lente à s'installer — `PAGE_BG_WINDOW` (distance de scroll
+  sur laquelle chaque rampe se déploie) passe de `560` à `220`. Seule cette
+  constante change ; le reste du mécanisme (`pageBgSample()`, la liste de
+  keyframes, le plafond dynamique par frontière via `pageBgWindow()`,
+  l'indicateur `data-tone`) est inchangé. Revérifié par balayage fin autour
+  de la frontière hero→stats-band (la rampe démarre désormais à 220px avant
+  la frontière au lieu de 450px) et par le même test de résistance
+  Playwright (40 allers-retours de scroll, balayage complet) : aucune
+  valeur de couleur invalide, la rampe vers le footer atteint toujours
+  exactement `--navy-900` au scroll maximal réel. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
