@@ -243,6 +243,26 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    58rem this has no effect (a block can't exceed its own containing block),
    so it's a no-op on tablet/mobile. */
 .teaser .section-head { max-width: 58rem; }
+/* Filet de contraste pendant la traversée du bandeau chiffres clés
+   (2026-08-21) : contrairement aux autres frontières du calque de fond
+   animé (navy↔crème, très éloignées en luminance), la traversée
+   terracotta→crème passe par des tons intermédiaires où NI le texte crème
+   ni le texte encre foncée (les deux extrêmes du système `.bg-adaptive-*`,
+   pensé pour des écarts de luminance bien plus marqués) ne contrastent
+   très bien — repéré par capture d'écran pendant la vérification, pas
+   supposé. Un léger `text-shadow` (sombre pour l'état crème, clair pour
+   l'état encre) donne un peu de marge dans les deux cas sans changer les
+   couleurs elles-mêmes ni toucher aux autres éléments `.bg-adaptive-*` du
+   site, qui n'ont pas ce problème (leurs propres frontières restent
+   suffisamment contrastées). */
+body.home[data-tone="dark"] .teaser .section-head .eyebrow,
+body.home[data-tone="dark"] .teaser .section-head h2 {
+  text-shadow: 0 2px 18px rgba(16, 31, 39, 0.45);
+}
+body.home[data-tone="light"] .teaser .section-head .eyebrow,
+body.home[data-tone="light"] .teaser .section-head h2 {
+  text-shadow: 0 2px 18px rgba(255, 250, 240, 0.55);
+}
 
 /* ==========================================================================
    Buttons
@@ -897,7 +917,22 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
 
 /* Key figures — isolated on their own solid-color band, distinct from the
    hero photo carousel, per brand brief */
-.stats-band { background: transparent; padding-block: var(--space-5); } /* voir #pageBgLayer */
+/* Fond plein (pas transparent/#pageBgLayer, 2026-08-21) : la cliente veut
+   ce bandeau chiffres clés visuellement DISTINCT de la section suivante
+   ("Quatre mondes..."), pas fondu en continu dedans par le calque de fond
+   animé — un vrai bandeau séparé, pas une transition de couleur en douceur.
+   `position:relative` + `z-index:1` + `box-shadow` projetée vers le bas
+   créent une coupure nette et visible à la jonction avec `.teaser` (qui,
+   lui, reste sur le calque animé — cf. `updatePageBg()`, `main.js`, qui
+   traite désormais cette section comme une zone opaque "masquée", au même
+   titre que `#sensesJourney`). */
+.stats-band {
+  position: relative;
+  z-index: 1;
+  background: var(--terracotta);
+  padding-block: var(--space-5);
+  box-shadow: 0 28px 56px -24px rgba(16, 31, 39, 0.45);
+}
 .stats-band-grid {
   display: grid;
   /* 4 colonnes depuis l'ajout du repère B2B (2026-08-18, ci-dessous) —

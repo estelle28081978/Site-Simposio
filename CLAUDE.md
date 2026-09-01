@@ -5437,6 +5437,58 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   réapparaissent dans un diff, c'est cette ancienne section, à ne pas
   réintroduire sans qu'on le redemande — l'historique complet de ses
   ~10 itérations reste documenté plus haut dans ce fichier pour référence.
+- **Bandeau chiffres clés redevenu un vrai bandeau séparé (2026-08-21)**
+  (`.stats-band`, `style.css`/`main.js`) : depuis la suppression de
+  "Notre promesse" (bullet précédent), `.stats-band` et `.teaser` étaient
+  devenus directement adjacents, tous deux transparents et fondus l'un
+  dans l'autre par le calque de fond animé — la cliente a demandé que le
+  bandeau chiffres clés redevienne "un bandeau séparé de la partie
+  suivante", "que cela se remarque visuellement".
+  **`.stats-band` reprend un fond plein** (`background: var(--terracotta)`,
+  au lieu de `transparent`/calque animé) + `position:relative; z-index:1`
+  + une `box-shadow` marquée projetée vers le bas
+  (`0 28px 56px -24px rgba(16,31,39,0.45)`) — le bandeau se détache
+  nettement de `.teaser` juste en dessous, une vraie coupure visible (fond
+  plein + ombre portée) plutôt qu'un dégradé continu.
+  **Bug réel trouvé et corrigé pendant la vérification, pas supposé** :
+  un premier essai a traité `.stats-band` comme `#sensesJourney` plus bas
+  dans `updatePageBg()` (teinte plate tenue puis rampe resserrée juste
+  avant la sortie) — mais `#sensesJourney` fait 1240vh (bien plus haut que
+  le viewport, donc entièrement invisible derrière lui pendant toute sa
+  traversée), alors que `.stats-band` ne fait qu'environ 320px, bien
+  MOINS que le viewport (~900px) : sa moitié basse et le haut de
+  `.teaser` peuvent donc être visibles SIMULTANÉMENT bien avant que
+  `scrollY` n'atteigne son bord bas. Avec le palier plat, le calque
+  restait figé en terracotta longtemps après que le titre "Quatre
+  mondes..." soit déjà visible à l'écran, puis basculait d'un coup en
+  crème — repéré par capture d'écran à un point de scroll représentatif
+  (pas en relisant juste le code), montrant le titre encore sur fond
+  orange alors qu'il aurait dû tendre vers le crème. Corrigé en étalant la
+  transition en continu sur toute la traversée du bandeau (`statsTop` →
+  `statsBottom`, sans palier ni fenêtre resserrée) — la couleur progresse
+  graduellement pendant que le bandeau défile. Le bandeau lui-même n'est
+  jamais affecté (fond plein CSS, indépendant de ce calque) ; seule la
+  zone transparente de `.teaser` juste en dessous en bénéficie.
+  **Limite résiduelle assumée** : contrairement aux autres frontières du
+  calque (navy↔crème, écart de luminance énorme), la traversée
+  terracotta→crème passe par des tons intermédiaires où ni le texte crème
+  ni le texte encre foncée (les deux extrêmes du système
+  `.bg-adaptive-*`) ne contrastent très bien — un filet de `text-shadow`
+  (sombre en état crème, clair en état encre) a été ajouté sur
+  `.teaser .section-head` pour atténuer cette zone, sans l'éliminer
+  totalement (limite mathématique du choix binaire de couleur de texte à
+  l'instant exact du basculement, pas un bug à corriger davantage). Reste
+  bref en scroll réel (une centaine de pixels), plus visible sur une
+  capture figée que pendant un scroll continu.
+  Vérifié par script Playwright (fond de `.stats-band` confirmé opaque,
+  balayage de couleur sur toute la frontière stats→teaser sans valeur
+  invalide, test de résistance 40 allers-retours de scroll) et capture
+  d'écran à plusieurs points de la transition, desktop et mobile.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console. Si `.stats-band { background: transparent }` ou un palier
+  plat façon `#sensesJourney` réapparaissent sur ce bandeau, c'est un
+  retour à une version précédente, à ne pas réintroduire sans qu'on le
+  redemande.
 
 ## État d'avancement
 

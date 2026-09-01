@@ -37,18 +37,26 @@
      AskUserQuestion — l'option "un seul calque de fond qui teinte toute la
      page" plutôt qu'une bande à chaque jonction. `#pageBgLayer` (fixed,
      derrière tout, cf. style.css) porte donc la vraie couleur de fond ;
-     les sections concernées (`.hero`/`.stats-band`/`.teaser`/`.method-cta`,
-     plus `.site-footer` scopée à `body.home`) ont leur propre `background`
+     les sections concernées (`.hero`/`.teaser`/`.method-cta`, plus
+     `.site-footer` scopée à `body.home`) ont leur propre `background`
      passé à `transparent` pour le laisser transparaître. La section
      "Notre promesse" (`.promise`), qui vivait entre stats-band et teaser,
-     a été supprimée le 2026-08-21 (cf. CLAUDE.md) — la chaîne de
-     keyframes passe donc directement de PAGE_BG_STATS à PAGE_BG_TEASER.
-     `#sensesJourney` reste volontairement à l'écart de l'interpolation
-     "visible" : c'est un mécanisme pinned/sticky autonome, déjà 100% opaque
-     une fois épinglé (cf. historique détaillé plus haut dans CLAUDE.md) —
-     le calque global vise juste la même teinte que son bord bas pendant
-     qu'il est caché derrière, pour qu'aucun bord net ne soit visible au
-     moment précis où il cède la place à la section suivante.
+     a été supprimée le 2026-08-21 (cf. CLAUDE.md).
+     `.stats-band` (le bandeau chiffres clés) et `#sensesJourney` restent
+     tous deux opaques et hors de l'interpolation "visible" du calque, mais
+     pas de la même façon : `.stats-band` a repris un fond plein
+     (2026-08-21, la cliente le veut visuellement séparé de la section
+     suivante, pas fondu dedans par le calque animé — cf. style.css) tout
+     en restant BEAUCOUP plus court que le viewport (~320px contre 900px),
+     donc le calque continue d'y transitionner en continu pendant toute sa
+     traversée (voir le commentaire détaillé sur ce point précis dans
+     `updatePageBg()`) — la coupure nette VOULUE vient du fond plein + de
+     l'ombre portée en CSS, pas d'un saut de couleur dans cette
+     interpolation. `#sensesJourney`, lui, est un mécanisme pinned/sticky
+     bien plus long que le viewport (1240vh) — le calque y tient une
+     teinte plate le temps de sa traversée (entièrement invisible derrière
+     lui) puis rampe vers la couleur suivante juste avant qu'il ne cède la
+     place, cf. historique détaillé plus haut dans CLAUDE.md.
      Recalcule les positions RÉELLES des sections à chaque frame (pas de
      cache) : le même piège que sur les anciens bandeaux `.scroll-transition`
      s'applique ici — des images encore `loading="lazy"` plus bas dans la
@@ -120,7 +128,9 @@
 
     function updatePageBg() {
       var scrollY = window.scrollY;
-      var statsTop = pageBgStats.getBoundingClientRect().top + scrollY;
+      var statsRect = pageBgStats.getBoundingClientRect();
+      var statsTop = statsRect.top + scrollY;
+      var statsBottom = statsTop + statsRect.height;
       var teaserTop = pageBgTeaser.getBoundingClientRect().top + scrollY;
       var journeyRect = pageBgJourney.getBoundingClientRect();
       var journeyTop = journeyRect.top + scrollY;
@@ -143,7 +153,6 @@
       var footerRampEnd = Math.min(footerTop, maxScrollY);
 
       var wStats = pageBgWindow(statsTop - 0);
-      var wTeaser = pageBgWindow(teaserTop - statsTop);
       var wJourney = pageBgWindow(journeyTop - teaserTop);
       var wJourneyExit = pageBgWindow(journeyBottom - journeyTop);
       var wFooter = pageBgWindow(footerRampEnd - journeyBottom);
@@ -151,8 +160,26 @@
       var keyframes = [
         { y: statsTop - wStats, rgb: PAGE_BG_HERO },
         { y: statsTop, rgb: PAGE_BG_STATS },
-        { y: teaserTop - wTeaser, rgb: PAGE_BG_STATS },
-        { y: teaserTop, rgb: PAGE_BG_TEASER },
+        /* PAS de palier plat ici façon #sensesJourney plus bas : ce
+           bandeau (~320px) est bien plus COURT que le viewport (~900px),
+           contrairement à #sensesJourney (1240vh, largement plus haut que
+           l'écran) — la moitié basse du bandeau ET le haut de `.teaser`
+           peuvent donc être visibles SIMULTANÉMENT bien avant que `scrollY`
+           n'atteigne `statsBottom`. Un palier plat + une rampe resserrée
+           juste avant `statsBottom` (comme pour la sortie du parcours des
+           5 sens) faisait rester le calque figé en terracotta bien après
+           que le titre "Quatre mondes..." soit déjà visible à l'écran, puis
+           basculer d'un coup en crème une fois `statsBottom` atteint — un
+           vrai bug visuel trouvé par capture d'écran (pas supposé), pas
+           juste une lenteur. Corrigé en étalant la transition en continu
+           sur TOUTE la traversée du bandeau (`statsTop` → `statsBottom`,
+           sans palier ni fenêtre resserrée) : la couleur progresse
+           graduellement pendant que le bandeau défile, au lieu de rester
+           bloquée puis sauter d'un coup. Le bandeau lui-même reste
+           parfaitement lisible quoi qu'il arrive (fond plein + ombre
+           portée en CSS, indépendants de ce calque) — seule la zone
+           transparente de `.teaser` juste en dessous en bénéficie. */
+        { y: statsBottom, rgb: PAGE_BG_TEASER },
         { y: journeyTop - wJourney, rgb: PAGE_BG_TEASER },
         { y: journeyTop, rgb: PAGE_BG_JOURNEY },
         /* Tient la teinte plate PAGE_BG_JOURNEY sur toute la traversée du
