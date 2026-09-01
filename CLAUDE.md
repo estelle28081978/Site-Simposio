@@ -6003,6 +6003,36 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   5 pages × 2 viewports : 0 débordement, 0 erreur console. Si `0.75`
   réapparaît dans `SCROLL_FADE_TRIGGER_FRACTION`, c'est le réglage
   précédent, à ne pas réintroduire sans qu'on le redemande.
+- **Menu plein écran — minuscules, survol nettement agrandi "au premier
+  plan" (2026-09-02)** (`.mobile-menu-links`, `style.css`) : deux demandes
+  de la cliente sur ce composant.
+  **Retour aux minuscules** : `text-transform: uppercase` retiré de
+  `.mobile-menu-links .label` (ajouté le 2026-09-01, cf. plus haut dans ce
+  fichier) — le HTML des liens était déjà écrit en casse normale ("À
+  propos", pas "À PROPOS"), donc ce retrait ne demande aucun changement de
+  contenu, seul le rendu visuel change.
+  **Agrandissement au survol nettement accentué** : demande explicite
+  ("j'aimerais qu'il apparaisse en plus gros que les autres, en prenant
+  plus de place comme s'il allait un peu au premier plan") — remplace le
+  léger `scale(1.04)` du 2026-09-01 (pensé comme un simple "petit
+  mouvement", à peine perceptible) par `scale(1.35)`, conservant le léger
+  soulèvement vertical (`translateY(-6px)`) déjà en place. `z-index:2`
+  ajouté sur le LIEN survolé/focus (`.mobile-menu-links a:hover`, pas
+  seulement sur `.label`) : sans ça, le lien agrandi chevauche
+  visuellement ses voisins (gap vertical fixe entre liens, le `transform`
+  sur `.label` ne modifie pas la mise en page) mais reste dans l'ordre
+  d'empilement normal du flux — `z-index` le fait vraiment passer
+  au-dessus des liens voisins, ce qui est le sens de "premier plan"
+  demandé. `.mobile-menu-links a` est déjà `position:relative` (nécessaire
+  pour que `z-index` ait un effet, sinon ignoré). Si
+  `text-transform:uppercase` ou `scale(1.04)` réapparaissent sur ces
+  règles, ce sont les réglages précédents, à ne pas réintroduire sans
+  qu'on le redemande.
+  Vérifié par script Playwright (menu ouvert, survol du 3ᵉ lien simulé par
+  positionnement direct de la souris — pas de clic — puis capture d'écran,
+  0 débordement horizontal confirmé desktop et mobile, 0 erreur console) :
+  le lien survolé s'affiche visiblement plus grand et chevauche
+  proprement l'espace de ses voisins, en terracotta, au-dessus d'eux.
 
 ## État d'avancement
 
