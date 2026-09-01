@@ -5567,6 +5567,59 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   au survol confirmé combiné translateY+scale, `text-transform:uppercase`
   confirmé sur les 5 liens) et capture d'écran desktop. Regression
   complète 5 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Hero accueil sans eyebrow, cartes Engagements remontées, Équipe
+  moins haute (2026-09-01)** (`index.html`, `.hero-content-minimal`,
+  `.engagement-cards`, `.talent-stage-media`, `style.css`) : quatre
+  retouches de la cliente en une fois.
+  **Eyebrow du hero retiré** : `<p class="eyebrow on-dark">Dolce Vita ·
+  Événementiel B2B premium en Alsace</p>`, jusque-là premier enfant de
+  `.hero-content-minimal`, est supprimé du HTML — demande explicite, sans
+  raison donnée. La règle `.hero-content .eyebrow` (qui ne stylait plus
+  que cet unique élément, `.hero-content` n'étant utilisée nulle part
+  ailleurs sur le site, vérifié par grep avant de la retirer) est
+  supprimée de `style.css`, désormais orpheline.
+  **Titre + CTA abaissés** : sans rien au-dessus pour occuper l'espace,
+  le `h1` (et le bouton "Entrer dans l'univers" qui le suit dans le même
+  flux, sous `.hero-actions`) remontait visiblement trop haut dans le
+  cadre une fois centré verticalement par `.hero` (`display:flex;
+  align-items:center`). `margin-top: clamp(2rem, 8vh, 6rem)` ajouté sur
+  `.hero-content-minimal h1` — abaisse le titre ET, par un simple effet
+  de flux normal (pas de règle séparée nécessaire), le CTA en dessous.
+  Calé en `clamp()` avec un terme `vh` (pas une valeur fixe) pour rester
+  proportionné à la hauteur réelle du viewport plutôt que de pousser le
+  bloc hors écran sur les fenêtres basses.
+  **Cartes Engagements remontées** : `.engagement-cards` (les 4
+  flip-cards sous "Cliquez sur une carte...", `engagements.html`)
+  `margin-top` réduit de `var(--space-5)` à `var(--space-4)` — rapproche
+  les cartes du texte d'introduction juste au-dessus, sans toucher à leur
+  disposition en ligne (`flex-wrap`) ni à leur mécanisme de flip/scale au
+  scroll.
+  **Équipe moins haute, même largeur** : `.talent-stage-media` (le bloc
+  photo+texte "Les talents derrière Simposio", `@media (min-width:640px)`)
+  passe de `min(94vh, 72rem)` à `min(84vh, 64rem)`. **Effet de bord
+  assumé, documenté** : cette hauteur avait été AUGMENTÉE 4 fois de suite
+  à des itérations précédentes (`min(88vh,54rem)` → `min(88vh,60rem)` →
+  `min(92vh,66rem)` → `min(94vh,72rem)`, cf. plus haut dans ce fichier)
+  précisément parce qu'une boîte plus haute réduit le zoom effectif
+  d'`object-fit:cover` (la largeur étant fixée par le viewport, c'est la
+  hauteur de la boîte qui pilote la fraction de photo visible) — réduire
+  la hauteur ici va donc légèrement à l'inverse et réintroduit un peu
+  plus de zoom sur les deux photos de l'équipe qu'à l'itération
+  précédente, un compromis accepté implicitement par la demande ("qu'elle
+  garde la même longueur sur l'écran juste que tu réduise légèrement la
+  hauteur" ne visait que l'espace vertical occupé par la section, pas le
+  cadrage des photos) plutôt que quelque chose à corriger. Si le zoom des
+  photos d'équipe devient gênant après ce changement, revoir cette
+  hauteur en connaissance de cet arbitrage plutôt que de la remonter sans
+  y repenser.
+  Vérifié par script Playwright (eyebrow confirmé absent du DOM,
+  `.engagement-cards` `marginTop` mesuré à `44px` = 2.75rem,
+  `.talent-stage-media` `minHeight` mesuré à `756px` = 84vh à 900px de
+  haut) et capture d'écran desktop + mobile (390×844) pour le hero et la
+  section Équipe — titre/CTA bien repositionnés sur la photo Fiat,
+  section Équipe visiblement plus courte en hauteur mais toujours pleine
+  largeur, aucun débordement. Regression complète 5 pages × 2 viewports :
+  0 débordement, 0 erreur console.
 
 ## État d'avancement
 

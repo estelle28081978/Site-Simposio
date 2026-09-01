@@ -906,7 +906,6 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
 }
 
 .hero-content { position: relative; z-index: 3; max-width: 40rem; margin-inline: 0; }
-.hero-content .eyebrow { display: block; margin-bottom: var(--space-3); color: var(--terracotta-300); }
 .hero-content h1 {
   margin-block: 0 var(--space-3);
   color: var(--cream);
@@ -916,7 +915,15 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
 }
 .hero-content h1 br { content: ""; display: block; }
 .hero-content h1 .accent { color: var(--terracotta-300); }
-.hero-content-minimal h1 { margin-bottom: var(--space-4); }
+/* L'eyebrow "Dolce Vita · Événementiel B2B premium en Alsace" a été
+   retiré du hero (2026-09-01, demande explicite de la cliente) — sans
+   rien d'autre au-dessus du titre pour occuper l'espace, celui-ci (et le
+   CTA "Entrer dans l'univers" juste en dessous, qui le suit dans le même
+   flux) remontait visuellement trop haut dans le cadre une fois centré
+   verticalement par `.hero`. `margin-top` compense en les abaissant tous
+   les deux ensemble (le CTA hérite du décalage puisqu'il suit le titre
+   dans le flux normal), plutôt que de les recentrer tels quels. */
+.hero-content-minimal h1 { margin-top: clamp(2rem, 8vh, 6rem); margin-bottom: var(--space-4); }
 /* Title forced onto exactly 3 lines ("L'événement qui" / "a le goût d'une" /
    "expérience", 2 manual <br> in the HTML) without changing font-size. Above
    ~1470px the font-size clamp caps at 5.2rem and "L'événement qui" alone
@@ -1336,7 +1343,11 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
   align-items: flex-start;
   justify-content: center;
   gap: var(--space-3);
-  margin-top: var(--space-5);
+  /* Remontées légèrement (2026-09-01, demande explicite) : réduit de
+     var(--space-5) (4.5rem) à var(--space-4) (2.75rem) — seul l'écart
+     entre le texte d'intro ("Cliquez sur une carte...") et les cartes se
+     resserre, le reste de la section est inchangé. */
+  margin-top: var(--space-4);
 }
 /* min-width (not min-width:0) is what makes this responsive without a
    manual breakpoint: `flex:1 1 0` alone lets 4 equal cards shrink forever
@@ -2174,7 +2185,15 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
    choisir ce sens plutôt que de deviner. */
 @media (min-width: 640px) {
   .talent-stage { display: grid; }
-  .talent-stage-media { grid-area: 1 / 1; aspect-ratio: auto; min-height: min(94vh, 72rem); }
+  /* Réduite légèrement de `min(94vh,72rem)` à `min(84vh,64rem)`
+     (2026-09-01, demande explicite de la cliente : "moins d'espace dans
+     la hauteur", largeur/mise en page inchangées) — inverse partiellement
+     les 4 agrandissements successifs documentés ci-dessus. Effet de bord
+     assumé et cohérent avec la même logique déjà établie : une boîte
+     moins haute AUGMENTE légèrement le zoom effectif de `object-fit:cover`
+     (au lieu de le réduire comme le faisait chaque agrandissement) — pas
+     un problème ici vu l'ampleur modeste de la réduction. */
+  .talent-stage-media { grid-area: 1 / 1; aspect-ratio: auto; min-height: min(84vh, 64rem); }
   .talent-stage-caption { grid-area: 1 / 1; }
 }
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
