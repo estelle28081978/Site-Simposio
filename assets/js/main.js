@@ -231,6 +231,149 @@
     updatePageBg();
   }
 
+  /* ---------- Autres pages : même fond de page unique piloté au scroll
+     (2026-09-02) ---------- */
+  /* Généralisation demandée explicitement par la cliente ("rajoute l'effet
+     de fond au scroll de la page d'accueil sur les autres pages") du
+     mécanisme `#pageBgLayer` ci-dessus aux 4 autres pages (Prestations,
+     Projets, À propos, Contact). Bloc entièrement séparé et autonome (pas
+     un refactor du bloc `index.html` ci-dessus, ses fonctions
+     `pageBgLerp`/`pageBgSample`/`pageBgWindow` restent locales à ce bloc) —
+     pour ne prendre aucun risque sur le mécanisme de l'accueil, déjà calé
+     au pixel près sur plusieurs itérations (cf. CLAUDE.md) : dupliquer une
+     petite fonction pure plutôt que la partager coûte quelques lignes,
+     mais élimine tout risque qu'une future retouche ici casse
+     silencieusement l'accueil.
+     **Règle de construction des repères, plus simple que le bloc
+     ci-dessus** : pour chaque frontière entre deux sections, une courte
+     rampe (fenêtre `w`, plafonnée à la moitié de l'écart entre les deux
+     sections) va de la couleur de la section précédente à celle de la
+     section suivante, ancrée sur le bord réel (`top`, recalculé chaque
+     frame, jamais mis en cache) de la section suivante. Entre deux
+     frontières consécutives, les deux repères qui encadrent l'intérieur
+     d'une section partagent TOUJOURS la même couleur (le repère de sortie
+     d'une frontière = couleur de la section courante ; le repère d'entrée
+     de la frontière suivante = couleur de cette même section, en tant que
+     "précédente") — l'interpolation y est donc automatiquement plate, sans
+     dérive, que la section soit courte (ex. une bande crème entre deux
+     sections sombres) ou très longue/épinglée (ex. `.values-reel` sur À
+     propos, même mécanisme que `#sensesJourney`) : aucun cas particulier
+     ("hold" explicite comme pour `#sensesJourney` ci-dessus) n'est
+     nécessaire ici, cette règle le couvre déjà par construction. Les
+     sections qui gardent leur propre fond opaque (photos plein cadre :
+     `.world`, `.contact-band` ; mécanismes épinglés : `.values-reel`) ne
+     sont pas listées individuellement — seul leur point d'ENTRÉE (leur
+     propre `top`) sert de repère de couleur, le calque restant de toute
+     façon invisible tout le temps qu'elles couvrent l'écran. */
+  (function () {
+    var otherPageLayer = document.getElementById("pageBgLayer");
+    if (!otherPageLayer || document.body.classList.contains("home")) return;
+
+    var otherPageConfig = null;
+    if (document.body.classList.contains("page-prestations")) {
+      otherPageConfig = [
+        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
+        { el: document.querySelector(".world"), rgb: [16, 31, 39] } // --navy-900 (photos plein cadre, cf. commentaire ci-dessus)
+      ];
+    } else if (document.body.classList.contains("page-projets")) {
+      otherPageConfig = [
+        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
+        { el: document.querySelector(".mosaic-section"), rgb: [16, 31, 39] } // --navy-900
+      ];
+    } else if (document.body.classList.contains("page-engagements")) {
+      otherPageConfig = [
+        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
+        /* .talents a un fond crème-dim en CSS, mais celui-ci n'est en
+           réalité JAMAIS visible : `.talent-stage` (le bloc photo+texte de
+           l'équipe) est plein cadre et opaque (fond --navy-900), donc
+           recouvre 100% de la section — c'est cette couleur RÉELLEMENT
+           visible qui sert de repère ici, pas le --bg-dim nominal de
+           `.talents` (jamais montré à l'écran). */
+        { el: document.querySelector(".talents"), rgb: [16, 31, 39] }, // --navy-900 (couverte par .talent-stage, opaque)
+        { el: document.querySelector(".founder"), rgb: [246, 241, 231] }, // --bg
+        { el: document.querySelector(".values-reel"), rgb: [16, 31, 39] } // --navy-900 (épinglé, cf. commentaire ci-dessus)
+      ];
+    } else if (document.body.classList.contains("page-contact")) {
+      otherPageConfig = [
+        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
+        { el: document.querySelector(".contact-band"), rgb: [193, 98, 45] }, // --terracotta (photo plein cadre, cf. commentaire ci-dessus)
+        { el: document.querySelector(".contact-devis"), rgb: [236, 227, 209] }, // --bg-dim
+        { el: document.querySelector(".contact-faq"), rgb: [16, 31, 39] } // --navy-900
+      ];
+    }
+
+    if (!otherPageConfig) return;
+    for (var ci = 0; ci < otherPageConfig.length; ci++) {
+      if (!otherPageConfig[ci].el) return; // markup incomplet : on ne prend aucun risque
+    }
+
+    var OTHER_PAGE_BG_WINDOW = 220;
+
+    function otherPageBgLerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function otherPageBgSample(keyframes, y) {
+      if (y <= keyframes[0].y) return keyframes[0].rgb;
+      for (var i = 0; i < keyframes.length - 1; i++) {
+        var a = keyframes[i];
+        var b = keyframes[i + 1];
+        if (y >= a.y && y <= b.y) {
+          var t = b.y > a.y ? (y - a.y) / (b.y - a.y) : 1;
+          return [
+            otherPageBgLerp(a.rgb[0], b.rgb[0], t),
+            otherPageBgLerp(a.rgb[1], b.rgb[1], t),
+            otherPageBgLerp(a.rgb[2], b.rgb[2], t)
+          ];
+        }
+      }
+      return keyframes[keyframes.length - 1].rgb;
+    }
+
+    function otherPageBgWindow(gap) {
+      return Math.min(OTHER_PAGE_BG_WINDOW, Math.max(60, gap / 2));
+    }
+
+    function updateOtherPageBg() {
+      var scrollY = window.scrollY;
+      var tops = [];
+      for (var ti = 0; ti < otherPageConfig.length; ti++) {
+        tops.push(otherPageConfig[ti].el.getBoundingClientRect().top + scrollY);
+      }
+
+      var keyframes = [{ y: tops[0], rgb: otherPageConfig[0].rgb }];
+      for (var i = 1; i < otherPageConfig.length; i++) {
+        var w = otherPageBgWindow(tops[i] - tops[i - 1]);
+        keyframes.push({ y: tops[i] - w, rgb: otherPageConfig[i - 1].rgb });
+        keyframes.push({ y: tops[i], rgb: otherPageConfig[i].rgb });
+      }
+
+      var rgb = otherPageBgSample(keyframes, scrollY);
+      var r = Math.round(rgb[0]);
+      var g = Math.round(rgb[1]);
+      var b = Math.round(rgb[2]);
+      otherPageLayer.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
+
+      var luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      document.body.dataset.tone = luminance < 0.6 ? "dark" : "light";
+    }
+
+    var otherPageBgTicking = false;
+    function requestOtherPageBgUpdate() {
+      if (!otherPageBgTicking) {
+        window.requestAnimationFrame(function () {
+          updateOtherPageBg();
+          otherPageBgTicking = false;
+        });
+        otherPageBgTicking = true;
+      }
+    }
+    window.addEventListener("scroll", requestOtherPageBgUpdate, { passive: true });
+    window.addEventListener("resize", requestOtherPageBgUpdate);
+    document.fonts && document.fonts.ready && document.fonts.ready.then(requestOtherPageBgUpdate);
+    updateOtherPageBg();
+  })();
+
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();

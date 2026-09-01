@@ -777,17 +777,31 @@ body.home[data-tone="light"] .teaser .section-head h2 {
    fixe (`#pageBgLayer`, `assets/js/main.js`) qui porte la couleur de fond
    réelle, recalculée chaque frame de scroll (rAF-throttlé, cf.
    `updatePageBg()`).
-   Scopé à `index.html` uniquement (`body.home`, `#pageBgLayer` n'existe
-   que sur cette page) : `.hero`/`.stats-band`/`.teaser`/`.method-cta`
-   sont des classes déjà exclusives à l'accueil (vérifié — aucune des 4
-   autres pages ne les utilise), donc leur passage à
-   `background: transparent` ci-dessous est sans risque pour le reste du
-   site. `.site-footer`, elle, est PARTAGÉE par les 6 pages (balisage
-   dupliqué) — sa règle de transparence est donc scopée explicitement à
-   `body.home` un peu plus bas, pour ne jamais affecter les 4 autres
-   pages où `#pageBgLayer` n'existe pas (un footer transparent y
-   laisserait voir le fond crème `body` nu, avec un texte toujours stylé
-   clair-sur-sombre — casse totale du contraste).
+   `.hero`/`.stats-band`/`.teaser`/`.method-cta` sont des classes déjà
+   exclusives à l'accueil (vérifié — aucune des 4 autres pages ne les
+   utilise), donc leur passage à `background: transparent` ci-dessous est
+   sans risque pour le reste du site. `.site-footer`, elle, est PARTAGÉE
+   par les 6 pages (balisage dupliqué) — sa règle de transparence est donc
+   scopée explicitement à `body.home` un peu plus bas.
+   **Généralisé aux 4 autres pages (2026-09-02)**, demande explicite de la
+   cliente ("rajoute l'effet de fond au scroll de la page d'accueil sur les
+   autres pages") — `#pageBgLayer` (le `<div>`, identique) et le mécanisme
+   JS (bloc séparé et autonome, cf. `main.js` — pas un refactor du bloc
+   ci-dessus, pour ne prendre aucun risque sur l'accueil) existent
+   désormais aussi sur Prestations/Projets/À propos/Contact, chacune avec
+   son propre `body.page-X` (`page-prestations`/`page-projets`/
+   `page-engagements`/`page-contact`) pour scoper la transparence des
+   classes qu'elle PARTAGE avec d'autres pages (`.page-header`,
+   `.site-footer`) sans jamais toucher `body.home` ni les 5 autres pages —
+   les classes exclusives à une seule page (`.mosaic-section`, `.talents`,
+   `.founder`, `.contact-devis`, `.contact-faq`) sont, elles, rendues
+   transparentes directement (vérifié par grep qu'aucune autre page ne les
+   réutilise). Sections gardées OPAQUES sur ces 4 pages, pour la même
+   raison que `.stats-band`/`#sensesJourney` ci-dessus (photo plein cadre
+   ou mécanisme pinned déjà calé) : `.world` (Prestations, 4 panneaux photo
+   plein cadre), `.contact-band` (photo "dolce vita"), `.values-reel` (À
+   propos, épinglé façon `#sensesJourney`) — leur propre `top` sert
+   seulement de repère de couleur au calque, cf. `main.js`.
    `#sensesJourney` (le parcours des 5 sens) N'EST PAS rendu transparent :
    c'est un mécanisme pinned/sticky autonome, calibré au pixel près sur de
    très nombreuses itérations (glow du tracé SVG, contraste des cartes —
@@ -824,9 +838,26 @@ body.home[data-tone="light"] .teaser .section-head h2 {
    `.eyebrow.on-dark`/`.lede.on-dark`, pas de nouvelle couleur inventée) ;
    `[data-tone="light"]` fait l'inverse pour le footer (né pour un fond
    sombre, seule section de ce groupe dans ce cas). */
-body.home[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
-body.home[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
-body.home[data-tone="dark"] .bg-adaptive-lede { color: var(--fg-muted-inverse); }
+/* Sélecteurs étendus à `body.page-contact`/`body.page-engagements`
+   (2026-09-02) : la colonne de gauche de `.contact-devis`
+   (`.contact-devis-text`) est, comme `.teaser`/`.method-cta` sur l'accueil,
+   née pour un fond clair juste après une section sombre (`.contact-band`,
+   terracotta) — mêmes classes, mêmes couleurs cibles, aucune valeur
+   nouvelle. Même chose pour l'eyebrow "La fondatrice" (`.founder`), née
+   pour un fond clair juste après `.talents` (dark, cf. commentaire sur ce
+   waypoint dans `main.js` — sa couleur RÉELLEMENT visible, via
+   `.talent-stage`, est sombre malgré le `--bg-dim` nominal de la section).
+   Étendre la LISTE de sélecteurs (plutôt que généraliser `body.home` en
+   `[data-tone]` seul) pour ne prendre aucun risque sur l'accueil : si une
+   future page utilise ces classes sans avoir été pensée pour, elle
+   n'héritera de rien tant qu'elle n'est pas ajoutée ici explicitement. */
+body.home[data-tone="dark"] .bg-adaptive-eyebrow,
+body.page-contact[data-tone="dark"] .bg-adaptive-eyebrow,
+body.page-engagements[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
+body.home[data-tone="dark"] .bg-adaptive-heading,
+body.page-contact[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
+body.home[data-tone="dark"] .bg-adaptive-lede,
+body.page-contact[data-tone="dark"] .bg-adaptive-lede { color: var(--fg-muted-inverse); }
 body.home[data-tone="dark"] .bg-adaptive-outline-btn {
   color: var(--cream);
   border-color: rgba(246, 241, 231, 0.4);
@@ -836,12 +867,50 @@ body.home[data-tone="dark"] .bg-adaptive-outline-btn:hover {
   color: var(--navy);
   border-color: var(--cream);
 }
+/* Cas inverse, propre à `.contact-faq` (Contact) : son eyebrow/titre sont
+   nés pour un fond SOMBRE (`.eyebrow.on-dark`, texte `--fg-inverse` hérité
+   de la section) juste après une section claire (`.contact-devis`,
+   crème-dim) — l'inverse exact du cas ci-dessus. N'existe nulle part sur
+   l'accueil (son seul équivalent "né sombre" est le footer, qui a déjà
+   son propre `.bg-adaptive-footer` dédié plus bas) : règles neuves, scopées
+   uniquement à `body.page-contact` pour ne toucher aucune autre page. */
+body.page-contact[data-tone="light"] .bg-adaptive-eyebrow { color: var(--accent); }
+body.page-contact[data-tone="light"] .bg-adaptive-heading { color: var(--navy); }
 body.home .site-footer { background: transparent; }
 body.home[data-tone="light"] .bg-adaptive-footer { color: var(--fg-muted); }
 body.home[data-tone="light"] .bg-adaptive-footer .footer-brand p { color: var(--fg-muted); }
 body.home[data-tone="light"] .bg-adaptive-footer .footer-col h4 { color: var(--navy); }
 body.home[data-tone="light"] .bg-adaptive-footer .footer-bottom { color: rgba(18, 35, 43, 0.55); }
 body.home[data-tone="light"] .bg-adaptive-footer .photo-credits { color: rgba(18, 35, 43, 0.45); }
+
+/* Transparence pour les 4 autres pages (2026-09-02, cf. commentaire plus
+   haut) : `.page-header`/`.site-footer` sont partagées par plusieurs
+   pages, scopées ici par `body.page-X` pour ne jamais affecter `body.home`
+   ni les pages qui n'ont pas ce mécanisme. `.founder`/`.contact-devis`/
+   `.contact-faq` (exclusives à une seule page chacune, vérifié par grep)
+   sont modifiées directement à leur déclaration d'origine plus bas dans ce
+   fichier. `.mosaic-section` et `.talents` restent volontairement OPAQUES
+   (comme `.world`/`.contact-band`/`.values-reel`, cf. commentaire plus
+   haut) : leur contenu (grille de tuiles sans espace, `.talent-stage`
+   plein cadre) couvre déjà 100% de leur surface, donc les rendre
+   transparentes n'aurait aucun effet visible tout en risquant de
+   laisser un vide si ce contenu change un jour — seul leur `top` sert de
+   repère de couleur au calque, cf. `main.js`. */
+body.page-prestations .page-header,
+body.page-projets .page-header,
+body.page-engagements .page-header,
+body.page-contact .page-header,
+body.page-prestations .site-footer,
+body.page-projets .site-footer,
+body.page-engagements .site-footer,
+body.page-contact .site-footer {
+  background: transparent;
+}
+/* `.mosaic-section`/`.talents`/`.founder`/`.contact-devis`/`.contact-faq`
+   sont modifiées directement à leur déclaration d'origine plus bas dans ce
+   fichier (pas ici) — une règle ajoutée à cet endroit serait de toute
+   façon écrasée par leur propre règle, plus bas dans l'ordre du fichier,
+   à spécificité égale. */
 body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(18, 35, 43, 0.65); }
 
 /* ==========================================================================
@@ -1351,14 +1420,13 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
   align-items: flex-start;
   justify-content: center;
   gap: var(--space-3);
-  /* Remontées une 2ᵉ fois (2026-09-01, "remonte encore les cartes
-     d'engagement vers le texte d'intro") : var(--space-5) (4.5rem) →
-     var(--space-4) (2.75rem) une 1ʳᵉ fois, puis var(--space-4) →
-     var(--space-2) (1rem) ici — seul l'écart entre le texte d'intro
-     ("Cliquez sur une carte...") et les cartes continue de se resserrer,
-     le reste de la section (gap entre cartes, largeur, mécanisme de
-     flip/scale au scroll) est inchangé. */
-  margin-top: var(--space-2);
+  /* Remontées une 3ᵉ fois (2026-09-02, "remonte encore un peu les cartes
+     d'engagement") : var(--space-5) (4.5rem) → var(--space-4) (2.75rem) →
+     var(--space-2) (1rem) → `0.5rem` ici — seul l'écart entre le texte
+     d'intro ("Cliquez sur une carte...") et les cartes continue de se
+     resserrer, le reste de la section (gap entre cartes, largeur,
+     mécanisme de flip/scale au scroll) est inchangé. */
+  margin-top: 0.5rem;
 }
 /* min-width (not min-width:0) is what makes this responsive without a
    manual breakpoint: `flex:1 1 0` alone lets 4 equal cards shrink forever
@@ -1585,7 +1653,10 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
    (`.founder-rule`, `2.75rem`, `1.5px solid var(--terracotta)`) en
    séparateur, puis l'identité (`.founder-id-minimal` : médaillon "EL" en
    simple contour + nom). */
-.founder { background: var(--bg); padding-block: var(--space-6); }
+/* background: transparent, pas var(--bg) (2026-09-02) : voir #pageBgLayer,
+   plus haut dans le fichier — le fond de cette section est désormais porté
+   par le calque de fond global de la page (même teinte crème). */
+.founder { background: transparent; padding-block: var(--space-6); }
 .founder-minimal { max-width: 42rem; margin-inline: auto; text-align: center; }
 .founder-quote-minimal {
   font-family: var(--font-display);
@@ -2203,8 +2274,18 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
      assumé et cohérent avec la même logique déjà établie : une boîte
      moins haute AUGMENTE légèrement le zoom effectif de `object-fit:cover`
      (au lieu de le réduire comme le faisait chaque agrandissement) — pas
-     un problème ici vu l'ampleur modeste de la réduction. */
-  .talent-stage-media { grid-area: 1 / 1; aspect-ratio: auto; min-height: min(84vh, 64rem); }
+     un problème ici vu l'ampleur modeste de la réduction.
+     **Réduite une 2ᵉ fois, à `min(50vh,40rem)` (2026-09-02)** : demande
+     explicite ("coupe jusqu'à l'intérieur du coude à gauche de la dame") —
+     valeur choisie pour être largement sous le plancher réel (cf.
+     `.talent-stage-caption`/`.talent-stage-selector` juste en dessous,
+     qui pilotent en réalité la hauteur totale sur les largeurs d'écran
+     courantes, cf. commentaire détaillé sur `padding-bottom`) plutôt que
+     pour une valeur exacte — sur un viewport inhabituellement haut (au-delà
+     de ~1280px de haut), ce plancher pourrait redevenir le facteur
+     limitant et empêcher le rognage voulu ; cas limite non traité ici, à
+     revoir si signalé. */
+  .talent-stage-media { grid-area: 1 / 1; aspect-ratio: auto; min-height: min(50vh, 40rem); }
   .talent-stage-caption { grid-area: 1 / 1; }
 }
 /* `opacity` seule dans la transition (pas `transform`) : deux photos
@@ -2536,11 +2617,26 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
      la section dès que la légende est le facteur limitant (le cas sur les
      largeurs d'écran courantes, ~1440-1600px — au-delà, c'est le
      `min-height` de `.talent-stage-media` qui prend le relais, cf.
-     commentaire dessus). Voir `.talent-stage-selector` juste en dessous
-     pour le second changement nécessaire (remonter les avatars) : réduire
-     seulement ce padding sans y toucher aurait laissé les avatars
-     chevaucher légèrement le bas du texte de bio (~8px de recouvrement
-     mesuré par script Playwright avant ce second ajustement). */
+     commentaire dessus).
+     **Réduit une 2ᵉ fois, à `1.25rem` (2026-09-02)** : nouvelle demande
+     explicite, plus radicale — "réduit encore la section... coupe jusqu'à
+     l'intérieur du coude à gauche de la dame". Calibré empiriquement par
+     capture d'écran (balayage de plusieurs valeurs, mesure du bord bas
+     réel de la section à chaque fois, jamais deviné) : `1.25rem` est la
+     valeur qui fait passer le bord bas de la photo juste à l'intérieur du
+     coude visible sur la photo d'Estelle, sans couper davantage (ce qui
+     aurait commencé à couper l'avant-bras/le poignet, perdant la lecture
+     du geste "bras croisés"). **Le "chevauchement avatars/bio" documenté
+     à l'itération précédente n'était en réalité pas un risque réel** :
+     `.talent-stage-selector` vit dans une colonne horizontalement séparée
+     du texte (`left:max(37rem,50%)`, largement à droite de cette colonne
+     `width:min(26rem,48%)`) — un recouvrement de leurs rectangles en Y
+     seul (ce qu'une mesure `getBoundingClientRect` naïve détecte) ne
+     produit aucun chevauchement VISUEL tant que leurs plages en X restent
+     disjointes, ce qui est le cas ici à toutes les largeurs testées. Le
+     vrai garde-fou nécessaire est plus simple : que les avatars restent
+     entièrement DANS le cadre (`overflow:hidden` sur `.talent-stage`),
+     cf. `.talent-stage-selector` juste en dessous. */
   .talent-stage-caption {
     justify-self: start;
     align-self: stretch;
@@ -2548,7 +2644,7 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
     flex-direction: column;
     justify-content: flex-end;
     width: min(26rem, 48%);
-    padding: var(--space-5) var(--space-4) 9rem var(--space-5);
+    padding: var(--space-5) var(--space-4) 1.25rem var(--space-5);
     background: none;
   }
   /* Titre plus large que la colonne (2026-08-20, 3ᵉ passe) : demande
@@ -2582,17 +2678,19 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
      même logique `max()` qu'avant (plancher absolu + dérive
      proportionnelle sur grand écran). */
   /* `bottom` remonté de `var(--space-4)` (44px) à `3.5rem` (56px)
-     (2026-09-01) : conséquence directe de la réduction de `padding-bottom`
-     ci-dessus sur `.talent-stage-caption` — sans ce 2ᵉ ajustement, les
-     avatars (positionnés indépendamment en `position:absolute` par
-     rapport à `.talent-stage`, pas dans le flux de la légende) se
-     seraient retrouvés à chevaucher légèrement le bas du texte de bio une
-     fois la section raccourcie (~8px de recouvrement mesuré). Les remonte
-     davantage que nécessaire pour compenser cette réduction (44px→56px,
-     alors que la section elle-même perd ~130-140px de hauteur), demande
-     explicite de la cliente ("remonte les deux ronds un peu plus haut
-     pour qu'ils ne soient pas coupés"). */
-  .talent-stage-selector { left: max(37rem, 50%); bottom: 3.5rem; }
+     (2026-09-01), puis réduit à `1rem` (16px) (2026-09-02) : la section
+     ayant été raccourcie beaucoup plus radicalement à cette itération
+     (`padding-bottom` de `.talent-stage-caption` 9rem→1.25rem, cf.
+     commentaire dessus), les avatars suivent mécaniquement ce
+     raccourcissement (ils restent bien "remontés" par rapport à
+     l'itération précédente en position absolue sur l'écran, même si leur
+     décalage RELATIF au nouveau bord bas, plus proche, est lui-même plus
+     petit) — demande explicite de la cliente ("remonte les deux ronds pour
+     qu'ils ne soient pas coupés"). Calibré empiriquement en même temps que
+     `padding-bottom` (capture d'écran, pas deviné) : `1rem` garde les
+     avatars entièrement visibles dans le cadre, avec une légère marge
+     sous eux, sans les rapprocher davantage du bord que nécessaire. */
+  .talent-stage-selector { left: max(37rem, 50%); bottom: 1rem; }
 }
 
 /* ==========================================================================
@@ -3064,7 +3162,9 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 }
 
 /* Devis — two columns: pitch text on the left, premium navy form card on the right */
-.contact-devis { position: relative; background: var(--bg-dim); padding-block: var(--space-6); overflow: hidden; }
+/* background: transparent, pas var(--bg-dim) (2026-09-02) : voir
+   #pageBgLayer, plus haut dans le fichier. */
+.contact-devis { position: relative; background: transparent; padding-block: var(--space-6); overflow: hidden; }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-5); }
 @media (min-width: 960px) {
   .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: start; gap: var(--space-6); }
@@ -3169,7 +3269,9 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 }
 
 /* FAQ — native <details>/<summary> accordion, no JS required */
-.contact-faq { background: var(--navy-900); color: var(--fg-inverse); padding-block: var(--space-6); }
+/* background: transparent, pas var(--navy-900) (2026-09-02) : voir
+   #pageBgLayer, plus haut dans le fichier. */
+.contact-faq { background: transparent; color: var(--fg-inverse); padding-block: var(--space-6); }
 .faq-list { max-width: 44rem; margin-inline: auto; display: flex; flex-direction: column; gap: 0.9rem; }
 .faq-item {
   border: 1px solid var(--border-inverse);

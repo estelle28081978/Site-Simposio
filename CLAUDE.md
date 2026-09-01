@@ -5683,6 +5683,144 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   est inchangé.
   Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Équipe — rognée jusqu'à l'intérieur du coude, cartes Engagements
+  remontées une 3ᵉ fois, fond de page unique généralisé aux 4 autres pages
+  (2026-09-02)** : trois demandes de la cliente en une fois.
+  **Équipe — rognée jusqu'à l'intérieur du coude** (`.talent-stage-caption`/
+  `.talent-stage-selector`/`.talent-stage-media`, `style.css`) : demande
+  explicite, plus radicale que la précédente — "coupe jusqu'à l'intérieur
+  du coude à gauche de la dame" (le coude visible côté gauche du cadre,
+  au point où ses bras croisés se plient). **Le vrai levier n'est pas
+  `.talent-stage-media`** (`min-height`, déjà réduit à l'itération
+  précédente) — sur les largeurs d'écran courantes, c'est
+  `.talent-stage-caption` qui reste le facteur limitant de la hauteur
+  totale de la grille (`.talent-stage`, grid-area:1/1 partagée, se
+  dimensionne sur le plus grand des deux enfants), donc réduire encore
+  `min-height` sur la photo seule n'aurait eu strictement aucun effet
+  visible tant que la légende reste plus haute — vérifié par script avant
+  d'agir plutôt que supposé (trois passes de calibrage où faire varier
+  `min-height` seul ne changeait rien à la hauteur réelle mesurée).
+  `padding-bottom` de `.talent-stage-caption` (le vide réservé sous le
+  nom/rôle/bio, qui pilote directement la hauteur totale via
+  `justify-content:flex-end`) est donc réduit une 2ᵉ fois, de `9rem` à
+  `1.25rem` — calibré empiriquement par balayage de plusieurs valeurs avec
+  capture d'écran à chaque fois (jamais deviné), jusqu'à ce que le bord bas
+  de la photo tombe très exactement à l'intérieur du coude visible.
+  `.talent-stage-media` (`min-height`) est tout de même réduit en
+  accompagnement, de `min(84vh,64rem)` à `min(50vh,40rem)`, pour rester
+  largement sous ce nouveau plancher réel et ne pas risquer de le
+  redevenir sur un viewport inhabituellement haut. `.talent-stage-selector`
+  (`bottom`) repasse de `3.5rem` à `1rem` pour garder les avatars
+  entièrement dans le cadre (`overflow:hidden` sur `.talent-stage`), avec
+  encore un peu de marge sous eux.
+  **Le "chevauchement avatars/bio" documenté à l'itération précédente
+  s'est révélé ne pas être un vrai risque, une fois réexaminé avec ce
+  nouveau calibrage plus serré** : `.talent-stage-selector` vit dans une
+  colonne horizontalement disjointe du texte (`left:max(37rem,50%)`, à
+  droite de la colonne de texte `width:min(26rem,48%)`) — un recouvrement
+  de leurs rectangles en coordonnée Y seule (ce qu'une mesure
+  `getBoundingClientRect` brute détecte) ne produit aucun chevauchement
+  VISUEL tant que leurs plages en X restent séparées, ce qui est le cas ici
+  à toutes les largeurs testées (vérifié par capture d'écran, pas
+  seulement par le calcul). Documenté pour éviter de re-complexifier ce
+  réglage sur une fausse alerte si un futur calibrage retombe sur des
+  chiffres en apparence "qui se chevauchent".
+  Vérifié par script Playwright (avatars confirmés entièrement dans le
+  cadre — `top`/`bottom` comparés à ceux de `.talent-stage` — à
+  1024/1440/1600/1920px de large, 0 débordement horizontal, 0 erreur
+  console) et capture d'écran à chacune de ces largeurs : le bord bas de la
+  photo tombe systématiquement à l'intérieur du coude visible, quelle que
+  soit la largeur, sans dépendre d'un réglage par largeur.
+  **Cartes Engagements remontées une 3ᵉ fois** : `margin-top` sur
+  `.engagement-cards` passe de `var(--space-2)` (1rem) à `0.5rem` — demande
+  explicite ("remonte encore un peu les cartes d'engagement"), même
+  mécanisme, encore resserré.
+  **Fond de page unique généralisé aux 4 autres pages** (`#pageBgLayer`,
+  `main.js`/`style.css`, les 5 fichiers HTML sauf `index.html`) : demande
+  explicite ("rajoute l'effet de fond au scroll de la page d'accueil sur
+  les autres pages") — le mécanisme documenté plus haut dans ce fichier
+  (calque de fond unique fixe, teinte interpolée en continu au scroll,
+  `body[data-tone]` pour l'adaptation du texte) existait jusqu'ici
+  seulement sur `index.html` (`body.home`). Étendu à Prestations, Projets,
+  À propos et Contact.
+  **Bloc JS entièrement séparé, pas un refactor du bloc `index.html`**
+  (`main.js`) : pour ne prendre aucun risque sur le mécanisme de l'accueil,
+  déjà calé au pixel près sur de nombreuses itérations (cf. plus haut) —
+  ses fonctions `pageBgLerp`/`pageBgSample`/`pageBgWindow` restent locales
+  à ce bloc, dupliquées plutôt que partagées. Se désactive lui-même sur
+  `body.home` (`if (... || document.body.classList.contains("home")) return;`)
+  et sur toute page où le markup attendu est incomplet — aucun risque de
+  double-exécution ni de crash si une page ne correspond à aucune
+  configuration connue.
+  **Règle de construction des repères de couleur, plus simple que celle de
+  l'accueil** : pour chaque frontière entre deux sections, une courte rampe
+  (fenêtre `w`, plafonnée à la moitié de l'écart entre les deux) va de la
+  couleur de la section précédente à celle de la section suivante, ancrée
+  sur le bord réel (`top`, recalculé chaque frame, jamais mis en cache) de
+  la section suivante. Entre deux frontières consécutives, les deux
+  repères qui encadrent l'intérieur d'une section partagent TOUJOURS la
+  même couleur — l'interpolation y est donc automatiquement plate, sans
+  dérive, que la section soit courte (ex. le bandeau `.contact-band`) ou
+  très longue/épinglée (`.values-reel`, même mécanisme que
+  `#sensesJourney`) : aucun cas particulier ("hold" explicite, comme celui
+  qu'a nécessité `#sensesJourney` sur l'accueil) n'est nécessaire ici,
+  cette règle le couvre déjà par construction.
+  **Chaque page a son propre `body.page-X`** (`page-prestations`/
+  `page-projets`/`page-engagements`/`page-contact`) pour scoper la
+  transparence des classes qu'elle PARTAGE avec d'autres pages
+  (`.page-header`, `.site-footer`) sans jamais toucher `body.home` ni les
+  autres pages ; les classes exclusives à une seule page (`.founder`,
+  `.contact-devis`, `.contact-faq`) sont rendues transparentes directement
+  à leur déclaration d'origine (vérifié par grep qu'aucune autre page ne
+  les réutilise).
+  **Sections gardées OPAQUES**, pour la même raison que `.stats-band`/
+  `#sensesJourney` sur l'accueil (photo plein cadre ou mécanisme pinned
+  déjà calé, aucun bénéfice visible à les rendre transparentes) : `.world`
+  (Prestations, 4 panneaux photo plein cadre), `.mosaic-section` (Projets —
+  sa grille de tuiles sans espace couvre déjà 100% de la section),
+  `.contact-band` (photo "dolce vita"), `.values-reel` (À propos, épinglé).
+  **Piège réel trouvé avant publication, pas supposé** : `.talents`
+  (À propos) a un fond CSS nominal `--bg-dim` (crème-dim, clair), mais
+  celui-ci n'est en réalité JAMAIS visible à l'écran — `.talent-stage` (le
+  bloc photo+texte de l'équipe) est plein cadre et opaque (fond
+  `--navy-900`, sombre) et couvre 100% de la section. Le repère de couleur
+  utilisé dans `main.js` pour cette section est donc `--navy-900` (la
+  teinte RÉELLEMENT visible), pas le `--bg-dim` nominal de `.talents` —
+  utiliser ce dernier aurait fait dériver le calque vers une teinte claire
+  qui n'apparaît jamais réellement à l'écran, créant un décalage au moment
+  où `.founder` (vraiment claire, juste après) prend le relais.
+  **Adaptation du texte aux frontières les plus marquées**
+  (`.bg-adaptive-eyebrow`/`.bg-adaptive-heading`/`.bg-adaptive-lede`,
+  `contact.html`/`engagements.html`) : les règles `[data-tone] .bg-adaptive-*`
+  existantes (nées pour l'accueil, scopées `body.home`) sont étendues en
+  LISTE de sélecteurs (`body.home[data-tone="dark"] .bg-adaptive-eyebrow,
+  body.page-contact[data-tone="dark"] .bg-adaptive-eyebrow { … }`, jamais
+  généralisées en `[data-tone]` seul) — pour ne prendre aucun risque de
+  changement de couleur non désiré sur l'accueil. Appliquées à
+  `.contact-devis-text` (eyebrow/h2/lede, nés pour un fond clair juste
+  après `.contact-band`, sombre — même cas que `.teaser`/`.method-cta` sur
+  l'accueil, mêmes couleurs cibles réutilisées) et à l'eyebrow "La
+  fondatrice" (`.founder`, né pour un fond clair juste après `.talents`,
+  RÉELLEMENT sombre malgré son `--bg-dim` nominal, cf. piège ci-dessus).
+  **Cas inverse, nouveau, propre à `.contact-faq`** : son eyebrow/titre
+  sont nés pour un fond SOMBRE (`.eyebrow.on-dark`, texte `--fg-inverse`
+  hérité de la section) juste après une section claire
+  (`.contact-devis`) — l'inverse exact du cas ci-dessus, qui n'existait
+  nulle part sur l'accueil (son seul équivalent "né sombre" est le footer,
+  qui a déjà son propre `.bg-adaptive-footer` dédié). Deux règles neuves,
+  scopées uniquement à `body.page-contact[data-tone="light"]`, sans
+  équivalent sur l'accueil.
+  Vérifié par script Playwright : balayage complet du scroll sur les 4
+  pages (couleur du calque et `data-tone` échantillonnés à 26 points
+  chacune) confirmant des transitions cohérentes, des couleurs de départ/
+  arrivée correctes et 0 valeur invalide ; capture d'écran à chaque
+  frontière de couleur sur les 4 pages (desktop et mobile) confirmant
+  visuellement un texte lisible tout du long, y compris aux deux
+  frontières protégées par `.bg-adaptive-*` sur Contact ; `index.html`
+  revérifié à l'identique (balayage de couleur comparé point par point,
+  aucune différence — le nouveau bloc se désactive bien via
+  `body.home`). Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
