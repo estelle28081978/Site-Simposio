@@ -5489,6 +5489,58 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   plat façon `#sensesJourney` réapparaissent sur ce bandeau, c'est un
   retour à une version précédente, à ne pas réintroduire sans qu'on le
   redemande.
+- **Menu plein écran — 4ᵉ refonte : grandes typographies centrées, sans
+  numéro, avec entrée animée (2026-08-21)** (`.mobile-menu-links`,
+  `style.css`, les 5 pages) : la cliente a demandé de reprendre l'esprit
+  "titres en gros" des versions précédentes du menu, mais centré, sans
+  les numéros d'index, avec un effet d'animation à l'ouverture.
+  **Retiré** : les `<span class="idx" aria-hidden="true">01</span>`…`05`
+  (chiffres "fantômes" en filigrane, 3ᵉ refonte) sont retirés du HTML des
+  5 pages (`perl` en une passe, motif identique partout) et toute la CSS
+  associée (`.mobile-menu-links .idx`, ses états hover/is-current, le
+  décalage `padding-left` au survol qui n'avait de sens qu'avec un
+  chiffre à révéler) est supprimée de `style.css`.
+  **Centré** : `.mobile-menu-links` passe à `align-items:center;
+  text-align:center` (au lieu d'un alignement à gauche).
+  **Titres agrandis** : `.label` passe de `clamp(1.5rem, min(7.2vh,
+  11.5vw), 3.4rem)` à `clamp(2.2rem, min(9.5vh, 15vw), 6.4rem)` — plafond
+  quasiment doublé, l'espace auparavant partagé avec le chiffre fantôme
+  profite maintenant entièrement au libellé. Toujours calé en
+  `vh`/`min(vh,vw)` (pas la version `vw` seule de la 1ʳᵉ refonte, qui
+  débordait en hauteur sur les fenêtres courtes) pour garder la
+  contrainte "tient sur un écran" déjà établie sur ce composant.
+  **Effet d'animation** : chaque lien entre en fondu + léger glissement
+  vertical (`opacity:0→1`, `translateY(28px)→0`) au moment où
+  `.mobile-menu` reçoit `.is-open`, échelonné par `nth-child` (60ms
+  d'écart) — même principe de cascade déjà utilisé ailleurs sur le site
+  (`[data-reveal-group]`, `.method-steps-list`), reconduit ici pour
+  l'ouverture du menu plutôt qu'un scroll. La transition de l'entrée
+  (`opacity`/`transform` sur `a`, avec son `transition-delay` échelonné)
+  est volontairement séparée de la transition de survol (`color`/
+  `transform:scale(1.04)` sur `.label`, sans délai) pour que le survol
+  reste instantané quel que soit le lien, jamais retardé par le délai de
+  l'ouverture.
+  **Calibrage revérifié empiriquement, pas juste recopié de l'ancienne
+  version** : le plafond `vh` initial (`11vh`) faisait légèrement
+  déborder le menu en hauteur sur quelques largeurs étroites à 640px de
+  haut (repéré par un balayage Playwright de 56 combinaisons largeur×
+  hauteur, pas supposé) — réduit à `9.5vh`. Sur les tailles d'écran
+  réelles courantes (iPhone SE 375×667, iPhone 12+ 390×844, Android
+  360×800, Pixel 412×915, desktop/tablette 768 à 1920px de large), 0
+  débordement ; seul le très ancien iPhone 5 (320×568, un appareil de
+  2012) montre encore un débordement résiduel de 10px, absorbé sans
+  casse par le `overflow-y:auto` déjà en place comme filet de sécurité.
+  Vérifié par script Playwright : chiffres fantômes confirmés absents du
+  DOM, alignement centré confirmé (`getComputedStyle`), taille de police
+  ~99px à 1440×900 (vs ~54px avant), page courante toujours mise en
+  valeur sur les 5 pages, navigation clavier (Tab + Entrée) confirmée
+  fonctionnelle, survol confirmé (couleur + léger agrandissement).
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console. Si `.idx` réapparaît dans le HTML ou en CSS sur ce composant,
+  c'est la version à chiffres fantômes (3ᵉ refonte), à ne pas
+  réintroduire sans qu'on le redemande — l'historique complet des 3
+  refontes précédentes (panneau divisé, chiffres fantômes) reste
+  documenté plus haut dans ce fichier pour référence.
 
 ## État d'avancement
 

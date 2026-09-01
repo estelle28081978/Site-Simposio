@@ -414,34 +414,39 @@ body.home[data-tone="light"] .teaser .section-head h2 {
   .nav-toggle-label { display: none; }
 }
 
-/* Menu plein écran — 3ᵉ refonte, minimaliste avec chiffres "fantômes"
-   (2026-08-20) : la cliente a rejeté le panneau divisé terracotta/navy de
-   la refonte précédente et demandé "un menu plus minimaliste, mais
-   toujours avec les grosses polices et un peu plus original".
-   **Remplace entièrement** `.mobile-menu-panels`/`.mobile-menu-brand`/
-   `.mobile-menu-nav`/`.mobile-menu-eyebrow` — plus de panneau terracotta,
-   plus de citation de marque, plus de bloc "Menu" séparé : un seul fond
-   navy uni, les liens seuls portent toute l'identité visuelle. Si ces
-   classes réapparaissent, c'est l'itération précédente, à ne pas
-   réintroduire sans qu'on le redemande.
-   **"Un peu plus original"** : chaque numéro d'index (`01`-`05`) n'est
-   plus un petit repère à côté du libellé — c'est un très grand chiffre
-   "fantôme" (`.idx`), en terracotta très translucide, posé EN FOND du
-   lien, débordant à droite derrière le texte (façon filigrane d'un
-   sommaire de magazine) — le libellé (`.label`) est superposé par-dessus
-   en pleine opacité. Plus aucune ligne de séparation entre les liens
-   (`border-bottom` retiré) : c'est ce chiffre fantôme, pas un trait, qui
-   rythme la liste — plus minimal en surface (aucun filet visible tant
-   qu'on ne survole/n'atteint pas la page courante) tout en gardant une
-   vraie identité graphique distincte du reste du site.
-   **Toujours "tient sur un écran"** (contrainte conservée de l'itération
-   précédente, non redemandée à nouveau mais pas abandonnée pour autant) :
-   même technique `vh`/`min(vh,vw)` déjà établie sur ce site pour ce type
-   de contrainte (cf. `fitPromiseLines()`), reprise ici pour le libellé ET
-   pour le chiffre fantôme. Le bouton fermer reste en `position:absolute`
-   (ne consomme pas de hauteur dans le flux) ; `overflow-y:auto` reste un
-   pur filet de sécurité (vérifié par script Playwright de 640 à 1200px de
-   haut, jamais censé s'activer aux hauteurs réelles). */
+/* Menu plein écran — 4ᵉ refonte, grandes typographies centrées sans
+   numéro, avec entrée animée (2026-08-21) : la cliente a demandé de
+   reprendre l'esprit "titres en gros" des versions précédentes mais
+   centré, sans les numéros d'index, avec un effet d'animation à
+   l'ouverture. **Remplace la 3ᵉ refonte (chiffres "fantômes")** : le
+   `<span class="idx">` par lien (chiffre géant en fond de lien,
+   `.mobile-menu-links .idx`) est retiré du HTML des 5 pages et de ce
+   fichier — alignement à gauche + décalage `padding-left` au survol
+   également abandonnés au profit d'un alignement centré
+   (`align-items:center; text-align:center` sur `.mobile-menu-links`).
+   Si `.idx`/`padding-left` au survol réapparaissent ici, c'est cette
+   ancienne version à chiffres fantômes, à ne pas réintroduire sans qu'on
+   le redemande (historique complet des 3 refontes précédentes — panneau
+   divisé, chiffres fantômes — conservé dans CLAUDE.md).
+   **Toujours "tient sur un écran"** (contrainte conservée depuis la 2ᵉ
+   refonte) : même technique `vh`/`min(vh,vw)` déjà établie sur ce site
+   pour ce type de contrainte (cf. `fitPromiseLines()`) — le retrait du
+   chiffre fantôme et le centrage n'y changent rien, `.label` reste
+   dimensionné en `clamp(2.2rem, min(9.5vh, 15vw), 6.4rem)`, revu à la
+   hausse par rapport à la version à chiffres fantômes (plafond passé de
+   `3.4rem` à `6.4rem`) puisque l'espace auparavant occupé par le chiffre
+   n'a plus besoin d'être partagé. Le bouton fermer reste en
+   `position:absolute` (ne consomme pas de hauteur dans le flux) ;
+   `overflow-y:auto` reste un pur filet de sécurité.
+   **Effet d'animation** : chaque lien entre en fondu + léger glissement
+   vertical (`opacity`/`translateY`), échelonné par `nth-child` (60ms
+   d'écart) au moment où `.mobile-menu` reçoit `.is-open` — même principe
+   de cascade déjà utilisé ailleurs sur le site (`[data-reveal-group]`,
+   `.method-steps-list`), reconduit ici pour l'ouverture du menu plutôt
+   qu'un scroll. Un survol/focus fait légèrement grossir le libellé
+   (`transform:scale(1.04)` sur `.label`, pas sur `a` lui-même — évite
+   tout conflit avec le `transition-delay` de l'entrée, qui ne porte que
+   sur `opacity`/`transform` de `a`). */
 .mobile-menu {
   position: fixed;
   inset: 0;
@@ -478,7 +483,9 @@ body.home[data-tone="light"] .teaser .section-head h2 {
 .mobile-menu-links {
   display: flex;
   flex-direction: column;
-  gap: clamp(0.3rem, 1.6vh, 1rem);
+  align-items: center;
+  text-align: center;
+  gap: clamp(0.3rem, 1.8vh, 1.2rem);
   max-width: var(--max-width);
   margin-inline: auto;
   width: 100%;
@@ -493,49 +500,51 @@ body.home[data-tone="light"] .teaser .section-head h2 {
   display: block;
   min-width: 0;
   padding-block: clamp(0.2rem, 1vh, 0.5rem);
-  overflow: hidden;
-  transition: padding-left var(--dur) var(--ease);
+  /* Entrée en fondu + léger glissement vers le haut, échelonnée par lien
+     (nth-child ci-dessous) — l'"effet d'animation" demandé pour cette
+     4ᵉ refonte du menu. Uniquement `opacity`/`transform` ici (jamais
+     `color`, qui a sa propre transition sur `.label` plus bas) pour que
+     le `transition-delay` de l'entrée n'affecte jamais la réactivité du
+     survol. */
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
 }
-.mobile-menu-links a:hover,
-.mobile-menu-links a:focus-visible { padding-left: var(--space-2); }
-.mobile-menu-links .idx {
-  position: absolute;
-  top: 50%;
-  right: clamp(-0.3rem, 1vw, 1.5rem);
-  transform: translateY(-50%);
-  z-index: 0;
-  font-family: var(--font-display);
-  font-size: clamp(3.2rem, min(15vh, 19vw), 8rem);
-  line-height: 1;
-  color: rgba(193, 98, 45, 0.16);
-  pointer-events: none;
-  user-select: none;
-  transition: color var(--dur) var(--ease);
+.mobile-menu.is-open .mobile-menu-links a {
+  opacity: 1;
+  transform: translateY(0);
 }
-.mobile-menu-links a:hover .idx,
-.mobile-menu-links a:focus-visible .idx { color: rgba(193, 98, 45, 0.3); }
+.mobile-menu.is-open .mobile-menu-links a:nth-child(1) { transition-delay: 60ms; }
+.mobile-menu.is-open .mobile-menu-links a:nth-child(2) { transition-delay: 120ms; }
+.mobile-menu.is-open .mobile-menu-links a:nth-child(3) { transition-delay: 180ms; }
+.mobile-menu.is-open .mobile-menu-links a:nth-child(4) { transition-delay: 240ms; }
+.mobile-menu.is-open .mobile-menu-links a:nth-child(5) { transition-delay: 300ms; }
+/* 4ᵉ refonte (2026-08-21) : retour aux très grandes typographies de la
+   toute 1ʳᵉ version du menu plein écran ("les titres en gros"), mais
+   centrées (au lieu d'alignées à gauche avec un numéro d'index à côté) et
+   sans numérotation — la cliente a explicitement demandé de retirer les
+   chiffres. Toujours calé en `vh`/`min(vh,vw)` (pas la version `vw` seule
+   de la 1ʳᵉ itération, qui débordait en hauteur sur les fenêtres courtes)
+   pour garder la contrainte "tient sur un écran" déjà établie sur ce
+   composant. */
 .mobile-menu-links .label {
-  position: relative;
-  z-index: 1;
-  display: block;
+  display: inline-block;
   min-width: 0;
   overflow-wrap: break-word;
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, min(7.2vh, 11.5vw), 3.4rem);
+  font-size: clamp(2.2rem, min(9.5vh, 15vw), 6.4rem);
   line-height: 1.05;
   color: var(--cream);
-  transition: color var(--dur-fast) var(--ease);
+  transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  transform-origin: center;
 }
 .mobile-menu-links a:hover .label,
-.mobile-menu-links a:focus-visible .label { color: var(--terracotta-300); }
-/* Page courante repérée en marge : chaque fichier HTML porte
-   `.is-current`/`aria-current="page"` sur son propre lien plutôt qu'un
-   calcul JS — cohérent avec le balisage dupliqué par page déjà en place
-   partout ailleurs sur le site (header/menu/footer). Le chiffre fantôme
-   passe en pleine teinte terracotta (au lieu d'un survol ponctuel) : la
-   page courante reste identifiable même sans interaction. */
+.mobile-menu-links a:focus-visible .label { color: var(--terracotta-300); transform: scale(1.04); }
+/* Page courante repérée directement sur le libellé : chaque fichier HTML
+   porte `.is-current`/`aria-current="page"` sur son propre lien plutôt
+   qu'un calcul JS — cohérent avec le balisage dupliqué par page déjà en
+   place partout ailleurs sur le site (header/menu/footer). */
 .mobile-menu-links a.is-current .label { color: var(--terracotta-300); }
-.mobile-menu-links a.is-current .idx { color: rgba(193, 98, 45, 0.55); }
 
 /* Pied de page compact : coordonnées + réseaux sociaux sur une seule
    ligne dès 560px. Les icônes Instagram/LinkedIn (mêmes SVG et classe
