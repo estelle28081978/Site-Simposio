@@ -5821,6 +5821,123 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   aucune différence — le nouveau bloc se désactive bien via
   `body.home`). Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Effet de fond au scroll — retiré partout sauf 3 sections précises,
+  nouveau déclencheur "bas de section au milieu de l'écran" (2026-09-02)** :
+  la cliente a demandé de retirer l'effet de fond au scroll généralisé
+  ci-dessus, en ne le gardant QUE sur "Nos prestations / Quatre mondes,
+  une même Dolce Vita" (`.teaser`, accueil), la citation de la fondatrice
+  (`.founder`, À propos) et "Questions fréquentes" (`.contact-faq`,
+  Contact) — avec une consigne précise sur `.teaser` (l'effet doit aller du
+  bleu au blanc) et un nouveau déclencheur explicite pour les 3 sections
+  gardées : la couleur définitive doit apparaître au moment où le BAS de
+  la section arrive au MILIEU de l'écran (pas un simple passage de
+  frontière comme avant).
+  **Remplace ENTIÈREMENT** le mécanisme de "fond de page unique"
+  (`#pageBgLayer`, un calque fixe partagé, avec ses variantes `body.home`
+  pour l'accueil puis `body.page-X` pour les 4 autres pages — historique
+  complet des nombreuses itérations documenté juste au-dessus dans ce
+  fichier) — remplacé par `initScrollFade(el, fromRgb, toRgb)`
+  (`main.js`), une fonction minuscule appelée 3 fois, une par section
+  gardée, chacune totalement indépendante : plus de calque fixe partagé ni
+  de repères inter-sections, chaque section porte directement sa PROPRE
+  couleur de fond. `#pageBgLayer` et les classes `body.home`/`body.page-X`
+  sont entièrement retirés du HTML des 5 pages. Si l'une de ces classes ou
+  `#pageBgLayer` réapparaissent dans un diff, c'est cet ancien mécanisme, à
+  ne pas réintroduire sans qu'on le redemande — l'historique complet des
+  itérations reste documenté plus haut dans ce fichier pour référence, et
+  n'est plus d'actualité.
+  **Nouveau déclencheur, plus simple que l'ancien système de repères par
+  frontière** : `progress = (viewportHeight - rect.bottom) / (viewportHeight
+  / 2)`, clampé `[0,1]` — `progress=0` quand le bas de la section touche le
+  bas du viewport (elle commence tout juste à apparaître), `progress=1`
+  quand son bas atteint le milieu de l'écran (consigne explicite de la
+  cliente), et la couleur reste figée à la couleur d'arrivée au-delà (pas
+  de retour en arrière tant qu'on ne scrolle pas remonte). Revenir en
+  arrière au scroll refait aussi refondre vers la couleur de départ,
+  cohérent avec tous les autres effets scroll-liés bidirectionnels du
+  site. Recalcule `getBoundingClientRect()` à chaque frame (pas de cache),
+  même précaution que l'ancien mécanisme.
+  **Bug réel trouvé et corrigé, pas supposé** : sans filet de sécurité,
+  `.contact-faq` (suivie d'un footer plus court que le reste de la
+  distance de scroll qu'il faudrait pour que son propre bas atteigne
+  géométriquement le milieu de l'écran) restait bloquée à `progress≈0,87`
+  même au scroll maximal de la page — la couleur définitive (bleu
+  Méditerranéen le plus sombre) n'était alors jamais atteinte, repéré par
+  balayage de scroll complet (mesure de `progress` à chaque étape jusqu'au
+  scroll max réel), pas supposé. Corrigé en forçant `progress=1` dès que
+  `window.scrollY` atteint le scroll maximal réel de la page
+  (`document.documentElement.scrollHeight - window.innerHeight`) — même
+  principe que le `footerRampEnd` de l'ancien mécanisme, qui avait déjà dû
+  résoudre exactement ce même genre de problème pour la même raison
+  structurelle (une section proche de la fin de page, suivie d'un élément
+  plus court que la distance de scroll idéale).
+  **Couleurs** (aucune inventée, toutes reprises de la palette de marque
+  fixe) : `.teaser` va de `--navy` (28,59,74, "bleu", demande explicite) à
+  `--bg`/`--cream` (246,241,231, "blanc calcaire" — la palette du site n'a
+  pas de blanc pur, cette teinte est la plus proche et déjà la couleur
+  cible historique de cette section) ; `.founder` va de `--navy-900`
+  (16,31,39 — la teinte RÉELLEMENT visible juste au-dessus dans la page,
+  via `.talent-stage` qui couvre entièrement `.talents` malgré son
+  `--bg-dim` nominal jamais montré à l'écran, cf. commentaire déjà présent
+  dans le code) à `--bg` ; `.contact-faq` va de `--bg-dim` (236,227,209, la
+  teinte de `.contact-devis` juste au-dessus, redevenue statique, cf.
+  plus bas) à `--navy-900`.
+  **Sections revenues à un fond fixe (statique, plus aucun effet)** :
+  `.hero`/`.method-cta` (accueil, → `var(--navy)`/`var(--bg)`),
+  `.contact-devis` (Contact, → `var(--bg-dim)`) — ainsi que TOUTES les
+  sections des 4 autres pages qui avaient reçu l'effet généralisé
+  ci-dessus (`.page-header`, `.site-footer`, `.world`, `.mosaic-section`,
+  `.talents`, `.values-reel`, `.contact-band`) : aucune n'a plus le
+  moindre effet de fond au scroll désormais, seules les 3 sections
+  nommées explicitement par la cliente le gardent. Les classes
+  `.bg-adaptive-*` devenues inertes sur ces sections (`.method-cta`,
+  `.site-footer`, `.contact-devis-text`) sont retirées de leur HTML par
+  cohérence (plus aucune règle CSS ne les cible), pas seulement laissées
+  en dead code.
+  **`data-tone` posé directement sur la SECTION elle-même** (pas sur
+  `body` comme dans l'ancien mécanisme, devenu inutile puisque chaque
+  fondu est maintenant autonome et ne concerne jamais qu'une seule section
+  à la fois) : `.teaser[data-tone]`/`.founder[data-tone]`/
+  `.contact-faq[data-tone]` pilotent l'adaptation de leurs propres
+  éléments `.bg-adaptive-*` (mêmes classes que l'ancien mécanisme,
+  simplement rescopées).
+  **Deux bugs de contraste réels trouvés et corrigés pendant la
+  vérification par capture d'écran, aucun supposé** — l'ancien mécanisme
+  ne concernait que l'eyebrow/le titre de chaque section (seuls éléments
+  à risque sur l'accueil/Contact) ; le fondu bien plus large en amplitude
+  de `.founder` (bleu Méditerranéen le plus sombre → crème, un écart de
+  luminance bien plus marqué que les frontières de l'ancien mécanisme) a
+  révélé deux éléments supplémentaires jamais concernés jusqu'ici :
+  1. La citation/signature de la fondatrice (`.founder-quote-minimal`/
+     `.founder-signature-minimal`/`.founder-avatar-minimal`, toutes en
+     `--navy`, fixe) devenait quasi illisible en tout début de fondu
+     (texte navy sur fond encore bleu Méditerranéen très sombre, les deux
+     étant proches en luminance) — capturé à un point de scroll précis où
+     le texte est déjà visible à l'écran mais le fond encore entièrement
+     sombre (`{el:'.founder-quote-minimal', bg:'rgb(16,31,39)'}` mesuré).
+     Corrigé par des règles `.founder[data-tone="dark"] .founder-quote-
+     minimal/.founder-signature-minimal/.founder-avatar-minimal` basculant
+     vers `--cream`/`--fg-muted-inverse`, réutilisant les teintes déjà
+     établies ailleurs sur le site pour ce rôle sur fond sombre.
+  2. Les cartes FAQ (`.faq-item`, fond quasi transparent à 3% de blanc,
+     texte `--cream`/`--fg-muted-inverse`, nées pour le fond sombre de
+     repos) devenaient illisibles pendant la phase claire du fondu de
+     `.contact-faq` (texte clair sur fond redevenu clair) — même défaut
+     que le cas précédent, dans l'autre sens. Corrigé par
+     `.contact-faq[data-tone="light"] .faq-item`
+     (`border-color:var(--border); background:rgba(28,59,74,0.03)`, même
+     opacité que l'original mais teintée navy) et ses `summary`/`p`
+     rebasculés vers `--ink`/`--fg-muted`.
+  Vérifié par script Playwright : balayage complet du scroll sur les 3
+  sections gardées (couleur/`data-tone` échantillonnés à 20-21 points
+  chacune) confirmant `progress=0` en entrée, `progress=1` (couleur
+  figée) dès que le bas de la section atteint le milieu de l'écran, et
+  0 valeur invalide — y compris au scroll maximal réel pour
+  `.contact-faq` (correctif du bug ci-dessus revérifié) ; capture d'écran
+  à plusieurs points de chaque fondu (desktop et mobile) confirmant
+  visuellement un texte lisible tout du long, y compris pour les deux
+  bugs de contraste ci-dessus une fois corrigés. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 

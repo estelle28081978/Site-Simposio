@@ -243,24 +243,23 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    58rem this has no effect (a block can't exceed its own containing block),
    so it's a no-op on tablet/mobile. */
 .teaser .section-head { max-width: 58rem; }
-/* Filet de contraste pendant la traversée du bandeau chiffres clés
-   (2026-08-21) : contrairement aux autres frontières du calque de fond
-   animé (navy↔crème, très éloignées en luminance), la traversée
-   terracotta→crème passe par des tons intermédiaires où NI le texte crème
-   ni le texte encre foncée (les deux extrêmes du système `.bg-adaptive-*`,
-   pensé pour des écarts de luminance bien plus marqués) ne contrastent
+/* Filet de contraste pendant le fondu bleu Méditerranéen → blanc calcaire
+   de `.teaser` (`initScrollFade()`, `main.js` — cf. commentaire détaillé
+   plus bas dans ce fichier, recherche "Fondus de fond localisés") : dans
+   les tons intermédiaires du fondu, NI le texte crème ni le texte encre
+   foncée (les deux extrêmes du système `.bg-adaptive-*`) ne contrastent
    très bien — repéré par capture d'écran pendant la vérification, pas
    supposé. Un léger `text-shadow` (sombre pour l'état crème, clair pour
    l'état encre) donne un peu de marge dans les deux cas sans changer les
-   couleurs elles-mêmes ni toucher aux autres éléments `.bg-adaptive-*` du
-   site, qui n'ont pas ce problème (leurs propres frontières restent
-   suffisamment contrastées). */
-body.home[data-tone="dark"] .teaser .section-head .eyebrow,
-body.home[data-tone="dark"] .teaser .section-head h2 {
+   couleurs elles-mêmes. Rescopé de `body.home[data-tone]` à
+   `.teaser[data-tone]` (2026-09-02) : `data-tone` est désormais posé
+   directement sur la section par `initScrollFade()`, plus sur `body`. */
+.teaser[data-tone="dark"] .section-head .eyebrow,
+.teaser[data-tone="dark"] .section-head h2 {
   text-shadow: 0 2px 18px rgba(16, 31, 39, 0.45);
 }
-body.home[data-tone="light"] .teaser .section-head .eyebrow,
-body.home[data-tone="light"] .teaser .section-head h2 {
+.teaser[data-tone="light"] .section-head .eyebrow,
+.teaser[data-tone="light"] .section-head h2 {
   text-shadow: 0 2px 18px rgba(255, 250, 240, 0.55);
 }
 
@@ -672,7 +671,13 @@ body.home[data-tone="light"] .teaser .section-head h2 {
 /* ==========================================================================
    Homepage prestations teaser — text-forward, no photos (kept for inner page)
    ========================================================================== */
-.teaser { background: transparent; padding-block: var(--space-6); } /* voir #pageBgLayer */
+/* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :
+   fondu localisé bleu Méditerranéen → blanc calcaire au scroll — voir le
+   commentaire détaillé plus haut dans ce fichier (recherche
+   "Fondus de fond localisés"). `var(--bg)` reste un filet de sécurité
+   avant l'exécution du JS (état final, cohérent avec la couleur de repos
+   de cette section avant l'introduction de tout effet de scroll). */
+.teaser { background: var(--bg); padding-block: var(--space-6); }
 .teaser-grid { display: grid; gap: 1px; background: var(--border); margin-top: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 @media (min-width: 780px) { .teaser-grid { grid-template-columns: repeat(2, 1fr); } }
 /* Fond photo (2026-08-18) : chaque carte formule affiche désormais la même
@@ -762,156 +767,47 @@ body.home[data-tone="light"] .teaser .section-head h2 {
 .link-sweep:hover::after { left: 130%; }
 
 /* ==========================================================================
-   Homepage — fond de page unique, piloté en JS au scroll (2026-08-21)
+   Fondus de fond localisés au scroll (2026-09-02)
    ========================================================================== */
-/* Remplace le mécanisme précédent (bandeaux `.scroll-transition` en CSS
-   pur, retiré à la demande de la cliente le même jour — voir CLAUDE.md).
-   Cette fois la demande est explicite et détaillée (mécanique décrite
-   noeud par noeud : déclenchement au franchissement d'une section,
-   interpolation dynamique liée au scroll, adaptation du texte en contact,
-   requestAnimationFrame) et la cliente a choisi elle-même, en connaissance
-   du compromis (`AskUserQuestion`), l'option "fond unique qui teinte toute
-   la page" plutôt que "garder les sections colorées, ajouter une bande à
-   chaque jonction" — donc, contrairement à la version précédente, les
-   sections elles-mêmes deviennent transparentes et c'est UN SEUL calque
-   fixe (`#pageBgLayer`, `assets/js/main.js`) qui porte la couleur de fond
-   réelle, recalculée chaque frame de scroll (rAF-throttlé, cf.
-   `updatePageBg()`).
-   `.hero`/`.stats-band`/`.teaser`/`.method-cta` sont des classes déjà
-   exclusives à l'accueil (vérifié — aucune des 4 autres pages ne les
-   utilise), donc leur passage à `background: transparent` ci-dessous est
-   sans risque pour le reste du site. `.site-footer`, elle, est PARTAGÉE
-   par les 6 pages (balisage dupliqué) — sa règle de transparence est donc
-   scopée explicitement à `body.home` un peu plus bas.
-   **Généralisé aux 4 autres pages (2026-09-02)**, demande explicite de la
-   cliente ("rajoute l'effet de fond au scroll de la page d'accueil sur les
-   autres pages") — `#pageBgLayer` (le `<div>`, identique) et le mécanisme
-   JS (bloc séparé et autonome, cf. `main.js` — pas un refactor du bloc
-   ci-dessus, pour ne prendre aucun risque sur l'accueil) existent
-   désormais aussi sur Prestations/Projets/À propos/Contact, chacune avec
-   son propre `body.page-X` (`page-prestations`/`page-projets`/
-   `page-engagements`/`page-contact`) pour scoper la transparence des
-   classes qu'elle PARTAGE avec d'autres pages (`.page-header`,
-   `.site-footer`) sans jamais toucher `body.home` ni les 5 autres pages —
-   les classes exclusives à une seule page (`.mosaic-section`, `.talents`,
-   `.founder`, `.contact-devis`, `.contact-faq`) sont, elles, rendues
-   transparentes directement (vérifié par grep qu'aucune autre page ne les
-   réutilise). Sections gardées OPAQUES sur ces 4 pages, pour la même
-   raison que `.stats-band`/`#sensesJourney` ci-dessus (photo plein cadre
-   ou mécanisme pinned déjà calé) : `.world` (Prestations, 4 panneaux photo
-   plein cadre), `.contact-band` (photo "dolce vita"), `.values-reel` (À
-   propos, épinglé façon `#sensesJourney`) — leur propre `top` sert
-   seulement de repère de couleur au calque, cf. `main.js`.
-   `#sensesJourney` (le parcours des 5 sens) N'EST PAS rendu transparent :
-   c'est un mécanisme pinned/sticky autonome, calibré au pixel près sur de
-   très nombreuses itérations (glow du tracé SVG, contraste des cartes —
-   voir l'historique détaillé plus haut dans CLAUDE.md), bien plus fragile
-   que les sections à fond plat ci-dessus. Le retoucher pour le rendre
-   transparent risquerait de casser ce système sans rien apporter de
-   visible : sa propre `.senses-journey-sticky` étant déjà 100% opaque une
-   fois épinglée, `#pageBgLayer` ne serait de toute façon jamais visible
-   à travers elle. `updatePageBg()` continue seulement de faire viser au
-   calque global la teinte d'entrée/sortie de cette section (mêmes tons
-   que son propre dégradé), pour que la couleur soit déjà correcte au
-   moment précis où le tracé épinglé cède la place à la section suivante
-   — sans quoi un bord net et incohérent serait visible pendant une
-   fraction de seconde à cette transition précise. */
-#pageBgLayer {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: var(--navy);
-  pointer-events: none;
-}
-
-/* Éléments qui reposent directement sur le fond plat d'une section (pas
-   sur leur propre photo/scrim/carte, qui gèrent déjà leur contraste
-   indépendamment) et doivent donc suivre la teinte réelle de
-   #pageBgLayer pour rester lisibles pendant une transition. Un seul
-   indicateur global (`body.home[data-tone]`, posé par `updatePageBg()`
-   sur la luminance réelle du calque) suffit : à un instant donné, une
-   seule transition de section est jamais visible à l'écran, donc les
-   éléments concernés par les AUTRES transitions sont de toute façon hors
-   champ. `[data-tone="dark"]` bascule les éléments nés pour un fond
-   clair (Prestations, Notre méthodologie) vers leurs teintes claires déjà
-   utilisées ailleurs sur le site pour ce rôle (mêmes variables que
-   `.eyebrow.on-dark`/`.lede.on-dark`, pas de nouvelle couleur inventée) ;
-   `[data-tone="light"]` fait l'inverse pour le footer (né pour un fond
-   sombre, seule section de ce groupe dans ce cas). */
-/* Sélecteurs étendus à `body.page-contact`/`body.page-engagements`
-   (2026-09-02) : la colonne de gauche de `.contact-devis`
-   (`.contact-devis-text`) est, comme `.teaser`/`.method-cta` sur l'accueil,
-   née pour un fond clair juste après une section sombre (`.contact-band`,
-   terracotta) — mêmes classes, mêmes couleurs cibles, aucune valeur
-   nouvelle. Même chose pour l'eyebrow "La fondatrice" (`.founder`), née
-   pour un fond clair juste après `.talents` (dark, cf. commentaire sur ce
-   waypoint dans `main.js` — sa couleur RÉELLEMENT visible, via
-   `.talent-stage`, est sombre malgré le `--bg-dim` nominal de la section).
-   Étendre la LISTE de sélecteurs (plutôt que généraliser `body.home` en
-   `[data-tone]` seul) pour ne prendre aucun risque sur l'accueil : si une
-   future page utilise ces classes sans avoir été pensée pour, elle
-   n'héritera de rien tant qu'elle n'est pas ajoutée ici explicitement. */
-body.home[data-tone="dark"] .bg-adaptive-eyebrow,
-body.page-contact[data-tone="dark"] .bg-adaptive-eyebrow,
-body.page-engagements[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
-body.home[data-tone="dark"] .bg-adaptive-heading,
-body.page-contact[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
-body.home[data-tone="dark"] .bg-adaptive-lede,
-body.page-contact[data-tone="dark"] .bg-adaptive-lede { color: var(--fg-muted-inverse); }
-body.home[data-tone="dark"] .bg-adaptive-outline-btn {
-  color: var(--cream);
-  border-color: rgba(246, 241, 231, 0.4);
-}
-body.home[data-tone="dark"] .bg-adaptive-outline-btn:hover {
-  background: var(--cream);
-  color: var(--navy);
-  border-color: var(--cream);
-}
-/* Cas inverse, propre à `.contact-faq` (Contact) : son eyebrow/titre sont
-   nés pour un fond SOMBRE (`.eyebrow.on-dark`, texte `--fg-inverse` hérité
-   de la section) juste après une section claire (`.contact-devis`,
-   crème-dim) — l'inverse exact du cas ci-dessus. N'existe nulle part sur
-   l'accueil (son seul équivalent "né sombre" est le footer, qui a déjà
-   son propre `.bg-adaptive-footer` dédié plus bas) : règles neuves, scopées
-   uniquement à `body.page-contact` pour ne toucher aucune autre page. */
-body.page-contact[data-tone="light"] .bg-adaptive-eyebrow { color: var(--accent); }
-body.page-contact[data-tone="light"] .bg-adaptive-heading { color: var(--navy); }
-body.home .site-footer { background: transparent; }
-body.home[data-tone="light"] .bg-adaptive-footer { color: var(--fg-muted); }
-body.home[data-tone="light"] .bg-adaptive-footer .footer-brand p { color: var(--fg-muted); }
-body.home[data-tone="light"] .bg-adaptive-footer .footer-col h4 { color: var(--navy); }
-body.home[data-tone="light"] .bg-adaptive-footer .footer-bottom { color: rgba(18, 35, 43, 0.55); }
-body.home[data-tone="light"] .bg-adaptive-footer .photo-credits { color: rgba(18, 35, 43, 0.45); }
-
-/* Transparence pour les 4 autres pages (2026-09-02, cf. commentaire plus
-   haut) : `.page-header`/`.site-footer` sont partagées par plusieurs
-   pages, scopées ici par `body.page-X` pour ne jamais affecter `body.home`
-   ni les pages qui n'ont pas ce mécanisme. `.founder`/`.contact-devis`/
-   `.contact-faq` (exclusives à une seule page chacune, vérifié par grep)
-   sont modifiées directement à leur déclaration d'origine plus bas dans ce
-   fichier. `.mosaic-section` et `.talents` restent volontairement OPAQUES
-   (comme `.world`/`.contact-band`/`.values-reel`, cf. commentaire plus
-   haut) : leur contenu (grille de tuiles sans espace, `.talent-stage`
-   plein cadre) couvre déjà 100% de leur surface, donc les rendre
-   transparentes n'aurait aucun effet visible tout en risquant de
-   laisser un vide si ce contenu change un jour — seul leur `top` sert de
-   repère de couleur au calque, cf. `main.js`. */
-body.page-prestations .page-header,
-body.page-projets .page-header,
-body.page-engagements .page-header,
-body.page-contact .page-header,
-body.page-prestations .site-footer,
-body.page-projets .site-footer,
-body.page-engagements .site-footer,
-body.page-contact .site-footer {
-  background: transparent;
-}
-/* `.mosaic-section`/`.talents`/`.founder`/`.contact-devis`/`.contact-faq`
-   sont modifiées directement à leur déclaration d'origine plus bas dans ce
-   fichier (pas ici) — une règle ajoutée à cet endroit serait de toute
-   façon écrasée par leur propre règle, plus bas dans l'ordre du fichier,
-   à spécificité égale. */
-body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(18, 35, 43, 0.65); }
+/* Historique : un mécanisme de "fond de page unique" (`#pageBgLayer`, un
+   calque fixe partagé par toute une page voire plusieurs) a existé ici du
+   2026-08-21 au 2026-09-02 — plusieurs itérations documentées en détail
+   dans CLAUDE.md. La cliente a ensuite demandé de retirer l'effet PARTOUT
+   sauf sur 3 sections précises ("Nos prestations / Quatre mondes, une même
+   Dolce Vita" sur l'accueil, la citation de la fondatrice sur À propos,
+   "Questions fréquentes" sur Contact), avec un nouveau déclencheur
+   (couleur définitive atteinte quand le bas de la section arrive au milieu
+   de l'écran, pas à un simple passage de frontière) — remplacé par trois
+   petits fondus indépendants (`initScrollFade()`, `main.js`), chaque
+   section portant directement sa propre couleur de fond au lieu d'un
+   calque fixe partagé. `#pageBgLayer` et les classes `body.home`/
+   `body.page-X` qui scopaient l'ancien mécanisme sont entièrement retirés
+   du HTML des 5 pages. Si `#pageBgLayer`, `body.home` ou `body.page-X`
+   réapparaissent dans un diff, c'est cet ancien mécanisme, à ne pas
+   réintroduire sans qu'on le redemande — l'historique complet reste dans
+   CLAUDE.md pour référence.
+   `[data-tone]` est désormais posé directement SUR LA SECTION ELLE-MÊME
+   par `initScrollFade()` (pas sur `body`, inutile maintenant que chaque
+   fondu est autonome et ne concerne qu'une seule section à la fois) —
+   `.teaser[data-tone]`/`.founder[data-tone]`/`.contact-faq[data-tone]`
+   pilotent l'adaptation de leurs propres éléments `.bg-adaptive-*`
+   (mêmes classes que l'ancien mécanisme, juste rescopées). Toutes les
+   autres sections qui utilisaient ces classes (`.method-cta`, `.site-footer`,
+   `.contact-devis-text`) ont vu ces classes retirées de leur HTML — plus
+   aucun effet ne s'y applique, elles gardent leur unique couleur fixe. */
+/* `.teaser` : né pour un fond clair (défaut `.eyebrow`/`h2` non modifiés),
+   a besoin d'une variante sombre pendant la phase bleue du fondu. */
+.teaser[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
+.teaser[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
+/* `.founder` : même cas que `.teaser` — l'eyebrow "La fondatrice" est né
+   pour un fond clair, a besoin d'une variante sombre pendant la phase
+   bleu Méditerranéen sombre du fondu. */
+.founder[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
+/* `.contact-faq` : cas inverse — son eyebrow/titre sont nés pour un fond
+   SOMBRE (`.eyebrow.on-dark`, texte `--fg-inverse` hérité de la section),
+   ont besoin d'une variante claire pendant la phase crème-dim du fondu. */
+.contact-faq[data-tone="light"] .bg-adaptive-eyebrow { color: var(--accent); }
+.contact-faq[data-tone="light"] .bg-adaptive-heading { color: var(--navy); }
 
 /* ==========================================================================
    Hero — full viewport, cinematic gradient
@@ -923,10 +819,11 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
   align-items: center;
   justify-content: flex-start;
   overflow: hidden;
-  /* transparent, pas var(--navy) : voir #pageBgLayer plus haut dans le
-     fichier — le fond de cette section est désormais porté par le calque
-     de fond global de l'accueil, piloté en JS. */
-  background: transparent;
+  /* background: var(--navy), fond fixe (2026-09-02) : l'effet de fond
+     piloté au scroll est retiré de cette section (demande explicite de la
+     cliente — gardé uniquement sur `.teaser`/`.founder`/`.contact-faq`,
+     cf. commentaire détaillé sur `initScrollFade()` dans main.js). */
+  background: var(--navy);
   color: var(--cream);
   text-align: left;
   padding-top: 7rem;
@@ -1653,10 +1550,13 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
    (`.founder-rule`, `2.75rem`, `1.5px solid var(--terracotta)`) en
    séparateur, puis l'identité (`.founder-id-minimal` : médaillon "EL" en
    simple contour + nom). */
-/* background: transparent, pas var(--bg) (2026-09-02) : voir #pageBgLayer,
-   plus haut dans le fichier — le fond de cette section est désormais porté
-   par le calque de fond global de la page (même teinte crème). */
-.founder { background: transparent; padding-block: var(--space-6); }
+/* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :
+   parmi les seules 3 sections du site où l'effet de fond au scroll est
+   conservé (demande explicite de la cliente) — fondu localisé bleu
+   Méditerranéen sombre → crème, cf. commentaire détaillé dans main.js
+   (recherche "Fondus de fond localisés"). `var(--bg)` reste un filet de
+   sécurité avant l'exécution du JS (état final). */
+.founder { background: var(--bg); padding-block: var(--space-6); }
 .founder-minimal { max-width: 42rem; margin-inline: auto; text-align: center; }
 .founder-quote-minimal {
   font-family: var(--font-display);
@@ -1709,6 +1609,17 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
   text-transform: none;
   color: var(--fg-muted);
 }
+/* Adaptation à la phase sombre du fondu de `.founder` (2026-09-02) : la
+   citation/signature sont nées pour le fond clair de repos (`--navy` sur
+   `--bg`) — repéré par capture d'écran (pas supposé) qu'en tout début de
+   fondu, quand le fond est encore bleu Méditerranéen sombre, ce texte
+   navy sur navy devenait quasi illisible (les deux étant proches en
+   luminance). Bascule vers les variantes claires déjà utilisées ailleurs
+   sur le site pour ce rôle sur fond sombre. */
+.founder[data-tone="dark"] .founder-quote-minimal,
+.founder[data-tone="dark"] .founder-signature-minimal { color: var(--cream); }
+.founder[data-tone="dark"] .founder-signature-minimal span { color: var(--fg-muted-inverse); }
+.founder[data-tone="dark"] .founder-avatar-minimal { color: var(--cream); border-color: rgba(246, 241, 231, 0.4); }
 @media (max-width: 700px) {
   .founder-id-minimal { flex-direction: column; gap: 0.5rem; }
   .founder-id-minimal .founder-signature-minimal { text-align: center; }
@@ -3162,9 +3073,11 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 }
 
 /* Devis — two columns: pitch text on the left, premium navy form card on the right */
-/* background: transparent, pas var(--bg-dim) (2026-09-02) : voir
-   #pageBgLayer, plus haut dans le fichier. */
-.contact-devis { position: relative; background: transparent; padding-block: var(--space-6); overflow: hidden; }
+/* background: var(--bg-dim), fond fixe (2026-09-02) : l'effet de fond au
+   scroll est retiré de cette section (gardé uniquement sur
+   `.teaser`/`.founder`/`.contact-faq`, cf. commentaire sur `.hero` plus
+   haut dans ce fichier et le commentaire détaillé dans main.js). */
+.contact-devis { position: relative; background: var(--bg-dim); padding-block: var(--space-6); overflow: hidden; }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-5); }
 @media (min-width: 960px) {
   .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: start; gap: var(--space-6); }
@@ -3269,9 +3182,13 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 }
 
 /* FAQ — native <details>/<summary> accordion, no JS required */
-/* background: transparent, pas var(--navy-900) (2026-09-02) : voir
-   #pageBgLayer, plus haut dans le fichier. */
-.contact-faq { background: transparent; color: var(--fg-inverse); padding-block: var(--space-6); }
+/* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :
+   parmi les seules 3 sections du site où l'effet de fond au scroll est
+   conservé (demande explicite de la cliente) — fondu localisé crème-dim →
+   bleu Méditerranéen le plus sombre, cf. commentaire détaillé dans
+   main.js (recherche "Fondus de fond localisés"). `var(--navy-900)` reste
+   un filet de sécurité avant l'exécution du JS (état final). */
+.contact-faq { background: var(--navy-900); color: var(--fg-inverse); padding-block: var(--space-6); }
 .faq-list { max-width: 44rem; margin-inline: auto; display: flex; flex-direction: column; gap: 0.9rem; }
 .faq-item {
   border: 1px solid var(--border-inverse);
@@ -3316,6 +3233,17 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 .faq-item[open] .faq-item-icon { background: var(--accent); border-color: var(--accent); transform: rotate(45deg); }
 .faq-item[open] .faq-item-icon::before, .faq-item[open] .faq-item-icon::after { background: var(--cream); }
 .faq-item p { margin-top: var(--space-2); font-size: 0.95rem; color: var(--fg-muted-inverse); line-height: 1.6; max-width: 38rem; }
+/* Adaptation au fondu de `.contact-faq` (2026-09-02) : les cartes FAQ sont
+   nées pour le fond sombre de repos (`--cream`/`--fg-muted-inverse`, un
+   fond quasi transparent à 3% de blanc) — pendant la phase claire du
+   fondu (`data-tone="light"`), repéré par capture d'écran (pas supposé)
+   que ce texte clair sur un fond redevenu clair perdait tout contraste.
+   Bascule vers l'équivalent clair déjà utilisé ailleurs sur le site pour
+   ce rôle (`--border`/`--ink`/`--fg-muted`), même opacité de fond que
+   l'original (3%) mais teintée navy plutôt que crème. */
+.contact-faq[data-tone="light"] .faq-item { border-color: var(--border); background: rgba(28, 59, 74, 0.03); }
+.contact-faq[data-tone="light"] .faq-item summary { color: var(--ink); }
+.contact-faq[data-tone="light"] .faq-item p { color: var(--fg-muted); }
 
 /* Service picker — visual selectable cards instead of a plain <select>,
    native radios under the hood so it stays keyboard/screen-reader friendly. */
@@ -3380,7 +3308,9 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    réapparaissent dans un diff, c'est cette ancienne version (ou une
    version encore antérieure), à ne pas réintroduire sans qu'on le
    redemande. */
-.method-cta { position: relative; padding-block: var(--space-6); background: transparent; overflow: hidden; } /* voir #pageBgLayer */
+/* background: var(--bg), fond fixe (2026-09-02) : effet de fond au scroll
+   retiré de cette section (cf. commentaire sur `.hero` plus haut). */
+.method-cta { position: relative; padding-block: var(--space-6); background: var(--bg); overflow: hidden; }
 .method-cta-grid { display: grid; gap: var(--space-6); position: relative; z-index: 1; }
 @media (min-width: 960px) { .method-cta-grid { grid-template-columns: 0.85fr 1.15fr; align-items: start; } }
 

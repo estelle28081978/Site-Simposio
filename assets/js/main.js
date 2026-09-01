@@ -27,352 +27,94 @@
   updateScrollbarWidth();
   window.addEventListener("resize", updateScrollbarWidth);
 
-  /* ---------- Homepage : fond de page unique piloté au scroll (2026-08-21) ---------- */
-  /* Remplace le mécanisme précédent (bandeaux `.scroll-transition` en CSS
-     pur, retiré le même jour à la demande de la cliente — voir CLAUDE.md) :
-     cette fois la demande décrit une vraie mécanique (déclenchement au
-     franchissement d'une section, interpolation liée au scroll,
-     adaptation du texte en contact, requestAnimationFrame) et la cliente a
-     choisi elle-même — après avoir vu le compromis expliqué via
-     AskUserQuestion — l'option "un seul calque de fond qui teinte toute la
-     page" plutôt qu'une bande à chaque jonction. `#pageBgLayer` (fixed,
-     derrière tout, cf. style.css) porte donc la vraie couleur de fond ;
-     les sections concernées (`.hero`/`.teaser`/`.method-cta`, plus
-     `.site-footer` scopée à `body.home`) ont leur propre `background`
-     passé à `transparent` pour le laisser transparaître. La section
-     "Notre promesse" (`.promise`), qui vivait entre stats-band et teaser,
-     a été supprimée le 2026-08-21 (cf. CLAUDE.md).
-     `.stats-band` (le bandeau chiffres clés) et `#sensesJourney` restent
-     tous deux opaques et hors de l'interpolation "visible" du calque, mais
-     pas de la même façon : `.stats-band` a repris un fond plein
-     (2026-08-21, la cliente le veut visuellement séparé de la section
-     suivante, pas fondu dedans par le calque animé — cf. style.css) tout
-     en restant BEAUCOUP plus court que le viewport (~320px contre 900px),
-     donc le calque continue d'y transitionner en continu pendant toute sa
-     traversée (voir le commentaire détaillé sur ce point précis dans
-     `updatePageBg()`) — la coupure nette VOULUE vient du fond plein + de
-     l'ombre portée en CSS, pas d'un saut de couleur dans cette
-     interpolation. `#sensesJourney`, lui, est un mécanisme pinned/sticky
-     bien plus long que le viewport (1240vh) — le calque y tient une
-     teinte plate le temps de sa traversée (entièrement invisible derrière
-     lui) puis rampe vers la couleur suivante juste avant qu'il ne cède la
-     place, cf. historique détaillé plus haut dans CLAUDE.md.
-     Recalcule les positions RÉELLES des sections à chaque frame (pas de
-     cache) : le même piège que sur les anciens bandeaux `.scroll-transition`
-     s'applique ici — des images encore `loading="lazy"` plus bas dans la
-     page peuvent décaler la mise en page pendant qu'on scrolle, une
-     position mise en cache au chargement se désynchroniserait. */
-  var pageBgLayer = document.getElementById("pageBgLayer");
-  var pageBgHero = document.getElementById("hero");
-  var pageBgStats = document.querySelector(".stats-band");
-  var pageBgTeaser = document.querySelector(".teaser");
-  var pageBgJourney = document.getElementById("sensesJourney");
-  var pageBgMethod = document.querySelector(".method-cta");
-  var pageBgFooter = document.querySelector(".site-footer");
+  /* ---------- Fondus de fond localisés au scroll (2026-09-02) ---------- */
+  /* Remplace ENTIÈREMENT le mécanisme précédent (un calque de fond unique
+     `#pageBgLayer`, partagé par toute une page voire plusieurs pages —
+     historique complet des nombreuses itérations dans CLAUDE.md) : la
+     cliente a demandé de retirer l'effet partout SAUF sur 3 sections
+     précises — "Nos prestations / Quatre mondes, une même Dolce Vita"
+     (`.teaser`, accueil), la citation de la fondatrice (`.founder`, À
+     propos) et "Questions fréquentes" (`.contact-faq`, Contact) — avec un
+     nouveau déclencheur explicite : la couleur définitive doit être
+     atteinte au moment où le BAS de la section atteint le MILIEU de
+     l'écran (pas un simple passage de frontière entre deux sections comme
+     avant). Plus de calque fixe partagé ni de repères inter-sections
+     nécessaires pour ça : chaque section porte directement sa PROPRE
+     couleur de fond, recalculée à chaque frame de scroll à partir de sa
+     seule position — trois petits fondus indépendants plutôt qu'un
+     système de fond de page unique. `#pageBgLayer` (le `<div>`, dans les 5
+     pages) et `body.home`/`body.page-X` (les classes de scoping du
+     mécanisme précédent) sont retirés du HTML, désormais inutiles.
+     `initScrollFade(el, fromRgb, toRgb)` : `progress` vaut 0 quand le bas
+     de `el` touche le bas du viewport (la section commence tout juste à
+     apparaître) et 1 quand son bas atteint le milieu du viewport (consigne
+     explicite de la cliente) — au-delà, la couleur reste figée à `toRgb`
+     (`Math.max(0, Math.min(1, …))` la borne des deux côtés, donc revenir
+     en arrière au scroll refait aussi refondre vers `fromRgb`, cohérent
+     avec tous les autres effets scroll-liés bidirectionnels du site).
+     Recalcule `getBoundingClientRect()` à chaque frame (pas de cache),
+     même précaution que l'ancien mécanisme. `data-tone` est posé
+     directement sur l'ÉLÉMENT LUI-MÊME (pas sur `body` comme avant,
+     inutile désormais vu que chaque fondu est autonome) et lu par les
+     règles `.teaser[data-tone]`/`.founder[data-tone]`/
+     `.contact-faq[data-tone]` dans `style.css` pour l'adaptation du texte
+     (mêmes classes `.bg-adaptive-*` que le mécanisme précédent, juste
+     rescopées à la section plutôt qu'à `body`). */
+  function initScrollFade(el, fromRgb, toRgb) {
+    if (!el) return;
 
-  if (
-    pageBgLayer &&
-    pageBgHero &&
-    pageBgStats &&
-    pageBgTeaser &&
-    pageBgJourney &&
-    pageBgMethod &&
-    pageBgFooter
-  ) {
-    /* Même palette exacte que les fonds d'origine de chaque section
-       (--navy, --terracotta, --bg-dim, --rosso-ombria/#2b1010, --bg,
-       --navy-900) — aucune couleur inventée, aucun écart avec la charte
-       graphique fixe du site. */
-    var PAGE_BG_HERO = [28, 59, 74];
-    var PAGE_BG_STATS = [193, 98, 45];
-    var PAGE_BG_TEASER = [236, 227, 209];
-    var PAGE_BG_JOURNEY = [43, 16, 16];
-    var PAGE_BG_METHOD = [246, 241, 231];
-    var PAGE_BG_FOOTER = [16, 31, 39];
-    /* Distance de scroll (px) sur laquelle chaque transition de couleur se
-       déploie, ancrée sur la frontière réelle entre deux sections (se
-       termine exactement quand le bas de la section précédente quitte le
-       haut du viewport). Plafonnée dynamiquement à la moitié de la plus
-       courte des deux sections concernées, pour ne jamais chevaucher deux
-       frontières voisines sur une section inhabituellement courte.
-       Réduite de 560 à 220 (2026-08-21) : la cliente a trouvé la 1ʳᵉ valeur
-       trop lente à s'installer — chaque rampe se déploie maintenant sur une
-       distance de scroll bien plus courte, la nouvelle couleur "apparaît"
-       nettement plus vite en entrant dans une section. */
-    var PAGE_BG_WINDOW = 220;
-
-    function pageBgLerp(a, b, t) {
-      return a + (b - a) * t;
-    }
-
-    function pageBgSample(keyframes, y) {
-      if (y <= keyframes[0].y) return keyframes[0].rgb;
-      for (var i = 0; i < keyframes.length - 1; i++) {
-        var a = keyframes[i];
-        var b = keyframes[i + 1];
-        if (y >= a.y && y <= b.y) {
-          var t = b.y > a.y ? (y - a.y) / (b.y - a.y) : 1;
-          return [
-            pageBgLerp(a.rgb[0], b.rgb[0], t),
-            pageBgLerp(a.rgb[1], b.rgb[1], t),
-            pageBgLerp(a.rgb[2], b.rgb[2], t)
-          ];
-        }
-      }
-      return keyframes[keyframes.length - 1].rgb;
-    }
-
-    function pageBgWindow(gap) {
-      return Math.min(PAGE_BG_WINDOW, Math.max(60, gap / 2));
-    }
-
-    function updatePageBg() {
-      var scrollY = window.scrollY;
-      var statsRect = pageBgStats.getBoundingClientRect();
-      var statsTop = statsRect.top + scrollY;
-      var statsBottom = statsTop + statsRect.height;
-      var teaserTop = pageBgTeaser.getBoundingClientRect().top + scrollY;
-      var journeyRect = pageBgJourney.getBoundingClientRect();
-      var journeyTop = journeyRect.top + scrollY;
-      var journeyBottom = journeyTop + journeyRect.height;
-      var footerTop = pageBgFooter.getBoundingClientRect().top + scrollY;
-      /* Le footer est la dernière section de la page et plus courte que
-         le viewport (~390px pour un viewport de 900px) — on ne peut
-         jamais scroller assez loin pour que SON PROPRE bord haut atteigne
-         le haut du viewport (`document.scrollHeight - innerHeight`, la
-         position de scroll maximale possible, s'arrête avant). Sans ce
-         plafond, la rampe finale visait un point de scroll inatteignable
-         et restait bloquée en cours de route, quelle que soit la distance
-         scrollée (bug réel rencontré : le fond restait bloqué en crème
-         jusqu'au bas de la page au lieu d'atteindre le bleu marine du
-         footer — repéré en comparant le point de scroll maximal réel à
-         `footerTop`, pas supposé). Plafonner la cible au scroll maximal
-         réel fait terminer la rampe exactement quand la page ne peut plus
-         défiler, quelle que soit la hauteur du footer. */
+    function update() {
+      var rect = el.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var progress = (vh - rect.bottom) / (vh / 2);
+      /* Filet de sécurité pour une section proche du bas de la page (ex.
+         `.contact-faq`, suivie d'un footer plus court que le reste de la
+         distance de scroll qu'il faudrait pour que son propre bas
+         atteigne géométriquement le milieu de l'écran) : sans ce filet,
+         `progress` resterait bloqué sous 1 même une fois arrivé tout en
+         bas de la page (bug réel rencontré : mesuré ~0.87 au scroll
+         maximal sur Contact, jamais 1) — la couleur définitive ne serait
+         alors jamais atteinte. Dès que la page ne peut plus défiler
+         (`scrollY` à son maximum), on force `progress` à 1. */
       var maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
-      var footerRampEnd = Math.min(footerTop, maxScrollY);
-
-      var wStats = pageBgWindow(statsTop - 0);
-      var wJourney = pageBgWindow(journeyTop - teaserTop);
-      var wJourneyExit = pageBgWindow(journeyBottom - journeyTop);
-      var wFooter = pageBgWindow(footerRampEnd - journeyBottom);
-
-      var keyframes = [
-        { y: statsTop - wStats, rgb: PAGE_BG_HERO },
-        { y: statsTop, rgb: PAGE_BG_STATS },
-        /* PAS de palier plat ici façon #sensesJourney plus bas : ce
-           bandeau (~320px) est bien plus COURT que le viewport (~900px),
-           contrairement à #sensesJourney (1240vh, largement plus haut que
-           l'écran) — la moitié basse du bandeau ET le haut de `.teaser`
-           peuvent donc être visibles SIMULTANÉMENT bien avant que `scrollY`
-           n'atteigne `statsBottom`. Un palier plat + une rampe resserrée
-           juste avant `statsBottom` (comme pour la sortie du parcours des
-           5 sens) faisait rester le calque figé en terracotta bien après
-           que le titre "Quatre mondes..." soit déjà visible à l'écran, puis
-           basculer d'un coup en crème une fois `statsBottom` atteint — un
-           vrai bug visuel trouvé par capture d'écran (pas supposé), pas
-           juste une lenteur. Corrigé en étalant la transition en continu
-           sur TOUTE la traversée du bandeau (`statsTop` → `statsBottom`,
-           sans palier ni fenêtre resserrée) : la couleur progresse
-           graduellement pendant que le bandeau défile, au lieu de rester
-           bloquée puis sauter d'un coup. Le bandeau lui-même reste
-           parfaitement lisible quoi qu'il arrive (fond plein + ombre
-           portée en CSS, indépendants de ce calque) — seule la zone
-           transparente de `.teaser` juste en dessous en bénéficie. */
-        { y: statsBottom, rgb: PAGE_BG_TEASER },
-        { y: journeyTop - wJourney, rgb: PAGE_BG_TEASER },
-        { y: journeyTop, rgb: PAGE_BG_JOURNEY },
-        /* Tient la teinte plate PAGE_BG_JOURNEY sur toute la traversée du
-           parcours des 5 sens (jusqu'à 1240vh, largement invisible derrière
-           sa propre section pinned/opaque) — sans ce point intermédiaire,
-           `pageBgSample` interpolerait linéairement entre le point d'entrée
-           et le point de sortie sur toute cette distance, faisant dériver le
-           fond en continu pendant toute la traversée au lieu de rester
-           figé (bug réel rencontré et corrigé en vérifiant les couleurs
-           échantillonnées sur un balayage complet du scroll, pas supposé). */
-        { y: journeyBottom - wJourneyExit, rgb: PAGE_BG_JOURNEY },
-        { y: journeyBottom, rgb: PAGE_BG_METHOD },
-        { y: footerRampEnd - wFooter, rgb: PAGE_BG_METHOD },
-        { y: footerRampEnd, rgb: PAGE_BG_FOOTER }
-      ];
-
-      var rgb = pageBgSample(keyframes, scrollY);
-      var r = Math.round(rgb[0]);
-      var g = Math.round(rgb[1]);
-      var b = Math.round(rgb[2]);
-      pageBgLayer.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
-
-      /* Bascule d'un seul indicateur global (une seule transition de
-         section n'est jamais visible qu'à la fois, donc un seul indicateur
-         suffit à piloter tous les éléments `.bg-adaptive-*`, cf. style.css)
-         — hard-switch sur la luminance réelle plutôt qu'un fondu de couleur
-         continu sur le texte : deux couleurs de texte parties d'extrêmes
-         opposés et interpolées en parallèle du fond se croisent forcément
-         au milieu (bug déjà rencontré et corrigé sur une itération
-         précédente de cet effet, cf. CLAUDE.md) — un seuil net évite ce
-         passage par un gris flou à faible contraste. */
+      if (window.scrollY >= maxScrollY - 1) progress = 1;
+      progress = Math.max(0, Math.min(1, progress));
+      var r = Math.round(fromRgb[0] + (toRgb[0] - fromRgb[0]) * progress);
+      var g = Math.round(fromRgb[1] + (toRgb[1] - fromRgb[1]) * progress);
+      var b = Math.round(fromRgb[2] + (toRgb[2] - fromRgb[2]) * progress);
+      el.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
       var luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      document.body.dataset.tone = luminance < 0.6 ? "dark" : "light";
+      el.dataset.tone = luminance < 0.6 ? "dark" : "light";
     }
 
-    var pageBgTicking = false;
-    function requestPageBgUpdate() {
-      if (!pageBgTicking) {
+    var ticking = false;
+    function request() {
+      if (!ticking) {
         window.requestAnimationFrame(function () {
-          updatePageBg();
-          pageBgTicking = false;
+          update();
+          ticking = false;
         });
-        pageBgTicking = true;
+        ticking = true;
       }
     }
-    window.addEventListener("scroll", requestPageBgUpdate, { passive: true });
-    window.addEventListener("resize", requestPageBgUpdate);
-    document.fonts && document.fonts.ready && document.fonts.ready.then(requestPageBgUpdate);
-    updatePageBg();
+    window.addEventListener("scroll", request, { passive: true });
+    window.addEventListener("resize", request);
+    document.fonts && document.fonts.ready && document.fonts.ready.then(request);
+    update();
   }
 
-  /* ---------- Autres pages : même fond de page unique piloté au scroll
-     (2026-09-02) ---------- */
-  /* Généralisation demandée explicitement par la cliente ("rajoute l'effet
-     de fond au scroll de la page d'accueil sur les autres pages") du
-     mécanisme `#pageBgLayer` ci-dessus aux 4 autres pages (Prestations,
-     Projets, À propos, Contact). Bloc entièrement séparé et autonome (pas
-     un refactor du bloc `index.html` ci-dessus, ses fonctions
-     `pageBgLerp`/`pageBgSample`/`pageBgWindow` restent locales à ce bloc) —
-     pour ne prendre aucun risque sur le mécanisme de l'accueil, déjà calé
-     au pixel près sur plusieurs itérations (cf. CLAUDE.md) : dupliquer une
-     petite fonction pure plutôt que la partager coûte quelques lignes,
-     mais élimine tout risque qu'une future retouche ici casse
-     silencieusement l'accueil.
-     **Règle de construction des repères, plus simple que le bloc
-     ci-dessus** : pour chaque frontière entre deux sections, une courte
-     rampe (fenêtre `w`, plafonnée à la moitié de l'écart entre les deux
-     sections) va de la couleur de la section précédente à celle de la
-     section suivante, ancrée sur le bord réel (`top`, recalculé chaque
-     frame, jamais mis en cache) de la section suivante. Entre deux
-     frontières consécutives, les deux repères qui encadrent l'intérieur
-     d'une section partagent TOUJOURS la même couleur (le repère de sortie
-     d'une frontière = couleur de la section courante ; le repère d'entrée
-     de la frontière suivante = couleur de cette même section, en tant que
-     "précédente") — l'interpolation y est donc automatiquement plate, sans
-     dérive, que la section soit courte (ex. une bande crème entre deux
-     sections sombres) ou très longue/épinglée (ex. `.values-reel` sur À
-     propos, même mécanisme que `#sensesJourney`) : aucun cas particulier
-     ("hold" explicite comme pour `#sensesJourney` ci-dessus) n'est
-     nécessaire ici, cette règle le couvre déjà par construction. Les
-     sections qui gardent leur propre fond opaque (photos plein cadre :
-     `.world`, `.contact-band` ; mécanismes épinglés : `.values-reel`) ne
-     sont pas listées individuellement — seul leur point d'ENTRÉE (leur
-     propre `top`) sert de repère de couleur, le calque restant de toute
-     façon invisible tout le temps qu'elles couvrent l'écran. */
-  (function () {
-    var otherPageLayer = document.getElementById("pageBgLayer");
-    if (!otherPageLayer || document.body.classList.contains("home")) return;
-
-    var otherPageConfig = null;
-    if (document.body.classList.contains("page-prestations")) {
-      otherPageConfig = [
-        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
-        { el: document.querySelector(".world"), rgb: [16, 31, 39] } // --navy-900 (photos plein cadre, cf. commentaire ci-dessus)
-      ];
-    } else if (document.body.classList.contains("page-projets")) {
-      otherPageConfig = [
-        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
-        { el: document.querySelector(".mosaic-section"), rgb: [16, 31, 39] } // --navy-900
-      ];
-    } else if (document.body.classList.contains("page-engagements")) {
-      otherPageConfig = [
-        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
-        /* .talents a un fond crème-dim en CSS, mais celui-ci n'est en
-           réalité JAMAIS visible : `.talent-stage` (le bloc photo+texte de
-           l'équipe) est plein cadre et opaque (fond --navy-900), donc
-           recouvre 100% de la section — c'est cette couleur RÉELLEMENT
-           visible qui sert de repère ici, pas le --bg-dim nominal de
-           `.talents` (jamais montré à l'écran). */
-        { el: document.querySelector(".talents"), rgb: [16, 31, 39] }, // --navy-900 (couverte par .talent-stage, opaque)
-        { el: document.querySelector(".founder"), rgb: [246, 241, 231] }, // --bg
-        { el: document.querySelector(".values-reel"), rgb: [16, 31, 39] } // --navy-900 (épinglé, cf. commentaire ci-dessus)
-      ];
-    } else if (document.body.classList.contains("page-contact")) {
-      otherPageConfig = [
-        { el: document.querySelector(".page-header"), rgb: [246, 241, 231] }, // --bg
-        { el: document.querySelector(".contact-band"), rgb: [193, 98, 45] }, // --terracotta (photo plein cadre, cf. commentaire ci-dessus)
-        { el: document.querySelector(".contact-devis"), rgb: [236, 227, 209] }, // --bg-dim
-        { el: document.querySelector(".contact-faq"), rgb: [16, 31, 39] } // --navy-900
-      ];
-    }
-
-    if (!otherPageConfig) return;
-    for (var ci = 0; ci < otherPageConfig.length; ci++) {
-      if (!otherPageConfig[ci].el) return; // markup incomplet : on ne prend aucun risque
-    }
-
-    var OTHER_PAGE_BG_WINDOW = 220;
-
-    function otherPageBgLerp(a, b, t) {
-      return a + (b - a) * t;
-    }
-
-    function otherPageBgSample(keyframes, y) {
-      if (y <= keyframes[0].y) return keyframes[0].rgb;
-      for (var i = 0; i < keyframes.length - 1; i++) {
-        var a = keyframes[i];
-        var b = keyframes[i + 1];
-        if (y >= a.y && y <= b.y) {
-          var t = b.y > a.y ? (y - a.y) / (b.y - a.y) : 1;
-          return [
-            otherPageBgLerp(a.rgb[0], b.rgb[0], t),
-            otherPageBgLerp(a.rgb[1], b.rgb[1], t),
-            otherPageBgLerp(a.rgb[2], b.rgb[2], t)
-          ];
-        }
-      }
-      return keyframes[keyframes.length - 1].rgb;
-    }
-
-    function otherPageBgWindow(gap) {
-      return Math.min(OTHER_PAGE_BG_WINDOW, Math.max(60, gap / 2));
-    }
-
-    function updateOtherPageBg() {
-      var scrollY = window.scrollY;
-      var tops = [];
-      for (var ti = 0; ti < otherPageConfig.length; ti++) {
-        tops.push(otherPageConfig[ti].el.getBoundingClientRect().top + scrollY);
-      }
-
-      var keyframes = [{ y: tops[0], rgb: otherPageConfig[0].rgb }];
-      for (var i = 1; i < otherPageConfig.length; i++) {
-        var w = otherPageBgWindow(tops[i] - tops[i - 1]);
-        keyframes.push({ y: tops[i] - w, rgb: otherPageConfig[i - 1].rgb });
-        keyframes.push({ y: tops[i], rgb: otherPageConfig[i].rgb });
-      }
-
-      var rgb = otherPageBgSample(keyframes, scrollY);
-      var r = Math.round(rgb[0]);
-      var g = Math.round(rgb[1]);
-      var b = Math.round(rgb[2]);
-      otherPageLayer.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
-
-      var luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      document.body.dataset.tone = luminance < 0.6 ? "dark" : "light";
-    }
-
-    var otherPageBgTicking = false;
-    function requestOtherPageBgUpdate() {
-      if (!otherPageBgTicking) {
-        window.requestAnimationFrame(function () {
-          updateOtherPageBg();
-          otherPageBgTicking = false;
-        });
-        otherPageBgTicking = true;
-      }
-    }
-    window.addEventListener("scroll", requestOtherPageBgUpdate, { passive: true });
-    window.addEventListener("resize", requestOtherPageBgUpdate);
-    document.fonts && document.fonts.ready && document.fonts.ready.then(requestOtherPageBgUpdate);
-    updateOtherPageBg();
-  })();
+  /* Couleurs reprises telles quelles de la palette de marque fixe (aucune
+     valeur inventée) : bleu Méditerranéen `--navy` (28,59,74) et blanc
+     calcaire `--bg`/`--cream` (246,241,231) pour "Quatre mondes..." (demande
+     explicite : "l'effet fasse la couleur bleue à blanc") ; bleu
+     Méditerranéen le plus sombre `--navy-900` (16,31,39, la teinte
+     RÉELLEMENT visible derrière la photo de l'équipe juste au-dessus dans
+     la page) vers `--bg` pour la citation de la fondatrice ; crème-dim
+     `--bg-dim` (236,227,209, la teinte de `.contact-devis` juste au-dessus)
+     vers `--navy-900` pour les questions fréquentes. */
+  initScrollFade(document.querySelector(".teaser"), [28, 59, 74], [246, 241, 231]);
+  initScrollFade(document.querySelector(".founder"), [16, 31, 39], [246, 241, 231]);
+  initScrollFade(document.querySelector(".contact-faq"), [236, 227, 209], [16, 31, 39]);
 
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");
