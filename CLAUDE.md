@@ -5938,6 +5938,28 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   visuellement un texte lisible tout du long, y compris pour les deux
   bugs de contraste ci-dessus une fois corrigés. Regression complète
   5 pages × 2 viewports : 0 débordement, 0 erreur console.
+  **Correction du déclencheur, le jour même** : la cliente s'est trompée
+  dans sa consigne initiale ("je me suis trompé, je veux que cela
+  apparaisse quand le HAUT de la section a atteint le milieu de l'écran")
+  — `update()` dans `initScrollFade()` passe de `progress = (vh -
+  rect.bottom) / (vh/2)` à `progress = (vh - rect.top) / (vh/2)`, seule
+  cette ligne change (le reste du mécanisme — filet de sécurité au scroll
+  maximal, `data-tone`, bornage `[0,1]` — est inchangé). Avec le haut de
+  section comme repère, la couleur définitive est atteinte plus tôt dans
+  le scroll qu'avec le bas (le haut passe le milieu de l'écran avant le
+  bas, forcément) — revérifié que le filet de sécurité au scroll maximal
+  (nécessaire avec `rect.bottom` pour `.contact-faq`, cf. bullet
+  ci-dessus) reste inoffensif ici : avec `rect.top`, cette section
+  atteint désormais `progress=1` bien avant la fin réelle du scroll de la
+  page, le filet ne se déclenche donc plus, mais reste en place par
+  précaution pour une future section courte en fin de page. Si
+  `rect.bottom` réapparaît dans cette fonction, c'est ce réglage
+  initial (une consigne erronée, corrigée le jour même), à ne pas
+  réintroduire sans qu'on le redemande. Vérifié par le même script de
+  balayage de scroll (progress 0→1 atteint quand `rect.top<=vhMid` sur
+  les 3 sections, plus aucune valeur bloquée avant la fin de page) et
+  regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 

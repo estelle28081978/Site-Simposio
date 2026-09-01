@@ -35,19 +35,24 @@
      précises — "Nos prestations / Quatre mondes, une même Dolce Vita"
      (`.teaser`, accueil), la citation de la fondatrice (`.founder`, À
      propos) et "Questions fréquentes" (`.contact-faq`, Contact) — avec un
-     nouveau déclencheur explicite : la couleur définitive doit être
-     atteinte au moment où le BAS de la section atteint le MILIEU de
-     l'écran (pas un simple passage de frontière entre deux sections comme
-     avant). Plus de calque fixe partagé ni de repères inter-sections
-     nécessaires pour ça : chaque section porte directement sa PROPRE
-     couleur de fond, recalculée à chaque frame de scroll à partir de sa
-     seule position — trois petits fondus indépendants plutôt qu'un
-     système de fond de page unique. `#pageBgLayer` (le `<div>`, dans les 5
-     pages) et `body.home`/`body.page-X` (les classes de scoping du
-     mécanisme précédent) sont retirés du HTML, désormais inutiles.
-     `initScrollFade(el, fromRgb, toRgb)` : `progress` vaut 0 quand le bas
+     déclencheur explicite : la couleur définitive doit être atteinte au
+     moment où le HAUT de la section atteint le MILIEU de l'écran (pas un
+     simple passage de frontière entre deux sections comme avant).
+     **Précision de la cliente (même jour)** : la 1ʳᵉ version de cette
+     consigne demandait le bas de la section, corrigée en haut de section
+     juste après — si `rect.bottom` réapparaît dans `update()` ci-dessous
+     à la place de `rect.top`, c'est ce 1er réglage, à ne pas réintroduire
+     sans qu'on le redemande. Plus de calque fixe partagé ni de repères
+     inter-sections nécessaires pour ça : chaque section porte directement
+     sa PROPRE couleur de fond, recalculée à chaque frame de scroll à
+     partir de sa seule position — trois petits fondus indépendants plutôt
+     qu'un système de fond de page unique. `#pageBgLayer` (le `<div>`,
+     dans les 5 pages) et `body.home`/`body.page-X` (les classes de
+     scoping du mécanisme précédent) sont retirés du HTML, désormais
+     inutiles.
+     `initScrollFade(el, fromRgb, toRgb)` : `progress` vaut 0 quand le haut
      de `el` touche le bas du viewport (la section commence tout juste à
-     apparaître) et 1 quand son bas atteint le milieu du viewport (consigne
+     apparaître) et 1 quand son haut atteint le milieu du viewport (consigne
      explicite de la cliente) — au-delà, la couleur reste figée à `toRgb`
      (`Math.max(0, Math.min(1, …))` la borne des deux côtés, donc revenir
      en arrière au scroll refait aussi refondre vers `fromRgb`, cohérent
@@ -66,16 +71,20 @@
     function update() {
       var rect = el.getBoundingClientRect();
       var vh = window.innerHeight;
-      var progress = (vh - rect.bottom) / (vh / 2);
+      var progress = (vh - rect.top) / (vh / 2);
       /* Filet de sécurité pour une section proche du bas de la page (ex.
          `.contact-faq`, suivie d'un footer plus court que le reste de la
-         distance de scroll qu'il faudrait pour que son propre bas
+         distance de scroll qu'il faudrait pour que son propre haut
          atteigne géométriquement le milieu de l'écran) : sans ce filet,
-         `progress` resterait bloqué sous 1 même une fois arrivé tout en
-         bas de la page (bug réel rencontré : mesuré ~0.87 au scroll
-         maximal sur Contact, jamais 1) — la couleur définitive ne serait
-         alors jamais atteinte. Dès que la page ne peut plus défiler
-         (`scrollY` à son maximum), on force `progress` à 1. */
+         `progress` pourrait rester bloqué sous 1 même une fois arrivé
+         tout en bas de la page — la couleur définitive ne serait alors
+         jamais atteinte (même défaut déjà rencontré et corrigé une 1ʳᵉ
+         fois avec le déclencheur précédent basé sur `rect.bottom`, cf.
+         historique juste au-dessus — conservé par précaution avec ce
+         nouveau déclencheur basé sur `rect.top`, moins exposé au problème
+         mais pas à l'abri sur une section très courte en fin de page).
+         Dès que la page ne peut plus défiler (`scrollY` à son maximum),
+         on force `progress` à 1. */
       var maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
       if (window.scrollY >= maxScrollY - 1) progress = 1;
       progress = Math.max(0, Math.min(1, progress));
