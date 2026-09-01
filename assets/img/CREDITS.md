@@ -20,7 +20,7 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
 | `evenement-cave-barolo.jpg` | Mosaïque Projets (retirée du hero Accueil le 2026-08-21, cf. « Important » plus bas) |
-| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets (retirée du hero Accueil le 2026-08-21, cf. « Important » plus bas ; utilisée jusqu'au 2026-08-19 sur Engagements — grille de flip-cards, "Concept clé en main" — remplacée par une toute nouvelle photo, voir « Important » plus bas) |
+| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets (retirée du hero Accueil le 2026-08-21, cf. « Important » plus bas) + **Engagements — grille de flip-cards, "Concept clé en main" (2026-09-02, revenue)** : cf. « Important » plus bas pour le détail du retour à de vraies photos d'événement sur cette grille |
 | `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) + Accueil (carte formule L'Aperitivo) |
 | `evenement-vespas-vintage.jpg` | Mosaïque Projets |
 | `evenement-fiat500-blanche.jpg` | Mosaïque Projets |
@@ -40,10 +40,10 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-illustration-dolce-vita.jpg` | Mosaïque Projets |
 | `evenement-illustration-cincin.jpg` | Mosaïque Projets |
 | `evenement-stand-raye-guirlande.jpg` | Mosaïque Projets |
-| `evenement-vespa-gelato-brindapino.jpg` | Mosaïque Projets (utilisée jusqu'au 2026-08-19 sur Engagements — grille de flip-cards, "Spécialiste Dolce Vita" — remplacée par une toute nouvelle photo, voir « Important » plus bas) |
+| `evenement-vespa-gelato-brindapino.jpg` | Mosaïque Projets + **Engagements — grille de flip-cards, "Spécialiste Dolce Vita" (2026-09-02, revenue)**, cf. « Important » plus bas |
 | `evenement-triporteur-gelato.jpg` | Mosaïque Projets |
 | `evenement-assiette-agrume-ceramique.jpg` | Mosaïque Projets |
-| `evenement-carte-degustation.jpg` | Mosaïque Projets (utilisée jusqu'au 2026-08-19 sur Engagements — grille de flip-cards, "Positionnement premium" — remplacée par une toute nouvelle photo, voir « Important » plus bas) |
+| `evenement-carte-degustation.jpg` | Mosaïque Projets + **Engagements — grille de flip-cards, "Positionnement premium" (2026-09-02, revenue)**, cf. « Important » plus bas |
 
 ## Photos Wikimedia Commons (banque libre)
 
@@ -63,15 +63,19 @@ hero d'`index.html` (voir « Important » plus bas). Son auteur (Tracey
 Hind) reste crédité dans le bloc `.photo-credits` d'`index.html` (à côté
 du crédit Andrew Parlette), l'usage sur cette page étant inchangé, seul
 l'emplacement précis change. Depuis le 2026-08-19, cinq nouvelles photos
-Wikimedia sont utilisées sur `engagements.html` (`alsace-maisons-colombages.jpg`,
+Wikimedia étaient utilisées sur `engagements.html` (`alsace-maisons-colombages.jpg`,
 `ravello-villa-cimbrone-jardin.jpg`, `ravello-terrasse-infini.jpg`,
 `vietri-ceramique-detail.jpg`, `amalfi-coteside-signature.jpg`) — voir
-« Important » plus bas pour le contexte de ce remplacement ; leurs 5
-auteurs (Didivo67, Greg Willis, Nessy, Anila amataj, Ra Boe) sont crédités
-dans le bloc `.photo-credits` de cette page, qui ne cite plus que ces
-5-là (les 3 anciens crédits Wikimedia de cette page — JIP, Hartmut Schmidt
-Heidelberg, Nicolas Torquet — ont été retirés, leurs 3 photos n'étant plus
-utilisées nulle part sur le site, cf. lignes correspondantes ci-dessous).
+« Important » plus bas pour le contexte de ce remplacement. **Depuis le
+2026-09-02**, `ravello-villa-cimbrone-jardin.jpg` et `ravello-terrasse-infini.jpg`
+ne sont plus utilisées (grille de flip-cards revenue à de vraies photos
+d'événement Simposio, cf. « Important » plus bas) — le bloc
+`.photo-credits` de cette page ne cite donc plus que 3 auteurs
+(Didivo67, Anila amataj, Ra Boe), les crédits Greg Willis et Nessy ayant
+été retirés en même temps (les 3 anciens crédits Wikimedia d'avant le
+2026-08-19 — JIP, Hartmut Schmidt Heidelberg, Nicolas Torquet — restent
+eux aussi retirés, leurs photos n'étant toujours pas utilisées, cf.
+lignes correspondantes ci-dessous).
 Les fichiers restants ci-dessous sont inutilisés ; s'ils sont un jour
 réutilisés, remettre leur lien de crédit dans les footers concernés.
 
@@ -80,8 +84,8 @@ réutilisés, remettre leur lien de crédit dans les footers concernés.
 | `terrace-dinner-assisi.jpg` | Prestations — La Tavola + Accueil (carte formule La Tavola) | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
 | `amalfi-coast-sunset.jpg` | Accueil — diaporama du hero (retirée de la section "Notre promesse" le 2026-08-21, cf. « Important » plus bas) | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 | `alsace-maisons-colombages.jpg` | Engagements — grille de flip-cards ("Ancrage alsacien") | [Donnenheim maison rue du villageA.jpg](https://commons.wikimedia.org/wiki/File:Donnenheim_maison_rue_du_villageA.jpg) | Didivo67 | CC BY-SA 4.0 |
-| `ravello-villa-cimbrone-jardin.jpg` | Engagements — grille de flip-cards ("Concept clé en main") | [Ravello - Villa Cimbrone (4786631550).jpg](https://commons.wikimedia.org/wiki/File:Ravello_-_Villa_Cimbrone_(4786631550).jpg) | Greg Willis | CC BY-SA 2.0 |
-| `ravello-terrasse-infini.jpg` | Engagements — grille de flip-cards ("Positionnement premium") | [Terrace Villa Cimbrone.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Villa_Cimbrone.jpg) | Nessy | CC BY-SA 4.0 |
+| `ravello-villa-cimbrone-jardin.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-09-02 sur Engagements, grille de flip-cards ("Concept clé en main"), remplacée par une vraie photo d'événement Simposio, voir « Important » plus bas | [Ravello - Villa Cimbrone (4786631550).jpg](https://commons.wikimedia.org/wiki/File:Ravello_-_Villa_Cimbrone_(4786631550).jpg) | Greg Willis | CC BY-SA 2.0 |
+| `ravello-terrasse-infini.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-09-02 sur Engagements, grille de flip-cards ("Positionnement premium"), remplacée par une vraie photo d'événement Simposio, voir « Important » plus bas | [Terrace Villa Cimbrone.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Villa_Cimbrone.jpg) | Nessy | CC BY-SA 4.0 |
 | `vietri-ceramique-detail.jpg` | Engagements — carrousel Valeurs ("Le détail qui change tout") | [Ceramiche Vietri Sul Mare Italia.jpg](https://commons.wikimedia.org/wiki/File:Ceramiche_Vietri_Sul_Mare_Italia.jpg) | Anila amataj | CC BY-SA 4.0 |
 | `amalfi-coteside-signature.jpg` | Engagements — carrousel Valeurs ("Chaque événement, une signature") | [Costiera amalfitana 2019 -Castiglione, Ravello- by-RaBoe 270.jpg](https://commons.wikimedia.org/wiki/File:Costiera_amalfitana_2019_-Castiglione,_Ravello-_by-RaBoe_270.jpg) | Ra Boe | CC BY-SA 3.0 de |
 | `spritz-terrasse.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("L'exigence comme point de départ"), remplacée par une toute nouvelle photo, voir « Important » plus bas | [Red Spritz.jpg](https://commons.wikimedia.org/wiki/File:Red_Spritz.jpg) | JIP | CC BY-SA 4.0 |
@@ -110,13 +114,15 @@ de fichier, pour ne pas les confondre avec les vraies photos de la cliente.
 |---|---|---|---|
 | `positano-ceramiche-decor.jpg` | Prestations — La Cartolina (fond) + Accueil (carte formule La Cartolina) | [Pexels photo 12986066](https://www.pexels.com/photo/12986066/) | Paco de Bydzia |
 | `vespa-fleuriste-rue.jpg` | Prestations — L'Esperienza (fond) + Accueil (carte formule L'Esperienza) | [Pexels photo 7539898](https://www.pexels.com/photo/7539898/) | ROMAN ODINTSOV |
-| `piazza-siena-terrasses.jpg` | Engagements — grille de flip-cards ("Spécialiste Dolce Vita") | [Pexels photo 36825577](https://www.pexels.com/photo/lively-piazza-del-campo-in-siena-italy-36825577/) | Claudia Solano |
+| `piazza-siena-terrasses.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-09-02 sur Engagements, grille de flip-cards ("Spécialiste Dolce Vita"), remplacée par une vraie photo d'événement Simposio, voir « Important » plus bas | [Pexels photo 36825577](https://www.pexels.com/photo/lively-piazza-del-campo-in-siena-italy-36825577/) | Claudia Solano |
 | `chef-dressage-pates.jpg` | Engagements — carrousel Valeurs ("L'exigence comme point de départ") | [Pexels photo 17216559](https://www.pexels.com/photo/a-chef-putting-pasta-on-a-plate-17216559/) | Luca Luperto |
 | `burano-ruelle-facades.jpg` | Engagements — carrousel Valeurs ("L'Italie comme art de vivre, pas comme décor") | [Pexels photo 31801216](https://www.pexels.com/photo/colorful-houses-in-burano-venice-street-view-31801216/) | Eileen Gao |
 | `diner-duo-toast-vin.jpg` | Engagements — carrousel Valeurs ("Un interlocuteur, jamais un standard") | [Pexels photo 5086625](https://www.pexels.com/photo/people-toasting-their-wine-glasses-5086625/) | Jep Gambardella |
 | `poignee-main-confiance.jpg` | Engagements — carrousel Valeurs ("La confiance avant la prestation") | [Pexels photo 9870223](https://www.pexels.com/photo/unrecognizable-hands-handshaking-over-table-9870223/) | Ron Lach |
-| `talent-placeholder-1.jpg` | Engagements — section Équipe (`.talent-stage`), photo temporaire tenant lieu de la vraie photo d'Estelle Lorusso, à remplacer. **Remplacée le 2026-08-20 (3ᵉ remplacement)** : la cliente a demandé "d'autres photos de membres qui sont moins zoomées et qui laissent plus de place" pour le titre superposé — l'ancienne photo (Zoe Galarza, Pexels 34381970, tête et épaules serrées) laissait peu de marge une fois recadrée dans la boîte très large/peu haute ; remplacée par un plan buste complet sur fond crème uni, bras croisés, avec beaucoup d'espace vide autour du sujet des deux côtés — le fond uni tolère un recadrage large sans jamais coller à quoi que ce soit derrière | [Pexels photo 6112353](https://www.pexels.com/photo/a-standing-woman-in-business-attire-6112353/) | Pisey Tuon |
-| `talent-placeholder-2.jpg` | Engagements — section Équipe (`.talent-stage`), photo temporaire tenant lieu de la 2ᵉ personne de l'équipe (nom à venir), à remplacer — remplacée le 2026-08-20 par une photo de femme (la cliente a précisé que les deux membres de l'équipe représentés sont des femmes), l'ancienne photo d'homme (Christoph Sixt, Pexels photo 29856511) n'est plus utilisée nulle part sur le site. **2ᵉ remplacement le même jour** : un premier essai (Pexels photo 29852895, Ifeyinka Adeyemo, tête seule très serrée) se recadrait en gros plan yeux/nez/bouche une fois affiché dans la boîte `.talent-stage-media`, désormais très large et peu haute (`min(88vh,54rem)`) — repéré par capture d'écran, pas supposé — remplacé par un buste (bras croisés, beaucoup plus d'espace au-dessus de la tête et sous les épaules, Pexels 4342352, Edmond Dantès), qui supportait bien mieux ce recadrage très paysage. **3ᵉ remplacement, même journée** : encore plus d'espace demandé — remplacé par un buste sur fond blanc uni avec une très large marge de tête (près de la moitié du cadre est un mur vide au-dessus des cheveux), même logique que le nouveau `talent-placeholder-1.jpg` (fond uni, bras croisés) pour une paire visuellement cohérente | [Pexels photo 8528852](https://www.pexels.com/photo/a-woman-in-white-blazer-smiling-with-her-arms-crossed-8528852/) | Karola G |
+| `talent-placeholder-1.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — photo temporaire d'Estelle Lorusso utilisée jusqu'au 2026-09-02 sur Engagements (`.talent-stage`), remplacée par `talent-placeholder-3.jpg`, voir « Important » plus bas | [Pexels photo 6112353](https://www.pexels.com/photo/a-standing-woman-in-business-attire-6112353/) | Pisey Tuon |
+| `talent-placeholder-2.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — photo temporaire de la 2ᵉ personne de l'équipe utilisée jusqu'au 2026-09-02 sur Engagements (`.talent-stage`), remplacée par `talent-placeholder-4.jpg`, voir « Important » plus bas | [Pexels photo 8528852](https://www.pexels.com/photo/a-woman-in-white-blazer-smiling-with-her-arms-crossed-8528852/) | Karola G |
+| `talent-placeholder-3.jpg` | Engagements — section Équipe (`.talent-stage`), photo temporaire tenant lieu de la vraie photo d'Estelle Lorusso, à remplacer. **Remplace `talent-placeholder-1.jpg` (2026-09-02)** : la cliente a demandé de chercher d'autres photos pour l'équipe (Pinterest si possible — s'est avéré peu adapté, le contenu Pinterest n'ayant pas de licence de réutilisation claire contrairement à Pexels/Wikimedia déjà utilisés sur ce site, repli sur Pexels comme proposé en alternative) — buste en tailleur bleu marine sur mur uni, bras croisés, avec une très grande marge au-dessus de la tête, cadrage recalibré empiriquement (`object-position`/`transform` sur `.talent-stage-photo[data-talent-target="0"]`, cf. `style.css`) | [Pexels photo 6702633](https://www.pexels.com/photo/beautiful-woman-with-her-arms-crossed-6702633/) | Maksim Goncharenok |
+| `talent-placeholder-4.jpg` | Engagements — section Équipe (`.talent-stage`), photo temporaire tenant lieu de la 2ᵉ personne de l'équipe (nom à venir), à remplacer. **Remplace `talent-placeholder-2.jpg` (2026-09-02)**, même contexte que `talent-placeholder-3.jpg` ci-dessus — buste en chemise, bras croisés, devant une fenêtre/véranda ; un 1er candidat (Pexels photo 34381970, Karola G — portrait plus serré) a été essayé mais rejeté après calcul/capture d'écran : sa composition plus resserrée laissait trop peu de marge verticale une fois recadrée dans la boîte `.talent-stage-media` (très large/peu haute sur grand écran), le haut du crâne se retrouvant coupé aux largeurs desktop les plus grandes — remplacé par cette photo au format paysage (3:2), bien mieux adaptée à ce type de boîte | [Pexels photo 7648239](https://www.pexels.com/photo/woman-office-party-event-7648239/) | RDNE Stock project |
 | `terrasse-lanternes-soir.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("Le détail qui change tout"), remplacée par une toute nouvelle photo, voir « Important » plus bas | [Pexels photo 18331431](https://www.pexels.com/photo/18331431/) | Chris F |
 | `spritz-duo-sicile.jpg` | Non utilisée actuellement (disponible dans `assets/img/`) — utilisée jusqu'au 2026-08-19 sur Engagements, carrousel Valeurs ("Un interlocuteur, jamais un standard"), remplacée par une toute nouvelle photo, voir « Important » plus bas | [Pexels photo 36786940](https://www.pexels.com/photo/36786940/) | Ilma Elsberga |
 
@@ -325,3 +331,49 @@ Aucun nouveau crédit requis : les 4 photos étaient déjà toutes utilisées
 sur `index.html` (3 déjà dans le hero, la 4ᵉ dans "Notre promesse" juste
 en dessous) — seul leur emplacement précis change, le crédit Tracey Hind
 d'`amalfi-coast-sunset.jpg` reste valide et inchangé dans le footer.
+
+**Grille de flip-cards Engagements — retour à de vraies photos
+d'événement Simposio (2026-09-02)** : demande explicite de la cliente
+("prend des photos vraiment évènementiel Dolce Vita"). Les photos
+introduites lors du renouvellement du 2026-08-19 pour 3 des 4 cartes
+(`ravello-villa-cimbrone-jardin.jpg`, `ravello-terrasse-infini.jpg`,
+`piazza-siena-terrasses.jpg` — des photos de lieux/tourisme Italie,
+Wikimedia/Pexels) sont remplacées par de vraies photos Simposio déjà
+utilisées ailleurs sur le site (mosaïque Projets) et qui, elles,
+montrent un véritable événement mis en scène (table dressée aux
+chandelles, carte de dégustation, vespa+gelato+parasol) plutôt qu'un
+simple décor touristique : `evenement-tablee-diner-bougies.jpg`
+("Concept clé en main"), `evenement-carte-degustation.jpg`
+("Positionnement premium"), `evenement-vespa-gelato-brindapino.jpg`
+("Spécialiste Dolce Vita") — ce sont d'ailleurs les 3 mêmes photos
+utilisées sur ces mêmes cartes avant le renouvellement du 2026-08-19,
+un retour plutôt qu'un nouveau choix. La 4ᵉ carte ("Ancrage alsacien",
+`alsace-maisons-colombages.jpg`) n'est pas concernée : elle reste le
+point de contraste explicite non-italien de cette grille (déjà
+documenté comme tel lors du renouvellement précédent), pas un
+événement Dolce Vita à proprement parler. Les 3 fichiers remplacés
+restent disponibles dans `assets/img/` (marqués "non utilisée
+actuellement" ci-dessus, convention habituelle de ce fichier) ; les
+crédits Wikimedia Greg Willis et Nessy sont retirés du bloc
+`.photo-credits` d'`engagements.html` (leurs 2 photos ne sont plus
+utilisées nulle part sur le site).
+
+**Photos d'équipe (`talent-stage`) renouvelées (2026-09-02)** : demande
+explicite de la cliente de chercher deux nouvelles photos pour les 2
+membres de l'équipe, en suggérant Pinterest en premier lieu. **Pinterest
+non utilisé pour la sélection finale** : la plateforme republie
+massivement des photos dont elle ne détient pas les droits, sans
+information de licence fiable pour un usage commercial — contrairement
+à Pexels (licence Pexels, déjà établie comme source sur ce projet) et
+Wikimedia Commons (CC BY/BY-SA avec attribution), aucune des deux garanties
+n'existe sur un pin Pinterest pris au hasard. Repli sur Pexels, la
+seconde option proposée par la cliente elle-même ("sinon sur nos banques
+d'image"). `talent-placeholder-1.jpg`/`-2.jpg` sont remplacées par
+`talent-placeholder-3.jpg`/`-4.jpg` (détail des deux nouvelles photos et
+du candidat intermédiaire écarté pour `-4.jpg` dans leurs lignes
+respectives ci-dessus) — toutes deux recalibrées empiriquement
+(`object-position`/`transform` sur `.talent-stage-photo`, `style.css`,
+balayage de plusieurs valeurs à 5 largeurs desktop + mobile, capture
+d'écran à chaque fois) plutôt que réutiliser les anciens réglages, taillés
+pour les anciennes photos. Toujours des photos temporaires en attente des
+vraies photos de l'équipe (cf. `CLAUDE.md`, section « Limites connues »).

@@ -6097,6 +6097,97 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   voisins, 0 débordement horizontal desktop et mobile, 0 erreur console) et
   regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Cartes Engagements — retour à de vraies photos d'événement ; photos
+  d'équipe renouvelées (2026-09-02)** (`engagements.html`,
+  `assets/css/style.css`) : demande explicite de la cliente ("pour les
+  cartes d'engagement prend des photos vraiment évènementiel Dolce
+  Vita et aussi prends deux autres photos pour l'équipe cherche sur
+  Pinterest, si tu peux sinon sur nos banques d'image").
+  **Cartes Engagements (flip-cards, 3 des 4)** : les photos issues du
+  renouvellement du 2026-08-19 — `ravello-villa-cimbrone-jardin.jpg`,
+  `ravello-terrasse-infini.jpg`, `piazza-siena-terrasses.jpg` (jardin/
+  terrasse/place, du tourisme italien plutôt qu'un événement) — sont
+  remplacées par de vraies photos Simposio déjà utilisées ailleurs sur le
+  site (mosaïque Projets), qui montrent cette fois un vrai événement mis
+  en scène plutôt qu'un simple décor : `evenement-tablee-diner-bougies.jpg`
+  ("Concept clé en main", tablée complète bougies/fleurs/verrerie),
+  `evenement-carte-degustation.jpg` ("Positionnement premium", carte à
+  déguster sur chevalet), `evenement-vespa-gelato-brindapino.jpg`
+  ("Spécialiste Dolce Vita", vespa+gelato+toast). Ce sont d'ailleurs les 3
+  mêmes photos utilisées sur ces mêmes cartes avant le renouvellement du
+  2026-08-19 — un retour plutôt qu'un nouveau choix, cohérent avec le sens
+  de la demande ("vraiment évènementiel"). La classe
+  `.engagement-card-front-img--pos-left` (recadrage spécifique au buste en
+  marbre de l'ancienne photo "Positionnement premium") est retirée du
+  `<img>` de cette carte, plus nécessaire avec la nouvelle photo (crop par
+  défaut déjà bien centré, vérifié par capture). **La 4ᵉ carte ("Ancrage
+  alsacien", `alsace-maisons-colombages.jpg`) n'est pas touchée** : elle
+  reste le point de contraste non-italien de cette grille (déjà documenté
+  comme volontaire lors du renouvellement précédent), pas un événement
+  Dolce Vita au sens propre. Crédits Wikimedia Greg Willis et Nessy
+  retirés du bloc `.photo-credits` d'`engagements.html` (leurs 2 photos ne
+  sont plus utilisées nulle part) ; `assets/img/CREDITS.md` mis à jour
+  (les 3 anciennes photos remises en "non utilisée actuellement", les 3
+  photos Simposio remises en "Utilisée sur").
+  **Photos d'équipe (`.talent-stage`)** : Pinterest a été essayé en
+  premier (demande explicite) via recherche web, mais écarté pour la
+  sélection finale — la plateforme republie des photos dont elle ne
+  détient pas nécessairement les droits, sans information de licence
+  fiable pour un usage commercial, contrairement à Pexels (licence Pexels,
+  déjà la source établie sur ce projet) et Wikimedia Commons (CC BY/BY-SA
+  avec attribution) ; repli sur Pexels, la 2ᵉ option proposée par la
+  cliente elle-même. `talent-placeholder-1.jpg`/`-2.jpg` (les 2 photos de
+  banque provisoires en place depuis le 2026-08-20) sont remplacées par
+  `talent-placeholder-3.jpg` (buste en tailleur bleu marine sur mur uni,
+  bras croisés, très grande marge au-dessus de la tête — Pexels 6702633,
+  Maksim Goncharenok) et `talent-placeholder-4.jpg` (buste en chemise,
+  bras croisés, devant une véranda/fenêtre — Pexels 7648239, RDNE Stock
+  project). Toujours des photos temporaires en attente des vraies photos
+  de l'équipe (TODO déjà présent dans le HTML, inchangé).
+  **Recadrage entièrement recalibré pour les 2 nouvelles photos**
+  (`.talent-stage-photo[data-talent-target="0"/"1"]`, `style.css`) — les
+  anciens réglages (`object-position`/`transform:scale()+translateX()`)
+  étaient taillés pixel par pixel pour les compositions des 2 anciennes
+  photos (têtes plus serrées), donc obsolètes pour ces 2 nouvelles. Même
+  méthode déjà établie sur ce composant : `object-position` vertical seul
+  pour cadrer tête/torse (l'axe horizontal reste inopérant dans cette
+  boîte très large/peu haute une fois `object-fit:cover` appliqué, cf.
+  explication déjà en place dans le CSS), complété par
+  `transform:scale()+translateX()` pour dégager le visage de la zone
+  floutée/assombrie de gauche (`.talent-stage-blur`, ≥640px uniquement).
+  Calibré par balayage empirique (capture d'écran à chaque valeur, jamais
+  deviné) à 5 largeurs desktop (768 à 1920px) puis revérifié à l'identique
+  sur mobile : `data-talent-target="0"` → `object-position:50% 52%` +
+  `transform:scale(1.1) translateX(9%)` ; `data-talent-target="1"` →
+  `object-position:50% 32%` + `transform:scale(1.3) translateX(18%)` (zoom
+  plus fort car son visage, plus proche du centre de la photo source, a
+  besoin de plus de décalage pour sortir de la zone floutée).
+  **Piège méthodologique rencontré et corrigé pendant ce calibrage, pas un
+  bug du site** : un premier balayage sur mobile via
+  `.locator('.talent-stage').screenshot()` semblait montrer un recadrage
+  cassé (torse seul, tête absente, identique quelle que soit la valeur
+  testée) — écarté après investigation : c'est le header fixe du site
+  (translucide, toujours à l'écran) qui se retrouvait peint par-dessus le
+  haut de la photo au moment précis où Playwright scrollait la section
+  pile au ras du haut du viewport pour la capturer, masquant la tête —
+  un artefact de la méthode de capture (scroll-into-view avant screenshot
+  d'un long élément), pas un défaut de mise en page. Confirmé en
+  screenshotant l'`<img>` isolé plutôt que toute la section : le cadrage
+  était en réalité déjà correct. Un candidat de remplacement pour la 2ᵉ
+  photo (Pexels 34381970, Karola G — portrait plus serré que le choix
+  final) a par contre été rejeté pour un vrai motif géométrique, confirmé
+  par calcul et capture d'écran : sur les très grands écrans, la boîte
+  `.talent-stage-media` devient si peu haute par rapport à sa largeur que
+  cette composition plus serrée n'y laissait plus aucune marge, coupant le
+  haut du crâne — remplacé par une photo au format paysage (3:2), bien
+  mieux adaptée à ce type de boîte très large/peu haute.
+  Vérifié par script Playwright (0 débordement horizontal, 0 erreur
+  console sur les 5 pages × 2 viewports ; retournement des flip-cards
+  clic+clavier et navigation clavier du sélecteur d'équipe revérifiés
+  fonctionnels après les changements de photos) et capture d'écran à
+  5 largeurs (390 à 1920px) pour les 2 photos d'équipe et les 4 cartes
+  d'engagement. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
@@ -6185,10 +6276,10 @@ sans qu'on le redemande.
   double2.fr dans cet environnement pour un calage pixel-exact — à affiner
   si des captures d'écran de leurs pages sont fournies.
 - **Photos d'équipe** (`engagements.html`, section `.talent-stage`) :
-  utilise actuellement `talent-placeholder-1.jpg`/`-2.jpg`, deux photos de
-  banque prises au hasard (cf. bullet dédié plus haut et `CREDITS.md`) —
-  en attente des vraies photos et du nom/rôle/bio de la 2ᵉ personne (voir
-  commentaire `TODO` dans le fichier).
+  utilise actuellement `talent-placeholder-3.jpg`/`-4.jpg`, deux photos de
+  banque (cf. bullet dédié plus haut et `CREDITS.md`) — en attente des
+  vraies photos et du nom/rôle/bio de la 2ᵉ personne (voir commentaire
+  `TODO` dans le fichier).
 - **Liens réseaux sociaux** (`#` dans le header) : placeholders `TODO` à
   remplacer, présents dans les 6 pages.
 - **Coordonnées du bandeau Contact** (`.contact-band`, `contact.html`) :
