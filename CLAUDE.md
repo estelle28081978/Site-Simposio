@@ -5347,6 +5347,58 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   valeur de couleur invalide, la rampe vers le footer atteint toujours
   exactement `--navy-900` au scroll maximal réel. Regression complète
   5 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Photo retirée de "Notre promesse", hero recentré sur 4 photos ; cercles
+  décoratifs des page-headers retirés (2026-08-21)** : deux demandes
+  distinctes de la cliente.
+  **1) Photo de "Notre promesse" retirée, déplacée dans le hero**
+  (`index.html`, `.promise`, `assets/img/CREDITS.md`) : `<img
+  class="promise-photo">` et `<div class="promise-scrim">` sont retirés de
+  la section "Notre promesse" (la citation "Suspendre le quotidien
+  professionnel..."). Comme `.promise` a déjà `background: transparent`
+  depuis le fond de page unique (`#pageBgLayer`, cf. plus haut), retirer la
+  photo ne laisse pas de vide : le fond visible devient directement la
+  teinte animée du calque global, déjà `--navy-900` sur cette portion de
+  scroll — exactement la teinte sombre que la photo assombrie (`filter:
+  brightness(0.5)`) visait à donner, donc le texte crème de la section
+  reste lisible sans aucun ajustement de couleur. `.promise-photo`,
+  `.promise-scrim` et `@keyframes promisePhotoDrift` (le Ken Burns de la
+  photo) sont supprimés de `style.css`, désormais inutilisés — si l'une de
+  ces règles réapparaît ici, c'est cet ancien fond photo, à ne pas
+  réintroduire sans qu'on le redemande.
+  **La photo réapparaît dans le diaporama du hero** (`.hero-slideshow`,
+  tout en haut de la page) plutôt que d'être perdue : `amalfi-coast-sunset.jpg`
+  rejoint la rotation, qui passe de 5 à 4 photos — la cliente a listé
+  explicitement les 4 à garder : celle-ci, "celle de la fiat"
+  (`evenement-fiat500-creme-mur-pierre.jpg`), "celle du plateau d'agrumes"
+  (`evenement-plateau-agrumes.jpg`) et "celle des tartines de tomate"
+  (`evenement-planche-charcuterie.jpg` — la planche de charcuterie
+  comprend des tartines/toasts à la tomate, seule photo de nourriture du
+  hero correspondant à cette description). `evenement-tablee-diner-bougies.jpg`
+  et `evenement-cave-barolo.jpg` sortent donc de la rotation (aucun fichier
+  supprimé, toutes deux restent utilisées dans la mosaïque Projets).
+  `.hero-slideshow img:nth-child(N)` : délais d'apparition recalés sur
+  30s/4 = 7,5s d'écart (au lieu de 30s/5 = 6s) pour garder un cycle total
+  de 30s avec un espacement régulier entre les 4 photos. Aucun nouveau
+  crédit requis : les 4 photos étaient déjà toutes utilisées sur
+  `index.html` (3 déjà dans le hero, la 4ᵉ dans "Notre promesse" juste en
+  dessous) — le crédit Tracey Hind d'`amalfi-coast-sunset.jpg` reste
+  inchangé dans le footer, seul l'emplacement précis de la photo change
+  (voir `CREDITS.md` pour le détail complet).
+  **2) Cercles décoratifs retirés des page-headers** (`.page-header::before`/
+  `::after`, `style.css`) : les deux cercles "Havas-esque" (un grand cercle
+  à liseré terracotta en haut à droite du bandeau titre + un petit cercle
+  plein en bas à gauche), présents sur les 4 pages qui utilisent
+  `.page-header` (Prestations, Projets, À propos, Contact), sont retirés à
+  la demande explicite de la cliente. `index.html` n'est pas concerné : son
+  hero utilise la classe `.hero`, pas `.page-header`, donc n'a jamais eu ces
+  cercles. Si `.page-header::before`/`::after` réapparaissent dans un diff,
+  c'est cet ancien motif décoratif, à ne pas réintroduire sans qu'on le
+  redemande.
+  Vérifié par script Playwright (`getComputedStyle(el, '::before').content`
+  confirmé `"none"` sur les 4 pages, diaporama du hero confirmé à 4 images
+  dans le bon ordre, section Promesse vérifiée sans `<img>`/scrim restant)
+  et capture d'écran desktop + mobile. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 

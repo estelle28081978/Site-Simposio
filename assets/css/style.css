@@ -620,30 +620,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .page-header.on-dark .lede { color: var(--fg-muted-inverse); }
 .page-header.on-dark h1 .accent { color: var(--terracotta-300); }
 
-/* Havas-esque decorative shapes — asymmetric marks on the background, echoed on several pages */
-.page-header::before,
-.page-header::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  border-radius: 50%;
-}
-.page-header::before {
-  width: 15rem;
-  height: 15rem;
-  right: -5rem;
-  top: -6rem;
-  border: 1.5px solid rgba(var(--terracotta-rgb), 0.35);
-}
-.page-header::after {
-  width: 5rem;
-  height: 5rem;
-  left: 8%;
-  bottom: -2rem;
-  background: rgba(var(--navy-rgb), 0.08);
-}
-.page-header.on-dark::before { border-color: rgba(246, 241, 231, 0.22); }
-.page-header.on-dark::after { background: rgba(224, 149, 106, 0.14); }
+/* Les deux cercles décoratifs "Havas-esque" (`.page-header::before`/`::after`,
+   un grand cercle à liseré terracotta en haut à droite + un petit cercle
+   plein en bas à gauche) ont été retirés le 2026-08-21 à la demande de la
+   cliente, sur les 4 pages qui utilisent `.page-header` (Prestations,
+   Projets, À propos, Contact). Si ces deux pseudo-éléments réapparaissent
+   ici, c'est cet ancien motif, à ne pas réintroduire sans qu'on le
+   redemande. */
 
 @media (min-width: 900px) {
   .page-header { text-align: left; }
@@ -856,11 +839,13 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
   opacity: 0;
   animation: heroSlideFade 30s infinite;
 }
+/* 4 photos (2026-08-21, cf. CLAUDE.md) : délais recalés sur 30s/4 = 7,5s
+   d'écart au lieu de 30s/5 = 6s, pour garder un cycle total de 30s avec un
+   espacement régulier entre les 4 images. */
 .hero-slideshow img:nth-child(1) { animation-delay: 0s; }
-.hero-slideshow img:nth-child(2) { animation-delay: 6s; }
-.hero-slideshow img:nth-child(3) { animation-delay: 12s; }
-.hero-slideshow img:nth-child(4) { animation-delay: 18s; }
-.hero-slideshow img:nth-child(5) { animation-delay: 24s; }
+.hero-slideshow img:nth-child(2) { animation-delay: 7.5s; }
+.hero-slideshow img:nth-child(3) { animation-delay: 15s; }
+.hero-slideshow img:nth-child(4) { animation-delay: 22.5s; }
 @keyframes heroSlideFade {
   0% { opacity: 0; }
   4% { opacity: 1; }
@@ -1107,29 +1092,13 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
      tall the centered block gets. */
   padding-top: 6.5rem;
   padding-bottom: 3rem;
-  /* transparent : le fond derrière la photo (toujours plein cadre, cf.
-     .promise-photo) est désormais porté par #pageBgLayer. */
+  /* Plus de photo de fond ici (retirée le 2026-08-21, cf. CLAUDE.md — la
+     photo amalfi-coast-sunset.jpg est passée dans le diaporama du hero) :
+     le fond visible est donc directement #pageBgLayer (navy-900 sur cette
+     portion de scroll), déjà exactement la teinte sombre pour laquelle le
+     texte crème de cette section (var(--fg-inverse)) est prévu. */
   background: transparent;
   color: var(--fg-inverse);
-}
-.promise-photo {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.5);
-  transform: scale(1.08);
-  animation: promisePhotoDrift 22s ease-in-out infinite alternate;
-}
-@keyframes promisePhotoDrift {
-  from { transform: scale(1.08) translate(0, 0); }
-  to { transform: scale(1.16) translate(-1.5%, -1%); }
-}
-.promise-scrim {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
 }
 .promise .container { position: relative; z-index: 1; max-width: 100rem; padding-inline: clamp(1rem, 2.5vw, 2rem); }
 
@@ -1201,7 +1170,6 @@ body.home[data-tone="light"] .bg-adaptive-footer .photo-credits a { color: rgba(
 .promise-quote[data-reveal-group].is-visible > .promise-line:nth-child(11) { transition-delay: 600ms; }
 
 @media (prefers-reduced-motion: reduce) {
-  .promise-photo { animation: none; }
   .promise-quote[data-reveal-group] > .promise-line { opacity: 1; transform: translateX(0); }
 }
 

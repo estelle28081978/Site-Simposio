@@ -19,8 +19,8 @@ plus avant de marquer un fichier « non utilisé ».
 | `evenement-vespa-fleurie-lemon.jpg` | Non utilisée actuellement, disponible dans `assets/img/` |
 | `evenement-table-fleurs-legumes.jpg` | Mosaïque Projets |
 | `evenement-buffet-bruschetta.jpg` | Mosaïque Projets |
-| `evenement-cave-barolo.jpg` | Mosaïque Projets + Accueil (hero) |
-| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets + Accueil (hero) (utilisée jusqu'au 2026-08-19 sur Engagements — grille de flip-cards, "Concept clé en main" — remplacée par une toute nouvelle photo, voir « Important » plus bas) |
+| `evenement-cave-barolo.jpg` | Mosaïque Projets (retirée du hero Accueil le 2026-08-21, cf. « Important » plus bas) |
+| `evenement-tablee-diner-bougies.jpg` | Mosaïque Projets (retirée du hero Accueil le 2026-08-21, cf. « Important » plus bas ; utilisée jusqu'au 2026-08-19 sur Engagements — grille de flip-cards, "Concept clé en main" — remplacée par une toute nouvelle photo, voir « Important » plus bas) |
 | `evenement-rangee-spritz.jpg` | Mosaïque Projets + Prestations — L'Aperitivo (fond) + Accueil (carte formule L'Aperitivo) |
 | `evenement-vespas-vintage.jpg` | Mosaïque Projets |
 | `evenement-fiat500-blanche.jpg` | Mosaïque Projets |
@@ -52,13 +52,17 @@ CC BY-SA), qui **exige de créditer l'auteur**. `terrace-dinner-assisi.jpg`
 (La Tavola, Prestations) est actuellement utilisée sur le site — son crédit
 (Andrew Parlette) apparaît en bas de page sur les 5 pages qui partagent ce
 bloc footer (`index.html`, `univers.html`, `prestations.html`,
-`projets.html`, `contact.html`). Depuis le 2026-08-17, `amalfi-coast-sunset.jpg`
-est utilisée en fond plein écran de la section Promesse — d'abord sur
+`projets.html`, `contact.html`). `amalfi-coast-sunset.jpg` a d'abord servi
+(2026-08-17) de fond plein écran à la section Promesse — d'abord sur
 `univers.html`, puis (2026-08-18, `univers.html` supprimée et son contenu
-redistribué, cf. CLAUDE.md) sur `index.html`, qui réutilise exactement le
-même traitement pour sa propre section "Notre promesse". Son auteur (Tracey
-Hind) a été ajouté au bloc `.photo-credits` d'`index.html` (à côté du crédit
-Andrew Parlette déjà présent). Depuis le 2026-08-19, cinq nouvelles photos
+redistribué, cf. CLAUDE.md) sur `index.html` — avant que la cliente ne
+demande, le 2026-08-21, de retirer cette photo de fond de la section
+"Notre promesse" (qui repose désormais directement sur le fond de page
+animé, `#pageBgLayer`) pour la faire rejoindre à la place le diaporama du
+hero d'`index.html` (voir « Important » plus bas). Son auteur (Tracey
+Hind) reste crédité dans le bloc `.photo-credits` d'`index.html` (à côté
+du crédit Andrew Parlette), l'usage sur cette page étant inchangé, seul
+l'emplacement précis change. Depuis le 2026-08-19, cinq nouvelles photos
 Wikimedia sont utilisées sur `engagements.html` (`alsace-maisons-colombages.jpg`,
 `ravello-villa-cimbrone-jardin.jpg`, `ravello-terrasse-infini.jpg`,
 `vietri-ceramique-detail.jpg`, `amalfi-coteside-signature.jpg`) — voir
@@ -74,7 +78,7 @@ réutilisés, remettre leur lien de crédit dans les footers concernés.
 | Fichier | Utilisée sur | Source | Auteur | Licence |
 |---|---|---|---|---|
 | `terrace-dinner-assisi.jpg` | Prestations — La Tavola + Accueil (carte formule La Tavola) | [Terrace Dinner in Assisi.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Dinner_in_Assisi.jpg) | Andrew Parlette | CC BY 4.0 |
-| `amalfi-coast-sunset.jpg` | Accueil — fond plein écran de la section "Notre promesse" (ex-Univers, page supprimée le 2026-08-18) | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
+| `amalfi-coast-sunset.jpg` | Accueil — diaporama du hero (retirée de la section "Notre promesse" le 2026-08-21, cf. « Important » plus bas) | [Sunset looking South down the Amalfi Coast toward Salerno.jpg](https://commons.wikimedia.org/wiki/File:Sunset_looking_South_down_the_Amalfi_Coast_toward_Salerno_(52786584725).jpg) | Tracey Hind | CC BY-SA 2.0 |
 | `alsace-maisons-colombages.jpg` | Engagements — grille de flip-cards ("Ancrage alsacien") | [Donnenheim maison rue du villageA.jpg](https://commons.wikimedia.org/wiki/File:Donnenheim_maison_rue_du_villageA.jpg) | Didivo67 | CC BY-SA 4.0 |
 | `ravello-villa-cimbrone-jardin.jpg` | Engagements — grille de flip-cards ("Concept clé en main") | [Ravello - Villa Cimbrone (4786631550).jpg](https://commons.wikimedia.org/wiki/File:Ravello_-_Villa_Cimbrone_(4786631550).jpg) | Greg Willis | CC BY-SA 2.0 |
 | `ravello-terrasse-infini.jpg` | Engagements — grille de flip-cards ("Positionnement premium") | [Terrace Villa Cimbrone.jpg](https://commons.wikimedia.org/wiki/File:Terrace_Villa_Cimbrone.jpg) | Nessy | CC BY-SA 4.0 |
@@ -299,3 +303,25 @@ itérations précédentes (carte postale sur photo floutée, plaque bicolore,
 typographie minimaliste, assiette CSS/SVG, détourage GrabCut couleur puis
 duotone) conservé dans `CLAUDE.md` pour référence, à ne réintroduire sans
 qu'on le redemande.
+
+**Photo de fond retirée de "Notre promesse", déplacée dans le diaporama du
+hero + hero recentré sur 4 photos (2026-08-21)** : demande explicite de la
+cliente. `amalfi-coast-sunset.jpg` (fond plein cadre de la citation
+"Suspendre le quotidien...", `index.html`) est retirée de cette section —
+son fond repose désormais directement sur `#pageBgLayer` (le calque de
+fond animé au scroll, déjà navy-900 à cet endroit de la page, exactement la
+teinte que la photo assombrie visait à donner). La même photo est ajoutée
+au diaporama du hero (`.hero-slideshow`, tout en haut d'`index.html`), qui
+passe dans la foulée de 5 à 4 photos — la cliente a listé explicitement
+les 4 à garder : celle-ci (amalfi-coast-sunset.jpg), "celle de la fiat"
+(`evenement-fiat500-creme-mur-pierre.jpg`), "celle du plateau d'agrumes"
+(`evenement-plateau-agrumes.jpg`) et "celle des tartines de tomate"
+(`evenement-planche-charcuterie.jpg` — la planche de charcuterie
+comprenant des tartines/toasts à la tomate, seule photo de nourriture du
+hero correspondant à cette description). `evenement-tablee-diner-bougies.jpg`
+et `evenement-cave-barolo.jpg` sortent donc du diaporama du hero (aucun
+fichier supprimé — toutes deux restent utilisées dans la mosaïque Projets).
+Aucun nouveau crédit requis : les 4 photos étaient déjà toutes utilisées
+sur `index.html` (3 déjà dans le hero, la 4ᵉ dans "Notre promesse" juste
+en dessous) — seul leur emplacement précis change, le crédit Tracey Hind
+d'`amalfi-coast-sunset.jpg` reste valide et inchangé dans le footer.
