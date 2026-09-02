@@ -7219,6 +7219,45 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `Liana, Oswald, …`, 0 erreur console) et capture d'écran desktop + mobile
   (identité empilée verticalement sous 700px, toujours lisible). Regression
   complète 5 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Fondatrice — badge "EL" retiré, signature repassée en Glacial
+  Indifference et alignée sur la citation (2026-09-02)**
+  (`.founder-id-minimal`, `.founder-signature-minimal`, `engagements.html`/
+  `style.css`) : la cliente est revenue sur l'essai précédent (signature en
+  Liana + médaillon décalé, bullet ci-dessus) — demande explicite "enlève
+  le badge EL, remet ce texte... en glacial indifférence et aligne-le à la
+  gauche du texte en Liana juste au-dessus".
+  **Badge retiré** : `<span class="founder-avatar-minimal">EL</span>` (le
+  médaillon en contour, seul élément visuel restant d'un système d'avatar
+  utilisé plus tôt à plusieurs itérations de cette section) supprimé du
+  HTML ; ses règles CSS (`.founder-avatar-minimal`, sa variante
+  `[data-tone="dark"]`) retirées, devenues orphelines.
+  **Police repassée en Glacial Indifference** (`var(--font-body)`, pas
+  `--font-subtitle`/Oswald de l'avant-dernière version ni Liana de la
+  dernière) : `.founder-signature-minimal` retrouve globalement le style
+  d'avant l'essai Liana (majuscules, `letter-spacing`, `font-weight:700`
+  pour le nom — 700 plutôt que l'ancien 600, Glacial Indifference n'ayant
+  que les graisses 400/700 auto-hébergées, cf. `@font-face` en tête de
+  fichier — 400 pour le rattachement), seule la famille de police change.
+  **Alignement sur la citation** : sans médaillon à mettre en ligne,
+  `.founder-id-minimal` passe d'un `inline-flex` centré (qui encadrait
+  avatar + texte côte à côte, donc centré comme un bloc compact) à un bloc
+  `width:100%; text-align:left` — occupant toute la largeur de
+  `.founder-minimal` comme `.founder-quote-minimal` juste au-dessus (dont
+  le texte est centré mais dont la BOÎTE occupe déjà cette largeur
+  entière), aligner ce bloc à gauche revient donc à aligner la signature
+  sur le bord gauche réel de la citation, pas sur la position d'un mot en
+  particulier (qui varie ligne à ligne dans un texte centré). La règle
+  mobile dédiée (`flex-direction:column` + recentrage, pensée pour empiler
+  avatar/texte) est retirée, devenue sans objet à un seul enfant.
+  Vérifié par script Playwright (bord gauche de `.founder-signature-minimal`
+  mesuré strictement identique à celui de `.founder-quote-minimal` —
+  456,0px aux deux, à 1px près —, `.founder-avatar-minimal` confirmé
+  absent du DOM, `font-family` calculée confirmée `"Glacial Indifference",
+  …`, 0 erreur console) et capture d'écran desktop + mobile. Regression
+  complète 5 pages × 2 viewports : 0 débordement, 0 erreur console. Si
+  `.founder-avatar-minimal` ou une police Liana/Oswald sur
+  `.founder-signature-minimal` réapparaissent, ce sont des itérations
+  précédentes, à ne pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 

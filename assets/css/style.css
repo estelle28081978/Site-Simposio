@@ -1864,51 +1864,41 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   border: none;
   margin: 2.25rem auto;
 }
+/* Badge "EL" retiré, signature repassée en Glacial Indifference et alignée
+   à gauche (2026-09-02, demande explicite : "enlève le badge EL, remet ce
+   texte... en glacial indifférence et aligne-le à la gauche du texte en
+   Liana juste au-dessus") — remplace l'essai Liana + médaillon de
+   l'itération précédente (voir historique juste au-dessus dans ce
+   fichier). `.founder-id-minimal` passe d'un `inline-flex` centré (qui
+   encadrait le médaillon + la signature côte à côte) à un bloc pleine
+   largeur : sans médaillon à aligner, un simple bloc gauche suffit, et
+   comme il occupe toute la largeur de `.founder-minimal` (comme
+   `.founder-quote-minimal` juste au-dessus, dont le texte est centré mais
+   la BOÎTE occupe déjà toute cette largeur), l'aligner à gauche revient
+   bien à l'aligner sur le bord gauche de la citation. Si `.founder-avatar-minimal`
+   réapparaît dans le HTML/CSS, c'est cet ancien médaillon, à ne pas
+   réintroduire sans qu'on le redemande. */
 .founder-id-minimal {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.3rem;
+  display: block;
+  width: 100%;
+  text-align: left;
 }
-.founder-avatar-minimal {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.6rem;
-  height: 2.6rem;
-  border-radius: 50%;
-  border: 1px solid rgba(var(--navy-rgb), 0.28);
-  color: var(--navy);
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-}
-/* Police Liana + décalage à droite (2026-09-02, demande explicite : "fais
-   en sorte que ça se soit écrit aussi avec la police Liana et décale un peu
-   sur la droite... ESTELLE LORUSSO Fondatrice de Simposio, une initiative
-   Eurheka Conseil") — même police que la citation juste au-dessus
-   (`.founder-quote-minimal`), pour une signature cohérente avec la
-   citation plutôt qu'un contraste Liana/Oswald. `text-transform:uppercase`
-   et le `letter-spacing` marqué de l'ancienne version (pensés pour Oswald,
-   une police bâton) sont retirés : forcer des majuscules et écarter les
-   lettres casse les liaisons cursives d'une police script comme Liana —
-   même retenue déjà appliquée à Canter/`.eyebrow` ailleurs sur ce site.
-   Taille légèrement augmentée (une cursive fine se lit plus petite qu'un
-   sous-titre bâton à taille égale, même raisonnement que pour la
-   citation). Le "décalage à droite" est porté par le `gap` de
-   `.founder-id-minimal` (0.9rem → 1.3rem) : la signature s'éloigne du
-   médaillon "EL" plutôt que de coller contre lui. */
 .founder-signature-minimal {
-  font-family: "Liana", var(--font-subtitle);
-  font-size: 1.05rem;
-  font-weight: 400;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--navy);
   text-align: left;
 }
 .founder-signature-minimal span {
   display: block;
-  margin-top: 0.15rem;
-  font-size: 0.92rem;
+  margin-top: 0.2rem;
+  font-size: 0.74rem;
   font-weight: 400;
+  letter-spacing: 0.02em;
+  text-transform: none;
   color: var(--fg-muted);
 }
 /* Adaptation à la phase sombre du fondu de `.founder` (2026-09-02) : la
@@ -1921,11 +1911,6 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .founder[data-tone="dark"] .founder-quote-minimal,
 .founder[data-tone="dark"] .founder-signature-minimal { color: var(--cream); }
 .founder[data-tone="dark"] .founder-signature-minimal span { color: var(--fg-muted-inverse); }
-.founder[data-tone="dark"] .founder-avatar-minimal { color: var(--cream); border-color: rgba(246, 241, 231, 0.4); }
-@media (max-width: 700px) {
-  .founder-id-minimal { flex-direction: column; gap: 0.5rem; }
-  .founder-id-minimal .founder-signature-minimal { text-align: center; }
-}
 
 /* ==========================================================================
    Prestations — four full-viewport "worlds", each with its own dominant
