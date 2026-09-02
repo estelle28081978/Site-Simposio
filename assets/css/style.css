@@ -454,6 +454,36 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    (`transform:scale(1.04)` sur `.label`, pas sur `a` lui-même — évite
    tout conflit avec le `transition-delay` de l'entrée, qui ne porte que
    sur `opacity`/`transform` de `a`). */
+/* Filtre sombre sur la partie de l'écran non couverte par le tiroir
+   (2026-09-02, demande explicite : "met de la partie où ya pas le menu
+   un filtre foncé/noir opaque pour faire comme si c'était en arrière
+   plan") — `.mobile-menu-scrim` est un calque séparé, plein écran
+   (`inset:0`), posé JUSTE EN DESSOUS du panneau (`z-index:198` contre
+   `199`) : le panneau opaque du menu le recouvre entièrement sur sa
+   propre moitié (rien à voir en plus là où le tiroir est déjà opaque),
+   tandis que sur la moitié gauche — la page réelle, sans autre calque
+   par-dessus — ce filtre s'applique directement sur son contenu, lui
+   donnant l'aspect assombri d'un arrière-plan derrière une fenêtre au
+   premier plan. Couleur reprise de `--navy-900` (déjà la teinte "sombre"
+   de référence du site pour ce type de voile, ex. `.contact-band-scrim`,
+   plutôt qu'un noir pur hors palette) à 60% d'opacité. Un clic sur le
+   filtre ferme le menu (`main.js`) — comportement standard attendu d'un
+   arrière-plan assombri par un panneau au premier plan. */
+.mobile-menu-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 198;
+  background: rgba(16, 31, 39, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-slow) var(--ease), visibility 0s var(--dur-slow);
+}
+.mobile-menu-scrim.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+
 /* Retour au design Blanc Calcaire (opaque, couleurs claires), mais en
    demi-écran dans la LARGEUR plutôt que la hauteur (2026-09-02, demande
    explicite : "déjà reprend le design blanc qu'on avait défini et

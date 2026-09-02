@@ -169,9 +169,11 @@
   var navToggle = document.getElementById("navToggle");
   var mobileMenu = document.getElementById("mobileMenu");
   var mobileMenuClose = document.getElementById("mobileMenuClose");
+  var mobileMenuScrim = document.getElementById("mobileMenuScrim");
 
   function closeMenu() {
     mobileMenu.classList.remove("is-open");
+    if (mobileMenuScrim) mobileMenuScrim.classList.remove("is-open");
     navToggle.setAttribute("aria-expanded", "false");
     document.documentElement.classList.remove("menu-open");
   }
@@ -180,6 +182,10 @@
     navToggle.addEventListener("click", function () {
       var isOpen = mobileMenu.classList.toggle("is-open");
       navToggle.setAttribute("aria-expanded", String(isOpen));
+      // Filtre sombre sur la partie de l'écran non couverte par le tiroir
+      // (2026-09-02) : basculé en même temps que le menu, cf.
+      // `.mobile-menu-scrim` dans style.css pour le détail visuel.
+      if (mobileMenuScrim) mobileMenuScrim.classList.toggle("is-open", isOpen);
       // Bloque le scroll de la page tant que le menu (désormais un tiroir
       // occupant la moitié de la largeur, la page réelle restant visible
       // à côté) est ouvert (2026-09-02) — sans ça, faire défiler la page
@@ -187,6 +193,7 @@
       document.documentElement.classList.toggle("menu-open", isOpen);
     });
     if (mobileMenuClose) mobileMenuClose.addEventListener("click", closeMenu);
+    if (mobileMenuScrim) mobileMenuScrim.addEventListener("click", closeMenu);
     mobileMenu.querySelectorAll("a").forEach(function (a) {
       a.addEventListener("click", closeMenu);
     });

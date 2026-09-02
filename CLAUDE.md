@@ -6902,6 +6902,56 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   haut, plein écran…), à ne pas réintroduire sans qu'on le redemande —
   l'historique complet de toutes les refontes précédentes reste documenté
   plus haut dans ce fichier pour référence.
+- **Menu — filtre sombre sur la partie de l'écran non couverte par le
+  tiroir (2026-09-02, même jour)** (`.mobile-menu-scrim`, les 5 pages/
+  `style.css`/`main.js`) : demande explicite de la cliente ("met de la
+  partie où ya pas le menu un filtre foncé/noir opaque pour faire comme
+  si c'était en arrière plan") — sur le tiroir demi-largeur de
+  l'itération précédente, la moitié gauche de l'écran (la page réelle)
+  restait affichée normalement, sans traitement particulier ; la cliente
+  veut qu'elle soit assombrie pour se lire comme un arrière-plan derrière
+  le menu au premier plan.
+  **Nouvel élément séparé, pas une propriété du menu lui-même** :
+  `<div class="mobile-menu-scrim" id="mobileMenuScrim">`, un calque
+  plein écran (`position:fixed; inset:0`) ajouté juste avant `.mobile-menu`
+  dans le HTML des 5 pages, avec un `z-index:198` — juste EN DESSOUS du
+  panneau du menu (`z-index:199`). Ce choix (un calque séparé plutôt qu'un
+  `background`/`::before` sur `.mobile-menu` lui-même, qui n'occupe que
+  50% de la largeur) est ce qui permet au filtre de couvrir tout l'écran
+  sans rien changer côté menu : là où le panneau opaque du menu existe
+  déjà (sa propre moitié), il recouvre entièrement ce calque — rien à voir
+  en plus ; là où il n'y a pas de panneau (la moitié gauche), le filtre
+  s'applique directement sur la page réelle, produisant l'effet
+  "arrière-plan assombri" demandé sans avoir à connaître à l'avance quelle
+  moitié de l'écran est couverte.
+  **Couleur** : `rgba(16, 31, 39, 0.6)` — reprend `--navy-900`, déjà la
+  teinte de référence du site pour ce type de voile (`.contact-band-scrim`,
+  `.engagement-card-front-scrim`...), à 60% d'opacité, plutôt qu'un noir
+  pur hors palette de marque (la cliente disait "foncé/noir", les deux
+  interprétés comme "sombre", pas comme une exigence de noir pur).
+  **Apparition/disparition synchronisée avec le menu** (`main.js`) :
+  `mobileMenuScrim.classList.toggle("is-open", isOpen)` dans le même
+  gestionnaire de clic que `navToggle`, et retiré dans `closeMenu()` (donc
+  sur les 3 chemins de fermeture : bouton, lien, Échap). `opacity`/
+  `visibility` (pas `display`, pour garder la transition animée) au repos
+  contre `.is-open` — `visibility:hidden` par défaut pour que le calque,
+  bien qu'existant en permanence dans le DOM, n'intercepte aucun clic ni
+  ne soit lisible par un lecteur d'écran quand le menu est fermé.
+  **Clic sur le filtre = ferme le menu** (`mobileMenuScrim.addEventListener("click",
+  closeMenu)`) : comportement standard attendu d'un arrière-plan assombri
+  par un panneau au premier plan (cliquer "à côté" pour revenir en
+  arrière) — pas explicitement demandé dans ce message, mais une
+  conséquence naturelle d'avoir un calque cliquable là où auparavant il
+  n'y avait que la page nue ; vérifié qu'un clic sur la zone assombrie
+  (à gauche du panneau) ferme bien le menu et lève le verrou de scroll.
+  Vérifié par script Playwright (calque confirmé invisible et non
+  bloquant quand le menu est fermé — clic sur un lien de la page normale
+  toujours fonctionnel, scroll toujours possible —, opacité/couleur/
+  z-index cohérents sur les 5 pages une fois le menu ouvert, clic sur le
+  filtre confirmé fermant le menu et retirant `html.menu-open`) et
+  capture d'écran desktop + mobile confirmant l'effet "arrière-plan
+  assombri" recherché. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
