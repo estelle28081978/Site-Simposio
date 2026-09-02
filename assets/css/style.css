@@ -844,14 +844,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .contact-faq[data-tone="light"] .bg-adaptive-heading { color: var(--navy); }
 /* `.method-cta` : né pour un fond clair (eyebrow/h2/lede/note tous pensés
    pour du texte sombre sur crème), a besoin d'une variante claire pendant
-   la phase rouge Terre d'Ombrie sombre du fondu — 4 éléments à adapter ici
-   (contre 1-2 pour les 3 autres sections) car cette section, contrairement
-   aux autres, a plusieurs blocs de texte de rôles différents (eyebrow,
-   titre, lede ET un bouton outline) qui reposent tous directement sur le
-   fond de section plutôt que sur leur propre carte/photo. `.btn-outline-dark`
-   (pensé pour un fond clair : bordure/texte navy, transparent) devient
-   illisible sur fond sombre — `.bg-adaptive-btn-outline` bascule vers les
-   mêmes valeurs que `.btn-outline` (pensé, lui, pour un fond sombre). */
+   la phase bleu Méditerranéen sombre du fondu (couleur de départ alignée
+   sur `.teaser` — cf. commentaire dans `main.js`) — 4 éléments à adapter
+   ici (contre 1-2 pour les 3 autres sections) car cette section,
+   contrairement aux autres, a plusieurs blocs de texte de rôles
+   différents (eyebrow, titre, lede ET un bouton outline) qui reposent
+   tous directement sur le fond de section plutôt que sur leur propre
+   carte/photo. `.btn-outline-dark` (pensé pour un fond clair : bordure/
+   texte navy, transparent) devient illisible sur fond sombre —
+   `.bg-adaptive-btn-outline` bascule vers les mêmes valeurs que
+   `.btn-outline` (pensé, lui, pour un fond sombre). */
 .method-cta[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
 .method-cta[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
 .method-cta[data-tone="dark"] .bg-adaptive-lede { color: var(--fg-muted-inverse); }
@@ -3332,11 +3334,15 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    version encore antérieure), à ne pas réintroduire sans qu'on le
    redemande. */
 /* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :
-   fondu localisé rouge Terre d'Ombrie → blanc calcaire au scroll — l'effet
+   fondu localisé bleu Méditerranéen → blanc calcaire au scroll — l'effet
    avait été retiré de cette section plus tôt le même jour (cf. commentaire
-   "Fondus de fond localisés" plus haut dans ce fichier), puis redemandé.
-   `var(--bg)` reste un filet de sécurité avant l'exécution du JS (état
-   final, cohérent avec la couleur de repos de cette section). */
+   "Fondus de fond localisés" plus haut dans ce fichier), puis redemandé
+   avec une couleur de départ d'abord calée sur le rouge Terre d'Ombrie de
+   la section précédente, corrigée en bleu marine juste après ("fait comme
+   les autres") — mêmes couleurs que `.teaser`, cf. commentaire détaillé
+   dans `main.js`. `var(--bg)` reste un filet de sécurité avant
+   l'exécution du JS (état final, cohérent avec la couleur de repos de
+   cette section). */
 .method-cta { position: relative; padding-block: var(--space-6); background: var(--bg); overflow: hidden; }
 .method-cta-grid { display: grid; gap: var(--space-6); position: relative; z-index: 1; }
 @media (min-width: 960px) { .method-cta-grid { grid-template-columns: 0.85fr 1.15fr; align-items: start; } }

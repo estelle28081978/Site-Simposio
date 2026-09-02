@@ -136,19 +136,20 @@
      vers `--navy-900` pour les questions fréquentes.
      **`.method-cta` rajoutée (2026-09-02, même jour)** : la cliente a
      redemandé l'effet sur la partie méthodologie après l'avoir fait
-     retirer un peu plus tôt dans la même session. `#sensesJourney`, juste
-     au-dessus dans la page, est un long parcours ÉPINGLÉ (`position:sticky`,
-     1240vh de scroll) dont le fond ne défile pas — sa teinte RÉELLEMENT
-     visible au moment de sortir de cette section est donc le bas de son
-     propre dégradé interne (`.senses-journey-sticky`, `linear-gradient(190deg,
-     var(--rosso-ombria) 0%, #2b1010 100%)`), pas une valeur nominale de
-     section — `#2b1010` (43,16,16) est repris tel quel comme couleur de
-     départ, vers `--bg` (246,241,231, la couleur de repos propre à
-     `.method-cta`), même logique déjà appliquée à `.founder` ci-dessus. */
+     retirer un peu plus tôt dans la même session. Couleur de départ
+     d'abord calée sur la teinte RÉELLEMENT visible de `#sensesJourney`
+     juste au-dessus (un parcours épinglé au fond en dégradé rouge Terre
+     d'Ombrie, `#2b1010` au plus sombre) — la cliente a explicitement
+     demandé de revenir au bleu marine à la place ("fait comme les
+     autres, en passant du bleu marine jusqu'à la couleur originale"),
+     exactement la même paire de couleurs que `.teaser` juste en dessous
+     (`--navy` → `--bg`) plutôt qu'une teinte dérivée de la section
+     précédente. Si `[43, 16, 16]` réapparaît ici, c'est ce réglage
+     précédent, à ne pas réintroduire sans qu'on le redemande. */
   initScrollFade(document.querySelector(".teaser"), [28, 59, 74], [246, 241, 231]);
   initScrollFade(document.querySelector(".founder"), [16, 31, 39], [246, 241, 231]);
   initScrollFade(document.querySelector(".contact-faq"), [236, 227, 209], [16, 31, 39]);
-  initScrollFade(document.querySelector(".method-cta"), [43, 16, 16], [246, 241, 231]);
+  initScrollFade(document.querySelector(".method-cta"), [28, 59, 74], [246, 241, 231]);
 
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");

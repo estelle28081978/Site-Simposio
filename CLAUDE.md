@@ -6291,6 +6291,26 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   clic) et capture d'écran du haut de `.contact-devis` et de la jonction
   formulaire/FAQ, desktop et mobile. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Effet de fond au scroll de "Notre méthodologie" — couleur de départ
+  corrigée en bleu marine, comme les autres sections (2026-09-02)**
+  (`.method-cta`, `main.js`/`style.css`) : demande explicite de la
+  cliente ("fait comme les autres, en passant du bleu marine jusqu'à la
+  couleur originale"). Le fromRgb de `initScrollFade()` pour
+  `.method-cta` passait `[43, 16, 16]` (`#2b1010`, la teinte réellement
+  visible en bas du dégradé interne du parcours des 5 sens juste
+  au-dessus, épinglé — même logique déjà appliquée à `.founder`) — la
+  cliente veut ici la même paire de couleurs que `.teaser` juste en
+  dessous dans la page, sans dérivation depuis la section précédente :
+  `[28, 59, 74]` (`--navy`) → `[246, 241, 231]` (`--bg`), valeur
+  identique au caractère près à l'appel `.teaser`. Si `[43, 16, 16]`
+  réapparaît sur cet appel, c'est ce réglage précédent, à ne pas
+  réintroduire sans qu'on le redemande. Commentaires associés dans
+  `main.js` et `style.css` mis à jour en conséquence.
+  Vérifié par script Playwright (balayage de scroll confirmant la couleur
+  interpolée entre `rgb(28,59,74)` et `rgb(246,241,231)` à 6 points de
+  progression, `data-tone` cohérent) et capture d'écran en mi-fondu.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 
