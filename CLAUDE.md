@@ -6820,6 +6820,88 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   (opaque plein, Blanc Calcaire) réapparaissent sur `.mobile-menu`, ce
   sont les deux versions précédentes, à ne pas réintroduire sans qu'on le
   redemande.
+- **Menu — retour au design Blanc Calcaire, demi-écran dans la largeur
+  plutôt que la hauteur (2026-09-02, même jour)** (`.mobile-menu*`,
+  `main.js`, `style.css`) : la cliente a tranché sur l'essai précédent
+  ("déjà reprend le design blanc qu'on avait défini et plutôt demi écran
+  dans la largeur") — deux changements combinés.
+  **Retour au design Blanc Calcaire (opaque, couleurs claires)** : annule
+  le fond translucide sombre de l'essai précédent — `.mobile-menu`
+  redevient `background: var(--bg)` (opaque), et tous les éléments
+  repassent aux couleurs "fond clair" déjà établies plus tôt le même jour
+  (`.mobile-menu-close` : bordure/couleur `var(--border)`/`var(--navy)`,
+  survol fond `var(--navy)` + icône `var(--accent)` ; `.mobile-menu-links
+  .label` : `var(--navy)` au repos, `var(--accent)` au survol ;
+  `.mobile-menu-social .nav-social`/`.mobile-menu-info a`/
+  `.mobile-menu-location` : `var(--navy)` au repos, `var(--accent)` au
+  survol) — valeurs identiques à celles d'avant l'essai translucide, pas
+  réinventées.
+  **Demi-écran dans la LARGEUR, pas la hauteur** : `.mobile-menu` passe
+  d'une hauteur fixe à 50% (ancrée en haut, `top:0`) à une LARGEUR fixe à
+  50% (`width:50%`), pleine hauteur (`height:100vh/100svh`), ancrée à
+  DROITE (`right:0`) — un tiroir latéral plutôt qu'un bandeau du haut,
+  glissant horizontalement (`transform:translateX`, remplace le
+  `translateY` de toutes les itérations précédentes de ce composant) au
+  lieu de verticalement. Ancré du même côté que le bouton "Menu" dans le
+  header. La moitié GAUCHE de l'écran reste occupée par la page réelle,
+  visible sans aucun filtre (contrairement à l'essai précédent qui la
+  laissait deviner à travers une transparence sombre) — le retour au
+  design opaque rend cette transparence sans objet, le panneau étant de
+  nouveau plein et lisible par lui-même.
+  **`margin-top`/`padding-top` du pied de menu et `padding` du panneau
+  revenus à leurs valeurs "budget `100vh`" d'avant l'essai précédent** :
+  la compression verticale de l'itération précédente répondait à une
+  contrainte de hauteur (panneau à seulement 50vh) qui n'existe plus ici
+  (le panneau fait de nouveau 100% de la hauteur) — revenir à ces valeurs
+  n'est pas un choix esthétique, c'est simplement que la contrainte qui
+  les avait motivées a disparu.
+  **`.mobile-menu-links` `gap` réduit conservé tel quel** (de la demande
+  du tour précédent, "réduis l'espace entre les titres des pages") :
+  contrairement aux réglages ci-dessus, cette réduction répondait à une
+  demande de STYLE indépendante de la forme du panneau — reconduite sans
+  changement.
+  **Taille de police entièrement recalibrée pour la LARGEUR, pas la
+  hauteur** : l'ancien `clamp()` (`2.2rem`→`7.2rem`, avec un terme
+  `15.5vw`) était pensé pour un panneau PLEIN LARGEUR — dans un tiroir à
+  50% de large, le même texte ("Prestations", le titre le plus long)
+  aurait débordé ou forcé un retour à la ligne. Recalibré par script
+  Playwright (mesure du nombre de lignes réellement rendu par titre via
+  `Range.selectNodeContents()`/`getClientRects()`, technique déjà établie
+  ailleurs sur le site, à 12 largeurs de viewport de 320 à 1920px) :
+  `clamp(1.6rem, min(9vh, 4.4vw), 4.4rem)` — les 5 titres tiennent sur une
+  seule ligne à toutes les largeurs testées **sauf** 320px (iPhone 5, où
+  "À propos" replie sur 2 lignes) — limite physique acceptée, cohérente
+  avec la tolérance déjà établie ailleurs sur le site pour cet appareil
+  précis.
+  **Bug réel trouvé et corrigé pendant la vérification, pas supposé** :
+  l'adresse email ("Estellelorusso@eurhekaconseil.com", un seul token sans
+  espace) débordait silencieusement de sa colonne sur mobile (panneau à
+  ~195px de large à 390px d'écran) et se faisait couper par
+  `overflow-x:hidden` sur `.mobile-menu` — repéré par capture d'écran
+  mobile ("Estellelorusso@" visible, le reste invisible), pas anticipé
+  avant de tester. Corrigé en ajoutant `overflow-wrap:anywhere;
+  min-width:0` sur le lien email et `flex-wrap:wrap; min-width:0` sur
+  `.mobile-menu-info-group` — l'adresse peut désormais se couper en plein
+  mot si l'espace manque, plutôt que déborder invisible hors du panneau.
+  Si `overflow-x:hidden` réapparaît comme seule protection sur ce lien
+  sans `overflow-wrap`, revérifier ce bug avant de le garder.
+  **Verrou de scroll (`html.menu-open`, introduit à l'itération
+  précédente) conservé** : toujours pertinent pour un tiroir latéral —
+  empêche que le contenu visible dans la moitié gauche de l'écran change
+  pendant la consultation du menu, indépendamment de la question de
+  transparence qui l'avait motivé à l'origine.
+  Vérifié par script Playwright (0 ligne repliée sur les 5 titres à 12
+  largeurs sauf le cas limite documenté, transform confirmé réglé sur
+  `translateX` et non `translateY`, ouverture/fermeture par bouton/lien/
+  Échap toujours fonctionnelle, couleurs et largeur du panneau cohérentes
+  sur les 5 pages) et capture d'écran desktop (hero, survol) + mobile
+  (email correctement replié sur 2 lignes). Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console. Si `transform:translateY`
+  ou une hauteur fixe (`50vh`/`100vh` sans `width`) réapparaissent sur
+  `.mobile-menu`, c'est une version précédente de ce composant (bandeau du
+  haut, plein écran…), à ne pas réintroduire sans qu'on le redemande —
+  l'historique complet de toutes les refontes précédentes reste documenté
+  plus haut dans ce fichier pour référence.
 
 ## État d'avancement
 
