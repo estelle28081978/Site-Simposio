@@ -635,14 +635,17 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    plutôt qu'un bloc séparé à côté — `.mobile-menu-footer` n'a donc plus
    qu'un seul enfant direct, la media query `flex-direction:row` ci-dessus
    (pensée pour répartir deux blocs sur une même ligne dès 560px) est
-   retirée, devenue sans objet. `align-self:center` sur `.mobile-menu-social`
-   l'aligne verticalement avec le reste de la ligne baseline de
-   `.mobile-menu-info` plutôt que de suivre l'alignement par défaut du
-   texte. Si une media query `flex-direction:row` réapparaît sur
-   `.mobile-menu-footer`, ou si `.mobile-menu-social` redevient un enfant
-   direct de `.mobile-menu-footer` (frère de `.mobile-menu-info`, pas son
-   enfant), c'est l'ancienne disposition, à ne pas réintroduire sans qu'on
-   le redemande. */
+   retirée, devenue sans objet. Regroupé un peu plus tard le même jour avec
+   son eyebrow dans `.mobile-menu-info-group` (cf. commentaire sur
+   `.mobile-menu-info` plus bas) pour contrôler l'espacement entre le
+   libellé et les icônes indépendamment de l'espacement entre catégories.
+   `align-self:center` l'aligne verticalement avec le reste de la ligne
+   baseline de `.mobile-menu-info-group` plutôt que de suivre l'alignement
+   par défaut du texte. Si une media query `flex-direction:row` réapparaît
+   sur `.mobile-menu-footer`, ou si `.mobile-menu-social` redevient un
+   enfant direct de `.mobile-menu-footer` (frère de `.mobile-menu-info`,
+   pas son descendant), c'est l'ancienne disposition, à ne pas réintroduire
+   sans qu'on le redemande. */
 .mobile-menu-social { display: flex; align-items: center; align-self: center; gap: 0.5rem; flex-shrink: 0; }
 /* `.nav-social` est une classe générique partagée avec le header (fond
    sombre, jamais concerné par cet essai) — variante fond clair scopée ici
@@ -657,7 +660,26 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mobile-menu-social .nav-social { color: var(--navy); }
 .mobile-menu-social .nav-social:hover { color: var(--accent); background: var(--navy); }
 
-.mobile-menu-info { display: flex; flex-wrap: wrap; column-gap: var(--space-4); row-gap: 0.3rem; align-items: baseline; }
+/* Chaque catégorie (Contact/Basée en/Réseaux sociaux) est désormais un
+   groupe HTML séparé (2026-09-02, demande explicite : "laisse moins
+   d'espace entre contact et l'adresse mail, entre basée en et Alsace
+   France et entre réseaux sociaux et les icônes, par contre laisse plus
+   d'espace entre chacune des trois catégories") — avant ce changement,
+   tous les éléments (eyebrows + valeurs) étaient des enfants directs de
+   `.mobile-menu-info` au même niveau, donc `column-gap` s'appliquait
+   UNIFORMÉMENT entre chaque paire d'éléments adjacents, qu'ils
+   appartiennent à la même catégorie (eyebrow→valeur) ou à deux catégories
+   différentes (valeur→eyebrow suivant) — impossible de distinguer les
+   deux avec un seul `column-gap`. `.mobile-menu-info-group` (nouveau,
+   ci-dessous) regroupe chaque paire eyebrow+valeur dans son propre
+   conteneur flex à `gap` réduit ; `column-gap`/`row-gap` sur
+   `.mobile-menu-info` ne s'appliquent plus qu'ENTRE ces 3 groupes,
+   augmentés en conséquence. Si des `<span>`/`<div>` réapparaissent comme
+   enfants directs de `.mobile-menu-info` (sans passer par
+   `.mobile-menu-info-group`), c'est l'ancienne structure plate, à ne pas
+   réintroduire sans qu'on le redemande. */
+.mobile-menu-info { display: flex; flex-wrap: wrap; column-gap: var(--space-5); row-gap: var(--space-2); align-items: baseline; }
+.mobile-menu-info-group { display: flex; align-items: baseline; gap: 0.4rem; }
 /* Couleur passée de `var(--fg-muted)` à `var(--navy)` (2026-09-02, cf.
    commentaire sur `.mobile-menu-links .label` plus haut) : l'email et
    "Alsace, France" rejoignent le reste du pied de menu en bleu
@@ -684,20 +706,24 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mobile-menu-info .mailto-at { font-family: "Helvetica Neue", Arial, sans-serif; }
 /* "Contact" / "Basée en" in the mobile menu keep the old small Oswald
    eyebrow style — client's explicit call, these two stay out of Canter.
-   Étendu à `.mobile-menu-social .eyebrow` (2026-09-02) : le nouveau
-   libellé "Réseaux sociaux", ajouté devant les icônes Instagram/LinkedIn
-   à la demande explicite de la cliente ("rajoute une catégorie 'réseaux
-   sociaux'"), reprend le même style compact plutôt que le très grand
-   `.eyebrow` générique du site (pensé pour un titre de section, pas un
-   petit repère dans un pied de menu). */
-.mobile-menu-info .eyebrow,
-.mobile-menu-social .eyebrow {
+   "Réseaux sociaux" (2026-09-02) reprend le même style compact plutôt que
+   le très grand `.eyebrow` générique du site (pensé pour un titre de
+   section, pas un petit repère dans un pied de menu) — vit dans
+   `.mobile-menu-info-group` comme les deux autres eyebrows, donc
+   `.mobile-menu-info .eyebrow` seul suffit à le cibler ; le sélecteur
+   `.mobile-menu-social .eyebrow` (ajouté quand ce libellé existait encore
+   à cet endroit précis) est retiré, il ne correspondait déjà plus à rien
+   depuis que l'eyebrow est un enfant de `.mobile-menu-info-group`, pas de
+   `.mobile-menu-social`. `margin-right` retiré (2026-09-02, même jour) :
+   l'espacement entre l'eyebrow et sa valeur est désormais géré par le
+   `gap` de `.mobile-menu-info-group` (cf. plus haut), pas par une marge
+   sur l'eyebrow seul. */
+.mobile-menu-info .eyebrow {
   font-family: var(--font-subtitle);
   font-weight: 600;
   font-size: 0.72rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  margin-right: 0.5rem;
 }
 
 /* ==========================================================================

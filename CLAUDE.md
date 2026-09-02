@@ -6557,6 +6557,48 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `rgb(28,59,74)` au repos et `rgb(193,98,45)` au survol) et capture
   d'écran desktop (état survolé) et mobile. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Menu plein écran — espacement retravaillé : serré dans chaque
+  catégorie, généreux entre les trois (2026-09-02, même jour)**
+  (`.mobile-menu-info-group`, `.mobile-menu-info`, les 5 pages/`style.css`)
+  : demande explicite de la cliente ("laisse moins d'espace entre contact
+  et l'adresse mail, entre basée en et Alsace France et entre réseaux
+  sociaux et les icônes, par contre laisse plus d'espace entre chacune des
+  trois catégories").
+  **Cause du problème** : avant ce changement, les 3 eyebrows et leurs 3
+  valeurs (email, "Alsace, France", le bloc icônes) étaient tous des
+  enfants directs de `.mobile-menu-info`, au même niveau — `column-gap`
+  s'appliquait donc UNIFORMÉMENT entre chaque paire d'éléments adjacents,
+  sans distinction entre "eyebrow→sa valeur" (même catégorie) et
+  "valeur→eyebrow suivant" (catégorie suivante). Pire, l'eyebrow avait en
+  plus son propre `margin-right:0.5rem`, qui s'ajoutait au `column-gap`
+  uniquement du côté "eyebrow→valeur" — l'espace à l'intérieur d'une
+  catégorie (`column-gap` + `margin-right`) était donc en réalité PLUS
+  grand que l'espace entre deux catégories (`column-gap` seul),
+  l'inverse de ce qui se lit naturellement comme un regroupement.
+  **Solution : un conteneur par catégorie** — chaque paire eyebrow+valeur
+  est désormais enveloppée dans un `<div class="mobile-menu-info-group">`
+  (les 5 pages, balisage dupliqué) : `.mobile-menu-info-group` porte son
+  propre `gap:0.4rem` (l'espacement resserré demandé À L'INTÉRIEUR d'une
+  catégorie), pendant que `column-gap`/`row-gap` sur `.mobile-menu-info`
+  ne s'appliquent plus qu'ENTRE ces 3 groupes désormais indépendants —
+  augmentés en conséquence, de `var(--space-4)`/`0.3rem` à
+  `var(--space-5)`/`var(--space-2)` (mesuré : 72px entre catégories contre
+  ~6px à l'intérieur d'une catégorie, un vrai contraste net). Le
+  `margin-right:0.5rem` de l'eyebrow, devenu redondant avec le `gap` du
+  groupe, est retiré ; au passage, le sélecteur mort
+  `.mobile-menu-social .eyebrow` (qui ne correspondait déjà à rien,
+  l'eyebrow "Réseaux sociaux" étant un sibling de `.mobile-menu-social`,
+  pas un descendant) est retiré de la même règle plutôt que reconduit.
+  Si des `<span>`/`<div>` réapparaissent comme enfants directs de
+  `.mobile-menu-info` sans passer par `.mobile-menu-info-group`, ou si
+  `margin-right` réapparaît sur `.mobile-menu-info .eyebrow`, c'est
+  l'ancienne structure plate, à ne pas réintroduire sans qu'on le
+  redemande.
+  Vérifié par script Playwright (mesure des écarts réels entre eyebrow et
+  valeur — ~6,4px, identique sur les 3 catégories et les 5 pages — et
+  entre catégories consécutives — 72px, identique partout) et capture
+  d'écran desktop + mobile. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 
