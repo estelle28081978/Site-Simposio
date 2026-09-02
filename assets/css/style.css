@@ -1832,7 +1832,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Méditerranéen sombre → crème, cf. commentaire détaillé dans main.js
    (recherche "Fondus de fond localisés"). `var(--bg)` reste un filet de
    sécurité avant l'exécution du JS (état final). */
-.founder { background: var(--bg); padding-block: var(--space-6); }
+/* padding-block réduit (2026-09-02, "réduit la hauteur de la section dédiée
+   à la citation car il y a trop de blanc") : var(--space-6) (7rem, la
+   constante section standard du site) laissait un vide généreux en haut ET
+   en bas du bloc, sur une section qui ne contient qu'une courte citation —
+   ramené à var(--space-4), un net resserrement sans coller le contenu aux
+   sections voisines. */
+.founder { background: var(--bg); padding-block: var(--space-4); }
 .founder-minimal { max-width: 42rem; margin-inline: auto; text-align: center; }
 /* Essai en police Liana (2026-09-02, demande explicite : "pour la
    citation de la fondatrice essaye de mettre en police Liana") — remplace
@@ -1861,7 +1867,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .founder-id-minimal {
   display: inline-flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 1.3rem;
 }
 .founder-avatar-minimal {
   flex: 0 0 auto;
@@ -1876,22 +1882,33 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-display);
   font-size: 0.85rem;
 }
+/* Police Liana + décalage à droite (2026-09-02, demande explicite : "fais
+   en sorte que ça se soit écrit aussi avec la police Liana et décale un peu
+   sur la droite... ESTELLE LORUSSO Fondatrice de Simposio, une initiative
+   Eurheka Conseil") — même police que la citation juste au-dessus
+   (`.founder-quote-minimal`), pour une signature cohérente avec la
+   citation plutôt qu'un contraste Liana/Oswald. `text-transform:uppercase`
+   et le `letter-spacing` marqué de l'ancienne version (pensés pour Oswald,
+   une police bâton) sont retirés : forcer des majuscules et écarter les
+   lettres casse les liaisons cursives d'une police script comme Liana —
+   même retenue déjà appliquée à Canter/`.eyebrow` ailleurs sur ce site.
+   Taille légèrement augmentée (une cursive fine se lit plus petite qu'un
+   sous-titre bâton à taille égale, même raisonnement que pour la
+   citation). Le "décalage à droite" est porté par le `gap` de
+   `.founder-id-minimal` (0.9rem → 1.3rem) : la signature s'éloigne du
+   médaillon "EL" plutôt que de coller contre lui. */
 .founder-signature-minimal {
-  font-family: var(--font-subtitle);
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-family: "Liana", var(--font-subtitle);
+  font-size: 1.05rem;
+  font-weight: 400;
   color: var(--navy);
   text-align: left;
 }
 .founder-signature-minimal span {
   display: block;
-  margin-top: 0.2rem;
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: none;
+  margin-top: 0.15rem;
+  font-size: 0.92rem;
+  font-weight: 400;
   color: var(--fg-muted);
 }
 /* Adaptation à la phase sombre du fondu de `.founder` (2026-09-02) : la

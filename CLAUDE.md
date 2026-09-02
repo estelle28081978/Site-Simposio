@@ -7180,6 +7180,45 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `color: var(--terracotta-300)` sur `.is-reached` réapparaissent sur ce
   composant, c'est l'ancien style (fondu dans la photo), à ne pas
   réintroduire sans qu'on le redemande.
+- **Signature de la fondatrice en Liana, décalée à droite du médaillon ;
+  section resserrée en hauteur (2026-09-02)** (`.founder-signature-minimal`,
+  `.founder-id-minimal`, `.founder`, `style.css`) : trois demandes de la
+  cliente en une fois sur la section "La fondatrice" (`engagements.html`).
+  **Signature en Liana** ("fais en sorte que ça se soit écrit aussi avec la
+  police Liana... comme c'est fait sur les lettres : ESTELLE LORUSSO
+  Fondatrice de Simposio, une initiative Eurheka Conseil") : le nom et le
+  rattachement ("ESTELLE LORUSSO" / "Fondatrice de Simposio, une initiative
+  Eurheka Conseil", `.founder-signature-minimal` + son `span`) passent de
+  `var(--font-subtitle)` (Oswald) à `"Liana", var(--font-subtitle)` — même
+  police que la citation juste au-dessus, pour une signature cohérente
+  plutôt qu'un contraste net Oswald/Liana entre les deux. **`text-transform:
+  uppercase` et le `letter-spacing` marqué (0.05em/0.02em) retirés** :
+  pensés pour Oswald (police bâton, où l'espacement/les majuscules
+  fonctionnent bien), ils cassent les liaisons cursives d'une police
+  script comme Liana — même retenue déjà appliquée à Canter/`.eyebrow`
+  ailleurs sur ce site (« les bas-de-casse font tout le charme, les
+  majuscules aplatissent l'effet »). `font-weight` ramené de `600`/`500` à
+  `400` (Liana n'a qu'une seule graisse ; forcer un poids supérieur aurait
+  demandé une synthèse "faux gras" du navigateur, dégradant le rendu d'une
+  police script fine) et taille légèrement augmentée (`0.82rem`→`1.05rem`
+  nom, `0.74rem`→`0.92rem` rattachement) — même raisonnement déjà appliqué
+  à la citation : une cursive fine se lit plus petite qu'un sous-titre bâton
+  à taille égale.
+  **Décalage à droite** : porté par le `gap` de `.founder-id-minimal`
+  (`0.9rem`→`1.3rem`) — la signature s'éloigne un peu plus du médaillon
+  "EL" plutôt que de coller contre lui, sans toucher au reste de
+  l'agencement (toujours centré comme bloc, empilé sous 700px).
+  **Section resserrée** ("réduit la hauteur de la section dédiée à la
+  citation car il y a trop de blanc") : `.founder` passe de
+  `padding-block: var(--space-6)` (7rem, la constante section standard du
+  site) à `var(--space-4)` (2,75rem) — un vrai resserrement, mesuré par
+  script Playwright : hauteur totale de la section passée de 755px à 629px
+  à 1440×900 (-17%), sans coller le contenu aux sections voisines
+  (Valeurs au-dessus, Engagements en dessous).
+  Vérifié par script Playwright (`font-family` calculé confirmé
+  `Liana, Oswald, …`, 0 erreur console) et capture d'écran desktop + mobile
+  (identité empilée verticalement sous 700px, toujours lisible). Regression
+  complète 5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
