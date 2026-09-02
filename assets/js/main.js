@@ -173,12 +173,20 @@
   function closeMenu() {
     mobileMenu.classList.remove("is-open");
     navToggle.setAttribute("aria-expanded", "false");
+    document.documentElement.classList.remove("menu-open");
   }
 
   if (navToggle && mobileMenu) {
     navToggle.addEventListener("click", function () {
       var isOpen = mobileMenu.classList.toggle("is-open");
       navToggle.setAttribute("aria-expanded", String(isOpen));
+      // Bloque le scroll de la page tant que le menu (désormais en
+      // demi-écran, avec la page réelle visible en transparence derrière)
+      // est ouvert (2026-09-02) — sans ça, faire défiler la page pendant
+      // que le menu est ouvert changerait le fond visible à travers lui,
+      // ce qui contredirait "garder le fond de la page depuis laquelle on
+      // a ouvert le menu".
+      document.documentElement.classList.toggle("menu-open", isOpen);
     });
     if (mobileMenuClose) mobileMenuClose.addEventListener("click", closeMenu);
     mobileMenu.querySelectorAll("a").forEach(function (a) {

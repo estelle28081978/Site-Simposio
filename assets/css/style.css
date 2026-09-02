@@ -180,6 +180,13 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
+/* Bloque le scroll de la page pendant que le menu demi-écran est ouvert
+   (2026-09-02, cf. `main.js`) : le menu étant désormais translucide et
+   ne couvrant que la moitié haute de l'écran (voir `.mobile-menu` plus
+   bas), la page réelle reste visible au travers et en dessous — sans ce
+   verrou, la scroller pendant que le menu est ouvert changerait le fond
+   visible à travers lui. */
+html.menu-open { overflow: hidden; }
 
 .container {
   width: 100%;
@@ -446,29 +453,45 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    (`transform:scale(1.04)` sur `.label`, pas sur `a` lui-même — évite
    tout conflit avec le `transition-delay` de l'entrée, qui ne porte que
    sur `opacity`/`transform` de `a`). */
-/* Fond passé en Blanc Calcaire, à l'essai (2026-09-02) : demande explicite
-   de la cliente ("essaye de mettre le menu en blanc calcaire en adaptant
-   les couleurs") — remplace `var(--navy-900)` par `var(--bg)`. Tous les
-   éléments pensés pour un fond sombre (bordures/couleurs `-inverse`,
-   `--cream`, `--terracotta-300`) sont adaptés à leurs équivalents pour
-   fond clair juste en dessous — `.nav-social`/`.eyebrow.on-dark` restent
-   des classes génériques partagées avec le header (toujours sur fond
-   sombre, lui) donc non touchées : la variante claire est ajoutée en
-   scopée (`.mobile-menu-social .nav-social`) ou en retirant simplement
-   `on-dark` du HTML (`.mobile-menu-info .eyebrow`), jamais en modifiant
-   la règle de base. Si `background: var(--navy-900)` réapparaît ici,
-   c'est l'ancien fond, à ne pas réintroduire sans qu'on le redemande. */
+/* Menu ramené à un demi-écran, fond translucide révélant la page derrière
+   (2026-09-02, demande explicite : "faire apparaître la page du menu en
+   demi écran en gardant le fond avec la page de laquelle on ouvre le
+   menu mais en ajoutant un filtre opaque foncé pour mettre en valeur le
+   menu") — remplace le plein écran opaque en Blanc Calcaire de l'essai
+   précédent. Deux changements structurels :
+   1. `.mobile-menu` passe de `inset:0` (pleine hauteur) à une hauteur
+      fixe de 50% du viewport, ancrée en haut (`top:0`) — le bas de
+      l'écran reste occupé par la page réelle, non masquée, pendant que
+      le menu est ouvert.
+   2. Le fond passe d'une couleur opaque pleine (`var(--bg)`) à un navy
+      translucide (`rgba(16, 31, 39, 0.88)`, ~88% d'opacité — le "filtre
+      opaque foncé" demandé) : comme `.mobile-menu` est en
+      `position:fixed` par-dessus la page réelle (pas un calque séparé
+      qui la cacherait), cette transparence laisse deviner les couleurs/
+      formes de la page ouverte au travers ("gardant le fond avec la
+      page") tout en l'assombrissant assez pour que le texte du menu
+      ressorte nettement dessus, quelle que soit la page/section visible
+      derrière au moment de l'ouverture.
+   Tous les éléments du menu repassent en conséquence aux couleurs pensées
+   pour un fond sombre (`--cream`/`--terracotta-300`/`-inverse`), comme
+   avant l'essai Blanc Calcaire du 2026-09-02 (cf. historique complet dans
+   CLAUDE.md) — mêmes valeurs reprises telles quelles pour cette raison.
+   Si `inset:0` (pleine hauteur) ou `background: var(--bg)` (opaque plein)
+   réapparaissent ici, c'est l'une des deux versions précédentes, à ne pas
+   réintroduire sans qu'on le redemande. */
 .mobile-menu {
   position: fixed;
-  inset: 0;
-  background: var(--bg);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50vh;
+  height: 50svh;
+  background: rgba(16, 31, 39, 0.88);
   z-index: 199;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 100vh;
-  min-height: 100svh;
-  padding: var(--space-4) var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-2);
   transform: translateY(-100%);
   transition: transform var(--dur-slow) var(--ease);
   overflow-y: auto;
@@ -476,29 +499,19 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .mobile-menu.is-open { transform: translateY(0); }
 
-/* Couleur de repos passée de `var(--ink)` à `var(--navy)` (2026-09-02,
-   cf. commentaire sur `.mobile-menu-links .label` plus haut) : le bouton
-   de fermeture rejoint "le reste" du menu en bleu Méditerranéen. */
 .mobile-menu-close {
   position: absolute;
   top: var(--space-3);
   right: var(--space-3);
   z-index: 2;
   background: none;
-  border: 1px solid var(--border);
-  color: var(--navy);
+  border: 1px solid var(--border-inverse);
+  color: var(--cream);
   padding: 0.6rem;
   border-radius: 999px;
-  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
-/* Survol en terracotta + bleu Méditerranéen (2026-09-02, demande
-   explicite : "met en terracotta et bleu méditerranéen quand on passe
-   dessus") : le cercle se remplit de `var(--navy)` (bleu Méditerranéen
-   plein, pas une teinte translucide) pendant que l'icône passe en
-   `var(--accent)` (terracotta) — même duo de couleurs appliqué au survol
-   des icônes réseaux sociales juste en dessous, pour un langage de survol
-   cohérent sur tout le pied de menu. */
-.mobile-menu-close:hover { background: var(--navy); color: var(--accent); transform: rotate(90deg); }
+.mobile-menu-close:hover { background: rgba(246, 241, 231, 0.1); transform: rotate(90deg); }
 .mobile-menu-close svg { width: 18px; height: 18px; display: block; }
 
 /* Aligné à gauche (2026-09-02, demande explicite : "centre, le texte à
@@ -510,12 +523,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    `align-items:center; text-align:center` réapparaissent ici, c'est
    l'ancien réglage (4ᵉ refonte, 2026-08-21), à ne pas réintroduire sans
    qu'on le redemande. */
+/* `gap` réduit de `clamp(0.3rem,1.8vh,1.2rem)` à `clamp(0.1rem,0.6vh,0.4rem)`
+   (2026-09-02, demande explicite : "réduis l'espace entre les titres des
+   pages") — dans le cadre du passage en demi-écran ci-dessus, resserrer
+   les titres est aussi ce qui laisse le plus de place à une taille de
+   police encore lisible dans une hauteur disponible deux fois plus
+   petite qu'avant. */
 .mobile-menu-links {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  gap: clamp(0.3rem, 1.8vh, 1.2rem);
+  gap: clamp(0.1rem, 0.6vh, 0.4rem);
   max-width: var(--max-width);
   margin-inline: auto;
   width: 100%;
@@ -529,7 +548,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   position: relative;
   display: block;
   min-width: 0;
-  padding-block: clamp(0.2rem, 1vh, 0.5rem);
+  padding-block: clamp(0.05rem, 0.3vh, 0.15rem);
   /* Entrée en fondu + léger glissement vers le haut, échelonnée par lien
      (nth-child ci-dessous) — l'"effet d'animation" demandé pour cette
      4ᵉ refonte du menu. Uniquement `opacity`/`transform` ici (jamais
@@ -563,21 +582,32 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    contenu — seul le CSS le mettait en majuscules visuellement. Si
    `text-transform:uppercase` réapparaît ici, c'est cet ancien réglage, à
    ne pas réintroduire sans qu'on le redemande. */
-/* Couleur repassée de `var(--accent)` à `var(--navy)` (bleu Méditerranéen,
-   2026-09-02, 2ᵉ passe — demande explicite : "mes les titres des pages en
-   bleu méditerranéen") — annule le passage au terracotta fait plus tôt le
-   même jour. Le survol bascule à l'inverse vers `var(--accent)`
-   (terracotta, cf. règle plus bas), pour rester visible sur un texte
-   désormais navy au repos. Si `color: var(--accent)` réapparaît ici, c'est
-   ce réglage intermédiaire, à ne pas réintroduire sans qu'on le redemande. */
+/* Couleur repassée en `var(--cream)` (2026-09-02, passage du menu en
+   demi-écran sur fond translucide sombre, cf. commentaire sur
+   `.mobile-menu` plus haut) — le bleu Méditerranéen de l'essai Blanc
+   Calcaire n'a plus le contraste voulu sur ce nouveau fond navy
+   translucide. Le survol bascule vers `var(--terracotta-300)` (terracotta
+   clair, pensé pour ressortir sur fond sombre — pas `var(--accent)`, plus
+   difficile à distinguer du fond navy foncé une fois translucide).
+   **Taille très réduite** (`clamp(1.3rem, min(4.6vh, 7.5vw), 3.1rem)`, au
+   lieu de `clamp(2.2rem,…,7.2rem)`) : la contrainte "tient sur un écran"
+   déjà établie sur ce composant portait jusqu'ici sur un budget de
+   `100vh` — le panneau ne fait plus que 50% de la hauteur du viewport,
+   donc le même texte doit tenir dans grossièrement moitié moins de place
+   (padding et pied de page compris). Calibré par script Playwright
+   (mesure `scrollHeight` vs `clientHeight` de `.mobile-menu` à plusieurs
+   tailles de viewport desktop/mobile) plutôt qu'une simple division par 2
+   des anciennes valeurs. Si un `clamp()` calé sur un budget `100vh`
+   (plafond ≥ 6rem) réapparaît ici, c'est un retour à la version plein
+   écran, à ne pas réintroduire sans qu'on le redemande. */
 .mobile-menu-links .label {
   display: inline-block;
   min-width: 0;
   overflow-wrap: break-word;
   font-family: var(--font-display);
-  font-size: clamp(2.2rem, min(10.1vh, 15.5vw), 7.2rem);
+  font-size: clamp(1.3rem, min(4.6vh, 6.4vw), 3.1rem);
   line-height: 1.05;
-  color: var(--navy);
+  color: var(--cream);
   transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
   transform-origin: center;
 }
@@ -596,7 +626,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    redemande. */
 .mobile-menu-links a:hover .label,
 .mobile-menu-links a:focus-visible .label {
-  color: var(--accent);
+  color: var(--terracotta-300);
   transform: translateX(clamp(0.75rem, 2.5vw, 2rem));
 }
 /* Page courante (2026-09-01) : ne se distingue plus par la couleur (la
@@ -617,6 +647,11 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    (terracotta, 2026-09-02, demande explicite : "met la ligne en gris en
    terracotta") — seule cette couleur change, l'épaisseur/le style du
    trait restent inchangés. */
+/* `margin-top`/`padding-top` réduits (2026-09-02, passage en demi-écran) :
+   `clamp(1rem,3vh,…)`/`clamp(0.5rem,1.6vh,…)` visaient un budget vertical
+   de `100vh`, désormais divisé par deux (`.mobile-menu` ne fait plus que
+   50% du viewport) — resserrés en proportion pour laisser sa place au
+   texte des titres au-dessus. */
 .mobile-menu-footer {
   display: flex;
   flex-direction: column;
@@ -624,8 +659,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   max-width: var(--max-width);
   margin-inline: auto;
   width: 100%;
-  margin-top: clamp(1rem, 3vh, var(--space-4));
-  padding-top: clamp(0.5rem, 1.6vh, 1rem);
+  margin-top: clamp(0.5rem, 1.5vh, var(--space-3));
+  padding-top: clamp(0.3rem, 0.8vh, 0.6rem);
   border-top: 1px solid var(--accent);
 }
 /* "Réseaux sociaux" (libellé + icônes) collé à "Basée en" (2026-09-02,
@@ -674,10 +709,10 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: auto;
   height: auto;
   border-radius: 0;
-  color: var(--navy);
+  color: var(--fg-muted-inverse);
 }
 .mobile-menu-social .nav-social svg { width: 18px; height: 18px; }
-.mobile-menu-social .nav-social:hover { color: var(--accent); background: none; }
+.mobile-menu-social .nav-social:hover { color: var(--terracotta-300); background: none; }
 
 /* Chaque catégorie (Contact/Basée en/Réseaux sociaux) est désormais un
    groupe HTML séparé (2026-09-02, demande explicite : "laisse moins
@@ -721,8 +756,8 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    directement sur ce span dans les 5 pages, ne dépend plus de sa position
    dans le DOM. Si `span:last-child` réapparaît ici, revérifier ce bug
    avant de le garder. */
-.mobile-menu-info a, .mobile-menu-info .mobile-menu-location { color: var(--navy); font-size: 0.9rem; }
-.mobile-menu-info a:hover { color: var(--accent); }
+.mobile-menu-info a, .mobile-menu-info .mobile-menu-location { color: var(--fg-muted-inverse); font-size: 0.9rem; }
+.mobile-menu-info a:hover { color: var(--terracotta-300); }
 /* The "@" glyph in self-hosted Glacial Indifference (400 normal) is drawn
    with much thinner strokes than the rest of the font's character set —
    at this element's small size it's borderline invisible on standard

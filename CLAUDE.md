@@ -6725,6 +6725,101 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   le correctif (comparé à la capture prise juste avant ce correctif).
   Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Menu — essai en demi-écran translucide, révélant la page ouverte
+  derrière un filtre sombre (2026-09-02)** (`.mobile-menu*`, `main.js`,
+  les 5 pages/`style.css`) : demande explicite de la cliente ("essayons
+  de faire apparaître la page du menu en demi écran en gardant le fond
+  avec la page de laquelle on ouvre le menu mais en ajoutant un filtre
+  opaque foncé pour mettre en valeur le menu et réduis l'espace entre les
+  titres des pages") — un essai ("essayons"), pas un remplacement
+  discret ; à ajuster ou annuler selon son retour. **Remplace** le menu
+  plein écran opaque en Blanc Calcaire de l'essai précédent (même
+  journée) — voir plus haut pour l'historique complet des refontes de ce
+  composant.
+  **Demi-écran, fond translucide** : `.mobile-menu` passe de `inset:0`
+  (pleine hauteur, opaque) à une hauteur fixe `50vh`/`50svh` ancrée en
+  haut (`top:0; left:0; right:0`), avec un fond `rgba(16, 31, 39, 0.88)`
+  (navy-900 à 88% d'opacité) au lieu d'une couleur pleine. Comme
+  `.mobile-menu` est en `position:fixed` PAR-DESSUS la page réelle (pas un
+  calque séparé qui la remplacerait), cette transparence laisse deviner
+  les couleurs/formes de la page ouverte au travers ("gardant le fond
+  avec la page de laquelle on ouvre le menu") tout en l'assombrissant
+  assez pour que le texte du menu ressorte nettement dessus (le "filtre
+  opaque foncé" demandé), quelle que soit la section visible derrière au
+  moment de l'ouverture — vérifié sur le hero (photo Fiat 500) et en
+  ayant scrollé au milieu de Prestations (photo différente), l'effet
+  fonctionne sur n'importe quel fond. La moitié basse de l'écran reste
+  occupée par la page réelle, entièrement visible et non filtrée.
+  **Scroll verrouillé pendant que le menu est ouvert** (`main.js`,
+  nouvelle classe `html.menu-open { overflow:hidden }`) : sans ce verrou,
+  faire défiler la page pendant que le menu est ouvert changerait le fond
+  visible à travers le filtre translucide, ce qui contredirait "garder le
+  fond de la page depuis laquelle on a ouvert le menu" (littéralement, la
+  page telle qu'elle était au moment de l'ouverture) — la classe est
+  ajoutée/retirée sur `<html>` en même temps que `.is-open` sur
+  `.mobile-menu`, et retirée par `closeMenu()` quel que soit le chemin de
+  fermeture (bouton, clic sur un lien, touche Échap).
+  **Couleurs repassées au jeu "fond sombre"** (comme avant l'essai Blanc
+  Calcaire du même jour, valeurs reprises à l'identique de cette version
+  antérieure) : `.mobile-menu-close` (`border-inverse`/`cream`, survol
+  `rgba(246,241,231,0.1)`), `.mobile-menu-links .label` (`cream` au repos,
+  `terracotta-300` au survol — pas `var(--accent)`, moins lisible sur un
+  fond navy déjà sombre une fois translucide), `.mobile-menu-social
+  .nav-social`/`.mobile-menu-info a`/`.mobile-menu-location`
+  (`fg-muted-inverse` au repos, `terracotta-300` au survol). Le
+  `border-top` terracotta du pied de menu (demande d'une itération
+  précédente le même jour) reste inchangé, déjà adapté à un fond sombre.
+  **Espace entre les titres des pages réduit** (2ᵉ demande explicite de
+  ce message) : `.mobile-menu-links` `gap` de `clamp(0.3rem,1.8vh,1.2rem)`
+  à `clamp(0.1rem,0.6vh,0.4rem)`, `padding-block` de chaque lien de
+  `clamp(0.2rem,1vh,0.5rem)` à `clamp(0.05rem,0.3vh,0.15rem)`.
+  **Taille de police fortement réduite, calibrée pour tenir dans un
+  budget deux fois plus petit** : l'ancien `clamp(2.2rem,…,7.2rem)` visait
+  un budget de `100vh` (pleine hauteur) — désormais divisé par deux (le
+  panneau ne fait plus que 50% du viewport), donc simplement diviser par 2
+  les anciennes valeurs n'aurait pas suffi (padding et pied de page ne
+  scalent pas linéairement avec la hauteur du texte). Calibré par script
+  Playwright (mesure `scrollHeight` vs `clientHeight` de `.mobile-menu` à
+  9 tailles de viewport desktop/mobile) plutôt qu'une simple division :
+  `clamp(1.3rem, min(4.6vh, 6.4vw), 3.1rem)` — les deux coefficients (`vh`
+  ET `vw`) ont dû être ajustés séparément, le terme `vw` devenant le
+  facteur limitant aux largeurs de téléphone étroites (ex. 375px) alors
+  que `vh` domine sur desktop. `margin-top`/`padding-top` du pied de menu
+  réduits en proportion (`clamp(0.5rem,1.5vh,var(--space-3))`/
+  `clamp(0.3rem,0.8vh,0.6rem)`, au lieu de `clamp(1rem,3vh,var(--space-4))`/
+  `clamp(0.5rem,1.6vh,1rem)`).
+  **Résultat du calibrage** : tient sans le moindre débordement interne
+  (`scrollHeight<=clientHeight`) sur 9 tailles desktop/mobile courantes
+  (1440×900 à 1920×1080, 1024×768, 768×1024, 390×844 à 360×800).
+  **Limite physique acceptée, cohérente avec la tolérance déjà établie
+  ailleurs sur ce composant** : les orientations mobiles très courtes
+  (paysage, ex. 667×375/896×414) et l'iPhone 5 (320×568) débordent encore
+  légèrement — la hauteur disponible (~188-284px pour 5 liens + pied de
+  page) est physiquement trop juste pour rester lisible à ces tailles
+  sans une police illisible ; `overflow-y:auto` (déjà en place comme
+  filet de sécurité) absorbe l'écart avec un léger scroll interne plutôt
+  que de casser la mise en page — même compromis déjà accepté ailleurs
+  sur ce composant pour des tailles extrêmes similaires.
+  **Vérifié que le header reste correctement DERRIÈRE le menu** (z-index
+  199 contre 100, comme avant) malgré l'apparence trompeuse sur capture
+  d'écran (le logo "Simposio." et les icônes du header restent lisibles
+  en haut de l'écran une fois le menu ouvert) — confirmé par
+  `document.elementFromPoint` à l'emplacement du logo : c'est bien
+  `.mobile-menu` qui capte le point, pas le header ; la lisibilité du
+  logo vient simplement du fait qu'un texte clair sur un fond déjà sombre
+  (le glass du header, puis le filtre du menu par-dessus) reste lisible
+  dans les deux cas, sans rupture visuelle au niveau du header — pas un
+  bug de superposition.
+  Vérifié par script Playwright : ajustement/fermeture du verrou de
+  scroll (`html.menu-open`) confirmé sur les 3 chemins de fermeture
+  (bouton, lien, Échap), couleurs confirmées cohérentes sur les 5 pages,
+  0 erreur console. Capture d'écran desktop (hero, une autre page
+  scrollée en plein milieu, état survolé) et mobile confirmant l'effet
+  recherché. Regression complète 5 pages × 2 viewports : 0 débordement,
+  0 erreur console. Si `inset:0` (pleine hauteur) ou `background: var(--bg)`
+  (opaque plein, Blanc Calcaire) réapparaissent sur `.mobile-menu`, ce
+  sont les deux versions précédentes, à ne pas réintroduire sans qu'on le
+  redemande.
 
 ## État d'avancement
 
