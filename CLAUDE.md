@@ -6442,6 +6442,53 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `rgb(193,98,45)` sur le lien email) et capture d'écran de chaque état de
   survol. Regression complète 5 pages × 2 viewports : 0 débordement, 0
   erreur console.
+- **Menu — répartition terracotta/bleu Méditerranéen étendue à tout le
+  pied de menu, nouvelle catégorie "Réseaux sociaux" (2026-09-02, même
+  jour)** (`.mobile-menu*`, les 5 pages, `style.css`) : demande explicite
+  de la cliente ("met 'contact', 'basée en' et rajoute une catégorie
+  'réseaux sociaux' ainsi que les titres des pages en terracotta et le
+  reste en bleu méditerranéen").
+  **"Contact"/"Basée en" étaient déjà en terracotta** (`.mobile-menu-info
+  .eyebrow` hérite de `.eyebrow` générique, `var(--accent)`, depuis le
+  passage du menu en Blanc Calcaire) — aucun changement nécessaire de ce
+  côté, seulement vérifié.
+  **Nouvelle catégorie "Réseaux sociaux"** : un `<span class="eyebrow">
+  Réseaux sociaux</span>` est ajouté devant les icônes Instagram/LinkedIn
+  dans `.mobile-menu-social`, sur les 5 pages (markup dupliqué, cf.
+  convention du site). Le sélecteur Oswald compact partagé avec "Contact"/
+  "Basée en" (`.mobile-menu-info .eyebrow`) est étendu à
+  `.mobile-menu-social .eyebrow` pour que ce nouveau libellé reprenne le
+  même style discret plutôt que le très grand `.eyebrow` générique du
+  site (pensé pour un titre de section) — `align-items:center` ajouté à
+  `.mobile-menu-social` pour aligner ce texte avec les cercles d'icônes
+  34px sur la même ligne.
+  **"Les titres des pages" (les 5 liens Accueil/Prestations/Projets/À
+  propos/Contact) passent en terracotta au repos** :
+  `.mobile-menu-links .label` — `var(--ink)` → `var(--accent)`. Le survol,
+  qui basculait jusqu'ici vers ce même terracotta (devenu invisible
+  puisque déjà la couleur de repos), passe à l'inverse en `var(--navy)` —
+  un vrai changement de couleur reste ainsi perceptible au survol,
+  cohérent avec "le reste en bleu méditerranéen".
+  **"Le reste" passé en bleu Méditerranéen** : email + "Alsace, France"
+  (`.mobile-menu-info a`/`span:last-child`, `var(--fg-muted)` →
+  `var(--navy)`), icônes Instagram/LinkedIn au repos
+  (`.mobile-menu-social .nav-social`, `var(--fg-muted)` → `var(--navy)`),
+  bouton de fermeture au repos (`.mobile-menu-close`, `var(--ink)` →
+  `var(--navy)`). Les survols déjà établis au tour précédent (email en
+  terracotta, icônes/fermeture en icône terracotta sur fond navy plein)
+  restent inchangés — cohérents avec ce nouveau partage : ces éléments
+  "de repos bleu Méditerranéen" affichent tous un survol terracotta,
+  symétrique à celui des liens de navigation (repos terracotta → survol
+  bleu Méditerranéen).
+  Vérifié par script Playwright (`getComputedStyle` sur les 8 éléments
+  concernés : les 5 libellés + les 3 eyebrows du pied de menu confirmés
+  en `rgb(193,98,45)` (terracotta), email/"Alsace, France"/icônes/bouton
+  de fermeture confirmés en `rgb(28,59,74)` (bleu Méditerranéen), survol
+  d'un lien confirmé bien passé au bleu Méditerranéen) et capture d'écran
+  desktop (état normal + survol) et mobile (le nouveau libellé "Réseaux
+  sociaux" se réaligne proprement au-dessus des icônes sur la largeur
+  mobile, sans débordement). Regression complète 5 pages × 2 viewports :
+  0 débordement, 0 erreur console.
 
 ## État d'avancement
 

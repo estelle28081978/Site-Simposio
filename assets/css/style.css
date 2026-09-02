@@ -476,6 +476,9 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 }
 .mobile-menu.is-open { transform: translateY(0); }
 
+/* Couleur de repos passée de `var(--ink)` à `var(--navy)` (2026-09-02,
+   cf. commentaire sur `.mobile-menu-links .label` plus haut) : le bouton
+   de fermeture rejoint "le reste" du menu en bleu Méditerranéen. */
 .mobile-menu-close {
   position: absolute;
   top: var(--space-3);
@@ -483,7 +486,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   z-index: 2;
   background: none;
   border: 1px solid var(--border);
-  color: var(--ink);
+  color: var(--navy);
   padding: 0.6rem;
   border-radius: 999px;
   transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
@@ -560,6 +563,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    contenu — seul le CSS le mettait en majuscules visuellement. Si
    `text-transform:uppercase` réapparaît ici, c'est cet ancien réglage, à
    ne pas réintroduire sans qu'on le redemande. */
+/* Couleur passée de `var(--ink)` à `var(--accent)` (terracotta,
+   2026-09-02, demande explicite : "les titres des pages en terracotta et
+   le reste en bleu méditerranéen") — les 5 libellés (Accueil,
+   Prestations...) sont désormais terracotta au repos ; le survol bascule
+   à l'inverse vers `var(--navy)` (bleu Méditerranéen, cf. règle plus bas)
+   plutôt que de garder l'ancien survol terracotta, qui serait devenu
+   invisible sur un texte déjà terracotta au repos. */
 .mobile-menu-links .label {
   display: inline-block;
   min-width: 0;
@@ -567,7 +577,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-display);
   font-size: clamp(2.2rem, min(10.1vh, 15.5vw), 7.2rem);
   line-height: 1.05;
-  color: var(--ink);
+  color: var(--accent);
   transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
   transform-origin: center;
 }
@@ -586,7 +596,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    redemande. */
 .mobile-menu-links a:hover .label,
 .mobile-menu-links a:focus-visible .label {
-  color: var(--accent);
+  color: var(--navy);
   transform: translateX(clamp(0.75rem, 2.5vw, 2rem));
 }
 /* Page courante (2026-09-01) : ne se distingue plus par la couleur (la
@@ -616,19 +626,29 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 @media (min-width: 560px) {
   .mobile-menu-footer { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--space-4); }
 }
-.mobile-menu-social { display: flex; gap: 0.5rem; flex-shrink: 0; }
+/* `align-items:center` ajouté (2026-09-02) pour aligner verticalement le
+   nouveau libellé "Réseaux sociaux" (texte, hauteur de ligne) avec les
+   cercles d'icônes Instagram/LinkedIn (34px) sur la même ligne. */
+.mobile-menu-social { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 /* `.nav-social` est une classe générique partagée avec le header (fond
    sombre, jamais concerné par cet essai) — variante fond clair scopée ici
    plutôt que de toucher la règle de base. Survol en terracotta + bleu
    Méditerranéen (2026-09-02, demande explicite, cf. commentaire détaillé
    sur `.mobile-menu-close` plus haut) : `background` passe d'une teinte
    navy translucide (6%) à `var(--navy)` plein, cohérent avec le bouton de
-   fermeture juste au-dessus. */
-.mobile-menu-social .nav-social { color: var(--fg-muted); }
+   fermeture juste au-dessus. Couleur de repos passée de `var(--fg-muted)`
+   à `var(--navy)` (2026-09-02, 2ᵉ passe — cf. commentaire sur
+   `.mobile-menu-links .label` plus haut pour le contexte du nouveau
+   partage terracotta/bleu Méditerranéen). */
+.mobile-menu-social .nav-social { color: var(--navy); }
 .mobile-menu-social .nav-social:hover { color: var(--accent); background: var(--navy); }
 
 .mobile-menu-info { display: flex; flex-wrap: wrap; column-gap: var(--space-4); row-gap: 0.3rem; align-items: baseline; }
-.mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--fg-muted); font-size: 0.9rem; }
+/* Couleur passée de `var(--fg-muted)` à `var(--navy)` (2026-09-02, cf.
+   commentaire sur `.mobile-menu-links .label` plus haut) : l'email et
+   "Alsace, France" rejoignent le reste du pied de menu en bleu
+   Méditerranéen. */
+.mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--navy); font-size: 0.9rem; }
 .mobile-menu-info a:hover { color: var(--accent); }
 /* The "@" glyph in self-hosted Glacial Indifference (400 normal) is drawn
    with much thinner strokes than the rest of the font's character set —
@@ -639,8 +659,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    the email address looks. */
 .mobile-menu-info .mailto-at { font-family: "Helvetica Neue", Arial, sans-serif; }
 /* "Contact" / "Basée en" in the mobile menu keep the old small Oswald
-   eyebrow style — client's explicit call, these two stay out of Canter. */
-.mobile-menu-info .eyebrow {
+   eyebrow style — client's explicit call, these two stay out of Canter.
+   Étendu à `.mobile-menu-social .eyebrow` (2026-09-02) : le nouveau
+   libellé "Réseaux sociaux", ajouté devant les icônes Instagram/LinkedIn
+   à la demande explicite de la cliente ("rajoute une catégorie 'réseaux
+   sociaux'"), reprend le même style compact plutôt que le très grand
+   `.eyebrow` générique du site (pensé pour un titre de section, pas un
+   petit repère dans un pied de menu). */
+.mobile-menu-info .eyebrow,
+.mobile-menu-social .eyebrow {
   font-family: var(--font-subtitle);
   font-weight: 600;
   font-size: 0.72rem;
