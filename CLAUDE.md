@@ -7258,6 +7258,33 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `.founder-avatar-minimal` ou une police Liana/Oswald sur
   `.founder-signature-minimal` réapparaissent, ce sont des itérations
   précédentes, à ne pas réintroduire sans qu'on le redemande.
+- **Fondatrice — guillemets retirés, citation alignée à gauche sur la
+  signature (2026-09-02)** (`.founder-quote-minimal`, `.founder-rule`,
+  `engagements.html`/`style.css`) : demande explicite de la cliente ("à la
+  citation enlève les guillemets et aligne bien avec le Estelle Lorusso").
+  **Guillemets « »** retirés du texte HTML de la citation (ils n'étaient de
+  toute façon pas couverts par le charset de Liana, cf. bullet plus haut —
+  affichés via fallback Yeseva One, discrètement).
+  **Alignement à gauche** : `.founder-quote-minimal` reçoit
+  `text-align: left`, qui écrase le centrage hérité de `.founder-minimal`
+  — jusqu'ici seule la BOÎTE de la citation avait la même largeur/position
+  que la signature (cf. bullet précédent), pas son texte, resté centré
+  ligne par ligne. Désormais les deux blocs de texte s'alignent
+  réellement sur le même bord gauche (mesuré : 456,1px pour la citation,
+  456,1px pour la signature, à 1440px de large). `.founder-rule` (le petit
+  trait séparateur) passe de `margin: 2.25rem auto` (centré) à
+  `margin: 2.25rem 0` (aligné à gauche lui aussi) — sans ce changement, le
+  trait serait resté seul au milieu de la section entre deux blocs de
+  texte désormais alignés à gauche, visuellement disjoint.
+  Vérifié par script Playwright (bord gauche de `.founder-quote-minimal`
+  et `.founder-signature-minimal` mesuré identique à 1440px de large,
+  texte de la citation confirmé sans guillemets, 0 erreur console) et
+  capture d'écran desktop + mobile. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console. Si `text-align: center`
+  (hérité, sans override) réapparaît sur `.founder-quote-minimal`, ou si
+  `margin: … auto` réapparaît sur `.founder-rule`, c'est un retour à
+  l'alignement centré précédent, à ne pas réintroduire sans qu'on le
+  redemande.
 
 ## État d'avancement
 

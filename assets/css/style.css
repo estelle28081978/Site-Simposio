@@ -1849,20 +1849,34 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    respirer les jambages/boucles caractéristiques d'une cursive. Si Liana
    ne convient pas à l'usage, `--font-display` reste le fallback naturel
    (même famille de police que le reste des titres du site). */
+/* Guillemets retirés + alignement à gauche (2026-09-02, demande explicite :
+   "à la citation enlève les guillemets et aligne bien avec le Estelle
+   Lorusso") — `text-align:left` remplace le centrage hérité de
+   `.founder-minimal`, pour que le texte de la citation s'aligne
+   véritablement sur le texte de la signature juste en dessous (déjà
+   flush à gauche depuis le retrait du médaillon "EL"), pas seulement leurs
+   boîtes. Les guillemets « » du texte HTML sont retirés (voir aussi le
+   commentaire au-dessus du `<p>` dans engagements.html sur le charset de
+   Liana, qui ne les couvrait de toute façon pas). */
 .founder-quote-minimal {
   font-family: "Liana", var(--font-display);
   font-size: clamp(1.7rem, 1.3vw + 1.4rem, 2.5rem);
   line-height: 1.65;
   color: var(--navy);
   margin-top: 1.5rem;
+  text-align: left;
 }
+/* Alignée à gauche comme la citation/signature (2026-09-02, même demande
+   ci-dessus) — remplace le centrage `margin: … auto`, pour que ce trait ne
+   flotte plus seul au centre entre deux blocs de texte désormais alignés
+   à gauche. */
 .founder-rule {
   display: block;
   width: 2.75rem;
   height: 1.5px;
   background: var(--terracotta);
   border: none;
-  margin: 2.25rem auto;
+  margin: 2.25rem 0;
 }
 /* Badge "EL" retiré, signature repassée en Glacial Indifference et alignée
    à gauche (2026-09-02, demande explicite : "enlève le badge EL, remet ce
