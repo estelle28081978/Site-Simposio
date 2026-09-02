@@ -133,10 +133,22 @@
      RÉELLEMENT visible derrière la photo de l'équipe juste au-dessus dans
      la page) vers `--bg` pour la citation de la fondatrice ; crème-dim
      `--bg-dim` (236,227,209, la teinte de `.contact-devis` juste au-dessus)
-     vers `--navy-900` pour les questions fréquentes. */
+     vers `--navy-900` pour les questions fréquentes.
+     **`.method-cta` rajoutée (2026-09-02, même jour)** : la cliente a
+     redemandé l'effet sur la partie méthodologie après l'avoir fait
+     retirer un peu plus tôt dans la même session. `#sensesJourney`, juste
+     au-dessus dans la page, est un long parcours ÉPINGLÉ (`position:sticky`,
+     1240vh de scroll) dont le fond ne défile pas — sa teinte RÉELLEMENT
+     visible au moment de sortir de cette section est donc le bas de son
+     propre dégradé interne (`.senses-journey-sticky`, `linear-gradient(190deg,
+     var(--rosso-ombria) 0%, #2b1010 100%)`), pas une valeur nominale de
+     section — `#2b1010` (43,16,16) est repris tel quel comme couleur de
+     départ, vers `--bg` (246,241,231, la couleur de repos propre à
+     `.method-cta`), même logique déjà appliquée à `.founder` ci-dessus. */
   initScrollFade(document.querySelector(".teaser"), [28, 59, 74], [246, 241, 231]);
   initScrollFade(document.querySelector(".founder"), [16, 31, 39], [246, 241, 231]);
   initScrollFade(document.querySelector(".contact-faq"), [236, 227, 209], [16, 31, 39]);
+  initScrollFade(document.querySelector(".method-cta"), [43, 16, 16], [246, 241, 231]);
 
   /* ---------- Footer year ---------- */
   var yearEl = document.getElementById("year");

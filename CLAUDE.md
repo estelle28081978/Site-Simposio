@@ -6188,6 +6188,77 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   5 largeurs (390 à 1920px) pour les 2 photos d'équipe et les 4 cartes
   d'engagement. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Effet de fond au scroll rajouté sur "Notre méthodologie" ; "Composons
+  ensemble" retiré, "Notre méthodologie" prend sa place ; numéros des
+  cases retirés (2026-09-02, même jour)** (`.method-cta`, `index.html`,
+  `assets/css/style.css`, `assets/js/main.js`) : trois demandes de la
+  cliente sur le bandeau CTA+méthodologie de l'accueil, dans la foulée du
+  retrait de l'effet de fond au scroll généralisé plus tôt le même jour
+  (cf. bullet "Effet de fond au scroll — retiré partout sauf 3 sections
+  précises" plus haut, qui avait explicitement retiré l'effet de
+  `.method-cta`).
+  **1) Effet de fond au scroll rajouté** : un 4ᵉ appel à `initScrollFade()`
+  (`main.js`) est ajouté pour `.method-cta`, en plus des 3 sections déjà
+  gardées (`.teaser`, `.founder`, `.contact-faq`) — même mécanisme,
+  aucune modification de la fonction elle-même. Couleurs : rouge Terre
+  d'Ombrie très sombre (`#2b1010`, 43,16,16) → blanc calcaire (`--bg`,
+  246,241,231). **Couleur de départ pas prise dans la palette nominale de
+  la section précédente, mais dans sa teinte RÉELLEMENT visible** — même
+  raisonnement déjà appliqué à `.founder` (dont le fromRgb avait pris la
+  teinte réelle de `.talent-stage` plutôt que le `--bg-dim` nominal,
+  jamais visible à l'écran) : la section juste au-dessus,
+  `#sensesJourney`, est un long parcours ÉPINGLÉ (`position:sticky`,
+  1240vh de scroll) dont le fond ne défile pas — c'est le bas de son
+  propre dégradé interne (`.senses-journey-sticky`,
+  `linear-gradient(190deg, var(--rosso-ombria) 0%, #2b1010 100%)`) qui est
+  visible au moment de sortir de cette section, pas une valeur nominale
+  de section entière.
+  **Quatre éléments à adapter au fondu (contre 1-2 pour les 3 autres
+  sections déjà gardées)** : cette section a plusieurs blocs de texte de
+  rôles différents (eyebrow, titre, lede, ET un bouton outline) qui
+  reposent tous directement sur le fond de la section plutôt que sur leur
+  propre carte/photo — nouvelles classes marqueurs `.bg-adaptive-eyebrow`/
+  `.bg-adaptive-heading`/`.bg-adaptive-lede`/`.bg-adaptive-btn-outline`/
+  `.bg-adaptive-note` posées sur l'eyebrow, le `h2`, le `.lede`, le bouton
+  "Voir nos projets" (`.btn-outline-dark`, pensé pour un fond clair —
+  bordure/texte navy, transparent, invisible sur fond sombre) et
+  `.method-steps-note`. Règles `.method-cta[data-tone="dark"] .bg-adaptive-*`
+  ajoutées à côté des règles déjà en place pour les 3 autres sections,
+  même structure (`[data-tone]` posé directement sur la section par
+  `initScrollFade()`). `.method-step-panel` (les 3 cases elles-mêmes)
+  n'a besoin d'aucune adaptation : il a déjà son propre fond dégradé navy
+  fixe, indépendant du fondu de la section.
+  **2) "Composons ensemble" retiré, "Notre méthodologie" prend sa place** :
+  demande explicite ("enlève le titre composons ensemble et décale le
+  notre méthodologie à la place"). L'eyebrow "Composons ensemble" de
+  `.method-cta-intro` (colonne de gauche, au-dessus du `h2` "Votre
+  prochain événement commence ici") est supprimé ; l'eyebrow "Notre
+  méthodologie", qui vivait jusque-là au-dessus de la liste des 3 étapes
+  dans `.method-steps` (colonne de droite), est déplacé à sa place — un
+  seul eyebrow pour toute la section désormais, au lieu de deux
+  (un par colonne). `.method-steps-eyebrow` (la classe CSS dédiée,
+  devenue orpheline) est supprimée de `style.css`. Si `Composons
+  ensemble` réapparaît comme eyebrow, ou si `.method-steps` a de nouveau
+  son propre eyebrow séparé, c'est un retour à l'ancienne disposition, à
+  ne pas réintroduire sans qu'on le redemande.
+  **3) Numéros des cases retirés** : demande explicite ("sur les cases de
+  la méthodologie, enlève les numéros") — les 3 `<span class="method-step-num">
+  01/02/03</span>` (badges circulaires terracotta positionnés en
+  `top:-1.1rem` par-dessus chaque panneau) sont retirés du HTML, ainsi que
+  leurs règles CSS (`.method-step-num`, `.method-step:hover .method-step-num`)
+  — plus aucun changement de mise en page nécessaire, le badge était
+  purement décoratif, jamais dans le flux du panneau. Si
+  `.method-step-num` réapparaît, c'est cet ancien badge, à ne pas
+  réintroduire sans qu'on le redemande.
+  Vérifié par script Playwright (balayage de scroll sur `.method-cta`
+  confirmant `progress`/`data-tone`/couleur cohérents du rouge sombre au
+  crème, couleurs adaptatives des 5 éléments confirmées par
+  `getComputedStyle` en phase sombre, `.method-step-num` confirmé absent
+  du DOM, eyebrow de `.method-cta-intro` confirmé = "Notre méthodologie",
+  0 eyebrow restant dans `.method-steps`) et capture d'écran à plusieurs
+  points du fondu + à l'état survolé d'un panneau, desktop et mobile.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 

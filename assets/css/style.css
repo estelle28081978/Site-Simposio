@@ -816,12 +816,19 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    `[data-tone]` est désormais posé directement SUR LA SECTION ELLE-MÊME
    par `initScrollFade()` (pas sur `body`, inutile maintenant que chaque
    fondu est autonome et ne concerne qu'une seule section à la fois) —
-   `.teaser[data-tone]`/`.founder[data-tone]`/`.contact-faq[data-tone]`
-   pilotent l'adaptation de leurs propres éléments `.bg-adaptive-*`
-   (mêmes classes que l'ancien mécanisme, juste rescopées). Toutes les
-   autres sections qui utilisaient ces classes (`.method-cta`, `.site-footer`,
-   `.contact-devis-text`) ont vu ces classes retirées de leur HTML — plus
-   aucun effet ne s'y applique, elles gardent leur unique couleur fixe. */
+   `.teaser[data-tone]`/`.founder[data-tone]`/`.contact-faq[data-tone]`/
+   `.method-cta[data-tone]` pilotent l'adaptation de leurs propres éléments
+   `.bg-adaptive-*` (mêmes classes que l'ancien mécanisme, juste
+   rescopées). `.site-footer`/`.contact-devis-text` ont, elles, gardé ces
+   classes retirées de leur HTML — plus aucun effet ne s'y applique, elles
+   gardent leur unique couleur fixe.
+   **`.method-cta` rejoint les sections avec effet (2026-09-02, même jour) :
+   la cliente a demandé de "rajouter l'effet scroll" sur la partie
+   méthodologie, retirée le même jour un peu plus tôt (cf. commentaire sur
+   `background:var(--bg)` juste au-dessus) — un aller-retour dans la même
+   session, pas une hésitation à corriger. `initScrollFade()` est rappelée
+   pour cette section dans `main.js`, avec ses propres couleurs de départ/
+   arrivée (cf. commentaire dédié là-bas).** */
 /* `.teaser` : né pour un fond clair (défaut `.eyebrow`/`h2` non modifiés),
    a besoin d'une variante sombre pendant la phase bleue du fondu. */
 .teaser[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
@@ -835,6 +842,29 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    ont besoin d'une variante claire pendant la phase crème-dim du fondu. */
 .contact-faq[data-tone="light"] .bg-adaptive-eyebrow { color: var(--accent); }
 .contact-faq[data-tone="light"] .bg-adaptive-heading { color: var(--navy); }
+/* `.method-cta` : né pour un fond clair (eyebrow/h2/lede/note tous pensés
+   pour du texte sombre sur crème), a besoin d'une variante claire pendant
+   la phase rouge Terre d'Ombrie sombre du fondu — 4 éléments à adapter ici
+   (contre 1-2 pour les 3 autres sections) car cette section, contrairement
+   aux autres, a plusieurs blocs de texte de rôles différents (eyebrow,
+   titre, lede ET un bouton outline) qui reposent tous directement sur le
+   fond de section plutôt que sur leur propre carte/photo. `.btn-outline-dark`
+   (pensé pour un fond clair : bordure/texte navy, transparent) devient
+   illisible sur fond sombre — `.bg-adaptive-btn-outline` bascule vers les
+   mêmes valeurs que `.btn-outline` (pensé, lui, pour un fond sombre). */
+.method-cta[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
+.method-cta[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
+.method-cta[data-tone="dark"] .bg-adaptive-lede { color: var(--fg-muted-inverse); }
+.method-cta[data-tone="dark"] .bg-adaptive-note { color: var(--fg-muted-inverse); border-top-color: var(--border-inverse); }
+.method-cta[data-tone="dark"] .bg-adaptive-btn-outline {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--fg-inverse);
+  border-color: var(--border-inverse);
+}
+.method-cta[data-tone="dark"] .bg-adaptive-btn-outline:hover {
+  background: rgba(246, 241, 231, 0.14);
+  border-color: var(--fg-inverse);
+}
 
 /* ==========================================================================
    Hero — full viewport, cinematic gradient
@@ -3342,8 +3372,12 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    réapparaissent dans un diff, c'est cette ancienne version (ou une
    version encore antérieure), à ne pas réintroduire sans qu'on le
    redemande. */
-/* background: var(--bg), fond fixe (2026-09-02) : effet de fond au scroll
-   retiré de cette section (cf. commentaire sur `.hero` plus haut). */
+/* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :
+   fondu localisé rouge Terre d'Ombrie → blanc calcaire au scroll — l'effet
+   avait été retiré de cette section plus tôt le même jour (cf. commentaire
+   "Fondus de fond localisés" plus haut dans ce fichier), puis redemandé.
+   `var(--bg)` reste un filet de sécurité avant l'exécution du JS (état
+   final, cohérent avec la couleur de repos de cette section). */
 .method-cta { position: relative; padding-block: var(--space-6); background: var(--bg); overflow: hidden; }
 .method-cta-grid { display: grid; gap: var(--space-6); position: relative; z-index: 1; }
 @media (min-width: 960px) { .method-cta-grid { grid-template-columns: 0.85fr 1.15fr; align-items: start; } }
@@ -3374,7 +3408,6 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    `clip-path: polygon(...)` réapparaît sur `.method-step-panel` ou si le
    badge redevient un losange `rotate(45deg)`, c'est cette ancienne version,
    à ne pas réintroduire sans qu'on le redemande. */
-.method-steps-eyebrow { display: block; margin-bottom: var(--space-3); }
 .method-steps-list { list-style: none; display: flex; flex-direction: column; gap: var(--space-4); }
 .method-step {
   position: relative;
@@ -3392,11 +3425,14 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    2→3, un vrai escalier à pas régulier plutôt qu'un aller-retour. */
 .method-step-2 { margin-left: clamp(0px, 4vw, 2.25rem); }
 .method-step-3 { margin-left: clamp(0px, 8vw, 4.5rem); }
-/* Le panneau et le badge numéroté restent deux éléments distincts, tous
-   deux enfants directs de .method-step : même si le panneau n'est plus
-   clippé (donc ne rognerait plus un enfant qui déborde), garder le badge en
-   dehors évite qu'un futur overflow:hidden sur le panneau ne recrée le même
-   bug que documenté dans une itération précédente de ce fichier. */
+/* Badge numéroté retiré (2026-09-02, demande explicite : "sur les cases de
+   la méthodologie, enlève les numéros") — `.method-step-num` et ses règles
+   de survol sont supprimées ; le panneau (`.method-step-panel`) reste seul
+   enfant visuel de `.method-step`, sans changement de padding/mise en page
+   nécessaire (le badge était positionné en `top:-1.1rem`, purement
+   décoratif par-dessus le panneau, jamais dans son flux). Si
+   `.method-step-num` réapparaît ici, c'est cet ancien badge, à ne pas
+   réintroduire sans qu'on le redemande. */
 .method-step-panel {
   background: linear-gradient(155deg, var(--navy-900) 0%, var(--navy) 130%);
   color: var(--fg-inverse);
@@ -3409,29 +3445,6 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 .method-step:focus-within .method-step-panel {
   transform: translateY(-8px);
   box-shadow: 0 30px 60px rgba(16, 31, 39, 0.3);
-}
-.method-step-num {
-  position: absolute;
-  top: -1.1rem;
-  left: 1.8rem;
-  width: 2.7rem;
-  height: 2.7rem;
-  border-radius: 50%;
-  background: var(--terracotta);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-subtitle);
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  color: var(--cream);
-  box-shadow: 0 10px 22px rgba(193, 98, 45, 0.38);
-  transition: transform var(--dur) var(--ease);
-}
-.method-step:hover .method-step-num,
-.method-step:focus-within .method-step-num {
-  transform: scale(1.12) rotate(-8deg);
 }
 .method-step h3 { color: var(--cream); font-size: clamp(1.25rem, 0.7vw + 1.05rem, 1.55rem); margin-top: 0.7rem; margin-bottom: 0.5rem; }
 .method-step p { color: rgba(246, 241, 231, 0.72); font-size: 0.92rem; line-height: 1.55; max-width: 30rem; }
