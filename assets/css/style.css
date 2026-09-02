@@ -563,13 +563,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    contenu — seul le CSS le mettait en majuscules visuellement. Si
    `text-transform:uppercase` réapparaît ici, c'est cet ancien réglage, à
    ne pas réintroduire sans qu'on le redemande. */
-/* Couleur passée de `var(--ink)` à `var(--accent)` (terracotta,
-   2026-09-02, demande explicite : "les titres des pages en terracotta et
-   le reste en bleu méditerranéen") — les 5 libellés (Accueil,
-   Prestations...) sont désormais terracotta au repos ; le survol bascule
-   à l'inverse vers `var(--navy)` (bleu Méditerranéen, cf. règle plus bas)
-   plutôt que de garder l'ancien survol terracotta, qui serait devenu
-   invisible sur un texte déjà terracotta au repos. */
+/* Couleur repassée de `var(--accent)` à `var(--navy)` (bleu Méditerranéen,
+   2026-09-02, 2ᵉ passe — demande explicite : "mes les titres des pages en
+   bleu méditerranéen") — annule le passage au terracotta fait plus tôt le
+   même jour. Le survol bascule à l'inverse vers `var(--accent)`
+   (terracotta, cf. règle plus bas), pour rester visible sur un texte
+   désormais navy au repos. Si `color: var(--accent)` réapparaît ici, c'est
+   ce réglage intermédiaire, à ne pas réintroduire sans qu'on le redemande. */
 .mobile-menu-links .label {
   display: inline-block;
   min-width: 0;
@@ -577,7 +577,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-display);
   font-size: clamp(2.2rem, min(10.1vh, 15.5vw), 7.2rem);
   line-height: 1.05;
-  color: var(--accent);
+  color: var(--navy);
   transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
   transform-origin: center;
 }
@@ -596,7 +596,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    redemande. */
 .mobile-menu-links a:hover .label,
 .mobile-menu-links a:focus-visible .label {
-  color: var(--navy);
+  color: var(--accent);
   transform: translateX(clamp(0.75rem, 2.5vw, 2rem));
 }
 /* Page courante (2026-09-01) : ne se distingue plus par la couleur (la
@@ -607,11 +607,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    réapparaît ici hors état `:hover`/`:focus-visible`, c'est un retour à
    l'ancien comportement, à ne pas réintroduire sans qu'on le redemande. */
 
-/* Pied de page compact : coordonnées + réseaux sociaux sur une seule
-   ligne dès 560px. Les icônes Instagram/LinkedIn (mêmes SVG et classe
+/* Pied de page compact : coordonnées + réseaux sociaux, tous regroupés
+   dans `.mobile-menu-info` (2026-09-02 — voir commentaire juste en
+   dessous). Les icônes Instagram/LinkedIn (mêmes SVG et classe
    `.nav-social` que le header) sont dupliquées ici : le header passe
    derrière l'overlay plein écran (`z-index:100` contre `199`) tant que le
-   menu est ouvert, ces icônes y étaient donc inaccessibles. */
+   menu est ouvert, ces icônes y étaient donc inaccessibles.
+   `border-top` passé de `var(--border)` (gris) à `var(--accent)`
+   (terracotta, 2026-09-02, demande explicite : "met la ligne en gris en
+   terracotta") — seule cette couleur change, l'épaisseur/le style du
+   trait restent inchangés. */
 .mobile-menu-footer {
   display: flex;
   flex-direction: column;
@@ -621,15 +626,24 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 100%;
   margin-top: clamp(1rem, 3vh, var(--space-4));
   padding-top: clamp(0.5rem, 1.6vh, 1rem);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--accent);
 }
-@media (min-width: 560px) {
-  .mobile-menu-footer { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--space-4); }
-}
-/* `align-items:center` ajouté (2026-09-02) pour aligner verticalement le
-   nouveau libellé "Réseaux sociaux" (texte, hauteur de ligne) avec les
-   cercles d'icônes Instagram/LinkedIn (34px) sur la même ligne. */
-.mobile-menu-social { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+/* "Réseaux sociaux" (libellé + icônes) collé à "Basée en" (2026-09-02,
+   demande explicite : "colle la catégorie réseaux sociaux à basée en") :
+   `.mobile-menu-social` a été déplacé dans le HTML pour devenir un enfant
+   de `.mobile-menu-info` (juste après le `<span>Alsace, France</span>`)
+   plutôt qu'un bloc séparé à côté — `.mobile-menu-footer` n'a donc plus
+   qu'un seul enfant direct, la media query `flex-direction:row` ci-dessus
+   (pensée pour répartir deux blocs sur une même ligne dès 560px) est
+   retirée, devenue sans objet. `align-self:center` sur `.mobile-menu-social`
+   l'aligne verticalement avec le reste de la ligne baseline de
+   `.mobile-menu-info` plutôt que de suivre l'alignement par défaut du
+   texte. Si une media query `flex-direction:row` réapparaît sur
+   `.mobile-menu-footer`, ou si `.mobile-menu-social` redevient un enfant
+   direct de `.mobile-menu-footer` (frère de `.mobile-menu-info`, pas son
+   enfant), c'est l'ancienne disposition, à ne pas réintroduire sans qu'on
+   le redemande. */
+.mobile-menu-social { display: flex; align-items: center; align-self: center; gap: 0.5rem; flex-shrink: 0; }
 /* `.nav-social` est une classe générique partagée avec le header (fond
    sombre, jamais concerné par cet essai) — variante fond clair scopée ici
    plutôt que de toucher la règle de base. Survol en terracotta + bleu
@@ -647,8 +661,18 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 /* Couleur passée de `var(--fg-muted)` à `var(--navy)` (2026-09-02, cf.
    commentaire sur `.mobile-menu-links .label` plus haut) : l'email et
    "Alsace, France" rejoignent le reste du pied de menu en bleu
-   Méditerranéen. */
-.mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--navy); font-size: 0.9rem; }
+   Méditerranéen.
+   Sélecteur `span:last-child` remplacé par `.mobile-menu-location`
+   (2026-09-02, même jour) : depuis que `.mobile-menu-social` a été
+   déplacé À L'INTÉRIEUR de `.mobile-menu-info` (cf. commentaire plus
+   haut), le dernier enfant réel de `.mobile-menu-info` est ce `<div>`,
+   pas le `<span>Alsace, France</span>` — `span:last-child` aurait donc
+   arrêté de correspondre à quoi que ce soit, et "Alsace, France" aurait
+   silencieusement perdu sa couleur navy. Une classe dédiée, posée
+   directement sur ce span dans les 5 pages, ne dépend plus de sa position
+   dans le DOM. Si `span:last-child` réapparaît ici, revérifier ce bug
+   avant de le garder. */
+.mobile-menu-info a, .mobile-menu-info .mobile-menu-location { color: var(--navy); font-size: 0.9rem; }
 .mobile-menu-info a:hover { color: var(--accent); }
 /* The "@" glyph in self-hosted Glacial Indifference (400 normal) is drawn
    with much thinner strokes than the rest of the font's character set —

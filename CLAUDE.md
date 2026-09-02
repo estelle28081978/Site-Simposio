@@ -6489,6 +6489,74 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   sociaux" se réaligne proprement au-dessus des icônes sur la largeur
   mobile, sans débordement). Regression complète 5 pages × 2 viewports :
   0 débordement, 0 erreur console.
+- **Menu plein écran — "Réseaux sociaux" collé à "Basée en", ligne de
+  séparation en terracotta, titres de pages repassés en bleu
+  Méditerranéen (2026-09-02, même jour)** (`.mobile-menu-footer`,
+  `.mobile-menu-social`, `.mobile-menu-info`, `.mobile-menu-links .label`,
+  les 5 pages/`style.css`) : trois demandes de la cliente sur le rendu de
+  l'itération précédente ("colle la catégorie réseaux sociaux à basée en,
+  met la ligne en gris en terracotta et mes les titres des pages en bleu
+  méditerranéen").
+  **"Réseaux sociaux" collé à "Basée en"** : `.mobile-menu-social` (son
+  eyebrow + les 2 icônes Instagram/LinkedIn) était jusque-là un bloc frère
+  séparé de `.mobile-menu-info`, positionné à l'autre bout de
+  `.mobile-menu-footer` par la media query `flex-direction:row;
+  justify-content:space-between` — visuellement disjoint de "Contact"/
+  "Basée en" plutôt qu'à leur suite. Déplacé dans le HTML pour devenir un
+  enfant de `.mobile-menu-info`, juste après `<span>Alsace, France</span>`
+  (les 5 pages, balisage dupliqué) : le libellé "Réseaux sociaux" et ses
+  icônes suivent désormais directement "Basée en"/"Alsace, France" sur la
+  même ligne baseline, comme demandé. La media query
+  `@media (min-width:560px) { .mobile-menu-footer { flex-direction:row;
+  justify-content:space-between; … } }` devient sans objet (un seul enfant
+  direct reste dans `.mobile-menu-footer`) et est retirée ;
+  `align-self:center` ajouté sur `.mobile-menu-social` pour le recentrer
+  verticalement dans la ligne `align-items:baseline` de `.mobile-menu-info`
+  plutôt que de suivre l'alignement de texte par défaut.
+  **Bug réel identifié et corrigé avant qu'il ne se manifeste, pas après
+  coup** : `.mobile-menu-info a, .mobile-menu-info span:last-child {
+  color: var(--navy); … }` ciblait "Alsace, France" via `:last-child` —
+  un sélecteur qui dépend de la position dans le DOM. Une fois
+  `.mobile-menu-social` déplacé pour devenir le nouveau dernier enfant de
+  `.mobile-menu-info` (un `<div>`, pas un `<span>`), `span:last-child`
+  aurait cessé de correspondre à quoi que ce soit, et "Alsace, France"
+  aurait silencieusement perdu sa couleur navy (repéré en retraçant l'effet
+  du déplacement HTML sur ce sélecteur avant de vérifier au navigateur, pas
+  découvert après une régression visuelle). Corrigé en ajoutant une classe
+  dédiée `.mobile-menu-location` directement sur ce span (les 5 pages) et
+  en remplaçant `span:last-child` par `.mobile-menu-location` dans la
+  règle CSS — ne dépend plus de sa position dans le DOM. **Piège de
+  script rencontré pendant l'ajout de cette classe** : un premier passage
+  `perl` remplaçant `<span>Alsace, France</span>` sans borner le contexte
+  a aussi touché l'occurrence, sans rapport, du footer de bas de page
+  (`.footer-bottom`, "&copy; … Simposio" / "Alsace, France") sur les 5
+  pages — repéré par un `grep` de vérification juste après (comptant 2
+  occurrences par fichier au lieu d'1 attendue), corrigé en ne réappliquant
+  la classe qu'au span précédé de la ligne `&copy;` en contexte inverse
+  (celui du menu, qui n'a pas de `&copy;` juste avant, la retrouve donc
+  seule). Si `.mobile-menu-location` apparaît sur le span du footer de bas
+  de page, c'est ce piège, à corriger si revu.
+  **Ligne de séparation en terracotta** : `.mobile-menu-footer` avait
+  `border-top: 1px solid var(--border)` (gris, teinté navy à faible
+  opacité) — passé à `border-top: 1px solid var(--accent)` (terracotta),
+  seule la couleur change.
+  **Titres de pages repassés en bleu Méditerranéen** : `.mobile-menu-links
+  .label` repasse de `color: var(--accent)` (terracotta, depuis la demande
+  du même jour un peu plus tôt) à `color: var(--navy)` — le survol/focus
+  bascule à l'inverse de `var(--navy)` à `var(--accent)` (terracotta),
+  pour rester visible sur un texte désormais navy au repos. Si
+  `color: var(--accent)` réapparaît sur l'état de repos de `.label`, ou si
+  `span:last-child` réapparaît sur la règle de couleur de
+  `.mobile-menu-info`, ou si une media query `flex-direction:row`
+  réapparaît sur `.mobile-menu-footer`, ce sont des réglages précédents de
+  cette même journée, à ne pas réintroduire sans qu'on le redemande.
+  Vérifié par script Playwright (les 5 pages : `.mobile-menu-social`
+  confirmé dernier enfant de `.mobile-menu-info`, "Alsace, France" toujours
+  `rgb(28,59,74)` malgré le changement de position dans le DOM, bordure du
+  pied de menu confirmée `rgb(193,98,45)`, libellés de page confirmés
+  `rgb(28,59,74)` au repos et `rgb(193,98,45)` au survol) et capture
+  d'écran desktop (état survolé) et mobile. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
