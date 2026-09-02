@@ -446,10 +446,22 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    (`transform:scale(1.04)` sur `.label`, pas sur `a` lui-même — évite
    tout conflit avec le `transition-delay` de l'entrée, qui ne porte que
    sur `opacity`/`transform` de `a`). */
+/* Fond passé en Blanc Calcaire, à l'essai (2026-09-02) : demande explicite
+   de la cliente ("essaye de mettre le menu en blanc calcaire en adaptant
+   les couleurs") — remplace `var(--navy-900)` par `var(--bg)`. Tous les
+   éléments pensés pour un fond sombre (bordures/couleurs `-inverse`,
+   `--cream`, `--terracotta-300`) sont adaptés à leurs équivalents pour
+   fond clair juste en dessous — `.nav-social`/`.eyebrow.on-dark` restent
+   des classes génériques partagées avec le header (toujours sur fond
+   sombre, lui) donc non touchées : la variante claire est ajoutée en
+   scopée (`.mobile-menu-social .nav-social`) ou en retirant simplement
+   `on-dark` du HTML (`.mobile-menu-info .eyebrow`), jamais en modifiant
+   la règle de base. Si `background: var(--navy-900)` réapparaît ici,
+   c'est l'ancien fond, à ne pas réintroduire sans qu'on le redemande. */
 .mobile-menu {
   position: fixed;
   inset: 0;
-  background: var(--navy-900);
+  background: var(--bg);
   z-index: 199;
   display: flex;
   flex-direction: column;
@@ -470,13 +482,13 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   right: var(--space-3);
   z-index: 2;
   background: none;
-  border: 1px solid var(--border-inverse);
-  color: var(--cream);
+  border: 1px solid var(--border);
+  color: var(--ink);
   padding: 0.6rem;
   border-radius: 999px;
   transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.mobile-menu-close:hover { background: rgba(246, 241, 231, 0.1); transform: rotate(90deg); }
+.mobile-menu-close:hover { background: rgba(28, 59, 74, 0.08); transform: rotate(90deg); }
 .mobile-menu-close svg { width: 18px; height: 18px; display: block; }
 
 /* Aligné à gauche (2026-09-02, demande explicite : "centre, le texte à
@@ -548,7 +560,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-display);
   font-size: clamp(2.2rem, min(10.1vh, 15.5vw), 7.2rem);
   line-height: 1.05;
-  color: var(--cream);
+  color: var(--ink);
   transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
   transform-origin: center;
 }
@@ -567,7 +579,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    redemande. */
 .mobile-menu-links a:hover .label,
 .mobile-menu-links a:focus-visible .label {
-  color: var(--terracotta-300);
+  color: var(--accent);
   transform: translateX(clamp(0.75rem, 2.5vw, 2rem));
 }
 /* Page courante (2026-09-01) : ne se distingue plus par la couleur (la
@@ -592,16 +604,21 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   width: 100%;
   margin-top: clamp(1rem, 3vh, var(--space-4));
   padding-top: clamp(0.5rem, 1.6vh, 1rem);
-  border-top: 1px solid var(--border-inverse);
+  border-top: 1px solid var(--border);
 }
 @media (min-width: 560px) {
   .mobile-menu-footer { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--space-4); }
 }
 .mobile-menu-social { display: flex; gap: 0.5rem; flex-shrink: 0; }
+/* `.nav-social` est une classe générique partagée avec le header (fond
+   sombre, jamais concerné par cet essai) — variante fond clair scopée ici
+   plutôt que de toucher la règle de base. */
+.mobile-menu-social .nav-social { color: var(--fg-muted); }
+.mobile-menu-social .nav-social:hover { color: var(--accent); background: rgba(28, 59, 74, 0.06); }
 
 .mobile-menu-info { display: flex; flex-wrap: wrap; column-gap: var(--space-4); row-gap: 0.3rem; align-items: baseline; }
-.mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--fg-muted-inverse); font-size: 0.9rem; }
-.mobile-menu-info a:hover { color: var(--cream); }
+.mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--fg-muted); font-size: 0.9rem; }
+.mobile-menu-info a:hover { color: var(--ink); }
 /* The "@" glyph in self-hosted Glacial Indifference (400 normal) is drawn
    with much thinner strokes than the rest of the font's character set —
    at this element's small size it's borderline invisible on standard

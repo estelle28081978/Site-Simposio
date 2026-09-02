@@ -6377,6 +6377,48 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   confirmé dans le DOM, compteur "4" toujours fonctionnel après scroll)
   et capture d'écran desktop. Regression complète 5 pages × 2 viewports :
   0 débordement, 0 erreur console.
+- **Menu plein écran — essai fond Blanc Calcaire (2026-09-02)**
+  (`.mobile-menu`, `style.css`, les 5 pages) : demande explicite de la
+  cliente ("essaye de mettre le menu en blanc calcaire en adaptant les
+  couleurs") — un essai, pas un remplacement discret des styles de base.
+  `.mobile-menu { background: var(--navy-900) }` → `var(--bg)`. Chaque
+  élément pensé pour un fond sombre est adapté à son équivalent pour fond
+  clair :
+  - `.mobile-menu-close` : bordure `var(--border-inverse)` → `var(--border)`,
+    icône `var(--cream)` → `var(--ink)`, fond au survol
+    `rgba(246,241,231,0.1)` → `rgba(28,59,74,0.08)`.
+  - `.mobile-menu-links .label` : `var(--cream)` → `var(--ink)` ; couleur
+    au survol/focus `var(--terracotta-300)` (variante claire, pensée pour
+    ressortir sur fond sombre) → `var(--accent)` (terracotta plein, plus
+    de contraste sur blanc) — même choix de contraste déjà établi
+    ailleurs sur le site pour du texte sur fond clair.
+  - `.mobile-menu-footer` : bordure `var(--border-inverse)` → `var(--border)`.
+  - `.mobile-menu-info` (labels "Contact"/"Basée en" + email + "Alsace,
+    France") : `var(--fg-muted-inverse)` → `var(--fg-muted)`, survol
+    `var(--cream)` → `var(--ink)`.
+  - `.mobile-menu-info .eyebrow` : la classe `on-dark` (qui forçait
+    `var(--terracotta-300)`) est retirée du HTML des 5 pages sur ces 2
+    spans précis (uniquement ceux dans `.mobile-menu-info` — les autres
+    usages de `eyebrow on-dark` ailleurs sur chaque page, eux, restent sur
+    fond sombre et ne sont pas touchés) : l'eyebrow hérite alors du
+    `.eyebrow` générique (`var(--accent)`, terracotta plein), déjà adapté
+    à un fond clair.
+  - Icônes Instagram/LinkedIn du pied de menu : `.nav-social` est une
+    classe générique partagée avec le header (toujours sur fond sombre,
+    non concerné par cet essai) — variante claire ajoutée en scopé
+    (`.mobile-menu-social .nav-social`, `var(--fg-muted)` / survol
+    `var(--accent)` + fond `rgba(28,59,74,0.06)`) plutôt que de toucher la
+    règle de base, qui reste inchangée pour le header.
+  Vérifié par script Playwright (0 débordement/erreur console desktop +
+  mobile sur les 5 pages, header confirmé resté sur fond sombre
+  — `rgba(16,31,39,0.6)`, inchangé —, survol d'un lien confirmé en
+  terracotta, navigation clavier Tab toujours fonctionnelle) et capture
+  d'écran desktop (état normal + survol) et mobile. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console. Si
+  `background: var(--navy-900)` réapparaît sur `.mobile-menu`, ou si
+  `.mobile-menu-info .eyebrow` retrouve la classe `on-dark`, c'est un
+  retour à l'ancien fond sombre, à ne pas réintroduire sans qu'on le
+  redemande.
 
 ## État d'avancement
 
