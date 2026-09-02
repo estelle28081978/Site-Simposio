@@ -6311,6 +6311,49 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   progression, `data-tone` cohérent) et capture d'écran en mi-fondu.
   Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Méthodologie — cartes en glissement depuis la droite, note de clôture
+  retirée (2026-09-02)** (`.method-steps-list`, `index.html`, `style.css`)
+  : deux demandes de la cliente sur les 3 cases "Notre méthodologie".
+  **Entrée en glissement depuis la droite** : remplace l'entrée en cascade
+  de la 1ʳᵉ passe (fondu + montée `translateY(36px)` + léger zoom
+  `scale(0.96)`) par un fondu + glissement horizontal
+  (`translateX(6rem)→0`) — demande explicite ("un effet de glissement
+  provenant de la droite et qui s'arrête dans le même positionnement que
+  là actuellement"). Le point de repos (position finale, `translateX(0)`)
+  est strictement identique à avant : le décalage horizontal en escalier
+  des cartes 2 et 3 (`margin-left`, mise en page) est un mécanisme
+  entièrement distinct de cette animation d'entrée, non touché. **Durée
+  allongée à 1,2s** (au lieu de `var(--dur-slow)`, 900ms — déjà le palier
+  "lent" du site) : demande explicite ("pas trop rapide pour que lorsqu'on
+  scroll, on puisse le voir") — un reveal `[data-reveal-group]` se
+  déclenche une seule fois au passage du seuil de l'IntersectionObserver
+  (15% visible), donc une transition trop courte peut se terminer avant
+  d'être remarquée sur un scroll rapide ; le décalage entre cartes
+  (`transition-delay`, cascade) est aussi allongé en proportion (0/180/
+  360ms, contre 0/140/280ms avant). Vérifié par script Playwright : les 3
+  cartes démarrent bien à `translateX(96px)` (6rem) au déclenchement du
+  reveal, progressent à des rythmes différents (carte 1 en tête, carte 3
+  encore à son point de départ à 300ms grâce au délai), toutes à
+  `translateX(0)` en fin de transition ; `prefers-reduced-motion:reduce`
+  confirmé neutralisant l'effet (transform à `none` immédiatement, comme
+  la règle déjà en place). Si `translateY(36px) scale(0.96)` réapparaît
+  sur cette règle, c'est la 1ʳᵉ passe, à ne pas réintroduire sans qu'on le
+  redemande.
+  **Note de clôture retirée** : `<p class="method-steps-note">Un
+  accompagnement de bout en bout, du premier échange à la remise des
+  clés.</p>`, sous la liste des 3 cartes, est supprimée — demande
+  explicite ("enlève '...' et la ligne juste au dessus"), où "la ligne"
+  désignait le `border-top` qui servait de séparateur visuel juste
+  au-dessus de ce texte (pas une 2ᵉ ligne de texte séparée) : les deux
+  disparaissent ensemble avec le retrait de l'élément, sans action
+  distincte nécessaire. `.method-steps-note` (CSS) et `.bg-adaptive-note`
+  (son override de couleur en phase sombre du fondu de fond, devenu
+  orphelin) sont retirés de `style.css`. Si `.method-steps-note` ou
+  `.bg-adaptive-note` réapparaissent, c'est cet ancien texte de clôture, à
+  ne pas réintroduire sans qu'on le redemande.
+  Vérifié par capture d'écran (desktop en cours de transition et à l'état
+  final, mobile) et regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 

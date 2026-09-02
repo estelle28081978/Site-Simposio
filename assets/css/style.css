@@ -842,22 +842,21 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    ont besoin d'une variante claire pendant la phase crème-dim du fondu. */
 .contact-faq[data-tone="light"] .bg-adaptive-eyebrow { color: var(--accent); }
 .contact-faq[data-tone="light"] .bg-adaptive-heading { color: var(--navy); }
-/* `.method-cta` : né pour un fond clair (eyebrow/h2/lede/note tous pensés
-   pour du texte sombre sur crème), a besoin d'une variante claire pendant
-   la phase bleu Méditerranéen sombre du fondu (couleur de départ alignée
-   sur `.teaser` — cf. commentaire dans `main.js`) — 4 éléments à adapter
-   ici (contre 1-2 pour les 3 autres sections) car cette section,
-   contrairement aux autres, a plusieurs blocs de texte de rôles
-   différents (eyebrow, titre, lede ET un bouton outline) qui reposent
-   tous directement sur le fond de section plutôt que sur leur propre
-   carte/photo. `.btn-outline-dark` (pensé pour un fond clair : bordure/
-   texte navy, transparent) devient illisible sur fond sombre —
-   `.bg-adaptive-btn-outline` bascule vers les mêmes valeurs que
-   `.btn-outline` (pensé, lui, pour un fond sombre). */
+/* `.method-cta` : né pour un fond clair (eyebrow/h2/lede tous pensés pour
+   du texte sombre sur crème), a besoin d'une variante claire pendant la
+   phase bleu Méditerranéen sombre du fondu (couleur de départ alignée sur
+   `.teaser` — cf. commentaire dans `main.js`) — 3 éléments à adapter ici
+   (`.bg-adaptive-note` retirée avec `.method-steps-note`, cf. commentaire
+   plus bas dans ce fichier) car cette section, contrairement aux 3
+   autres, a plusieurs blocs de texte de rôles différents (eyebrow, titre,
+   lede ET un bouton outline) qui reposent tous directement sur le fond de
+   section plutôt que sur leur propre carte/photo. `.btn-outline-dark`
+   (pensé pour un fond clair : bordure/texte navy, transparent) devient
+   illisible sur fond sombre — `.bg-adaptive-btn-outline` bascule vers les
+   mêmes valeurs que `.btn-outline` (pensé, lui, pour un fond sombre). */
 .method-cta[data-tone="dark"] .bg-adaptive-eyebrow { color: var(--terracotta-300); }
 .method-cta[data-tone="dark"] .bg-adaptive-heading { color: var(--cream); }
 .method-cta[data-tone="dark"] .bg-adaptive-lede { color: var(--fg-muted-inverse); }
-.method-cta[data-tone="dark"] .bg-adaptive-note { color: var(--fg-muted-inverse); border-top-color: var(--border-inverse); }
 .method-cta[data-tone="dark"] .bg-adaptive-btn-outline {
   background: rgba(255, 255, 255, 0.06);
   color: var(--fg-inverse);
@@ -3413,37 +3412,52 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 }
 .method-step h3 { color: var(--cream); font-size: clamp(1.25rem, 0.7vw + 1.05rem, 1.55rem); margin-top: 0.7rem; margin-bottom: 0.5rem; }
 .method-step p { color: rgba(246, 241, 231, 0.72); font-size: 0.92rem; line-height: 1.55; max-width: 30rem; }
-.method-steps-note {
-  margin-top: var(--space-4);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border);
-  font-family: var(--font-subtitle);
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  color: var(--fg-muted);
-}
+/* `.method-steps-note` retirée (2026-09-02, demande explicite : "enlève
+   'Un accompagnement de bout en bout...' et la ligne juste au dessus")
+   — "la ligne" désignait le `border-top` qui servait de séparateur
+   au-dessus de ce texte, pas une 2ᵉ ligne de texte : les deux disparaissent
+   ensemble avec la suppression de l'élément. Si `.method-steps-note`
+   réapparaît ici, c'est cet ancien texte de clôture, à ne pas
+   réintroduire sans qu'on le redemande. */
 @media (max-width: 700px) {
   .method-step-2, .method-step-3 { margin-left: 0; }
 }
 
-/* Entrée en cascade des 3 panneaux — plus marquée que le reveal générique
-   [data-reveal-group] > * du site (fondu + translateY(20px) simple,
-   80ms d'écart) : ici fondu + montée + léger zoom, écart plus long entre
-   les cartes pour un effet plus premium/posé sur une section qui n'en
-   contient que 3 (contre jusqu'à 5 ailleurs) — un override ciblé, pas une
-   modification de la règle générique partagée. */
+/* Entrée en glissement depuis la droite (2026-09-02, 2ᵉ passe — remplace
+   le fondu + montée + léger zoom de la 1ʳᵉ passe, demande explicite : "un
+   effet de glissement provenant de la droite et qui s'arrête dans le même
+   positionnement que là actuellement") : chaque panneau part décalé vers
+   la droite (`translateX`) et glisse jusqu'à sa position de repos
+   habituelle (`translateX(0)`, inchangée — le décalage horizontal en
+   escalier de `.method-step-2`/`.method-step-3` via `margin-left` n'est
+   pas concerné, c'est un positionnement de mise en page distinct de cette
+   animation d'entrée). Toujours plus marquée que le reveal générique
+   [data-reveal-group] > * du site (fondu + translateY(20px) simple, 80ms
+   d'écart) : écart plus long entre les cartes pour un effet plus premium/
+   posé sur une section qui n'en contient que 3 (contre jusqu'à 5
+   ailleurs) — un override ciblé, pas une modification de la règle
+   générique partagée. **Durée volontairement plus longue que
+   `--dur-slow`** (900ms, déjà le palier "lent" du site) — demande
+   explicite ("pas trop rapide pour que lorsqu'on scroll, on puisse le
+   voir") : un simple reveal au scroll se déclenche une fois au passage du
+   seuil de l'IntersectionObserver (15% visible), donc si la transition
+   est trop courte elle peut se terminer avant que l'œil ne l'ait
+   remarquée sur un scroll rapide — 1,2s (contre 900ms) laisse le temps de
+   voir le glissement se dérouler. Si `translateY(36px) scale(0.96)`
+   réapparaît ici, c'est la 1ʳᵉ passe (montée+zoom), à ne pas réintroduire
+   sans qu'on le redemande. */
 .method-steps-list[data-reveal-group] > .method-step {
   opacity: 0;
-  transform: translateY(36px) scale(0.96);
-  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+  transform: translateX(6rem);
+  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
 }
 .method-steps-list[data-reveal-group].is-visible > .method-step {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateX(0);
 }
 .method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(1) { transition-delay: 0ms; }
-.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(2) { transition-delay: 140ms; }
-.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(3) { transition-delay: 280ms; }
+.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(2) { transition-delay: 180ms; }
+.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(3) { transition-delay: 360ms; }
 @media (prefers-reduced-motion: reduce) {
   .method-steps-list[data-reveal-group] > .method-step { opacity: 1; transform: none; }
 }
