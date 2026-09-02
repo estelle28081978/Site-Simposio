@@ -6259,6 +6259,38 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   points du fondu + à l'état survolé d'un panneau, desktop et mobile.
   Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Page Contact — CTA "Une question avant d'envoyer ?" retiré, FAQ
+  remontée directement sous le formulaire, quart de cercle décoratif
+  retiré (2026-09-02)** (`contact.html`, `assets/css/style.css`) : trois
+  demandes de la cliente sur la section `.contact-devis`
+  ("Deux minutes suffisent" + formulaire) et la FAQ juste en dessous.
+  **CTA retiré** : le lien `.contact-scroll-cta` ("Une question avant
+  d'envoyer&nbsp;?" + flèche rebondissante, ancré vers `#faq`) est
+  supprimé du HTML, avec ses règles CSS (`.contact-scroll-cta*`,
+  `@keyframes contact-scroll-bounce`) — plus aucune autre page ne pointait
+  vers `#faq` (vérifié par grep), donc aucun lien interne cassé ; l'`id="faq"`
+  reste sur la section elle-même, sans effet si rien ne le référence.
+  **FAQ remontée sous le formulaire** : conséquence directe du retrait
+  ci-dessus — `.contact-scroll-cta` portait `margin: var(--space-5) auto 0`
+  (un espace au-dessus, aucun en dessous), donc le retirer suffit à faire
+  suivre `.contact-faq` immédiatement après la fin du formulaire, sans
+  autre changement de padding/marge nécessaire (vérifié par script
+  Playwright : écart mesuré entre le bas de `.contact-devis` et le haut
+  de `.contact-faq` = 0px, desktop et mobile).
+  **Quart de cercle décoratif retiré** : `.contact-devis::before` (un
+  cercle complet de 22rem, `border-radius:50%`, positionné en haut à
+  gauche à cheval sur le bord de la section via `left:-9rem; top:-8rem` —
+  `overflow:hidden` sur `.contact-devis` n'en laissait apparaître qu'un
+  quart, juste au-dessus de l'eyebrow "Deux minutes suffisent") est
+  supprimé. Si `.contact-scroll-cta` ou `.contact-devis::before`
+  réapparaissent dans un diff, ce sont ces éléments retirés, à ne pas
+  réintroduire sans qu'on le redemande.
+  Vérifié par script Playwright (`.contact-scroll-cta` confirmé absent du
+  DOM, `.contact-devis::before` confirmé `content:none`, écart
+  formulaire→FAQ mesuré à 0px, accordéon FAQ revérifié fonctionnel au
+  clic) et capture d'écran du haut de `.contact-devis` et de la jonction
+  formulaire/FAQ, desktop et mobile. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 

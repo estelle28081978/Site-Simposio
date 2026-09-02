@@ -3146,17 +3146,14 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 @media (min-width: 960px) {
   .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: start; gap: var(--space-6); }
 }
-.contact-devis::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  width: 22rem;
-  height: 22rem;
-  left: -9rem;
-  top: -8rem;
-  border-radius: 50%;
-  border: 1.5px solid rgba(193, 98, 45, 0.18);
-}
+/* Quart de cercle décoratif retiré (2026-09-02, demande explicite : "enlève
+   le quart de cercle décoratif au niveau du deux minutes suffisent") —
+   `.contact-devis::before` était un cercle complet (`border-radius:50%`,
+   22rem) positionné en haut à gauche à cheval sur le bord de la section
+   (`left:-9rem; top:-8rem`), dont `overflow:hidden` sur `.contact-devis`
+   ne laissait apparaître qu'un quart, juste au-dessus de l'eyebrow "Deux
+   minutes suffisent". Si `.contact-devis::before` réapparaît ici, c'est
+   cet ancien motif, à ne pas réintroduire sans qu'on le redemande. */
 
 .contact-devis-text .lede { margin-top: var(--space-2); }
 
@@ -3206,44 +3203,6 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 .form-card-premium .field textarea { border-color: rgba(246, 241, 231, 0.22); }
 .form-card-premium .form-success { background: rgba(246, 241, 231, 0.08); border-color: rgba(246, 241, 231, 0.2); }
 .form-card-premium .form-success svg, .form-card-premium .form-success p { color: var(--cream); }
-
-/* Scroll-to-FAQ cue */
-.contact-scroll-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-  width: fit-content;
-  margin: var(--space-5) auto 0;
-  text-align: center;
-  font-family: var(--font-subtitle);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--fg-muted);
-  transition: color var(--dur-fast) var(--ease);
-}
-.contact-scroll-cta:hover { color: var(--accent); }
-.contact-scroll-cta-arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.8rem;
-  height: 2.8rem;
-  border-radius: 50%;
-  border: 1.5px solid var(--border);
-  color: var(--accent);
-  animation: contact-scroll-bounce 2.2s var(--ease) infinite;
-}
-.contact-scroll-cta-arrow svg { width: 16px; height: 16px; }
-.contact-scroll-cta:hover .contact-scroll-cta-arrow { background: var(--accent); border-color: var(--accent); color: var(--cream); }
-@keyframes contact-scroll-bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .contact-scroll-cta-arrow { animation: none; }
-}
 
 /* FAQ — native <details>/<summary> accordion, no JS required */
 /* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :
