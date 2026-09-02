@@ -6354,6 +6354,15 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   Vérifié par capture d'écran (desktop en cours de transition et à l'état
   final, mobile) et regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+  **Ralentie une 2ᵉ fois, même jour** ("encore plus lent l'animation") :
+  durée `1,2s` → `2,2s`, décalage entre cartes `180ms/360ms` → `320ms/640ms`
+  (même proportion conservée). Vérifié par script Playwright (balayage à
+  600ms/1800ms/3000ms confirmant une progression bien plus lente et un
+  retour à `translateX(0)` sur les 3 cartes en fin de transition) et
+  regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console. Si `1.2s`/`180ms`/`360ms` réapparaissent, c'est le réglage
+  d'avant ce ralentissement, à ne pas réintroduire sans qu'on le
+  redemande.
 
 ## État d'avancement
 

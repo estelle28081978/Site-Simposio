@@ -3442,22 +3442,27 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    voir") : un simple reveal au scroll se déclenche une fois au passage du
    seuil de l'IntersectionObserver (15% visible), donc si la transition
    est trop courte elle peut se terminer avant que l'œil ne l'ait
-   remarquée sur un scroll rapide — 1,2s (contre 900ms) laisse le temps de
-   voir le glissement se dérouler. Si `translateY(36px) scale(0.96)`
-   réapparaît ici, c'est la 1ʳᵉ passe (montée+zoom), à ne pas réintroduire
-   sans qu'on le redemande. */
+   remarquée sur un scroll rapide. **Ralentie une 2ᵉ fois** (1,2s → 2,2s,
+   demande explicite "encore plus lent l'animation") — décalage entre
+   cartes (`transition-delay`) allongé en proportion (320ms/640ms, contre
+   180ms/360ms) pour garder le même rythme relatif de cascade à cette
+   nouvelle durée. Si `1.2s`/`180ms`/`360ms` réapparaissent sur cette
+   règle, c'est le réglage de la 2ᵉ passe (avant ce dernier ralentissement),
+   à ne pas réintroduire sans qu'on le redemande — de même pour
+   `translateY(36px) scale(0.96)`, qui serait un retour à la 1ʳᵉ passe
+   (montée+zoom) d'avant le glissement depuis la droite. */
 .method-steps-list[data-reveal-group] > .method-step {
   opacity: 0;
   transform: translateX(6rem);
-  transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+  transition: opacity 2.2s var(--ease), transform 2.2s var(--ease);
 }
 .method-steps-list[data-reveal-group].is-visible > .method-step {
   opacity: 1;
   transform: translateX(0);
 }
 .method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(1) { transition-delay: 0ms; }
-.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(2) { transition-delay: 180ms; }
-.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(3) { transition-delay: 360ms; }
+.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(2) { transition-delay: 320ms; }
+.method-steps-list[data-reveal-group].is-visible > .method-step:nth-child(3) { transition-delay: 640ms; }
 @media (prefers-reduced-motion: reduce) {
   .method-steps-list[data-reveal-group] > .method-step { opacity: 1; transform: none; }
 }
