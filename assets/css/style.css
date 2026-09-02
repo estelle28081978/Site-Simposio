@@ -3253,7 +3253,12 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   height: 1.5rem;
   border-radius: 50%;
   border: 1.5px solid rgba(246, 241, 231, 0.32);
-  background: var(--navy-900);
+  /* Fond blanc calcaire (2026-09-02, demande explicite) : remplace le fond
+     navy-900 d'origine, pensé pour se fondre dans la photo derrière le fil
+     — la cliente voulait des ronds bien visibles/détachés, pas juste un
+     contour. Couleur du texte adaptée en conséquence (navy, pas
+     fg-muted-inverse qui était pensé pour du texte clair sur fond sombre). */
+  background: var(--bg);
   padding: 0;
   display: flex;
   align-items: center;
@@ -3261,14 +3266,14 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   font-family: var(--font-subtitle);
   font-weight: 700;
   font-size: 0.62rem;
-  color: var(--fg-muted-inverse);
+  color: var(--navy);
   cursor: pointer;
   transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
     background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease),
     color var(--dur-fast) var(--ease);
 }
 .values-reel-marker:hover { border-color: rgba(224, 149, 106, 0.6); }
-.values-reel-marker.is-reached { border-color: var(--terracotta-300); color: var(--terracotta-300); }
+.values-reel-marker.is-reached { border-color: var(--terracotta); color: var(--terracotta); }
 .values-reel-marker.is-active {
   background: var(--terracotta-300);
   border-color: var(--terracotta-300);

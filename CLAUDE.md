@@ -7152,6 +7152,34 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   cette citation sans que le fichier Liana n'ait changé, revérifier
   d'abord son charset (`fc-scan --format '%{charset}'`) avant de les
   remettre — le défaut documenté ici reviendrait immédiatement.
+- **Frise numérotée des Valeurs — ronds en fond blanc calcaire
+  (2026-09-02)** (`.values-reel-marker`, `style.css`) : demande explicite
+  de la cliente ("pour les numéros de la frise des valeurs mets juste un
+  fond blanc dans les petits ronds"). Les 6 marqueurs (`.values-reel-marker`,
+  posés sur `.values-reel-overlay`, par-dessus le bas de la photo active,
+  cf. bullet précédent) avaient un fond `var(--navy-900)` — pensé pour se
+  fondre dans le voile sombre de la photo, mais rendant les ronds peu
+  détachés. `background` passe à `var(--bg)` (Blanc Calcaire) à l'état de
+  repos ; couleur du texte adaptée en conséquence, de `var(--fg-muted-inverse)`
+  (gris clair, pensé pour du texte sur fond sombre) à `var(--navy)`.
+  **Ajustement de contraste nécessaire sur l'état `.is-reached`, pas
+  seulement demandé mais requis pour rester lisible** : ce state gardait
+  `color: var(--terracotta-300)` (une teinte claire pensée pour ressortir
+  sur fond sombre) — sur le nouveau fond blanc, le contraste devenait trop
+  faible ; recoloré en `var(--terracotta)` (plein), déjà le choix de
+  contraste établi ailleurs sur le site pour du texte sur fond clair.
+  `.is-active` (le marqueur de la valeur courante, fond terracotta-300
+  plein + texte navy-900) n'a demandé aucun changement : il définit déjà
+  son propre fond, indépendant de l'état de repos.
+  Vérifié par script Playwright (`getComputedStyle` sur les 6 marqueurs à
+  plusieurs positions de scroll : repos = fond crème/texte navy,
+  `is-reached` = fond crème/texte+bordure terracotta, `is-active` =
+  fond terracotta-300/texte navy-900, inchangé) et capture d'écran de la
+  frise. Regression complète 5 pages × 2 viewports : 0 débordement, 0
+  erreur console. Si `background: var(--navy-900)` ou
+  `color: var(--terracotta-300)` sur `.is-reached` réapparaissent sur ce
+  composant, c'est l'ancien style (fondu dans la photo), à ne pas
+  réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 
