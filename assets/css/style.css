@@ -638,27 +638,46 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    retirée, devenue sans objet. Regroupé un peu plus tard le même jour avec
    son eyebrow dans `.mobile-menu-info-group` (cf. commentaire sur
    `.mobile-menu-info` plus bas) pour contrôler l'espacement entre le
-   libellé et les icônes indépendamment de l'espacement entre catégories.
-   `align-self:center` l'aligne verticalement avec le reste de la ligne
-   baseline de `.mobile-menu-info-group` plutôt que de suivre l'alignement
-   par défaut du texte. Si une media query `flex-direction:row` réapparaît
-   sur `.mobile-menu-footer`, ou si `.mobile-menu-social` redevient un
-   enfant direct de `.mobile-menu-footer` (frère de `.mobile-menu-info`,
-   pas son descendant), c'est l'ancienne disposition, à ne pas réintroduire
-   sans qu'on le redemande. */
-.mobile-menu-social { display: flex; align-items: center; align-self: center; gap: 0.5rem; flex-shrink: 0; }
-/* `.nav-social` est une classe générique partagée avec le header (fond
-   sombre, jamais concerné par cet essai) — variante fond clair scopée ici
-   plutôt que de toucher la règle de base. Survol en terracotta + bleu
-   Méditerranéen (2026-09-02, demande explicite, cf. commentaire détaillé
-   sur `.mobile-menu-close` plus haut) : `background` passe d'une teinte
-   navy translucide (6%) à `var(--navy)` plein, cohérent avec le bouton de
-   fermeture juste au-dessus. Couleur de repos passée de `var(--fg-muted)`
-   à `var(--navy)` (2026-09-02, 2ᵉ passe — cf. commentaire sur
-   `.mobile-menu-links .label` plus haut pour le contexte du nouveau
-   partage terracotta/bleu Méditerranéen). */
-.mobile-menu-social .nav-social { color: var(--navy); }
-.mobile-menu-social .nav-social:hover { color: var(--accent); background: var(--navy); }
+   libellé et les icônes indépendamment de l'espacement entre catégories,
+   et centré verticalement avec lui (`.mobile-menu-info-group {
+   align-items: center }`, cf. plus bas) plutôt qu'aligné sur une ligne de
+   base — un logo SVG nu (cf. commentaire sur `.mobile-menu-social
+   .nav-social` plus bas) n'en a pas d'utile. Si une media query
+   `flex-direction:row` réapparaît sur `.mobile-menu-footer`, ou si
+   `.mobile-menu-social` redevient un enfant direct de `.mobile-menu-footer`
+   (frère de `.mobile-menu-info`, pas son descendant), c'est l'ancienne
+   disposition, à ne pas réintroduire sans qu'on le redemande. */
+.mobile-menu-social { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+/* `.nav-social` est une classe générique partagée avec le header — un
+   vrai bouton rond de 34px (`width`/`height`/`border-radius:50%`, cf. la
+   règle de base plus haut dans le fichier), pensé pour un groupe d'icônes
+   isolées dans le header, à côté du bouton "Menu". Ce bouton rond ne
+   fonctionne pas ici : posé à côté du texte "Contact"/"Basée en" (aligné
+   sur leur ligne de base), un cercle de 34px dépasse largement la hauteur
+   du texte et ne peut pas s'aligner visuellement avec lui, quel que soit
+   l'alignement flex choisi (2026-09-02, demande explicite : "les logos ne
+   laissez pas en bouton car sinon ils ne sont pas alignés avec le
+   texte... juste les logos de manière à ce que tout soit aligné").
+   **Retire entièrement l'habillage bouton** (taille fixe, fond au repos,
+   coins arrondis) pour ce contexte précis — ne reste que le logo SVG nu,
+   à peu près à la taille du texte environnant, qui peut alors être
+   centré avec lui comme n'importe quel autre élément de la ligne (voir
+   aussi `.mobile-menu-info-group { align-items: center }` plus bas,
+   remplace l'alignement sur la ligne de base par un centrage vertical
+   simple — plus fiable ici qu'une ligne de base, qui n'est pas définie de
+   façon utile pour une icône). Le survol garde un changement de couleur
+   (terracotta) mais perd le remplissage plein en cercle, qui n'aurait
+   plus de forme à remplir. Si `width`/`height`/`border-radius`/
+   `background` réapparaissent sur `.mobile-menu-social .nav-social`,
+   c'est ce bouton rond, à ne pas réintroduire sans qu'on le redemande. */
+.mobile-menu-social .nav-social {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  color: var(--navy);
+}
+.mobile-menu-social .nav-social svg { width: 18px; height: 18px; }
+.mobile-menu-social .nav-social:hover { color: var(--accent); background: none; }
 
 /* Chaque catégorie (Contact/Basée en/Réseaux sociaux) est désormais un
    groupe HTML séparé (2026-09-02, demande explicite : "laisse moins
@@ -679,7 +698,15 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    `.mobile-menu-info-group`), c'est l'ancienne structure plate, à ne pas
    réintroduire sans qu'on le redemande. */
 .mobile-menu-info { display: flex; flex-wrap: wrap; column-gap: var(--space-5); row-gap: var(--space-2); align-items: baseline; }
-.mobile-menu-info-group { display: flex; align-items: baseline; gap: 0.4rem; }
+/* `align-items` passé de `baseline` à `center` (2026-09-02, même jour) :
+   la ligne de base fonctionnait bien pour les deux premières catégories
+   (deux `<span>` de texte), mais pour "Réseaux sociaux" un logo SVG nu
+   (cf. commentaire sur `.mobile-menu-social .nav-social` plus haut) n'a
+   pas de ligne de base utile — un centrage vertical simple aligne les
+   icônes avec le texte de façon fiable dans les 3 groupes, sans
+   changement perceptible pour les deux premiers (leurs deux `<span>`
+   partagent déjà la même hauteur de ligne). */
+.mobile-menu-info-group { display: flex; align-items: center; gap: 0.4rem; }
 /* Couleur passée de `var(--fg-muted)` à `var(--navy)` (2026-09-02, cf.
    commentaire sur `.mobile-menu-links .label` plus haut) : l'email et
    "Alsace, France" rejoignent le reste du pied de menu en bleu

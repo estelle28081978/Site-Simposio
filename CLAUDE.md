@@ -6599,6 +6599,45 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   entre catégories consécutives — 72px, identique partout) et capture
   d'écran desktop + mobile. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Menu plein écran — icônes réseaux sociaux : bouton rond retiré, juste
+  les logos alignés avec le texte (2026-09-02, même jour)**
+  (`.mobile-menu-social .nav-social`, `.mobile-menu-info-group`, les 5
+  pages/`style.css`) : demande explicite de la cliente ("les logos ne
+  laissez pas en bouton car sinon ils ne sont pas alignés avec le texte,
+  mais juste les logos de manière à ce que tout soit aligné").
+  **Cause** : `.nav-social` (classe générique partagée avec le header) est
+  un vrai bouton rond de 34px (`width`/`height`/`border-radius:50%`) —
+  pensé pour un groupe d'icônes isolées dans le header, à côté du bouton
+  "Menu". Posé à côté du texte "Contact"/"Basée en" (bien plus petit),
+  ce cercle de 34px ne pouvait s'aligner visuellement avec le texte
+  environnant quel que soit l'alignement flex choisi — la cliente
+  proposait elle-même les deux options possibles (retirer le bouton, ou
+  baisser tout le texte pour l'aligner sur lui) ; retenue : retirer le
+  bouton, plus simple et cohérent avec le traitement discret déjà donné
+  au reste du pied de menu (aucun autre élément n'y a de fond/forme de
+  bouton).
+  **`.mobile-menu-social .nav-social`** perd sa taille fixe et son
+  `border-radius` (`width:auto; height:auto; border-radius:0`), ne
+  reste que le SVG nu, agrandi à `18px` (au lieu des `17px` hérités de la
+  règle générique, un peu plus lisible sans le cadre du bouton pour le
+  détacher) — le survol garde son changement de couleur (terracotta) mais
+  perd le remplissage plein en cercle, qui n'a plus de forme à remplir.
+  **`.mobile-menu-info-group`** passe de `align-items:baseline` à `center`
+  : la ligne de base fonctionnait pour les deux premières catégories (deux
+  `<span>` de texte) mais un logo SVG nu n'a pas de ligne de base utile —
+  un centrage vertical simple aligne les 3 catégories de façon fiable,
+  sans changement perceptible pour les deux premières (leurs `<span>`
+  partagent déjà la même hauteur de ligne). Si `width`/`height`/
+  `border-radius`/`background` réapparaissent sur `.mobile-menu-social
+  .nav-social`, ou si `.mobile-menu-info-group` repasse à
+  `align-items:baseline`, c'est l'ancien bouton rond, à ne pas
+  réintroduire sans qu'on le redemande.
+  Vérifié par script Playwright (icônes confirmées à 18×18px, sans
+  `border-radius`/fond, centre vertical de l'icône aligné à moins de 0,1px
+  du centre vertical de l'eyebrow "Réseaux sociaux" sur les 5 pages ;
+  survol confirmé toujours fonctionnel — couleur terracotta, plus de
+  fond) et capture d'écran desktop + mobile. Regression complète 5 pages
+  × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
