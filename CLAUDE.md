@@ -6363,6 +6363,20 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   console. Si `1.2s`/`180ms`/`360ms` réapparaissent, c'est le réglage
   d'avant ce ralentissement, à ne pas réintroduire sans qu'on le
   redemande.
+- **Bandeau chiffres clés — "100% B2B" et "Alsace" interverties
+  (2026-09-02)** (`.stats-band-grid`, `index.html`) : demande explicite de
+  la cliente. Simple échange de position des deux `<div>` dans le HTML —
+  nouvel ordre "5 sens" / "4" / "100% B2B" / "Alsace" (au lieu de "5 sens"
+  / "4" / "Alsace" / "100% B2B"). Aucun changement CSS/JS nécessaire :
+  `.stats-band-grid > div:not(:first-child)::before` (séparateurs entre
+  colonnes) et le compteur animé (`data-count`, sur la 2ᵉ colonne
+  "4") ne dépendent pas de l'ordre des colonnes suivantes ; `.is-b2b`
+  (classe restée sur le `<div>` "100% B2B" depuis le retrait de son
+  ancien style badge, cf. plus haut dans ce fichier) n'a de toute façon
+  plus aucun effet CSS. Vérifié par script Playwright (ordre des `dt`
+  confirmé dans le DOM, compteur "4" toujours fonctionnel après scroll)
+  et capture d'écran desktop. Regression complète 5 pages × 2 viewports :
+  0 débordement, 0 erreur console.
 
 ## État d'avancement
 
