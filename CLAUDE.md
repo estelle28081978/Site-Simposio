@@ -6952,6 +6952,77 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   capture d'écran desktop + mobile confirmant l'effet "arrière-plan
   assombri" recherché. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Audit sitewide : fonds de section uniformisés aux 3 couleurs exactes
+  de la charte (2026-09-02)** (`style.css`/`main.js`, les 5 pages) :
+  demande explicite de la cliente ("pour les fonds des sections sur
+  chacune des pages quand c'est blanc vérifie bien que c'est du blanc
+  calcaire #f6f1e7 sinon met le, pour le bleu méditerranéen vérifie que
+  c'est bien #1c3b4a sinon met le et pour le terracotta vérifie que
+  c'est bien #c1622d sinon même chose. Il y a juste le parcours des 5
+  sens avec le rouge pourpre et les fonds photo que tu changes dans
+  aucun cas").
+  **Vérification des tokens de base** : `--navy`(#1c3b4a)/`--terracotta`
+  (#c1622d)/`--cream`(#f6f1e7) dans `:root` étaient déjà exacts — le
+  problème n'était pas là, mais dans des SECTIONS utilisant volontairement
+  des teintes voisines mais distinctes : `--navy-900` (#101f27, bleu plus
+  sombre) et `--bg-dim`/`--cream-dim` (#ece3d1, crème plus grisé),
+  introduites au fil du projet pour varier le rythme visuel entre
+  sections adjacentes de même famille de couleur (cf. historique de ce
+  fichier). **Clarifié avec la cliente avant d'agir** (`AskUserQuestion`,
+  vu le risque de casser un rythme déjà validé à travers de nombreuses
+  itérations) : elle a choisi d'uniformiser partout aux 3 couleurs exactes,
+  quitte à perdre cette variation.
+  **Sections corrigées** (`--navy-900`→`--navy` ou `--bg-dim`/`--cream-dim`
+  →`--bg`) :
+  - `.mosaic-section`/`.mosaic-viewport` (Projets) : navy-900 → navy.
+  - `.talents` (À propos, "L'équipe") : bg-dim → bg — ce fond n'est de
+    toute façon jamais visible à l'écran (`.talent-stage`, plein cadre,
+    le recouvre entièrement, déjà documenté plus haut), corrigé par
+    cohérence plutôt que pour un changement visuel réel.
+  - `.values-reel`/`.values-reel-sticky` (À propos, Valeurs) : navy-900 →
+    navy.
+  - `.contact-devis` ("Deux minutes suffisent") : bg-dim → bg.
+  - `.contact-faq` ("Questions fréquentes") : navy-900 → navy.
+  - `.site-footer` (partagé par les 5 pages) : navy-900 → navy.
+  **Sections/éléments explicitement LAISSÉS EN NAVY-900** (photos ou
+  fragments de photo, pas des fonds de section à proprement parler,
+  cohérent avec l'exception "les fonds photo... jamais" de la cliente) :
+  `.mosaic-tile` (fallback derrière chaque tuile-photo de la mosaïque),
+  `.talent-stage`/`.talent-stage-caption` (montage photo de l'équipe),
+  `.engagement-card-front` (fallback derrière la photo de chaque
+  flip-card). Également laissés inchangés (dégradés décoratifs sur des
+  CARTES, pas des fonds de SECTION) : `.form-card.form-card-premium`
+  (dégradé navy→navy-900 du formulaire de contact) et
+  `.method-step-panel` (dégradé navy-900→navy des 3 cases "Notre
+  méthodologie") — ainsi que `.page-header.on-dark` et `.positioning-tag`,
+  qui utilisaient aussi `--navy-900`/`--bg-dim` mais se sont révélés être
+  du CSS mort (classes absentes des 5 pages HTML, vérifié par recherche
+  avant de les ignorer plutôt que supposé).
+  **Bug de désynchronisation trouvé et corrigé en cascade, pas supposé** :
+  `.contact-devis`/`.contact-faq` ont chacune un fondu de couleur au
+  scroll piloté par `initScrollFade()` (`main.js`) qui interpolait
+  directement entre des RGB CALÉS SUR LES ANCIENNES valeurs statiques
+  (`[236,227,209]` = bg-dim → `[16,31,39]` = navy-900) — en corrigeant
+  les fonds statiques sans toucher ce fondu JS, la couleur RÉELLEMENT
+  affichée (pilotée par le JS, qui écrase le CSS via `style.backgroundColor`
+  une fois le scroll commencé) serait restée sur les anciennes teintes,
+  malgré la correction CSS. Repéré en vérifiant explicitement la couleur
+  affichée après un scroll jusqu'en bas de la page (pas seulement la
+  valeur déclarée dans le CSS), avant de considérer la tâche terminée.
+  Corrigé en recalant les deux bornes du fondu de `.contact-faq` sur les
+  nouvelles couleurs exactes (`[246,241,231]`→`[28,59,74]`, cf. commentaire
+  dans `main.js`) — `.founder` garde volontairement son `fromRgb` en
+  navy-900 (16,31,39) car cette valeur ne représente pas la couleur DE la
+  section elle-même mais la teinte RÉELLEMENT visible de `.talent-stage`
+  juste au-dessus (exclu de cet audit, photo), pour une transition sans
+  à-coup à la frontière des deux sections ; `.teaser`/`.method-cta`
+  étaient déjà calés sur navy/cream exacts, aucun changement nécessaire.
+  Vérifié par script Playwright (couleur affichée mesurée via
+  `getComputedStyle` sur les 5 pages, y compris après scroll jusqu'en bas
+  pour `.contact-faq` — confirmé `rgb(28,59,74)`, plus l'ancien
+  `rgb(16,31,39)`) et capture d'écran (mosaïque, "L'équipe", jonction
+  FAQ/footer). Regression complète 5 pages × 2 viewports : 0 débordement,
+  0 erreur console.
 
 ## État d'avancement
 

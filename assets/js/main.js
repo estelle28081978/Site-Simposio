@@ -131,9 +131,9 @@
      explicite : "l'effet fasse la couleur bleue à blanc") ; bleu
      Méditerranéen le plus sombre `--navy-900` (16,31,39, la teinte
      RÉELLEMENT visible derrière la photo de l'équipe juste au-dessus dans
-     la page) vers `--bg` pour la citation de la fondatrice ; crème-dim
-     `--bg-dim` (236,227,209, la teinte de `.contact-devis` juste au-dessus)
-     vers `--navy-900` pour les questions fréquentes.
+     la page, `.talent-stage` — volontairement exclue de l'audit des fonds
+     de section du 2026-09-02, cf. plus bas) vers `--bg` pour la citation
+     de la fondatrice.
      **`.method-cta` rajoutée (2026-09-02, même jour)** : la cliente a
      redemandé l'effet sur la partie méthodologie après l'avoir fait
      retirer un peu plus tôt dans la même session. Couleur de départ
@@ -145,10 +145,22 @@
      exactement la même paire de couleurs que `.teaser` juste en dessous
      (`--navy` → `--bg`) plutôt qu'une teinte dérivée de la section
      précédente. Si `[43, 16, 16]` réapparaît ici, c'est ce réglage
-     précédent, à ne pas réintroduire sans qu'on le redemande. */
+     précédent, à ne pas réintroduire sans qu'on le redemande.
+     **Fondu de "Questions fréquentes" recalé (2026-09-02, même jour,
+     audit sitewide des couleurs de fond de section)** : visait auparavant
+     `--bg-dim`/`--navy-900` (236,227,209 → 16,31,39), pour rester
+     synchronisé avec les fonds statiques réels de `.contact-devis` et
+     `.contact-faq` juste au-dessus/en dessous — désormais `--bg`/`--navy`
+     (246,241,231 → 28,59,74) puisque ces deux sections ont elles-mêmes
+     été corrigées vers les couleurs exactes de la charte (cf. `style.css`).
+     Si `[236, 227, 209]`/`[16, 31, 39]` réapparaissent ici sans que les
+     fonds statiques correspondants aient eux aussi été remis à
+     `--bg-dim`/`--navy-900`, c'est un décalage entre le fondu JS et le
+     fond statique réel — les deux doivent toujours être changés
+     ensemble. */
   initScrollFade(document.querySelector(".teaser"), [28, 59, 74], [246, 241, 231]);
   initScrollFade(document.querySelector(".founder"), [16, 31, 39], [246, 241, 231]);
-  initScrollFade(document.querySelector(".contact-faq"), [236, 227, 209], [16, 31, 39]);
+  initScrollFade(document.querySelector(".contact-faq"), [246, 241, 231], [28, 59, 74]);
   initScrollFade(document.querySelector(".method-cta"), [28, 59, 74], [246, 241, 231]);
 
   /* ---------- Footer year ---------- */

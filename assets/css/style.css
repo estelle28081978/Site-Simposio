@@ -2156,7 +2156,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Projets — Double2-inspired seamless mosaic: a grid of square tiles, no
    gaps, larger than the viewport, that the visitor drags/pans freely.
    ========================================================================== */
-.mosaic-section { position: relative; background: var(--navy-900); padding-block: 0; }
+/* `background` remis à `var(--navy)` (2026-09-02, audit sitewide des
+   couleurs de fond de section : "vérifie bien que c'est du blanc
+   calcaire/bleu méditerranéen/terracotta sinon met le") — cette section
+   utilisait `var(--navy-900)` (bleu plus foncé, #101f27), une teinte
+   distincte du bleu Méditerranéen de la charte (#1c3b4a). Uniquement le
+   fond de la SECTION elle-même est concerné, pas les tuiles photo
+   (`.mosaic-tile`, plus bas) qui restent en `--navy-900` comme
+   fallback derrière chaque photo — exclues par la cliente ("les fonds
+   photo... jamais"). */
+.mosaic-section { position: relative; background: var(--navy); padding-block: 0; }
 
 .mosaic-viewport {
   position: relative;
@@ -2168,7 +2177,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   height: min(calc(78vh + 480px), 1240px);
   min-height: 900px;
   overflow: hidden;
-  background: var(--navy-900);
+  background: var(--navy);
   cursor: grab;
   touch-action: none;
   -webkit-tap-highlight-color: transparent;
@@ -2341,7 +2350,14 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    rupture de couleur plutôt qu'un fondu. Si un padding non nul réapparaît
    ici, c'est cette ancienne bande, à ne pas réintroduire sans qu'on le
    redemande. */
-.talents { background: var(--bg-dim); padding-block: 0; }
+/* `background` remis à `var(--bg)` (2026-09-02, audit sitewide des
+   couleurs de fond de section) — utilisait `var(--bg-dim)` (crème
+   légèrement assombri, #ece3d1), une teinte distincte du Blanc Calcaire
+   de la charte (#f6f1e7). Comme documenté juste au-dessus, ce fond n'est
+   de toute façon jamais visible à l'écran (`.talent-stage`, plein cadre,
+   le recouvre entièrement) — corrigé par cohérence plutôt que pour un
+   changement visuel réel. */
+.talents { background: var(--bg); padding-block: 0; }
 
 /* Équipe — "stage" photo unique avec sélecteur de petits cercles
    (2026-08-19), inspiré d'une référence fournie par la cliente (design
@@ -2885,13 +2901,20 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Si l'ancien carrousel texte (.values, .values-line, .values-media, etc.)
    réapparaît dans un diff, c'est cette version précédente — ne pas la
    réintroduire sans qu'on le redemande. */
+/* `background` remis à `var(--navy)` sur `.values-reel`/`.values-reel-sticky`
+   (2026-09-02, audit sitewide des couleurs de fond de section) —
+   utilisait `var(--navy-900)`, une teinte distincte du bleu Méditerranéen
+   de la charte. Le fond réel de cette section pendant le scroll est
+   presque toujours la photo de la valeur active (`.values-reel-photo`),
+   mais ce bleu reste visible aux bords/transitions — corrigé pour rester
+   dans la charte exacte, comme les autres sections. */
 .values-reel {
   position: relative;
   /* Was 500vh (~80vh of scroll per value) — the client found that far too
      long a scroll to get from one value to the next. Cut to roughly a
      third of that per-transition distance. */
   height: 260vh;
-  background: var(--navy-900);
+  background: var(--navy);
 }
 .values-reel-sticky {
   position: sticky;
@@ -2900,7 +2923,7 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--navy-900);
+  background: var(--navy);
 }
 .values-reel-eyebrow {
   position: absolute;
@@ -3339,8 +3362,12 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 /* background: var(--bg-dim), fond fixe (2026-09-02) : l'effet de fond au
    scroll est retiré de cette section (gardé uniquement sur
    `.teaser`/`.founder`/`.contact-faq`, cf. commentaire sur `.hero` plus
-   haut dans ce fichier et le commentaire détaillé dans main.js). */
-.contact-devis { position: relative; background: var(--bg-dim); padding-block: var(--space-6); overflow: hidden; }
+   haut dans ce fichier et le commentaire détaillé dans main.js).
+   `var(--bg-dim)` remplacé par `var(--bg)` (2026-09-02, même jour, audit
+   sitewide des couleurs de fond de section) — `--bg-dim` est un crème
+   légèrement assombri (#ece3d1), distinct du Blanc Calcaire exact de la
+   charte (#f6f1e7). */
+.contact-devis { position: relative; background: var(--bg); padding-block: var(--space-6); overflow: hidden; }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-5); }
 @media (min-width: 960px) {
   .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: start; gap: var(--space-6); }
@@ -3406,11 +3433,14 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 /* FAQ — native <details>/<summary> accordion, no JS required */
 /* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :
    parmi les seules 3 sections du site où l'effet de fond au scroll est
-   conservé (demande explicite de la cliente) — fondu localisé crème-dim →
-   bleu Méditerranéen le plus sombre, cf. commentaire détaillé dans
-   main.js (recherche "Fondus de fond localisés"). `var(--navy-900)` reste
-   un filet de sécurité avant l'exécution du JS (état final). */
-.contact-faq { background: var(--navy-900); color: var(--fg-inverse); padding-block: var(--space-6); }
+   conservé (demande explicite de la cliente) — fondu localisé blanc
+   calcaire → bleu Méditerranéen, cf. commentaire détaillé dans main.js
+   (recherche "Fondus de fond localisés"). `var(--navy)` ci-dessous reste
+   un filet de sécurité avant l'exécution du JS, qui correspond aussi à
+   l'état final du fondu (mêmes couleurs exactes des deux côtés, plus de
+   `--navy-900`/`--bg-dim` intermédiaires depuis l'audit du 2026-09-02,
+   cf. commentaire juste en dessous). */
+.contact-faq { background: var(--navy); color: var(--fg-inverse); padding-block: var(--space-6); }
 .faq-list { max-width: 44rem; margin-inline: auto; display: flex; flex-direction: column; gap: 0.9rem; }
 .faq-item {
   border: 1px solid var(--border-inverse);
@@ -3743,7 +3773,12 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 /* ==========================================================================
    Footer — minimal
    ========================================================================== */
-.site-footer { background: var(--navy-900); color: var(--fg-muted-inverse); padding-block: var(--space-5) var(--space-3); }
+/* `background` remis à `var(--navy)` (2026-09-02, audit sitewide des
+   couleurs de fond de section) — utilisait `var(--navy-900)`, une teinte
+   distincte du bleu Méditerranéen de la charte. Partagé par les 5 pages
+   (balisage dupliqué), donc corrigé une seule fois ici pour tout le
+   site. */
+.site-footer { background: var(--navy); color: var(--fg-muted-inverse); padding-block: var(--space-5) var(--space-3); }
 .footer-grid {
   display: grid;
   gap: var(--space-4);
