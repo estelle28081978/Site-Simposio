@@ -486,9 +486,16 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
   color: var(--ink);
   padding: 0.6rem;
   border-radius: 999px;
-  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
-.mobile-menu-close:hover { background: rgba(28, 59, 74, 0.08); transform: rotate(90deg); }
+/* Survol en terracotta + bleu Méditerranéen (2026-09-02, demande
+   explicite : "met en terracotta et bleu méditerranéen quand on passe
+   dessus") : le cercle se remplit de `var(--navy)` (bleu Méditerranéen
+   plein, pas une teinte translucide) pendant que l'icône passe en
+   `var(--accent)` (terracotta) — même duo de couleurs appliqué au survol
+   des icônes réseaux sociales juste en dessous, pour un langage de survol
+   cohérent sur tout le pied de menu. */
+.mobile-menu-close:hover { background: var(--navy); color: var(--accent); transform: rotate(90deg); }
 .mobile-menu-close svg { width: 18px; height: 18px; display: block; }
 
 /* Aligné à gauche (2026-09-02, demande explicite : "centre, le texte à
@@ -612,13 +619,17 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
 .mobile-menu-social { display: flex; gap: 0.5rem; flex-shrink: 0; }
 /* `.nav-social` est une classe générique partagée avec le header (fond
    sombre, jamais concerné par cet essai) — variante fond clair scopée ici
-   plutôt que de toucher la règle de base. */
+   plutôt que de toucher la règle de base. Survol en terracotta + bleu
+   Méditerranéen (2026-09-02, demande explicite, cf. commentaire détaillé
+   sur `.mobile-menu-close` plus haut) : `background` passe d'une teinte
+   navy translucide (6%) à `var(--navy)` plein, cohérent avec le bouton de
+   fermeture juste au-dessus. */
 .mobile-menu-social .nav-social { color: var(--fg-muted); }
-.mobile-menu-social .nav-social:hover { color: var(--accent); background: rgba(28, 59, 74, 0.06); }
+.mobile-menu-social .nav-social:hover { color: var(--accent); background: var(--navy); }
 
 .mobile-menu-info { display: flex; flex-wrap: wrap; column-gap: var(--space-4); row-gap: 0.3rem; align-items: baseline; }
 .mobile-menu-info a, .mobile-menu-info span:last-child { color: var(--fg-muted); font-size: 0.9rem; }
-.mobile-menu-info a:hover { color: var(--ink); }
+.mobile-menu-info a:hover { color: var(--accent); }
 /* The "@" glyph in self-hosted Glacial Indifference (400 normal) is drawn
    with much thinner strokes than the rest of the font's character set —
    at this element's small size it's borderline invisible on standard

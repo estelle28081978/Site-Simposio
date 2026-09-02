@@ -6419,6 +6419,29 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `.mobile-menu-info .eyebrow` retrouve la classe `on-dark`, c'est un
   retour à l'ancien fond sombre, à ne pas réintroduire sans qu'on le
   redemande.
+- **Menu — survol en terracotta + bleu Méditerranéen (2026-09-02, même
+  jour)** (`.mobile-menu-close`, `.mobile-menu-social .nav-social`,
+  `.mobile-menu-info a`, `style.css`) : demande explicite de la cliente,
+  juste après le passage du menu en Blanc Calcaire ci-dessus ("met en
+  terracotta et bleu méditerranéen quand on passe dessus"). Duo de
+  couleurs appliqué de façon cohérente sur tous les éléments interactifs
+  du pied de menu : les boutons ronds (fermeture, icônes Instagram/
+  LinkedIn) remplissent leur cercle de `var(--navy)` plein (au lieu d'une
+  teinte translucide, 8%/6% selon l'élément) pendant que leur icône passe
+  en `var(--accent)` (terracotta) ; le lien email suit la même logique
+  côté texte (`var(--ink)` → `var(--accent)` au survol, au lieu de rester
+  simplement plus foncé). Les 5 liens de navigation gardaient déjà un
+  survol terracotta (`var(--accent)`, posé lors du passage en Blanc
+  Calcaire) — non modifiés ici, cohérents avec ce nouveau duo sans
+  changement supplémentaire. `color` ajouté à la liste `transition` de
+  `.mobile-menu-close` (absente jusqu'ici, seuls `background`/`transform`
+  étaient animés) pour que le changement de couleur de l'icône reste
+  progressif comme le reste. Vérifié par script Playwright
+  (`getComputedStyle` sur les 3 éléments au survol : fond `rgb(28,59,74)`
+  et texte/icône `rgb(193,98,45)` sur les boutons ronds, texte
+  `rgb(193,98,45)` sur le lien email) et capture d'écran de chaque état de
+  survol. Regression complète 5 pages × 2 viewports : 0 débordement, 0
+  erreur console.
 
 ## État d'avancement
 
