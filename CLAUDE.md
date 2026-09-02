@@ -6638,6 +6638,93 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   survol confirmé toujours fonctionnel — couleur terracotta, plus de
   fond) et capture d'écran desktop + mobile. Regression complète 5 pages
   × 2 viewports : 0 débordement, 0 erreur console.
+- **Bug sitewide découvert et corrigé : tout le texte courant en Glacial
+  Indifference "normal" s'affichait en réalité en gras (2026-09-02, même
+  jour)** (`assets/css/style.css`, ligne 2) : la cliente signalait
+  "Alsace, France" et l'adresse email du menu comme étant en gras — en
+  creusant la vraie cause plutôt que de chercher une règle `font-weight`
+  à corriger localement (il n'y en avait aucune, ces éléments étaient
+  bien déclarés à `font-weight: 400`), un bug bien plus large a été
+  trouvé : **le tout premier commentaire du fichier CSS coupait lui-même
+  sa propre fermeture en plein milieu**, corrompant la toute première
+  règle `@font-face` du fichier (Glacial Indifference, `normal`, `400`) —
+  invisible dans l'éditeur, mais bien réel une fois le fichier interprété
+  par un vrai moteur CSS.
+  **Mécanisme exact du bug** : le commentaire d'en-tête `/* ...
+  (see assets/fonts/*/LICENSE.txt) ... */` utilise une notation "glob"
+  avec un astérisque comme joker (`fonts/*/LICENSE.txt`, "n'importe quel
+  sous-dossier"). Un commentaire CSS se termine à la PREMIÈRE occurrence
+  de `*/` rencontrée — et la séquence `fonts/*/LICENSE` contient
+  justement un `*` immédiatement suivi d'un `/`, donc littéralement
+  `*/`. Le commentaire se referme donc bien plus tôt que prévu, juste
+  après "assets/fonts/*" — tout ce qui suit ("LICENSE.txt) / la ligne de
+  `=` de fermeture / le vrai `*/` final") redevient du CSS actif aux yeux
+  du navigateur, du charabia syntaxiquement invalide que le moteur CSS
+  ignore en essayant de se resynchroniser sur la prochaine règle valide
+  qu'il reconnaît — ce qui, ici, correspondait à avaler purement et
+  simplement la règle `@font-face` de Glacial Indifference normale/400
+  qui suivait immédiatement, la seule occurrence perdue dans tout le
+  fichier (vérifié par recherche de ce même motif `mot/*/mot` ailleurs
+  dans `style.css`, `main.js` et les 5 pages HTML : aucune autre
+  occurrence). **Conséquence concrète** : sans face `normal`/`400`
+  disponible pour "Glacial Indifference" (seules `italic`/`400` et
+  `normal`/`700` restaient déclarées), chaque fois que le CSS demandait
+  cette police à son poids normal (`--font-body`, utilisé par défaut sur
+  quasiment tout le texte courant du site), le navigateur appliquait son
+  algorithme de correspondance de police et retombait sur la face la
+  PLUS PROCHE disponible pour un style `normal` — ici, la seule
+  candidate restante était la face `700` (gras) — donc tout texte "en
+  poids normal" du site s'affichait silencieusement en gras à la place,
+  sans qu'aucune règle `font-weight` explicite n'en soit responsable.
+  **Repéré par une investigation en plusieurs étapes, jamais supposé** :
+  1. Vérifié via `getComputedStyle` que les éléments visés avaient bien
+     `font-weight:400` en CSS (pas de règle bold cachée) — ce qui aurait
+     dû suffire à les afficher en normal.
+  2. Interrogé `document.fonts` (FontFaceSet) et le CSSOM
+     (`document.styleSheets[…].cssRules`, en filtrant les
+     `CSSFontFaceRule`) : la règle `@font-face` pour Glacial Indifference
+     `normal`/`400` était absente de la liste des règles réellement
+     parsées par le navigateur, alors qu'elle est bien présente et
+     syntaxiquement valide dans le fichier source (confirmé par `curl` +
+     lecture directe du fichier).
+  3. Reproduit en isolant des fragments de plus en plus petits du fichier
+     dans une page de test minimale (Playwright + serveur local dédié)
+     jusqu'à cerner que SEULE la présence du commentaire d'en-tête
+     (peu importe l'encodage, le tiret cadratin, `@charset`, ou l'ordre
+     des règles — tout testé et écarté un par un) faisait disparaître
+     cette règle précise.
+  4. Repéré la vraie cause en relisant le texte exact du commentaire :
+     `assets/fonts/*/LICENSE.txt` contient la séquence `*/`. Confirmé de
+     façon définitive en retirant uniquement cette séquence du
+     commentaire de test (`assets/fonts/LICENSE.txt files` à la place) :
+     la règle réapparaît immédiatement dans le CSSOM.
+  **Corrigé** en reformulant le commentaire pour ne plus contenir cette
+  séquence : `assets/fonts/<font>/LICENSE.txt` (le sens reste identique —
+  chaque police a son propre `LICENSE.txt` dans son sous-dossier — sans
+  utiliser un astérisque qui risque de fermer le commentaire). Si un
+  commentaire CSS contenant un chemin avec `*/` (notation glob,
+  chemin-astérisque-chemin) réapparaît ailleurs sur le site, appliquer le
+  même correctif (remplacer l'astérisque par autre chose, ex. `<...>` ou
+  `…`) — ce type de piège n'est pas spécifique à cette police, n'importe
+  quel commentaire contenant cette séquence de caractères aurait le même
+  effet, quel que soit son contenu.
+  **Portée du correctif, plus large que la demande initiale** : la
+  cliente ne signalait que "Alsace, France" et l'adresse email du menu,
+  mais ce bug touchait potentiellement TOUT texte du site utilisant
+  Glacial Indifference à son poids par défaut (`--font-body`, utilisé
+  par la quasi-totalité du corps de texte courant — paragraphes, ledes,
+  labels de formulaire, etc.) — pas seulement ces deux éléments. Le
+  correctif s'applique donc uniformément à tout le site en une seule
+  fois (un seul fichier CSS partagé par les 5 pages), pas élément par
+  élément.
+  Vérifié par script Playwright : `document.fonts` confirme désormais
+  `Glacial Indifference/400/normal` avec le statut `loaded`, le CSSOM
+  liste bien les 3 règles `@font-face` de cette police (`normal/400`,
+  `italic/400`, `normal/700`) au lieu de 2, capture d'écran du pied de
+  menu confirmant "Alsace, France"/l'email visiblement plus fins qu'avant
+  le correctif (comparé à la capture prise juste avant ce correctif).
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 
