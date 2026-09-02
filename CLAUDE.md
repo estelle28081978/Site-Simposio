@@ -7023,6 +7023,50 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `rgb(16,31,39)`) et capture d'écran (mosaïque, "L'équipe", jonction
   FAQ/footer). Regression complète 5 pages × 2 viewports : 0 débordement,
   0 erreur console.
+- **Valeurs — fil et frise numérotée intégrés directement sur la photo,
+  sans bande dédiée (2026-09-02)** (`.values-reel-overlay`, `engagements.html`
+  /`style.css`) : demande explicite de la cliente ("pour les valeurs, la
+  ligne ainsi que là où il y a les chiffres qui avancent au défilement,
+  j'aimerais que tu essayes de les mett[re] et les intégrer directement
+  là où on retrouve les photos et non pas prévoir un fond exprès pour
+  ça"). Jusqu'ici, `.values-reel-thread` (le fil terracotta qui progresse
+  au scroll) et `.values-reel-footer` (la frise à 6 chiffres) étaient des
+  enfants flex NORMAUX de `.values-reel-sticky`, empilés SOUS
+  `.values-reel-viewport` (qui n'avait alors que `flex:1 1 auto`,
+  rétrécissant pour leur laisser de la place) — ce qui créait, sous la
+  photo, une bande à fond plat dans la couleur de fond de la section
+  (bleu Méditerranéen), lisible comme un bandeau séparé plutôt
+  qu'intégré à la scène.
+  **`.values-reel-overlay`** (nouveau) regroupe maintenant le fil et la
+  frise dans un unique conteneur `position:absolute`, ancré au bas de
+  `.values-reel-viewport` — la photo (devenue seul enfant flex de
+  `.values-reel-sticky`) s'étend désormais sur TOUTE la hauteur du
+  panneau, et le fil/la frise se retrouvent simplement superposés
+  par-dessus son bord inférieur, déjà assombri par `.values-reel-scrim`
+  (dégradé jusqu'à 93% d'opacité tout en bas) — suffisant pour rester
+  lisibles sans bande dédiée. Le fil et la frise gardent leur mise en
+  page interne strictement inchangée (même mécanisme JS de progression/
+  clic/glisser dans `main.js`, aucune modification) — seul leur PARENT
+  direct change. Si `.values-reel-thread`/`.values-reel-footer`
+  réapparaissent comme enfants directs de `.values-reel-sticky` (plutôt
+  que de `.values-reel-overlay`), c'est l'ancienne bande dédiée, à ne pas
+  réintroduire sans qu'on le redemande.
+  **`.values-reel-caption` remontée en conséquence** : ce nouveau panneau
+  occupe ~7,1rem de haut par-dessus le bas de la photo (fil 1,4rem + pied
+  de page ~5,7rem) — la citation/le titre de chaque valeur, ancrés depuis
+  le bas (`bottom:`), auraient sinon fini recouverts par le fil/la frise.
+  `bottom` remonté de `2,75rem`/`3,25rem` à `8,75rem`/`9,25rem`
+  (mobile/desktop), calibré par script Playwright mesurant l'écart réel
+  entre le bas de la légende et le haut du nouveau panneau à 5 tailles de
+  viewport et 5 positions de scroll à travers tout le défilement des 6
+  valeurs : écart positif partout (~34px desktop, ~26px mobile), aucun
+  chevauchement.
+  Vérifié par script Playwright (photo confirmée occuper 100% de la
+  hauteur du panneau sticky, marqueurs de la frise confirmés entièrement
+  dans le viewport, clic sur un marqueur toujours fonctionnel — saut
+  direct à la bonne valeur —, 0 erreur console) et capture d'écran
+  desktop + mobile à plusieurs valeurs actives. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
