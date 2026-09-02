@@ -269,9 +269,16 @@
   <section class="founder">
     <div class="container founder-minimal">
       <span class="eyebrow bg-adaptive-eyebrow" data-reveal>La fondatrice</span>
+      <!-- Accents retirés volontairement dans CETTE citation uniquement (pas le reste du site) : le
+           fichier Liana fourni par la cliente (assets/fonts/liana/liana-regular.otf) ne contient aucun
+           caractère accentué latin (charset confirmé via `fc-scan` : ASCII de base + cyrillique
+           seulement, aucun é/è/à/ê/ç) — avec les accents, chaque lettre accentuée retombait sur
+           Yeseva One en plein milieu du mot (fallback de police par caractère). Demande explicite de la
+           cliente : remplacer chaque lettre accentuée par sa lettre classique plutôt que de garder ce
+           mélange visuel. Voir assets/fonts/README.md pour le détail complet. -->
       <p class="founder-quote-minimal" data-reveal>
-        « Simposio est née de l'envie de porter l'art de recevoir à l'italienne jusqu'en Alsace — pas comme un
-        thème, mais comme une manière de traiter chaque invité. »
+        « Simposio est nee de l'envie de porter l'art de recevoir a l'italienne jusqu'en Alsace — pas comme un
+        theme, mais comme une maniere de traiter chaque invite. »
       </p>
       <span class="founder-rule" aria-hidden="true"></span>
       <div class="founder-id-minimal" data-reveal>

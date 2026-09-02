@@ -7067,6 +7067,91 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   direct à la bonne valeur —, 0 erreur console) et capture d'écran
   desktop + mobile à plusieurs valeurs actives. Regression complète
   5 pages × 2 viewports : 0 débordement, 0 erreur console.
+- **Citation de la fondatrice en police Liana, accents retirés pour
+  compatibilité (2026-09-02)** (`.founder-quote-minimal`,
+  `assets/fonts/liana/`, `engagements.html`/`style.css`) : demande
+  explicite de la cliente ("pour la citation de la fondatrice essaye de
+  mettre en police Liana").
+  **Liana n'est pas une police libre** — recherche faite avant d'agir,
+  aucune source légale gratuite trouvée (contrairement à Yeseva One/
+  Oswald/Glacial Indifference, sous SIL OFL). Clarifié avec la cliente
+  (`AskUserQuestion`) : elle a choisi de fournir directement le fichier,
+  comme déjà fait pour Canter (elle détient la licence commerciale).
+  Fichier reçu (`liana.otf`, 32,5 Ko, OpenType/CFF, famille "Liana",
+  métadonnées internes indiquant "Copyright 2002 Adobe Systems
+  Incorporated" — vraisemblablement une police ParaType distribuée via
+  Adobe Fonts), copié dans `assets/fonts/liana/liana-regular.otf`.
+  **Servie en `.otf` brut, pas convertie en `.woff2`/`.woff`** comme le
+  reste des polices du site — écart assumé et documenté : `fontTools`
+  (l'outil utilisé pour convertir Canter) s'est révélé impossible à
+  installer dans cet environnement de développement, l'accès réseau à
+  PyPI et au registre npm étant tous deux bloqués (confirmé par plusieurs
+  méthodes — `pip`, `uv pip`, `npm view`, `curl` direct — toutes en 403,
+  et par la liste de contournement du proxy qui les cite explicitement).
+  Un `.otf` servi directement via `@font-face`/`format("opentype")` reste
+  un choix de self-hosting valide et supporté par tous les navigateurs
+  modernes ; seul le gain de compression de WOFF2 est perdu (négligeable
+  sur un fichier de 32 Ko) — à reconvertir si l'outil devient disponible
+  plus tard. `fc-scan`/`strings` (fontconfig, préinstallés) ont servi de
+  substituts à `fontTools` pour inspecter les métadonnées du fichier sans
+  pouvoir le parser en Python.
+  **Bug réel trouvé avant publication, pas supposé** : une fois appliquée
+  à la citation ("Simposio est née de l'envie de porter l'art de recevoir
+  à l'italienne..."), chaque lettre accentuée (é, è, à) s'affichait
+  visiblement dans une police différente (Yeseva One) au lieu de Liana,
+  cassant l'unité visuelle de la citation — repéré par capture d'écran
+  (`founder2.png`), pas supposé. Cause confirmée par `fc-scan --format
+  '%{charset}'` sur le fichier : le jeu de caractères de Liana ne couvre
+  que l'ASCII de base et le cyrillique (`20-7e a0 a9 ac-ae b0 b6 401
+  410-44f 451 45e 491 …`) — **aucun caractère latin accentué** (é/è/à/ê/ç
+  tous absents du charset, vérifié codepoint par codepoint). Sans glyphe
+  pour ces caractères, le navigateur retombe automatiquement sur la police
+  suivante de la liste (`--font-display`, Yeseva One) — comportement CSS
+  standard de secours par caractère, pas un bug d'intégration.
+  **Signalé à la cliente avant de publier** (`AskUserQuestion`, un vrai
+  défaut fonctionnel du fichier fourni, pas une question de goût) plutôt
+  que de livrer un mélange de polices non désiré : elle a choisi de
+  remplacer chaque lettre accentuée par sa lettre classique (accent aigu
+  → juste "e") plutôt que de revenir à Yeseva One ou d'attendre un autre
+  fichier. Le texte de la citation dans `engagements.html` est donc
+  volontairement désaccentué : "née"→"nee", "à"→"a", "thème"→"theme",
+  "manière"→"maniere", "invité"→"invite" — **seulement dans cette
+  citation précise**, aucun autre texte du site n'est concerné (vérifié
+  par recherche, cette citation n'existe qu'à cet unique endroit depuis la
+  suppression d'`univers.html`). Un commentaire HTML documente cette
+  décision directement au-dessus du paragraphe, pour qu'un futur
+  changement de police sur cet élément pense à revérifier si les accents
+  peuvent être réintroduits.
+  **Guillemets « »** : également absents du charset de Liana (vérifié par
+  le même calcul), donc eux aussi rendus via le fallback Yeseva One — mais
+  contrairement aux voyelles accentuées (où un glyphe serif clairement
+  différent cassait un mot cursif en plein milieu), l'effet reste discret
+  à l'œil (les deux polices dessinent des guillemets fins et anguleux,
+  visuellement proches) et n'a pas été signalé par la cliente ni changé —
+  la portée de sa demande se limitait explicitement aux lettres
+  accentuées. À surveiller si un jour ce mélange devient visible/gênant.
+  `.founder-quote-minimal` : `font-family` passe de `var(--font-display)`
+  seul à `"Liana", var(--font-display)` (Yeseva One reste le repli
+  naturel, même famille que le reste des titres du site) ; `font-size`
+  légèrement augmenté (`clamp(1.7rem, 1.3vw + 1.4rem, 2.5rem)`, contre
+  `clamp(1.4rem, 1vw + 1.15rem, 2rem)`) et `line-height` desserré (`1.65`
+  contre `1.5`) — une cursive fine se lit plus petite qu'un serif de titre
+  à taille égale, et les boucles/jambages caractéristiques du script ont
+  besoin de plus d'espace vertical. Aucun autre élément du site n'utilise
+  Liana (pas branchée sur `--font-display` ni une nouvelle variable
+  partagée) — voir `assets/fonts/README.md` pour le détail complet.
+  Vérifié par script Playwright (`document.fonts` confirme Liana chargée
+  — `status:"loaded"` —, couleur du texte confirmée `rgb(28,59,74)`
+  (navy) une fois l'animation `[data-reveal]` stabilisée — un premier
+  test avec un délai plus court avait capturé le texte en cours de
+  fondu, pas un bug de couleur —, texte de la citation confirmé
+  désaccentué) et capture d'écran desktop confirmant un rendu
+  entièrement cohérent en Liana, plus aucun mélange de police visible.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console. Si des accents (é/è/à) réapparaissent dans le texte HTML de
+  cette citation sans que le fichier Liana n'ait changé, revérifier
+  d'abord son charset (`fc-scan --format '%{charset}'`) avant de les
+  remettre — le défaut documenté ici reviendrait immédiatement.
 
 ## État d'avancement
 

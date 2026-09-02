@@ -69,6 +69,26 @@
     url("../fonts/canter/canter-bold.woff2") format("woff2"),
     url("../fonts/canter/canter-bold.woff") format("woff");
 }
+/* Liana — reçue directement de la cliente le 2026-09-02 (elle possède déjà
+   la licence, comme pour Canter), essayée sur la citation de la fondatrice
+   (`.founder-quote-minimal`) — voir assets/fonts/README.md pour le détail.
+   **Servie en `.otf` brut, pas en `.woff2`/`.woff`** contrairement aux
+   autres polices du site : `fontTools` (l'outil utilisé pour convertir
+   Canter) n'est pas installable dans cet environnement (accès réseau à
+   PyPI/npm bloqué, testé et confirmé avant de renoncer à la conversion) —
+   servir l'OTF directement reste un choix `@font-face`/self-hosting
+   parfaitement valide et supporté par tous les navigateurs modernes, sans
+   dépendance externe ; seul le gain de compression de WOFF2 est perdu,
+   négligeable ici (fichier déjà à 32 Ko). Si l'outil de conversion devient
+   disponible plus tard, convertir en `.woff2`/`.woff` pour rester cohérent
+   avec le reste du site. */
+@font-face {
+  font-family: "Liana";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/liana/liana-regular.otf") format("opentype");
+}
 
 /* ==========================================================================
    Simposio — Design tokens (Apple-inspired: huge type, glass, gradients,
@@ -1814,10 +1834,19 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    sécurité avant l'exécution du JS (état final). */
 .founder { background: var(--bg); padding-block: var(--space-6); }
 .founder-minimal { max-width: 42rem; margin-inline: auto; text-align: center; }
+/* Essai en police Liana (2026-09-02, demande explicite : "pour la
+   citation de la fondatrice essaye de mettre en police Liana") — remplace
+   Yeseva One (`--font-display`) uniquement sur cette citation précise, le
+   reste du site (titres, etc.) n'est pas concerné. Taille légèrement
+   augmentée (le script de Liana, plus fin/étroit qu'un serif de titre,
+   se lit plus petit à taille égale) et `line-height` desserré pour laisser
+   respirer les jambages/boucles caractéristiques d'une cursive. Si Liana
+   ne convient pas à l'usage, `--font-display` reste le fallback naturel
+   (même famille de police que le reste des titres du site). */
 .founder-quote-minimal {
-  font-family: var(--font-display);
-  font-size: clamp(1.4rem, 1vw + 1.15rem, 2rem);
-  line-height: 1.5;
+  font-family: "Liana", var(--font-display);
+  font-size: clamp(1.7rem, 1.3vw + 1.4rem, 2.5rem);
+  line-height: 1.65;
   color: var(--navy);
   margin-top: 1.5rem;
 }

@@ -55,3 +55,29 @@ les bas-de-casse de Canter sont dessinées en petites capitales élégantes,
 qui font tout le charme de la police — les majuscules aplatissent cet
 effet. Le texte HTML des eyebrows était déjà écrit en casse normale, donc
 ce retrait n'a demandé aucun changement de contenu, juste de CSS.
+
+## Liana
+
+Fichier reçu directement de la cliente le 2026-09-02 (`liana.otf` — elle
+possède déjà la licence, même situation que pour Canter), auto-hébergé
+dans `liana/liana-regular.otf`. Comme pour Canter, pas de `LICENSE.txt`
+ici : Liana est une police commerciale (publiée par ParaType/distribuée
+via Adobe Fonts — métadonnées internes du fichier : "Copyright 2002 Adobe
+Systems Incorporated"), c'est la licence de la cliente qui couvre son
+usage sur ce site, pas une licence libre redistribuable.
+
+**Servie en `.otf` brut, pas en `.woff2`/`.woff`** — seule exception parmi
+les polices de ce dossier. `fontTools` (l'outil utilisé pour convertir
+Canter en woff2/woff) n'a pas pu être installé dans l'environnement de
+développement au moment de l'intégration (accès réseau à PyPI/npm bloqué,
+confirmé avant d'y renoncer) — un fichier `.otf` servi directement via
+`@font-face`/`format("opentype")` reste un choix de self-hosting valide et
+supporté par tous les navigateurs modernes, seul le gain de compression de
+WOFF2 est perdu (négligeable ici, fichier à 32 Ko). À reconvertir en
+`.woff2`/`.woff` si l'outil devient disponible plus tard, pour rester
+cohérent avec le reste du site.
+
+Essayée uniquement sur la citation de la fondatrice
+(`.founder-quote-minimal`, `engagements.html`) — pas branchée sur une
+variable de police partagée (`--font-display` etc.), un seul élément est
+concerné pour l'instant.
