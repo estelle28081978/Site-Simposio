@@ -3452,52 +3452,69 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    sitewide des couleurs de fond de section) — `--bg-dim` est un crème
    légèrement assombri (#ece3d1), distinct du Blanc Calcaire exact de la
    charte (#f6f1e7). */
-.contact-devis { position: relative; background: var(--bg); padding-block: var(--space-6); overflow: hidden; }
-/* Essai "formulaire dans la longueur" (2026-09-03, demande explicite :
-   "et si on essayait le formulaire dans la longueur et non dans la
-   hauteur") — remplace le layout deux colonnes (texte 0.85fr à gauche,
-   carte formulaire 1.15fr à droite, elle-même plafonnée à `max-width:
-   40rem` par `.form-card` de base) qui forçait la carte à rester étroite
-   et donc haute (tous les groupes de champs empilés verticalement dans
-   une colonne resserrée). `.contact-devis-inner` repasse en une seule
-   colonne (plus de `grid-template-columns` dédié) : le texte reste en
-   haut, contraint à une largeur de lecture confortable
-   (`.contact-devis-text`, `max-width:44rem`), et la carte formulaire
-   occupe ensuite toute la largeur du conteneur
-   (`.form-card.form-card-premium`, `max-width:none` ci-dessous) — ce qui
-   permet aux groupes de champs de s'étaler sur plusieurs colonnes plutôt
-   que de s'empiler, donc un formulaire nettement plus large et plus
-   court. Si `grid-template-columns: 0.85fr 1.15fr` réapparaît ici, c'est
-   cet ancien layout deux colonnes, à ne pas réintroduire sans qu'on le
-   redemande — un essai à confirmer avec la cliente avant de le considérer
-   définitif. */
+/* Formulaire "intégré au fond" (2026-09-03, demande explicite : "enlève le
+   texte et fait un formulaire intégré au fond, ne le fait pas apparaître
+   dans un rectangle qui passe en premier plan... garde juste le
+   'Dites-nous où vous en êtes'... réduit la taille de la section") —
+   remplace l'essai précédent (texte eyebrow+h2+lede au-dessus d'une carte
+   navy avec coins arrondis/ombre portée, cf. commentaire encore plus haut
+   dans l'historique de ce fichier). Le dégradé navy qui habillait la carte
+   (`.form-card.form-card-premium`, ci-dessous) est remonté directement sur
+   `.contact-devis` : c'est désormais toute la section qui porte ce fond,
+   pas un rectangle posé dessus — la carte perd son propre
+   fond/bordure/coins arrondis/ombre (voir plus bas), donc les champs
+   flottent directement sur le fond de la section, sans rupture visuelle.
+   `padding-block` réduit de `var(--space-6)` à `var(--space-4)` (demande
+   explicite de réduire la taille de la section — déjà plus courte de
+   toute façon, l'eyebrow et le lede ayant été retirés). Si
+   `background: var(--bg)` réapparaît ici avec un `.form-card-premium` qui
+   garde son propre fond/ombre, c'est un retour à l'ancienne carte
+   "premier plan", à ne pas réintroduire sans qu'on le redemande. */
+.contact-devis {
+  position: relative;
+  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
+  padding-block: var(--space-4);
+  overflow: hidden;
+}
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); }
-.contact-devis-text { max-width: 44rem; }
+/* Titre seul, en clair sur le nouveau fond navy de la section — l'eyebrow
+   "Deux minutes suffisent" et le lede ont été retirés (demande explicite),
+   `.contact-devis-text` ne contient donc plus que le `h2`. Plus de
+   `max-width` dédié : sans lede à mettre en page, rien ne justifie de
+   brider sa largeur (cohérent avec la demande "tout dans la longueur"). */
+.contact-devis-text h2 { color: var(--fg-inverse); }
 /* Quart de cercle décoratif retiré (2026-09-02, demande explicite : "enlève
    le quart de cercle décoratif au niveau du deux minutes suffisent") —
    `.contact-devis::before` était un cercle complet (`border-radius:50%`,
    22rem) positionné en haut à gauche à cheval sur le bord de la section
    (`left:-9rem; top:-8rem`), dont `overflow:hidden` sur `.contact-devis`
    ne laissait apparaître qu'un quart, juste au-dessus de l'eyebrow "Deux
-   minutes suffisent". Si `.contact-devis::before` réapparaît ici, c'est
-   cet ancien motif, à ne pas réintroduire sans qu'on le redemande. */
+   minutes suffisent" (retirée depuis, cf. ci-dessus). Si
+   `.contact-devis::before` réapparaît ici, c'est cet ancien motif, à ne
+   pas réintroduire sans qu'on le redemande. */
 
-.contact-devis-text .lede { margin-top: var(--space-2); }
 /* Badge "EL Estelle Lorusso, fondatrice..." retiré (2026-09-03, demande
    explicite) — `.contact-founder-strip`/`.contact-founder-avatar`
    supprimés (HTML + CSS), plus utilisés nulle part. Si ces classes
    réapparaissent, c'est cet ancien badge, à ne pas réintroduire sans
    qu'on le redemande. */
 
-/* Premium form card — Bleu Méditerranéen background, fields stay light for legibility.
-   Compound selector so it wins over the later, equal-specificity .form-card base rule. */
+/* Plus de "carte" — le formulaire est intégré au fond de la section (cf.
+   commentaire sur .contact-devis) : fond/bordure/coins arrondis/ombre
+   portée de l'ancienne carte sont neutralisés, seule la mise en couleur du
+   texte (labels clairs, group-label terracotta clair...) reste, puisque
+   le fond de la SECTION porte maintenant la même teinte navy que portait
+   la carte. `padding` ramené à 0 : plus de rectangle à cadrer, la
+   colonne/ligne de grille (`.contact-devis-inner`) donne déjà l'espacement
+   par rapport au titre au-dessus et aux bords du conteneur. */
 .form-card.form-card-premium {
   max-width: none;
-  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
+  background: none;
   color: var(--fg-inverse);
   border: none;
-  border-radius: calc(var(--radius-lg) + 0.75rem);
-  box-shadow: 0 40px 80px -40px rgba(16, 31, 39, 0.55);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
 }
 .form-card-premium .field label { color: var(--cream); }
 .form-card-premium .field .optional { color: var(--fg-muted-inverse); }

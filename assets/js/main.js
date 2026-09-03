@@ -160,7 +160,18 @@
      ensemble. */
   initScrollFade(document.querySelector(".teaser"), [28, 59, 74], [246, 241, 231]);
   initScrollFade(document.querySelector(".founder"), [16, 31, 39], [246, 241, 231]);
-  initScrollFade(document.querySelector(".contact-faq"), [246, 241, 231], [28, 59, 74]);
+  /* fromRgb recalé sur navy-900 (2026-09-03, suite au formulaire "intégré
+     au fond") : `.contact-devis`, juste au-dessus, n'est plus crème mais
+     un dégradé navy → navy-900 (cf. style.css) — garder `[246, 241, 231]`
+     ici aurait provoqué un aller-retour crème en plein milieu de deux
+     sections sombres (navy-900 → crème → navy) au moment précis de la
+     transition. `[16, 31, 39]` (navy-900, la teinte réellement visible en
+     bas de `.contact-devis`) élimine ce flip — même raisonnement déjà
+     appliqué à `.founder` juste au-dessus, dont le fromRgb suit la teinte
+     RÉELLE de la section précédente plutôt que sa couleur nominale. Si
+     `[246, 241, 231]` réapparaît ici sans que `.contact-devis` ne soit
+     redevenue crème, c'est ce décalage à corriger. */
+  initScrollFade(document.querySelector(".contact-faq"), [16, 31, 39], [28, 59, 74]);
   initScrollFade(document.querySelector(".method-cta"), [28, 59, 74], [246, 241, 231]);
 
   /* ---------- Footer year ---------- */

@@ -7372,6 +7372,62 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   la cliente** — si `grid-template-columns: 0.85fr 1.15fr` réapparaît sur
   `.contact-devis-inner`, c'est un retour au layout deux colonnes
   précédent, à ne pas réintroduire sans qu'on le redemande.
+- **Page Contact — formulaire "intégré au fond", texte réduit au titre
+  seul, section raccourcie (2026-09-03)** (`.contact-devis`,
+  `.form-card.form-card-premium`, `contact.html`/`style.css`/`main.js`) :
+  demande explicite de la cliente sur l'essai précédent ("enlève le texte
+  et fait un formulaire intégré au fond, ne le fait pas apparaître dans un
+  rectangle qui passe en premier plan... garde juste le 'Dites-nous où
+  vous en êtes'... réduit la taille de la section").
+  **Texte réduit au titre seul** : l'eyebrow "Deux minutes suffisent" et le
+  lede ("Le contexte, vos objectifs...") sont retirés du HTML —
+  `.contact-devis-text` ne contient plus que le `<h2>`. `.contact-devis-text
+  .lede` (CSS, devenue orpheline) est supprimée ; le `max-width:44rem` de
+  l'essai précédent (posé pour contenir le lede) est retiré aussi, plus
+  rien ne justifiant de brider la largeur du seul titre.
+  **Formulaire "intégré au fond" plutôt qu'un rectangle au premier plan** :
+  le dégradé navy qui habillait la carte (`.form-card.form-card-premium`,
+  `linear-gradient(200deg, var(--navy), var(--navy-900))`) est remonté
+  directement sur `.contact-devis` — c'est désormais toute la SECTION qui
+  porte ce fond, pas une carte posée dessus. `.form-card.form-card-premium`
+  perd son propre `background`/`border`/`border-radius`/`box-shadow`/
+  `padding` (tous mis à `none`/`0`) : les champs flottent directement sur
+  le fond de la section, sans rupture visuelle de type "carte flottante".
+  Le titre, sur ce nouveau fond sombre, passe en `var(--fg-inverse)`
+  (crème) — inchangé sinon (mêmes tuiles de formule blanches, mêmes
+  couleurs de champs/labels déjà pensées pour ce contexte "premium" par
+  les itérations précédentes, cf. `.form-card-premium .field label` etc.,
+  non touchées).
+  **Section raccourcie** : `padding-block` passe de `var(--space-6)` à
+  `var(--space-4)` — déjà plus courte de fait (eyebrow/lede retirés,
+  pas de padding de carte à ajouter par-dessus).
+  **Bug de couleur trouvé et corrigé avant publication, pas supposé** :
+  `.contact-faq` juste en dessous a un fondu de fond au scroll
+  (`initScrollFade`, `main.js`) qui partait de `--bg`/crème
+  (`[246,241,231]`) — cohérent tant que `.contact-devis` juste au-dessus
+  était crème lui aussi (seam crème→crème invisible), mais avec
+  `.contact-devis` désormais navy, la FAQ démarrait quand même en crème à
+  son entrée dans le viewport (le fondu recalcule `progress` à chaque
+  frame sans mémoire de la couleur précédente), provoquant un aller-retour
+  navy → crème → navy pile à la jonction des deux sections — repéré par
+  script de mesure de couleur à la jonction exacte, pas visuellement en
+  relisant le code. Corrigé en recalant le `fromRgb` de `.contact-faq` sur
+  `[16, 31, 39]` (navy-900, la teinte réellement visible en bas du dégradé
+  de `.contact-devis`) plutôt que sur sa couleur nominale — même principe
+  déjà appliqué au `fromRgb` de `.founder` un peu plus haut dans le fichier
+  (suivre la teinte RÉELLE de la section précédente, pas sa valeur
+  déclarée). Si `[246, 241, 231]` réapparaît comme `fromRgb` de
+  `.contact-faq` sans que `.contact-devis` ne soit redevenue crème, c'est
+  ce décalage à corriger.
+  Vérifié par script Playwright (0 débordement à 390/768/1024/1600px,
+  jonction `.contact-devis`→`.contact-faq` mesurée sans aller-retour de
+  couleur, remplissage d'un champ + sélection d'une formule toujours
+  fonctionnels, 0 erreur console) et capture d'écran à ces largeurs.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console. Si `background: var(--bg)` réapparaît sur `.contact-devis` avec
+  un `.form-card-premium` qui garde son propre fond/ombre, c'est un retour
+  à l'essai "carte" précédent, à ne pas réintroduire sans qu'on le
+  redemande.
 
 ## État d'avancement
 
