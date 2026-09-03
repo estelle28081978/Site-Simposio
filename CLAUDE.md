@@ -7322,6 +7322,56 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   débordement, 0 erreur console. Si `.contact-founder-strip` ou
   `align-items:start` sur `.contact-devis-inner` réapparaissent, c'est
   cette ancienne version, à ne pas réintroduire sans qu'on le redemande.
+- **Page Contact — essai "formulaire dans la longueur" (2026-09-03)**
+  (`.contact-devis-inner`, `.form-row.cols-4`, `.service-picker`,
+  `contact.html`/`style.css`) : demande explicite de la cliente ("et si on
+  essayait le formulaire dans la longueur et non dans la hauteur"), sur le
+  layout deux colonnes de l'itération précédente (texte 0.85fr à gauche,
+  carte formulaire 1.15fr à droite). Un essai, comme signalé dans le
+  commentaire CSS — pas un remplacement discret des styles de base.
+  **Cause du "dans la hauteur"** : la carte formulaire
+  (`.form-card.form-card-premium`, `max-width:none` déjà en place) n'était
+  en réalité jamais bridée par son propre CSS — c'est la piste de grille
+  parente (1.15fr d'un container de 1320px, donc ~600-700px selon la
+  largeur d'écran) qui la contraignait à rester étroite, forçant chaque
+  groupe de champs (Vous/Votre événement/Votre projet) à s'empiler
+  verticalement dans cette colonne resserrée.
+  **`.contact-devis-inner` repasse en une seule colonne** (plus de
+  `grid-template-columns: 0.85fr 1.15fr`) : le texte (eyebrow + h2 + lede)
+  reste en haut, contraint à une largeur de lecture confortable
+  (`.contact-devis-text`, nouveau `max-width:44rem` — sans cette limite,
+  le texte se serait étalé sur toute la largeur du conteneur, illisible),
+  puis la carte formulaire occupe ensuite toute la largeur disponible
+  (jusqu'à ~1176px à 1600px d'écran, contre ~612px avant).
+  **Les groupes de champs s'étalent en conséquence** : les 4 champs du
+  bloc "Vous" (Nom complet/Entreprise/Email professionnel/Téléphone),
+  auparavant deux `form-row.cols-2` empilées, sont regroupés en HTML dans
+  une seule `form-row.cols-4` — nouvelle classe CSS avec un palier
+  intermédiaire à 2 colonnes entre 560 et 860px (la carte n'est pas encore
+  assez large pour 4 colonnes en dessous) puis 4 colonnes au-delà. Le
+  sélecteur de formule (`.service-picker`, 5 tuiles) reçoit un palier
+  supplémentaire à 5 colonnes ≥860px (au lieu de rester à 3, avec les 2
+  dernières tuiles repliées sur une 2ᵉ ligne) — les 5 tiennent maintenant
+  sur une seule ligne une fois la carte élargie.
+  **Bug réel trouvé et corrigé avant publication, pas supposé** : un
+  premier jet de `.form-row.cols-4` ne définissait `grid-template-columns`
+  qu'à partir de 860px, sans palier intermédiaire — repéré par capture
+  d'écran à 820px (juste sous le seuil) : les 4 champs retombaient
+  intégralement empilés en une seule colonne (1 par ligne) au lieu d'un
+  repli progressif, une vraie chute plutôt qu'une dégradation douce.
+  Corrigé en ajoutant `@media (min-width:560px) { .form-row.cols-4 {
+  grid-template-columns: repeat(2, 1fr); } }` avant la règle à 4 colonnes
+  — les deux s'appliquent à 860px+ mais la seconde gagne la cascade (même
+  spécificité, plus loin dans le fichier), donnant 1 colonne sous 560px, 2
+  entre 560 et 859px, 4 au-delà.
+  Vérifié par script Playwright (0 débordement horizontal à 820/860/1024/
+  1200/1600/1920px + mobile, remplissage d'un champ + sélection d'une
+  formule toujours fonctionnels, 0 erreur console) et capture d'écran à
+  chacune de ces largeurs. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console. **Explicitement un essai à confirmer avec
+  la cliente** — si `grid-template-columns: 0.85fr 1.15fr` réapparaît sur
+  `.contact-devis-inner`, c'est un retour au layout deux colonnes
+  précédent, à ne pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 

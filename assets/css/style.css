@@ -3453,21 +3453,26 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    légèrement assombri (#ece3d1), distinct du Blanc Calcaire exact de la
    charte (#f6f1e7). */
 .contact-devis { position: relative; background: var(--bg); padding-block: var(--space-6); overflow: hidden; }
-.contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-5); }
-/* align-items:center (2026-09-03, demande explicite : "retravailles la
-   disposition... pour que ça occupe mieux l'espace", suite au retrait du
-   badge "EL"/Estelle Lorusso ci-dessous) — remplace `align-items:start` :
-   la colonne de texte (eyebrow + h2 + lede) est bien plus courte que la
-   carte formulaire à sa droite, surtout une fois le badge retiré ; callée
-   en haut, elle laissait un grand vide sous elle jusqu'au bas du
-   formulaire. Centrée verticalement sur toute la hauteur de la ligne de
-   grille (= la hauteur du formulaire, le plus grand des deux), l'espace
-   au-dessus et en dessous du texte se rééquilibre, un compromis plus
-   confortable qu'un texte plaqué en haut avec un vide disproportionné en
-   dessous. */
-@media (min-width: 960px) {
-  .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: center; gap: var(--space-6); }
-}
+/* Essai "formulaire dans la longueur" (2026-09-03, demande explicite :
+   "et si on essayait le formulaire dans la longueur et non dans la
+   hauteur") — remplace le layout deux colonnes (texte 0.85fr à gauche,
+   carte formulaire 1.15fr à droite, elle-même plafonnée à `max-width:
+   40rem` par `.form-card` de base) qui forçait la carte à rester étroite
+   et donc haute (tous les groupes de champs empilés verticalement dans
+   une colonne resserrée). `.contact-devis-inner` repasse en une seule
+   colonne (plus de `grid-template-columns` dédié) : le texte reste en
+   haut, contraint à une largeur de lecture confortable
+   (`.contact-devis-text`, `max-width:44rem`), et la carte formulaire
+   occupe ensuite toute la largeur du conteneur
+   (`.form-card.form-card-premium`, `max-width:none` ci-dessous) — ce qui
+   permet aux groupes de champs de s'étaler sur plusieurs colonnes plutôt
+   que de s'empiler, donc un formulaire nettement plus large et plus
+   court. Si `grid-template-columns: 0.85fr 1.15fr` réapparaît ici, c'est
+   cet ancien layout deux colonnes, à ne pas réintroduire sans qu'on le
+   redemande — un essai à confirmer avec la cliente avant de le considérer
+   définitif. */
+.contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); }
+.contact-devis-text { max-width: 44rem; }
 /* Quart de cercle décoratif retiré (2026-09-02, demande explicite : "enlève
    le quart de cercle décoratif au niveau du deux minutes suffisent") —
    `.contact-devis::before` était un cercle complet (`border-radius:50%`,
@@ -3575,6 +3580,10 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    native radios under the hood so it stays keyboard/screen-reader friendly. */
 .service-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
 @media (min-width: 640px) { .service-picker { grid-template-columns: repeat(3, 1fr); } }
+/* 5 colonnes (2026-09-03, essai "formulaire dans la longueur") : une fois
+   la carte formulaire élargie (cf. .contact-devis-inner), les 5 options
+   tiennent sur une seule ligne au lieu de 3+2. */
+@media (min-width: 860px) { .service-picker { grid-template-columns: repeat(5, 1fr); } }
 .service-option {
   position: relative;
   display: flex;
@@ -3800,6 +3809,19 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 .form-row { display: grid; gap: 0.7rem; margin-bottom: 0.7rem; }
 @media (min-width: 560px) { .form-row.cols-2 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 560px) { .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
+/* cols-4 (2026-09-03, essai "formulaire dans la longueur", cf. commentaire
+   sur .contact-devis-inner) : regroupe les 4 champs du bloc "Vous"
+   (Nom complet/Entreprise/Email/Téléphone), auparavant deux `cols-2`
+   empilées, sur une seule ligne — n'a de sens qu'une fois la carte
+   formulaire élargie (breakpoint plus haut que `cols-2`/`cols-3`, sinon 4
+   champs se retrouveraient trop resserrés sur une carte encore étroite).
+   Palier intermédiaire à 2 colonnes entre 560 et 860px (au lieu de
+   retomber directement à 1 colonne empilée, un vrai bug de mise en page
+   repéré par capture d'écran à 820px avant publication) — la carte n'est
+   pas encore assez large pour 4 colonnes sous 860px, mais 2 restent
+   confortables. */
+@media (min-width: 560px) { .form-row.cols-4 { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 860px) { .form-row.cols-4 { grid-template-columns: repeat(4, 1fr); } }
 
 .field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.35rem; }
 .field .optional { text-transform: none; letter-spacing: 0; color: var(--fg-muted); font-size: 0.72rem; font-weight: 400; }
