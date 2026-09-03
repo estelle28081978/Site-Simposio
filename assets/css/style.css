@@ -3461,10 +3461,18 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    = `#f6f1e7`) plutôt qu'une valeur hex en dur, pour rester synchronisé
    avec le token de la charte si jamais retouché. `padding-block:
    var(--space-4)` (déjà réduit à l'itération précédente) inchangé. */
+/* Section et formulaire réduits (2026-09-03, demande explicite : "réduis
+   la taille de la section et réduit la place que prend le formulaire") —
+   `padding-block` resserré à `var(--space-3)` (1.75rem, contre 2.75rem) ;
+   le formulaire (cf. `.form-card.form-card-premium` plus bas) est plafonné
+   en largeur au lieu de continuer à occuper toute la largeur du
+   conteneur, et son espacement interne (form-group/form-row/champs/
+   tuiles de formule, plus bas dans ce fichier) est resserré une nouvelle
+   fois. */
 .contact-devis {
   position: relative;
   background: var(--bg);
-  padding-block: var(--space-4);
+  padding-block: var(--space-3);
   overflow: hidden;
 }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); }
@@ -3498,7 +3506,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    de ces règles "sur fond sombre" réapparaît, c'est un retour à la version
    navy, à ne pas réintroduire sans qu'on le redemande. */
 .form-card.form-card-premium {
-  max-width: none;
+  max-width: 60rem;
   background: none;
   border: none;
   border-radius: 0;
@@ -3586,7 +3594,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
-  padding: 0.4em 0.9em;
+  padding: 0.35em 0.8em;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--white);
@@ -3791,7 +3799,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    screen) — padding/margins/gaps below all reduced a second time. */
 @media (min-width: 600px) { .form-card { padding: 1.75rem; } }
 
-.form-group { margin-bottom: 0.7rem; }
+.form-group { margin-bottom: 0.5rem; }
 .form-group-label {
   display: block;
   font-family: var(--font-subtitle);
@@ -3800,10 +3808,10 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.45rem;
 }
 
-.form-row { display: grid; gap: 0.7rem; margin-bottom: 0.7rem; }
+.form-row { display: grid; gap: 0.5rem; margin-bottom: 0.5rem; }
 @media (min-width: 560px) { .form-row.cols-2 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 560px) { .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
 /* cols-4 (2026-09-03, essai "formulaire dans la longueur", cf. commentaire
@@ -3825,7 +3833,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 
 .field input, .field select, .field textarea {
   width: 100%;
-  padding: 0.45em 1.1em;
+  padding: 0.4em 1em;
   border: 1.5px solid var(--border);
   border-radius: 999px;
   background: var(--white);
@@ -3840,13 +3848,13 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(193, 98, 45, 0.15);
 }
-.field textarea { resize: vertical; min-height: 48px; border-radius: var(--radius); }
+.field textarea { resize: vertical; min-height: 40px; border-radius: var(--radius); }
 
 .field-error { display: none; font-size: 0.78rem; color: var(--accent-hover); margin-top: 0.4rem; font-weight: 500; }
 .field.has-error input, .field.has-error select, .field.has-error textarea { border-color: var(--accent-hover); }
 .field.has-error .field-error { display: block; }
 
-.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: 0.7rem; }
+.form-footer { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: 0.5rem; }
 .form-note { font-size: 0.78rem; color: var(--fg-muted); }
 
 .form-success {

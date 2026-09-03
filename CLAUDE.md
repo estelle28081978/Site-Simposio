@@ -7466,6 +7466,37 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   précédente, à ne pas réintroduire sans qu'on le redemande — de même
   pour `[16, 31, 39]` comme `fromRgb` de `.contact-faq` sans que
   `.contact-devis` ne soit redevenue sombre.
+- **Page Contact — section et formulaire réduits (2026-09-03)**
+  (`.contact-devis`, `.form-card.form-card-premium`, `.form-group`,
+  `.form-row`, `.field input/select/textarea`, `.service-option`,
+  `contact.html`/`style.css`) : demande explicite de la cliente ("réduis
+  la taille de la section et réduit la place que prend le formulaire"),
+  sur le formulaire "intégré au fond" pleine largeur de l'itération
+  précédente.
+  **Section** : `padding-block` de `.contact-devis` réduit de
+  `var(--space-4)` (2,75rem) à `var(--space-3)` (1,75rem).
+  **Largeur du formulaire plafonnée** : `.form-card.form-card-premium`
+  passe de `max-width:none` (pleine largeur du conteneur, jusqu'à ~1270px
+  à 1600px d'écran) à `max-width:60rem` (960px) — garde l'esprit "dans la
+  longueur" des itérations précédentes (les 4 champs "Vous" et les 5
+  tuiles de formule restent sur une seule ligne à cette largeur) sans
+  occuper tout l'écran.
+  **Espacement interne resserré une nouvelle fois** (déjà compacté à deux
+  reprises les 2026-08-17/18, cf. historique plus haut) : `.form-group`
+  margin-bottom `0.7rem`→`0.5rem`, `.form-group-label` margin-bottom
+  `0.6rem`→`0.45rem`, `.form-row` gap/margin-bottom `0.7rem`→`0.5rem`,
+  padding vertical des champs `0.45em`→`0.4em`, hauteur mini du textarea
+  `48px`→`40px`, padding des tuiles de formule `0.4em 0.9em`→
+  `0.35em 0.8em`, `.form-footer` margin-top `0.7rem`→`0.5rem`, et le
+  `margin-top` inline de la ligne "Combien serez-vous/Une date en tête"
+  (`contact.html`) de `var(--space-3)` à `var(--space-2)`.
+  Vérifié par script Playwright (formulaire mesuré à 945,6px de large ×
+  497,4px de haut contre ~1176×848px avant, à 1600px d'écran — nettement
+  plus compact dans les deux dimensions — 0 débordement à 390/860/1024/
+  1600px, remplissage d'un champ + sélection d'une formule toujours
+  fonctionnels, 0 erreur console) et capture d'écran à ces largeurs.
+  Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
+  console.
 
 ## État d'avancement
 
