@@ -7285,6 +7285,43 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `margin: … auto` réapparaît sur `.founder-rule`, c'est un retour à
   l'alignement centré précédent, à ne pas réintroduire sans qu'on le
   redemande.
+- **Page Contact — badge "EL Estelle Lorusso" retiré, colonne de texte
+  recentrée verticalement (2026-09-03)** (`.contact-founder-strip`,
+  `.contact-devis-inner`, `contact.html`/`style.css`) : demande explicite
+  de la cliente, capture d'écran à l'appui — "enlève le badge sur la page
+  contact... et retravailles la disposition de la section... pour que ça
+  occupe mieux l'espace".
+  **Badge retiré** : `.contact-founder-strip` (pastille arrondie avec
+  médaillon "EL" en dégradé terracotta→rouge Venise + "Estelle Lorusso,
+  fondatrice — vous répond personnellement, pas une équipe support.")
+  supprimée du HTML ; ses règles CSS (`.contact-founder-strip`,
+  `.contact-founder-avatar` et leurs sélecteurs enfants) retirées,
+  devenues orphelines — vérifié par recherche qu'aucune autre page ne les
+  réutilise.
+  **Colonne de texte recentrée verticalement** : sans le badge (et même
+  avec), la colonne de gauche (eyebrow "Deux minutes suffisent" + h2 +
+  lede) est nettement plus courte que la carte formulaire à sa droite —
+  callée en haut (`align-items:start`, hérité de la maquette Canva
+  d'origine de cette page), elle laissait un grand vide sous elle jusqu'au
+  bas du formulaire, exactement ce que montrait la capture de la cliente.
+  `.contact-devis-inner` passe à `align-items:center` (≥960px) : la
+  colonne de texte se centre désormais sur toute la hauteur de la ligne de
+  grille (= la hauteur du formulaire, le plus grand des deux blocs),
+  répartissant l'espace au-dessus et en dessous plutôt que de le laisser
+  entièrement en dessous. **Largeur/taille de police de cette colonne non
+  touchées** : un agrandissement avait déjà été écarté à une itération
+  précédente de cette page (cf. bullet "Titres forcés sur un nombre de
+  lignes précis" plus haut — élargir cette colonne débordait sur la carte
+  formulaire juste à côté), le recentrage vertical est donc le levier
+  utilisé ici plutôt qu'un changement de taille.
+  Vérifié par script Playwright (badge confirmé absent du DOM, centre
+  vertical de `.contact-devis-text` mesuré strictement identique à celui
+  de `.contact-devis-form` — 499,9px aux deux à 1600×1000 —, 0 erreur
+  console) et capture d'écran à 1024/1600px + mobile (colonne empilée,
+  inchangée sous 960px). Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console. Si `.contact-founder-strip` ou
+  `align-items:start` sur `.contact-devis-inner` réapparaissent, c'est
+  cette ancienne version, à ne pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 
