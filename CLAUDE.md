@@ -7688,6 +7688,22 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   0 erreur console. Si `.page-header-location` ou un `<ul>` à 3 puces
   réapparaissent sur `.contact-devis-infos`, ce sont ces éléments
   retirés, à ne pas réintroduire sans qu'on le redemande.
+- **Page Contact — lede du bandeau titre retiré, doublon résolu
+  (2026-09-03)** (`contact.html`) : demande explicite de la cliente
+  ("enlève le 'Nous revenons vers vous sous 48h...' de la première
+  section de la page"). Le bullet précédent avait sciemment dupliqué ce
+  texte à deux endroits (le `.lede` du bandeau titre ET le nouveau
+  `.contact-devis-infos` sous le formulaire) sur demande explicite de la
+  cliente à l'époque — elle revient ici sur la moitié "bandeau titre" de
+  ce doublon. `<p class="lede" data-reveal>` supprimé du
+  `.page-header.page-header-full` ; ne reste que l'eyebrow "Composons
+  ensemble" + le `h1`. Le texte reste inchangé sous le formulaire
+  (`.contact-devis-infos`), seule cette occurrence-ci est retirée.
+  `.lede` étant une classe générique partagée par toutes les pages, aucun
+  CSS à nettoyer (toujours utilisée ailleurs). Vérifié par script
+  Playwright (`.page-header .lede` confirmé absent du DOM, 0 erreur
+  console) et capture d'écran du bandeau titre. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
