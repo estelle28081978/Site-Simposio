@@ -3331,19 +3331,11 @@ h3 { font-size: clamp(1.3rem, 1vw + 0.95rem, 1.75rem); }
    Contact page — full-screen title, contact bandeau, single-column premium
    devis form, scroll-to-FAQ cue and FAQ accordion.
    ========================================================================== */
-.page-header-location {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-top: var(--space-4);
-  font-family: var(--font-subtitle);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
-}
-.page-header-location svg { width: 15px; height: 15px; color: var(--accent); flex-shrink: 0; }
+/* "Basée en Alsace, France" retirée du bandeau titre (2026-09-03, demande
+   explicite) — `.page-header-location` (HTML) supprimée, plus utilisée
+   nulle part sur le site ; règle CSS retirée avec elle. Si
+   `.page-header-location` réapparaît, c'est cette ancienne ligne, à ne
+   pas réintroduire sans qu'on le redemande. */
 
 /* Bandeau — only the three ways to reach Simposio (brand name + logo
    placeholder removed at the client's request, 2026-08-13). Sized
@@ -3556,24 +3548,17 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    (`--font-body`, héritée de `body`) : aucune règle `font-family` dédiée
    n'est nécessaire ici, seuls l'espacement et la puce (tiret terracotta,
    cohérent avec `.link-arrow`/`.eyebrow` ailleurs) sont stylés. */
+/* Devenue un simple paragraphe (2026-09-03, demande explicite : "met ça...
+   à la place des 3 infos") — remplace la liste à puces de 3 items
+   (Réponse 24h/interlocuteur unique/sans engagement) par une seule phrase
+   de réassurance ; règles `li`/`li::before` (puces tiret) retirées,
+   devenues inutiles sans liste. Si un `<ul>`/`<li>` réapparaît ici, c'est
+   l'ancienne version à 3 puces, à ne pas réintroduire sans qu'on le
+   redemande. */
 .contact-devis-infos {
   margin-top: var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  list-style: none;
-}
-.contact-devis-infos li {
-  position: relative;
-  padding-left: 1.3em;
   font-size: 0.95rem;
   color: var(--fg-muted);
-}
-.contact-devis-infos li::before {
-  content: "—";
-  position: absolute;
-  left: 0;
-  color: var(--accent);
 }
 
 /* Quart de cercle décoratif retiré (2026-09-02, demande explicite : "enlève

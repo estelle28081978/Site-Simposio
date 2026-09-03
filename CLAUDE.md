@@ -7662,6 +7662,32 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   `position:sticky` sur `.contact-devis-text`, c'est un retour à
   l'itération précédente (colonnes 50/50, pas de fixation au scroll), à
   ne pas réintroduire sans qu'on le redemande.
+- **Page Contact — texte de réassurance simplifié en une phrase, "Basée en
+  Alsace, France" retirée du bandeau titre (2026-09-03)** (`contact.html`,
+  `assets/css/style.css`) : deux demandes de la cliente en une fois.
+  **`.contact-devis-infos` passe de 3 puces à une seule phrase** ("met ça
+  'Nous revenons vers vous sous 48h avec une première proposition adaptée
+  à votre budget et vos objectifs' à la place des 3 infos") : le `<ul>`
+  de 3 `<li>` ("Réponse personnelle sous 24h" / "Un interlocuteur
+  unique..." / "Devis sur mesure...") devient un simple `<p>` — CSS
+  simplifiée en conséquence (plus de `list-style`/puces `::before`, un
+  seul bloc de texte). Reprend mot pour mot le même texte que le `.lede`
+  du bandeau titre de cette page (`.page-header .lede`, juste au-dessus,
+  hors de vue une fois scrollé jusqu'au formulaire) — duplication
+  volontaire du même message de réassurance à deux endroits de la page,
+  demandée telle quelle.
+  **"Basée en Alsace, France" retirée** du bandeau titre — `<p
+  class="page-header-location">` (icône pin + texte) supprimée du HTML ;
+  n'étant plus utilisée sur aucune des 5 pages (vérifié par recherche),
+  sa règle CSS (`.page-header-location`) est retirée avec elle plutôt que
+  laissée en CSS mort.
+  Vérifié par script Playwright (`.page-header-location` confirmée
+  absente du DOM, texte du nouveau `.contact-devis-infos` confirmé, 0
+  erreur console) et capture d'écran du bandeau titre + de la section
+  formulaire. Regression complète 5 pages × 2 viewports : 0 débordement,
+  0 erreur console. Si `.page-header-location` ou un `<ul>` à 3 puces
+  réapparaissent sur `.contact-devis-infos`, ce sont ces éléments
+  retirés, à ne pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 
