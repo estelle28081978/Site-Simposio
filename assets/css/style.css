@@ -3479,6 +3479,21 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    largeur du conteneur plutôt que de rester collé à gauche sous le
    titre — composition volontairement asymétrique (titre à gauche,
    formulaire centré en dessous), telle que demandée. */
+/* Retour à un layout deux colonnes 50/50 (2026-09-03, demande explicite :
+   "repasse à une disposition moitié formulaire, moitié informations à
+   côté, ce qui te permettra de réduire la taille de la section") —
+   remplace la colonne unique (titre en haut, formulaire pleine largeur
+   centré en dessous) des itérations précédentes : le texte et le
+   formulaire redeviennent deux colonnes CÔTE À CÔTE (`1fr 1fr`, contre
+   `0.85fr 1.15fr` sur l'ancien layout deux colonnes d'avant l'essai
+   "dans la longueur") — c'est cette disposition côte à côte, pas la
+   réduction de padding, qui raccourcit la section : le contenu utilise la
+   largeur au lieu de s'empiler verticalement. `align-items:center`
+   (comme l'ancien layout deux colonnes) pour équilibrer l'espace de part
+   et d'autre du bloc de texte, plus court que le formulaire. Si
+   `grid-template-columns: 1fr` (une seule colonne) réapparaît ici, c'est
+   un retour à un layout empilé précédent, à ne pas réintroduire sans
+   qu'on le redemande. */
 .contact-devis {
   position: relative;
   background: var(--bg);
@@ -3486,6 +3501,9 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   overflow: hidden;
 }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); }
+@media (min-width: 960px) {
+  .contact-devis-inner { grid-template-columns: 1fr 1fr; align-items: center; gap: var(--space-6); }
+}
 /* Quart de cercle décoratif retiré (2026-09-02, demande explicite : "enlève
    le quart de cercle décoratif au niveau du deux minutes suffisent") —
    `.contact-devis::before` était un cercle complet (`border-radius:50%`,
@@ -3515,9 +3533,13 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    maintenant comme n'importe quelle autre section claire du site. Si l'une
    de ces règles "sur fond sombre" réapparaît, c'est un retour à la version
    navy, à ne pas réintroduire sans qu'on le redemande. */
+/* max-width:none (2026-09-03, retour au layout 2 colonnes) : les
+   `max-width:60rem`/`margin-inline:auto` de l'itération "colonne unique
+   centrée" n'ont plus lieu d'être — le formulaire vit maintenant dans sa
+   propre piste de grille (~50% du conteneur), il en épouse simplement
+   toute la largeur (`.form-card` de base a déjà `width:100%`). */
 .form-card.form-card-premium {
-  max-width: 60rem;
-  margin-inline: auto;
+  max-width: none;
   background: none;
   border: none;
   border-radius: 0;
@@ -3596,10 +3618,16 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    native radios under the hood so it stays keyboard/screen-reader friendly. */
 .service-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
 @media (min-width: 640px) { .service-picker { grid-template-columns: repeat(3, 1fr); } }
-/* 5 colonnes (2026-09-03, essai "formulaire dans la longueur") : une fois
-   la carte formulaire élargie (cf. .contact-devis-inner), les 5 options
-   tiennent sur une seule ligne au lieu de 3+2. */
-@media (min-width: 860px) { .service-picker { grid-template-columns: repeat(5, 1fr); } }
+/* Palier à 5 colonnes retiré (2026-09-03, retour au layout 2 colonnes
+   50/50) : il datait de l'essai "formulaire dans la longueur", où le
+   formulaire occupait presque toute la largeur du conteneur — la règle se
+   déclenchait sur la largeur du VIEWPORT (`min-width:860px`), pas sur la
+   largeur réelle de la carte. Maintenant que le formulaire ne fait plus
+   que ~50% du conteneur, un viewport ≥860px ne garantit plus du tout une
+   carte assez large pour 5 colonnes (la carte peut faire beaucoup moins
+   que 860px de large) — 5 tuiles s'y seraient retrouvées écrasées. Si ce
+   palier réapparaît ici, revérifier d'abord la largeur réelle de la carte
+   à plusieurs largeurs de viewport avant de le réintroduire. */
 .service-option {
   position: relative;
   display: flex;
@@ -3825,19 +3853,20 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
 .form-row { display: grid; gap: 0.5rem; margin-bottom: 0.5rem; }
 @media (min-width: 560px) { .form-row.cols-2 { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 560px) { .form-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; } }
-/* cols-4 (2026-09-03, essai "formulaire dans la longueur", cf. commentaire
-   sur .contact-devis-inner) : regroupe les 4 champs du bloc "Vous"
-   (Nom complet/Entreprise/Email/Téléphone), auparavant deux `cols-2`
-   empilées, sur une seule ligne — n'a de sens qu'une fois la carte
-   formulaire élargie (breakpoint plus haut que `cols-2`/`cols-3`, sinon 4
-   champs se retrouveraient trop resserrés sur une carte encore étroite).
-   Palier intermédiaire à 2 colonnes entre 560 et 860px (au lieu de
-   retomber directement à 1 colonne empilée, un vrai bug de mise en page
-   repéré par capture d'écran à 820px avant publication) — la carte n'est
-   pas encore assez large pour 4 colonnes sous 860px, mais 2 restent
-   confortables. */
+/* cols-4 : regroupe les 4 champs du bloc "Vous" (Nom complet/Entreprise/
+   Email/Téléphone) dans une seule `<div class="form-row cols-4">` en HTML
+   (héritage de l'essai "formulaire dans la longueur", cf. historique) —
+   mais depuis le retour au layout 2 colonnes 50/50, **le palier à 4
+   colonnes est retiré** (même raison que pour `.service-picker` juste
+   au-dessus : `min-width:860px` porte sur le VIEWPORT, pas sur la
+   largeur réelle, désormais ~50%, de la carte — 4 champs y seraient
+   écrasés). Ne reste que le palier à 2 colonnes, qui donne visuellement
+   un 2×2 (grid wrap automatique sur 4 items en 2 colonnes) — l'équivalent
+   exact des deux `cols-2` empilées d'avant l'essai "dans la longueur",
+   sans avoir besoin de retoucher le HTML. Si `repeat(4, 1fr)`
+   réapparaît ici, revérifier d'abord la largeur réelle de la carte à
+   plusieurs largeurs de viewport avant de le réintroduire. */
 @media (min-width: 560px) { .form-row.cols-4 { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 860px) { .form-row.cols-4 { grid-template-columns: repeat(4, 1fr); } }
 
 .field label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--navy); margin-bottom: 0.35rem; }
 .field .optional { text-transform: none; letter-spacing: 0; color: var(--fg-muted); font-size: 0.72rem; font-weight: 400; }

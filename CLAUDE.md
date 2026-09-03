@@ -7517,6 +7517,55 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   sélection d'une formule toujours fonctionnels, 0 erreur console) et
   capture d'écran à ces largeurs. Regression complète 5 pages ×
   2 viewports : 0 débordement, 0 erreur console.
+- **Page Contact — retour au layout deux colonnes 50/50 (2026-09-03)**
+  (`.contact-devis-inner`, `.form-card.form-card-premium`, `.service-picker`,
+  `.form-row.cols-4`, `style.css`) : demande explicite de la cliente
+  ("repasse à une disposition moitié formulaire, moitié informations à
+  côté, ce qui te permettra de réduire la taille de la section"), sur la
+  colonne unique (titre en haut, formulaire centré en dessous) des
+  itérations précédentes.
+  **`.contact-devis-inner` reçoit `grid-template-columns:1fr 1fr;
+  align-items:center` à partir de 960px** — un vrai 50/50 (contre le
+  `0.85fr 1.15fr` de l'ancien layout deux colonnes, avant l'essai
+  "formulaire dans la longueur") : texte à gauche, formulaire à droite,
+  centrés verticalement l'un par rapport à l'autre puisque le texte
+  (juste le titre désormais) est bien plus court que le formulaire.
+  **C'est cette disposition côte à côte, pas un padding réduit, qui
+  raccourcit la section** — le contenu utilise la largeur disponible au
+  lieu de s'empiler verticalement (titre, puis tout le formulaire en
+  dessous). Mesuré : 720px de hauteur de section à 1600×1000, contre
+  757px pour la version "colonne unique centrée" juste avant.
+  `.form-card.form-card-premium` perd son `max-width:60rem`/
+  `margin-inline:auto` (plus nécessaires : le formulaire vit maintenant
+  dans sa propre piste de grille à ~50% du conteneur, il en épouse
+  simplement toute la largeur via `width:100%` déjà sur `.form-card` de
+  base).
+  **Bug potentiel anticipé et corrigé avant publication, pas découvert
+  après coup** : les paliers "formulaire large" de l'essai précédent
+  (`.service-picker` à 5 colonnes et `.form-row.cols-4` à 4 colonnes,
+  tous deux déclenchés par `@media (min-width:860px)`) se basent sur la
+  largeur du VIEWPORT, pas sur la largeur réelle de la carte — or une
+  fois le formulaire réduit à ~50% du conteneur, un viewport ≥860px ne
+  garantit plus du tout une carte assez large pour 4 ou 5 colonnes (à
+  960px de large par exemple, la carte ne fait plus que ~345px). Les deux
+  paliers ont été retirés avant même de tester (pas repérés par un bug
+  visuel a posteriori) : `.service-picker` retombe à son plafond
+  précédent (3 colonnes max, ≥640px), `.form-row.cols-4` ne garde que son
+  palier à 2 colonnes (≥560px) — qui donne un 2×2 par wrap automatique de
+  la grille sur les 4 champs, l'équivalent exact des deux `cols-2`
+  empilées d'avant l'essai "dans la longueur", sans avoir eu besoin de
+  retoucher le HTML.
+  Vérifié par script Playwright (les deux colonnes mesurées strictement
+  égales — 524px chacune à 1600px de large —, 0 débordement à
+  390/768/960/1024/1920px, remplissage d'un champ + sélection d'une
+  formule toujours fonctionnels, 0 erreur console) et capture d'écran à
+  ces largeurs, y compris pile au seuil de bascule (960px) où la carte
+  est la plus étroite. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console. Si `grid-template-columns:1fr` (une
+  seule colonne) réapparaît sur `.contact-devis-inner`, ou si les paliers
+  à 4/5 colonnes réapparaissent sur `.form-row.cols-4`/`.service-picker`,
+  c'est un retour à l'itération précédente, à ne pas réintroduire sans
+  qu'on le redemande.
 
 ## État d'avancement
 
