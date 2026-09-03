@@ -3508,6 +3508,13 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    fixe (~91px de haut, glass/backdrop-blur). `display:flex;
    align-items:center` centre le contenu (`.contact-devis-inner`, qui a
    déjà `width:100%` via `.container`) dans l'espace vertical restant. */
+/* `overflow:hidden` retiré (2026-09-03) : ne servait plus qu'à clipper le
+   quart de cercle décoratif de `.contact-devis::before`, déjà retiré (cf.
+   commentaire plus bas) — laissé par inadvertance. Le retirer est
+   nécessaire ici, pas juste un nettoyage : un ancêtre `overflow` différent
+   de `visible` casse le `position:sticky` des descendants dans la plupart
+   des navigateurs (piège CSS classique), ce qui aurait empêché
+   `.contact-devis-text` (ci-dessous) de rester fixe au scroll. */
 .contact-devis {
   position: relative;
   background: var(--bg);
@@ -3516,12 +3523,59 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
   padding-block: 6.5rem;
   display: flex;
   align-items: center;
-  overflow: hidden;
 }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); width: 100%; }
+/* Colonne de texte réduite + fixée au scroll (2026-09-03, demande
+   explicite : "réduis la taille de la section à gauche... la partie à
+   gauche avec les textes ne bouge pas même au scroll, par contre le
+   formulaire, lorsqu'on descend, lui affiche les informations
+   suivantes") — remplace le 50/50 de l'itération précédente par
+   `0.85fr 1.15fr` (même proportion que l'ancien layout deux colonnes
+   d'avant l'essai "dans la longueur", réutilisée plutôt qu'une nouvelle
+   valeur inventée) : la colonne de gauche redevient plus étroite que le
+   formulaire. `align-items:start` (plus `center`) est nécessaire pour
+   que `position:sticky` sur `.contact-devis-text` ait un sens — un
+   enfant de grille centré verticalement n'a nulle part où "se figer"
+   pendant le défilement, contrairement à un enfant callé en haut de sa
+   piste. Avec le formulaire nettement plus long que le titre + les 3
+   infos une fois la colonne resserrée, `.contact-devis-text` reste
+   visible et immobile pendant que le reste du formulaire défile en
+   dessous — exactement l'effet "affiche les informations suivantes au
+   scroll" décrit par la cliente, obtenu ici en CSS pur (`position:sticky`),
+   sans mécanisme JS dédié. */
 @media (min-width: 960px) {
-  .contact-devis-inner { grid-template-columns: 1fr 1fr; align-items: center; gap: var(--space-6); }
+  .contact-devis-inner { grid-template-columns: 0.85fr 1.15fr; align-items: start; gap: var(--space-6); }
+  .contact-devis-text { position: sticky; top: 6.5rem; }
 }
+/* Eyebrow "Formulaire" (Canter, via `.eyebrow` déjà en place sitewide) +
+   3 infos de réassurance en Glacial Indifference (2026-09-03, demande
+   explicite) — reprend l'esprit de l'ancien badge "Estelle Lorusso...
+   vous répond personnellement, pas une équipe support" (retiré plus tôt,
+   cf. plus bas) en texte simple plutôt qu'en pastille. Glacial
+   Indifference est déjà la police de corps par défaut du site
+   (`--font-body`, héritée de `body`) : aucune règle `font-family` dédiée
+   n'est nécessaire ici, seuls l'espacement et la puce (tiret terracotta,
+   cohérent avec `.link-arrow`/`.eyebrow` ailleurs) sont stylés. */
+.contact-devis-infos {
+  margin-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  list-style: none;
+}
+.contact-devis-infos li {
+  position: relative;
+  padding-left: 1.3em;
+  font-size: 0.95rem;
+  color: var(--fg-muted);
+}
+.contact-devis-infos li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
 /* Quart de cercle décoratif retiré (2026-09-02, demande explicite : "enlève
    le quart de cercle décoratif au niveau du deux minutes suffisent") —
    `.contact-devis::before` était un cercle complet (`border-radius:50%`,

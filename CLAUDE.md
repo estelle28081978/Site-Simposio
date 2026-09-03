@@ -7602,6 +7602,66 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   d'une formule toujours fonctionnels, 0 erreur console) et capture
   d'écran à ces tailles. Regression complète 5 pages × 2 viewports : 0
   débordement, 0 erreur console.
+- **Page Contact — colonne de gauche réduite et fixée au scroll, eyebrow
+  "Formulaire" + 3 infos de réassurance (2026-09-03)**
+  (`.contact-devis-inner`, `.contact-devis-text`, `.contact-devis-infos`,
+  `contact.html`/`style.css`) : quatre demandes de la cliente en une fois
+  ("réduis la taille de la section à gauche. Rajoute la baseline
+  'formulaire' écrit avec la police canter et en dessous du titre,
+  rajoute 2-3 infos avec la police glaciale indifférence. La partie à
+  gauche avec les textes ne bougent pas même au scroll. Par contre le
+  formulaire lorsque l'on descend lui affiche les informations suivantes
+  au scroll").
+  **Colonne réduite** : `.contact-devis-inner` repasse de `1fr 1fr`
+  (50/50, itération précédente) à `0.85fr 1.15fr` — la même proportion
+  que l'ancien layout deux colonnes d'avant l'essai "dans la longueur",
+  réutilisée plutôt qu'une nouvelle valeur inventée. La colonne de texte
+  redevient donc plus étroite que le formulaire.
+  **Eyebrow "Formulaire" en Canter** : simple `<span class="eyebrow">`
+  ajouté au-dessus du titre — `.eyebrow` utilise déjà `--font-accent`
+  (Canter) sitewide, aucune nouvelle règle de police nécessaire.
+  **3 infos en Glacial Indifference** (`.contact-devis-infos`, une
+  `<ul>` sous le titre) : "Réponse personnelle sous 24h" / "Un
+  interlocuteur unique, jamais une équipe support" / "Devis sur mesure,
+  sans engagement" — reprend l'esprit de l'ancien badge "Estelle Lorusso
+  fondatrice — vous répond personnellement, pas une équipe support"
+  (retiré le même jour, cf. bullet plus haut) en texte simple plutôt
+  qu'en pastille. Glacial Indifference étant déjà `--font-body` par
+  défaut sur tout le site, aucune règle `font-family` dédiée n'était
+  nécessaire — seule la puce (tiret terracotta via `::before`) est
+  stylée.
+  **Colonne de gauche fixée au scroll (`position:sticky`)** — c'est la
+  partie technique de la demande : `.contact-devis-text` reçoit
+  `position:sticky; top:6.5rem` (même constante que `.page-header`
+  utilise pour dégager le header fixe) et `.contact-devis-inner` passe de
+  `align-items:center` à `align-items:start` (nécessaire : un enfant de
+  grille centré n'a nulle part où se "figer" pendant le scroll,
+  contrairement à un enfant callé en haut de sa piste). **Un vrai bug
+  bloquant trouvé et corrigé avant que ça fonctionne, pas supposé** :
+  `.contact-devis` avait encore `overflow:hidden` (vestige du quart de
+  cercle décoratif déjà retiré plus tôt) — un ancêtre avec `overflow`
+  différent de `visible` casse `position:sticky` dans la plupart des
+  navigateurs, piège CSS classique. Retiré (`.contact-devis` n'a plus
+  besoin de clipper quoi que ce soit, aucun élément débordant ne
+  subsiste).
+  **Vérifié par script Playwright avec un vrai balayage de scroll fin**
+  (pas de simples sauts larges, qui avaient d'abord donné une fausse
+  impression que le sticky ne fonctionnait pas — la fenêtre où l'élément
+  reste réellement figé est étroite, ~50-75px de défilement à 1440×900,
+  plus large — ~150px — sur un écran plus bas comme 1440×700) : à
+  1440×700, `.contact-devis-text` reste à `top:104px` sur toute une
+  plage de scroll pendant laquelle les champs "Nom complet"/"Entreprise"
+  défilent hors champ et laissent apparaître "Votre événement"/"Votre
+  projet"/le bouton d'envoi — confirmé aussi par capture d'écran en plein
+  milieu de cette plage. 0 débordement à 390/768/960/1600/1920px,
+  remplissage d'un champ + sélection d'une formule toujours fonctionnels,
+  0 erreur console. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console. Si `overflow:hidden` réapparaît sur
+  `.contact-devis`, ou si `align-items:center`/`grid-template-columns:
+  1fr 1fr` réapparaissent sur `.contact-devis-inner` sans la règle
+  `position:sticky` sur `.contact-devis-text`, c'est un retour à
+  l'itération précédente (colonnes 50/50, pas de fixation au scroll), à
+  ne pas réintroduire sans qu'on le redemande.
 
 ## État d'avancement
 
