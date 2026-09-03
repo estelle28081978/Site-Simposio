@@ -3469,10 +3469,20 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    conteneur, et son espacement interne (form-group/form-row/champs/
    tuiles de formule, plus bas dans ce fichier) est resserré une nouvelle
    fois. */
+/* Encore réduit + formulaire centré (2026-09-03, demande explicite :
+   "réduis encore la taille de la section et centre le formulaire au
+   milieu de l'écran") — `padding-block` resserré une 2ᵉ fois
+   (`var(--space-3)` → `var(--space-2)`). Le titre reste aligné à gauche
+   (non concerné par la demande, qui ne visait que le formulaire) ; seul
+   le formulaire (`.form-card.form-card-premium`, déjà plafonné à
+   `max-width:60rem`) reçoit `margin-inline:auto` pour se centrer dans la
+   largeur du conteneur plutôt que de rester collé à gauche sous le
+   titre — composition volontairement asymétrique (titre à gauche,
+   formulaire centré en dessous), telle que demandée. */
 .contact-devis {
   position: relative;
   background: var(--bg);
-  padding-block: var(--space-3);
+  padding-block: var(--space-2);
   overflow: hidden;
 }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); }
@@ -3507,6 +3517,7 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    navy, à ne pas réintroduire sans qu'on le redemande. */
 .form-card.form-card-premium {
   max-width: 60rem;
+  margin-inline: auto;
   background: none;
   border: none;
   border-radius: 0;

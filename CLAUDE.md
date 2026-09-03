@@ -7497,6 +7497,26 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   fonctionnels, 0 erreur console) et capture d'écran à ces largeurs.
   Regression complète 5 pages × 2 viewports : 0 débordement, 0 erreur
   console.
+- **Page Contact — section resserrée une 2ᵉ fois, formulaire centré
+  (2026-09-03)** (`.contact-devis`, `.form-card.form-card-premium`,
+  `style.css`) : demande explicite de la cliente ("réduis encore la
+  taille de la section et centre le formulaire au milieu de l'écran").
+  `padding-block` de `.contact-devis` réduit une 2ᵉ fois, de
+  `var(--space-3)` (1,75rem) à `var(--space-2)` (1rem). `.form-card.
+  form-card-premium` (déjà plafonné à `max-width:60rem`) reçoit
+  `margin-inline:auto` pour se centrer horizontalement dans le conteneur
+  plutôt que de rester collé au bord gauche.
+  **Composition volontairement asymétrique** : le titre "Dites-nous où
+  vous en êtes" reste aligné à gauche (la demande ne portait que sur le
+  formulaire) — le formulaire se retrouve donc centré sous un titre
+  resté à gauche, plutôt que les deux repositionnés ensemble.
+  Vérifié par script Playwright (marges gauche/droite du formulaire
+  mesurées strictement égales — 187,2px de chaque côté à 1600px de
+  large —, hauteur de section réduite de 24px en cohérence avec le
+  padding, 0 débordement à 390/860/1024/1600px, remplissage d'un champ +
+  sélection d'une formule toujours fonctionnels, 0 erreur console) et
+  capture d'écran à ces largeurs. Regression complète 5 pages ×
+  2 viewports : 0 débordement, 0 erreur console.
 
 ## État d'avancement
 
