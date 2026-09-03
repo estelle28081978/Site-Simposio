@@ -3452,44 +3452,29 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    sitewide des couleurs de fond de section) — `--bg-dim` est un crème
    légèrement assombri (#ece3d1), distinct du Blanc Calcaire exact de la
    charte (#f6f1e7). */
-/* Formulaire "intégré au fond" (2026-09-03, demande explicite : "enlève le
-   texte et fait un formulaire intégré au fond, ne le fait pas apparaître
-   dans un rectangle qui passe en premier plan... garde juste le
-   'Dites-nous où vous en êtes'... réduit la taille de la section") —
-   remplace l'essai précédent (texte eyebrow+h2+lede au-dessus d'une carte
-   navy avec coins arrondis/ombre portée, cf. commentaire encore plus haut
-   dans l'historique de ce fichier). Le dégradé navy qui habillait la carte
-   (`.form-card.form-card-premium`, ci-dessous) est remonté directement sur
-   `.contact-devis` : c'est désormais toute la section qui porte ce fond,
-   pas un rectangle posé dessus — la carte perd son propre
-   fond/bordure/coins arrondis/ombre (voir plus bas), donc les champs
-   flottent directement sur le fond de la section, sans rupture visuelle.
-   `padding-block` réduit de `var(--space-6)` à `var(--space-4)` (demande
-   explicite de réduire la taille de la section — déjà plus courte de
-   toute façon, l'eyebrow et le lede ayant été retirés). Si
-   `background: var(--bg)` réapparaît ici avec un `.form-card-premium` qui
-   garde son propre fond/ombre, c'est un retour à l'ancienne carte
-   "premier plan", à ne pas réintroduire sans qu'on le redemande. */
+/* Formulaire "intégré au fond", repassé en Blanc Calcaire (2026-09-03,
+   demande explicite : "met en fond blanc calcaire #f6f1e7") — remplace le
+   dégradé navy de l'itération précédente (texte réduit au titre seul,
+   formulaire sans carte, déjà en place, cf. historique juste au-dessus) :
+   seule la COULEUR de fond change, la structure "pas de rectangle en
+   premier plan" est conservée à l'identique. `var(--bg)` (= `var(--cream)`
+   = `#f6f1e7`) plutôt qu'une valeur hex en dur, pour rester synchronisé
+   avec le token de la charte si jamais retouché. `padding-block:
+   var(--space-4)` (déjà réduit à l'itération précédente) inchangé. */
 .contact-devis {
   position: relative;
-  background: linear-gradient(200deg, var(--navy) 0%, var(--navy-900) 100%);
+  background: var(--bg);
   padding-block: var(--space-4);
   overflow: hidden;
 }
 .contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); }
-/* Titre seul, en clair sur le nouveau fond navy de la section — l'eyebrow
-   "Deux minutes suffisent" et le lede ont été retirés (demande explicite),
-   `.contact-devis-text` ne contient donc plus que le `h2`. Plus de
-   `max-width` dédié : sans lede à mettre en page, rien ne justifie de
-   brider sa largeur (cohérent avec la demande "tout dans la longueur"). */
-.contact-devis-text h2 { color: var(--fg-inverse); }
 /* Quart de cercle décoratif retiré (2026-09-02, demande explicite : "enlève
    le quart de cercle décoratif au niveau du deux minutes suffisent") —
    `.contact-devis::before` était un cercle complet (`border-radius:50%`,
    22rem) positionné en haut à gauche à cheval sur le bord de la section
    (`left:-9rem; top:-8rem`), dont `overflow:hidden` sur `.contact-devis`
    ne laissait apparaître qu'un quart, juste au-dessus de l'eyebrow "Deux
-   minutes suffisent" (retirée depuis, cf. ci-dessus). Si
+   minutes suffisent" (retirée depuis, cf. plus haut). Si
    `.contact-devis::before` réapparaît ici, c'est cet ancien motif, à ne
    pas réintroduire sans qu'on le redemande. */
 
@@ -3499,32 +3484,27 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    réapparaissent, c'est cet ancien badge, à ne pas réintroduire sans
    qu'on le redemande. */
 
-/* Plus de "carte" — le formulaire est intégré au fond de la section (cf.
-   commentaire sur .contact-devis) : fond/bordure/coins arrondis/ombre
-   portée de l'ancienne carte sont neutralisés, seule la mise en couleur du
-   texte (labels clairs, group-label terracotta clair...) reste, puisque
-   le fond de la SECTION porte maintenant la même teinte navy que portait
-   la carte. `padding` ramené à 0 : plus de rectangle à cadrer, la
-   colonne/ligne de grille (`.contact-devis-inner`) donne déjà l'espacement
-   par rapport au titre au-dessus et aux bords du conteneur. */
+/* Plus de "carte" (inchangé depuis l'itération précédente) — le formulaire
+   reste intégré au fond de la section, fond/bordure/coins arrondis/ombre
+   neutralisés. **Toutes les variantes de texte "sur fond sombre"
+   (`.form-card-premium .field label`/`.optional`/`.form-note`/
+   `.form-group-label`/bordures de champs/`.form-success`, en place depuis
+   la version navy) sont retirées** : le titre et les champs héritent
+   directement des règles génériques `h2`/`.field label`/`.form-group-label`/
+   etc. du site, déjà pensées pour un fond clair (texte `--ink`/`--navy`,
+   champs blancs à bordure `--border`, group-label en terracotta plein) —
+   aucun override dédié n'est donc plus nécessaire, la section se comporte
+   maintenant comme n'importe quelle autre section claire du site. Si l'une
+   de ces règles "sur fond sombre" réapparaît, c'est un retour à la version
+   navy, à ne pas réintroduire sans qu'on le redemande. */
 .form-card.form-card-premium {
   max-width: none;
   background: none;
-  color: var(--fg-inverse);
   border: none;
   border-radius: 0;
   box-shadow: none;
   padding: 0;
 }
-.form-card-premium .field label { color: var(--cream); }
-.form-card-premium .field .optional { color: var(--fg-muted-inverse); }
-.form-card-premium .form-note { color: var(--fg-muted-inverse); }
-.form-card-premium .form-group-label { color: var(--terracotta-300); }
-.form-card-premium .field input,
-.form-card-premium .field select,
-.form-card-premium .field textarea { border-color: rgba(246, 241, 231, 0.22); }
-.form-card-premium .form-success { background: rgba(246, 241, 231, 0.08); border-color: rgba(246, 241, 231, 0.2); }
-.form-card-premium .form-success svg, .form-card-premium .form-success p { color: var(--cream); }
 
 /* FAQ — native <details>/<summary> accordion, no JS required */
 /* background piloté en JS (2026-09-02, `initScrollFade()` dans main.js) :

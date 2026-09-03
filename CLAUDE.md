@@ -7428,6 +7428,44 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   un `.form-card-premium` qui garde son propre fond/ombre, c'est un retour
   à l'essai "carte" précédent, à ne pas réintroduire sans qu'on le
   redemande.
+- **Page Contact — formulaire "intégré au fond" repassé en Blanc Calcaire
+  (2026-09-03)** (`.contact-devis`, `.form-card.form-card-premium`,
+  `style.css`/`main.js`) : demande explicite de la cliente ("met en fond
+  blanc calcaire #f6f1e7"), sur l'itération précédente (fond navy). Seule
+  la couleur change — la structure "pas de rectangle en premier plan" est
+  conservée : `.contact-devis` passe de son dégradé navy à `var(--bg)`
+  (= `var(--cream)` = `#f6f1e7`, un token plutôt qu'une valeur en dur).
+  **Toutes les variantes de texte "sur fond sombre" retirées** —
+  `.form-card-premium .field label`/`.optional`/`.form-note`/
+  `.form-group-label`/bordures de champs/`.form-success` (labels clairs,
+  group-label terracotta clair, bordures crème translucide...) sont
+  supprimées plutôt que réajustées une par une : les règles génériques du
+  site (`.field label`, `.form-group-label`, `.form-note`, `.field
+  input/select/textarea`, `.form-success`) sont déjà pensées pour un fond
+  clair (texte `--ink`/`--navy`, champs blancs à bordure `--border`,
+  group-label en terracotta plein) — sans override, le titre et les champs
+  en héritent directement, la section se comporte comme n'importe quelle
+  autre section claire du site. Idem pour le `<h2>` : plus d'override
+  `color:var(--fg-inverse)`, hérite du texte sombre par défaut
+  (`--fg`/`--ink`).
+  **`fromRgb` du fondu de `.contact-faq` (`initScrollFade`, `main.js`)
+  repassé à `[246, 241, 231]`** (crème) : annule le recalage sur navy-900
+  fait à l'itération précédente (le temps où `.contact-devis` était
+  sombre) — `.contact-devis` étant de nouveau crème, c'est cette valeur
+  qui redevient la teinte réelle de la section précédente ; sans ce
+  second changement, la jonction `.contact-devis`→`.contact-faq` aurait
+  affiché un flip crème→navy-900 sombre juste avant de refondre vers
+  navy, l'inverse du bug déjà corrigé une fois dans l'autre sens.
+  Vérifié par script Playwright (fond mesuré `rgb(246,241,231)` exact,
+  jonction avec la FAQ revérifiée sans à-coup de couleur, remplissage
+  d'un champ + sélection d'une formule toujours fonctionnels, 0 erreur
+  console) et capture d'écran desktop + mobile. Regression complète
+  5 pages × 2 viewports : 0 débordement, 0 erreur console. Si le dégradé
+  navy ou les overrides "fond sombre" du formulaire réapparaissent sur
+  `.contact-devis`/`.form-card-premium`, c'est un retour à l'itération
+  précédente, à ne pas réintroduire sans qu'on le redemande — de même
+  pour `[16, 31, 39]` comme `fromRgb` de `.contact-faq` sans que
+  `.contact-devis` ne soit redevenue sombre.
 
 ## État d'avancement
 
