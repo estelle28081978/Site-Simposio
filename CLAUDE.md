@@ -7566,6 +7566,42 @@ formulaire de contact (soumission par `mailto:`, pas de backend).
   à 4/5 colonnes réapparaissent sur `.form-row.cols-4`/`.service-picker`,
   c'est un retour à l'itération précédente, à ne pas réintroduire sans
   qu'on le redemande.
+- **Page Contact — section "Dites-nous où vous en êtes" en pleine hauteur
+  d'écran, dégagée du menu en haut ET en bas (2026-09-03)**
+  (`.contact-devis`, `style.css`) : demande explicite de la cliente
+  ("augmente la taille de la section pour que ça fasse l'entièreté de
+  l'écran moins la barre du menu en haut comme en bas de l'écran").
+  `padding-block` fixe remplacé par `min-height:100vh`/`100svh` +
+  `display:flex; align-items:center` — même technique que
+  `.page-header-full`, déjà établie sur le site pour ce besoin (bandeaux
+  titre plein écran d'`univers.html`/`contact.html`/`engagements.html`).
+  **`6.5rem` de dégagement identique en haut ET en bas** (`padding-block:
+  6.5rem`), volontairement symétrique — contrairement à `.page-header`
+  (`calc(6.5rem + var(--space-5))` en haut / `var(--space-5)` seul en
+  bas), pensé pour une page qui COMMENCE par ce bandeau donc n'a rien à
+  dégager en dessous. Ici la demande portait explicitement sur un
+  dégagement égal des deux côtés ; `6.5rem` reste la même constante que
+  `.page-header` utilise pour dégager le bandeau du header fixe (~91px de
+  haut, glass/backdrop-blur). `.contact-devis-inner` reçoit `width:100%`
+  (nécessaire : un enfant d'un conteneur `display:flex` ne s'étire plus
+  automatiquement sur l'axe principal comme le ferait un bloc normal —
+  sans ce `width:100%`, la grille interne se serait resserrée à la
+  largeur de son contenu au lieu de occuper tout le conteneur).
+  **`min-height` plutôt qu'une `height` fixe** : sur un écran bas
+  (testé à 1440×700), le formulaire complet dépasse la place disponible
+  entre les deux dégagements de 6.5rem — la section grandit alors
+  au-delà de 100vh plutôt que de rogner le contenu (comportement attendu
+  d'un `min-height`), un peu de scroll interne à la section plutôt qu'un
+  chevauchement ou un contenu coupé.
+  Vérifié par script Playwright (hauteur de section mesurée strictement
+  égale à la hauteur du viewport à 900px et 1080px de haut, avec un
+  dégagement de ~105,7px identique en haut et en bas — cohérent avec les
+  6,5rem/104px demandés —, section qui dépasse proprement au-delà de
+  100vh sur un écran bas de 700px sans rogner le contenu, 0 débordement
+  horizontal à 390/1440/1600/1920px, remplissage d'un champ + sélection
+  d'une formule toujours fonctionnels, 0 erreur console) et capture
+  d'écran à ces tailles. Regression complète 5 pages × 2 viewports : 0
+  débordement, 0 erreur console.
 
 ## État d'avancement
 

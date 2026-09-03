@@ -3494,13 +3494,31 @@ a.contact-band-method:hover .contact-band-method-value { color: var(--navy); }
    `grid-template-columns: 1fr` (une seule colonne) réapparaît ici, c'est
    un retour à un layout empilé précédent, à ne pas réintroduire sans
    qu'on le redemande. */
+/* Pleine hauteur d'écran, dégagée du menu en haut ET en bas (2026-09-03,
+   demande explicite : "augmente la taille de la section pour que ça
+   fasse l'entièreté de l'écran moins la barre du menu en haut comme en
+   bas de l'écran") — `min-height:100vh`/`100svh` (même technique que
+   `.page-header-full`, déjà établie sur le site pour ce besoin) plutôt
+   qu'un `padding-block` fixe. `6.5rem` en haut ET en bas (au lieu du
+   couple asymétrique `calc(6.5rem + var(--space-5))`/`var(--space-5)`
+   qu'utilise `.page-header` — pensé pour une page qui COMMENCE par cette
+   bande, donc rien à dégager en bas) : ici la demande porte explicitement
+   sur un dégagement égal des deux côtés, `6.5rem` étant la même
+   constante que `.page-header` utilise pour dégager le bandeau du header
+   fixe (~91px de haut, glass/backdrop-blur). `display:flex;
+   align-items:center` centre le contenu (`.contact-devis-inner`, qui a
+   déjà `width:100%` via `.container`) dans l'espace vertical restant. */
 .contact-devis {
   position: relative;
   background: var(--bg);
-  padding-block: var(--space-2);
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-block: 6.5rem;
+  display: flex;
+  align-items: center;
   overflow: hidden;
 }
-.contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); }
+.contact-devis-inner { position: relative; z-index: 1; display: grid; gap: var(--space-4); width: 100%; }
 @media (min-width: 960px) {
   .contact-devis-inner { grid-template-columns: 1fr 1fr; align-items: center; gap: var(--space-6); }
 }
